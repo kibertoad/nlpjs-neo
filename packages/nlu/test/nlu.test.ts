@@ -272,6 +272,32 @@ describe('NLU', () => {
     });
   });
 
+  describe('fromJSON', () => {
+    test('It rebuilds imported classifications with the None intent', () => {
+      const nlu = new Nlu({ locale: 'en' }, container);
+      nlu.fromJSON({
+        settings: {},
+        features: {},
+        intents: { greet: true },
+        featuresToIntent: {},
+        intentFeatures: {},
+      });
+
+      const classifications = nlu.convertToArray({
+        classifications: { greet: 0.1, None: 0.9 },
+        settings: nlu.settings,
+      });
+      expect(classifications).toContainEqual({ intent: 'None', score: 0.9 });
+    });
+
+    test('It imports a never-trained model without intents', () => {
+      const nlu = new Nlu({ locale: 'en' }, container);
+
+      expect(() => nlu.fromJSON({ settings: {} })).not.toThrow();
+      expect(nlu.intents).toEqual({});
+    });
+  });
+
   describe('Some similar', () => {
     test('It should return false if items in array does not exists in dictionary', () => {
       const dict = { this: 1, is: 1, a: 1, cat: 1 };
