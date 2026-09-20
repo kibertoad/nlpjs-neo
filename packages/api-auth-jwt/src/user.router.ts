@@ -22,7 +22,7 @@
  */
 
 import { uuid } from '@nlpjs-neo/core';
-import bcrypt from 'bcryptjs';
+import { hashSync } from 'bcryptjs';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
 import getSettings from './default-settings.js';
@@ -98,7 +98,7 @@ function register(req, res, next) {
         error.status = 409;
         throw error;
       }
-      const hash = bcrypt.hashSync(req.body.password, 10);
+      const hash = hashSync(req.body.password, 10);
       const document = {
         email: req.body.email,
         password: hash,

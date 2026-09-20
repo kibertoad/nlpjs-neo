@@ -203,9 +203,6 @@ importers:
       formidable:
         specifier: ^2.0.1
         version: 2.1.5
-      node-fetch:
-        specifier: ^2.6.7
-        version: 2.7.0(encoding@0.1.13)
 
   packages/emoji:
     dependencies:
@@ -300,9 +297,6 @@ importers:
       decompress:
         specifier: ^4.2.1
         version: 4.2.1
-      rimraf:
-        specifier: ^3.0.2
-        version: 3.0.2
     devDependencies:
       '@types/archiver':
         specifier: ^8.0.0
@@ -897,11 +891,7 @@ importers:
         specifier: ^9.1.0
         version: 9.1.0(supports-color@8.1.1)
 
-  packages/request-rn:
-    dependencies:
-      axios:
-        specifier: ^0.26.0
-        version: 0.26.1(debug@4.4.3(supports-color@8.1.1))
+  packages/request-rn: {}
 
   packages/rest-connector:
     dependencies:
@@ -2019,9 +2009,6 @@ packages:
 
   aws4@1.13.2:
     resolution: {integrity: sha512-lHe62zvbTB5eEABUVi/AwVh0ZKY9rMMDhmm+eeyuuUQbQ3+J+fONVQOZyj+DdrvD4BY33uYniyRJ4UJIaSKAfw==}
-
-  axios@0.26.1:
-    resolution: {integrity: sha512-fPwcX4EvnSHuInCMItEhAGnaSEXRBjtzh9fOtsE6E1G6p7vl7edEeZe11QHf18+6+9gR5PbKV/sGKNaD8YaMeA==}
 
   axios@1.20.0:
     resolution: {integrity: sha512-r8aOh8j9cGKpgQAqpzrUHnSIc6a59Y3Xf/cv8sy1DrHCkZHzQGEuoq1tARk6qSyDdtQGSDgpb9kFlruzPvrgwg==}
@@ -5215,12 +5202,6 @@ snapshots:
 
   aws4@1.13.2:
     optional: true
-
-  axios@0.26.1(debug@4.4.3(supports-color@8.1.1)):
-    dependencies:
-      follow-redirects: 1.16.0(debug@4.4.3(supports-color@8.1.1))
-    transitivePeerDependencies:
-      - debug
 
   axios@1.20.0(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1):
     dependencies:

@@ -25,8 +25,6 @@ import http from 'http';
 import https from 'https';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import { HttpProxyAgent } from 'http-proxy-agent';
-import querystring from 'querystring';
-import url from 'url';
 
 function request(options) {
   if (typeof options === 'string') {
@@ -37,13 +35,13 @@ function request(options) {
   let client;
   if (options.url) {
     client = options.url.startsWith('http:') ? http : https;
-    const requrl = url.parse(options.url);
+    const requrl = new URL(options.url);
     options.host = requrl.hostname;
     options.port = requrl.port;
     if (!options.port) {
       options.port = options.url.startsWith('http:') ? 80 : 443;
     }
-    options.path = requrl.path;
+    options.path = `${requrl.pathname}${requrl.search}`;
     delete options.url;
   }
   if (!client) {
@@ -52,17 +50,17 @@ function request(options) {
   let { postData } = options;
   if (postData) {
     if (typeof postData !== 'string') {
-      postData = querystring.stringify(postData);
+      postData = new URLSearchParams(postData).toString();
     }
     delete options.postData;
     if (!options.headers) {
       options.headers = {};
     }
     if (!options.headers['Content-Type']) {
-      options.headers['Content-Type'] = 'application/x-wwww-form-urlencoded';
+      options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
     }
     if (!options.headers['Content-Length']) {
-      options.headers['Content-Length'] = postData.length;
+      options.headers['Content-Length'] = Buffer.byteLength(postData);
     }
   }
   if (!options.method) {

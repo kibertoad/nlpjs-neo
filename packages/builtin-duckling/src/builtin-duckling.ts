@@ -24,8 +24,6 @@
 import { Clonable, defaultContainer } from '@nlpjs-neo/core';
 import http from 'http';
 import https from 'https';
-import querystring from 'querystring';
-import url from 'url';
 
 const cultures = {
   bn: 'bn_BD',
@@ -74,7 +72,7 @@ class BuiltinDuckling extends Clonable {
       this.settings,
       this.container.getConfiguration(this.settings.tag)
     );
-    this.url = url.parse(this.settings.ducklingUrl);
+    this.url = new URL(this.settings.ducklingUrl);
     this.client = this.url.href.startsWith('https') ? https : http;
     this.port = this.url.port;
     if (!this.port) {
@@ -95,10 +93,10 @@ class BuiltinDuckling extends Clonable {
   // istanbul ignore next
   request(utterance, language) {
     return new Promise((resolve, reject) => {
-      const postData = querystring.stringify({
+      const postData = new URLSearchParams({
         text: utterance,
         locale: BuiltinDuckling.getCulture(language),
-      });
+      }).toString();
 
       const options = {
         host: this.url.hostname,
@@ -107,7 +105,7 @@ class BuiltinDuckling extends Clonable {
         path: this.url.pathname,
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'Content-Length': postData.length,
+          'Content-Length': Buffer.byteLength(postData),
         },
       };
       const req = this.client.request(options, (res) => {

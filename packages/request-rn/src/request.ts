@@ -21,27 +21,51 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import axiosModule from 'axios';
-import type { AxiosStatic } from 'axios';
-
-// axios 0.26 is CommonJS: Node hands the ESM importer the callable module
-// export, which the package's `export default` typings do not describe.
-const axios = axiosModule as unknown as AxiosStatic;
-
+// React Native and Node (since 18) both ship a global `fetch`, so this package
+// no longer needs an HTTP client. The option shape stays the one axios used, so
+// that callers of `request` do not have to change.
 async function request(options) {
   if (typeof options === 'string') {
     options = {
       url: options,
     };
   }
-  if (!options.method) {
-    options.method = 'get';
+  const { url, method = 'get', headers, data, params } = options;
+  const target = new URL(url);
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      target.searchParams.set(key, String(value));
+    }
   }
-  const result = await axios(options);
-  if (!result) {
-    return undefined;
+  const init: RequestInit = {
+    method: method.toUpperCase(),
+    headers: { ...headers },
+  };
+  if (data !== undefined) {
+    if (typeof data === 'string') {
+      init.body = data;
+    } else {
+      init.body = JSON.stringify(data);
+      init.headers = { 'Content-Type': 'application/json', ...init.headers };
+    }
   }
-  return result.data;
+  const response = await fetch(target, init);
+  const text = await response.text();
+  let body: unknown = text;
+  try {
+    body = JSON.parse(text);
+  } catch {
+    // Not JSON: hand back the raw text, as axios did.
+  }
+  if (!response.ok) {
+    const error: any = new Error(
+      `Request failed with status code ${response.status}`
+    );
+    error.status = response.status;
+    error.data = body;
+    throw error;
+  }
+  return body;
 }
 
 export default request;

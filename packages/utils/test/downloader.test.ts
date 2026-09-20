@@ -149,7 +149,7 @@ describe('Downloader', () => {
       expect(fs.readFileSync(downloaded, 'utf8')).toEqual(plainBody);
     });
 
-    test('It should request the path of the URL, including the query string', async () => {
+    test('It should request the path of the URL', async () => {
       const downloader = newDownloader();
       await downloader.download(
         `${fixture.baseUrl}/files/plain.txt`,

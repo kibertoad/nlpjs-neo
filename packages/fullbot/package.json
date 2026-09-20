@@ -65,8 +65,7 @@
     "@nlpjs-neo/mongodb-adapter": "workspace:^",
     "@nlpjs-neo/utils": "workspace:^",
     "archiver": "^8.0.0",
-    "decompress": "^4.2.1",
-    "rimraf": "^3.0.2"
+    "decompress": "^4.2.1"
   },
   "devDependencies": {
     "@types/archiver": "^8.0.0"

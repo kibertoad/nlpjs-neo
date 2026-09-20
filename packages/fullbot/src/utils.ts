@@ -23,7 +23,6 @@
 
 import fs from 'fs';
 import { ZipArchive } from 'archiver';
-import rimraf from 'rimraf';
 import path from 'path';
 import decompress from 'decompress';
 import { Downloader } from '@nlpjs-neo/utils';
@@ -48,7 +47,8 @@ function ensureDir(dirPath, recursive = true) {
   }
 }
 
-const removeDir = (dirPath) => rimraf.sync(dirPath);
+const removeDir = (dirPath) =>
+  fs.rmSync(dirPath, { recursive: true, force: true });
 
 function compressFolder(folder, fileName) {
   return new Promise<void>((resolve, reject) => {

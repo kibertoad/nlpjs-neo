@@ -22,7 +22,6 @@
  */
 
 import { uuid } from '@nlpjs-neo/core';
-import fetch from 'node-fetch';
 
 class DirectlineController {
   declare botUrl: any;

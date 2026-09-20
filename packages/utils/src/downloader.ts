@@ -27,7 +27,6 @@ import https from 'https';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import path from 'path';
 import { extract } from 'tar';
-import url from 'url';
 import ProgressBar from './progress-bar.js';
 import { getAbsolutePath } from './fs-extra.js';
 
@@ -73,7 +72,7 @@ class Downloader {
 
   download(urlPath, filePath?) {
     return new Promise((resolve, reject) => {
-      const parsed = url.parse(urlPath);
+      const parsed = new URL(urlPath);
       let relativePath = filePath;
       if (!relativePath) {
         relativePath = this.replicateAllFolders
@@ -89,7 +88,7 @@ class Downloader {
       const downloadDir = path.parse(absolutePath).dir;
       Downloader.ensureDir(downloadDir);
       const proto = parsed.protocol === 'https:' ? https : http;
-      let port: string | number | null = parsed.port;
+      let port: string | number = parsed.port;
       if (!port) {
         port = parsed.protocol === 'https:' ? 443 : 80;
       }

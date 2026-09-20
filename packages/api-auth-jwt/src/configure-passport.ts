@@ -24,7 +24,7 @@
 import passport from 'passport';
 import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
 import { Strategy as LocalStrategy } from 'passport-local';
-import bcrypt from 'bcryptjs';
+import { compare } from 'bcryptjs';
 
 function getLocalStrategy(db, settings) {
   const localOptions = {
@@ -42,7 +42,7 @@ function getLocalStrategy(db, settings) {
               message: 'This email is not registered',
             });
           }
-          return bcrypt.compare(password, user.password, (err, isMatch) => {
+          return compare(password, user.password, (err, isMatch) => {
             if (err || !isMatch) {
               return done(null, false, { message: 'Incorrect credentials' });
             }

@@ -157,7 +157,7 @@ describe('Request', () => {
         postData: { name: 'Anna', city: 'a b' },
       });
       expect(actual.method).toEqual('POST');
-      expect(received.at(-1)?.body).toEqual('name=Anna&city=a%20b');
+      expect(received.at(-1)?.body).toEqual('name=Anna&city=a+b');
     });
 
     test('It should set the content type and length of an object body', async () => {
@@ -168,9 +168,23 @@ describe('Request', () => {
       });
       const headers = received.at(-1)?.headers;
       expect(headers?.['content-type']).toEqual(
-        'application/x-wwww-form-urlencoded'
+        'application/x-www-form-urlencoded'
       );
       expect(headers?.['content-length']).toEqual('9');
+    });
+
+    test('It should measure the content length in bytes, not characters', async () => {
+      await request({
+        url: `${baseUrl}/submit`,
+        method: 'POST',
+        postData: '{"city":"München"}',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const received1 = received.at(-1);
+      expect(received1?.body).toEqual('{"city":"München"}');
+      expect(received1?.headers['content-length']).toEqual(
+        String(Buffer.byteLength('{"city":"München"}'))
+      );
     });
 
     test('It should send a string body untouched', async () => {
