@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { generate as unparse } from 'escodegen';
-import { parse } from 'esprima';
+import { generate as unparse } from 'astring';
+import parse from './parse.js';
 
 class Evaluator {
   declare context: any;
@@ -90,6 +90,9 @@ class Evaluator {
     if (node.operator === '||' && left) {
       return true;
     }
+    if (node.operator === '??' && left !== null && left !== undefined) {
+      return left;
+    }
     const right = this.walk(node.right, context);
     if (right === this.failResult) {
       return this.failResult;
@@ -136,6 +139,8 @@ class Evaluator {
         return left || right;
       case '&&':
         return left && right;
+      case '??':
+        return left ?? right;
       default:
         return this.failResult;
     }
@@ -158,6 +163,9 @@ class Evaluator {
 
   walkCall(node, context) {
     const callee = this.walk(node.callee, context);
+    if (node.optional && (callee === null || callee === undefined)) {
+      return undefined;
+    }
     if (callee === this.failResult || typeof callee !== 'function') {
       return this.failResult;
     }
@@ -183,6 +191,9 @@ class Evaluator {
     if (obj === this.failResult || typeof obj === 'function') {
       return this.failResult;
     }
+    if (node.optional && (obj === null || obj === undefined)) {
+      return undefined;
+    }
     if (
       node.property.type === 'Identifier' &&
       node.object.type !== 'ObjectExpression'
@@ -194,6 +205,17 @@ class Evaluator {
       return this.failResult;
     }
     return obj ? obj[prop] : this.failResult;
+  }
+
+  /**
+   * An optional chain -- `a?.b`, `a?.[b]`, `a?.()` -- is wrapped in a
+   * `ChainExpression` whose links carry `optional`. Only a link marked
+   * `optional` short-circuits here; a plain link that follows one, as the `.c`
+   * of `a?.b.c`, still reads a member of `undefined` and throws, which is what
+   * the walker does for any other member of a missing object.
+   */
+  walkChain(node, context) {
+    return this.walk(node.expression, context);
   }
 
   walkConditional(node, context) {
@@ -371,6 +393,8 @@ class Evaluator {
         return this.walkCall(node, context);
       case 'MemberExpression':
         return this.walkMember(node, context);
+      case 'ChainExpression':
+        return this.walkChain(node, context);
       case 'ConditionalExpression':
         return this.walkConditional(node, context);
       case 'ExpressionStatement':

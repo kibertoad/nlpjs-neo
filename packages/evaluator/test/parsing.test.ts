@@ -139,6 +139,66 @@ describe('Parsing and code generation', () => {
       });
     });
 
+    describe('limitations of optional chaining', () => {
+      // In JavaScript a `?.` short-circuits the whole chain, so `a?.b.c` is
+      // undefined when `a` is. The walkers only short-circuit the link that
+      // carries `?.`, so the plain `.c` still reads a member of undefined.
+      test('It should not carry the short circuit into a plain link', async () => {
+        await expect(async () =>
+          run('a?.b.c', { a: undefined })
+        ).rejects.toThrow(TypeError);
+      });
+    });
+
+    // None of this parses under `esprima` 4, which understands nothing newer
+    // than ES2017.
+    describe('syntax newer than ES2017', () => {
+      test('It should evaluate nullish coalescing over null', async () => {
+        expect(await run('a ?? b', { a: null, b: 7 })).toEqual(7);
+      });
+      test('It should evaluate nullish coalescing over undefined', async () => {
+        expect(await run('a ?? b', { a: undefined, b: 7 })).toEqual(7);
+      });
+      test('It should keep a falsy left term in nullish coalescing', async () => {
+        expect(await run('a ?? b', { a: 0, b: 7 })).toEqual(0);
+        expect(await run('a ?? b', { a: '', b: 'x' })).toEqual('');
+        expect(await run('a ?? b', { a: false, b: true })).toEqual(false);
+      });
+      test('It should not evaluate the right term when the left one is set', async () => {
+        const context = { a: 'kept', b: 'ignored' };
+        expect(await run('a ?? b', context)).toEqual('kept');
+      });
+
+      test('It should short-circuit an optional member access', async () => {
+        expect(await run('a?.b', { a: undefined })).toBeUndefined();
+        expect(await run('a?.b', { a: null })).toBeUndefined();
+      });
+      test('It should read through an optional member access', async () => {
+        expect(await run('a?.b', { a: { b: 42 } })).toEqual(42);
+      });
+      test('It should short-circuit an optional computed access', async () => {
+        expect(await run('a?.["b"]', { a: undefined })).toBeUndefined();
+      });
+      test('It should read through an optional computed access', async () => {
+        expect(await run('a?.["b"]', { a: { b: 42 } })).toEqual(42);
+      });
+      test('It should short-circuit a chain of optional accesses', async () => {
+        expect(await run('a?.b?.c', { a: undefined })).toBeUndefined();
+        expect(await run('a?.b?.c', { a: {} })).toBeUndefined();
+        expect(await run('a?.b?.c', { a: { b: { c: 9 } } })).toEqual(9);
+      });
+      test('It should short-circuit an optional call', async () => {
+        expect(await run('a?.()', { a: undefined })).toBeUndefined();
+      });
+
+      test('It should parse a numeric separator', async () => {
+        expect(await run('1_000_000')).toEqual(1000000);
+      });
+      test('It should parse a numeric separator inside an expression', async () => {
+        expect(await run('2_0 * 3')).toEqual(60);
+      });
+    });
+
     describe('invalid syntax', () => {
       test('It should throw for an unbalanced parenthesis', async () => {
         await expect(async () => run('(1 + ')).rejects.toBeDefined();

@@ -48,7 +48,7 @@
   },
   "gitHead": "cc4249fa994c58d220e6f10a6c94fdad05df32fd",
   "dependencies": {
-    "escodegen": "^2.0.0",
-    "esprima": "^4.0.1"
+    "acorn": "^8.18.0",
+    "astring": "^1.9.0"
   }
 }

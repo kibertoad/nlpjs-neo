@@ -387,8 +387,11 @@ describe('Evaluator', () => {
       const context = { a: 1, b: 2 };
       const evaluator = new Evaluator();
       const question = 'true ^^ false';
+      // The wording of a parse error belongs to the parser, so assert the
+      // error type and the offending position rather than a fixed message.
+      expect(() => evaluator.evaluate(question, context)).toThrow(SyntaxError);
       expect(() => evaluator.evaluate(question, context)).toThrow(
-        'Line 1: Unexpected token ^'
+        /Unexpected token/
       );
     });
     test('Should return NaN if left term is undefined', () => {

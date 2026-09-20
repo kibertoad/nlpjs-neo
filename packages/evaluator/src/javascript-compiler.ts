@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { generate as unparse } from 'escodegen';
-import { parse } from 'esprima';
+import { generate as unparse } from 'astring';
+import parse from './parse.js';
 
 class JavascriptCompiler {
   declare container: any;
@@ -104,6 +104,9 @@ class JavascriptCompiler {
     if (node.operator === '||' && left) {
       return true;
     }
+    if (node.operator === '??' && left !== null && left !== undefined) {
+      return left;
+    }
     const right = await this.walk(node.right, context);
     if (right === this.failResult) {
       return this.failResult;
@@ -150,6 +153,8 @@ class JavascriptCompiler {
         return left || right;
       case '&&':
         return left && right;
+      case '??':
+        return left ?? right;
       default:
         return this.failResult;
     }
@@ -200,6 +205,9 @@ class JavascriptCompiler {
       }
     } else {
       callee = await this.walk(node.callee, context);
+      if (node.optional && (callee === null || callee === undefined)) {
+        return undefined;
+      }
       if (callee === this.failResult || typeof callee !== 'function') {
         return this.failResult;
       }
@@ -241,6 +249,9 @@ class JavascriptCompiler {
     if (obj === this.failResult || typeof obj === 'function') {
       return this.failResult;
     }
+    if (node.optional && (obj === null || obj === undefined)) {
+      return undefined;
+    }
     if (
       node.property.type === 'Identifier' &&
       node.object.type !== 'ObjectExpression'
@@ -252,6 +263,17 @@ class JavascriptCompiler {
       return this.failResult;
     }
     return obj ? obj[prop] : undefined;
+  }
+
+  /**
+   * An optional chain -- `a?.b`, `a?.[b]`, `a?.()` -- is wrapped in a
+   * `ChainExpression` whose links carry `optional`. Only a link marked
+   * `optional` short-circuits here; a plain link that follows one, as the `.c`
+   * of `a?.b.c`, still reads a member of `undefined` and throws, which is what
+   * the walker does for any other member of a missing object.
+   */
+  async walkChain(node, context) {
+    return this.walk(node.expression, context);
   }
 
   async walkConditional(node, context) {
@@ -455,6 +477,8 @@ class JavascriptCompiler {
         return this.walkCall(node, context);
       case 'MemberExpression':
         return this.walkMember(node, context);
+      case 'ChainExpression':
+        return this.walkChain(node, context);
       case 'ConditionalExpression':
         return this.walkConditional(node, context);
       case 'ExpressionStatement':
