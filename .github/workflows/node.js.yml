@@ -68,3 +68,32 @@ jobs:
       # packages have to be built first.
       - name: Check published types and packaging
         run: pnpm run check:exports
+
+  automerge:
+    name: Automerge Dependabot pull request
+    # Only Dependabot's own pull requests are eligible. `github.event.pull_request.user.login`
+    # is used instead of `github.actor`, because the latter reports whoever last triggered the
+    # run (a rerun or a push to the branch), and so can be spoofed into passing this check.
+    if: github.event_name == 'pull_request' && github.event.pull_request.user.login == 'dependabot[bot]'
+    needs: [build, types]
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+
+    permissions:
+      # `contents: write` performs the merge itself, `pull-requests: write` approves the
+      # pull request beforehand, since the merge is rejected without a review approval.
+      contents: write
+      pull-requests: write
+
+    steps:
+      # Approves and squash-merges the pull request. Merging is gated on this job's `needs`,
+      # and further on whatever checks branch protection requires, because the merge goes
+      # through the GitHub API and is refused while a required check is missing or red.
+      #
+      # Landing a Dependabot pull request on `main` publishes nothing: these branches carry
+      # no changeset, so the release workflow finds no version to bump and `changeset
+      # publish` has nothing left to release.
+      - uses: fastify/github-action-merge-dependabot@73ec4cbb5e56df5591eae286972d5b2201ffe90f # v3.15.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          merge-method: squash
