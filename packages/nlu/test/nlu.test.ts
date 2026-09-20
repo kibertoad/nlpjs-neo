@@ -283,11 +283,14 @@ describe('NLU', () => {
         intentFeatures: {},
       });
 
-      const classifications = nlu.convertToArray({
+      const result = nlu.convertToArray({
         classifications: { greet: 0.1, None: 0.9 },
         settings: nlu.settings,
       });
-      expect(classifications).toContainEqual({ intent: 'None', score: 0.9 });
+      expect(result.classifications).toContainEqual({
+        intent: 'None',
+        score: 0.9,
+      });
     });
 
     test('It imports a never-trained model without intents', () => {
