@@ -20,6 +20,12 @@ const matrix2 = [
   [{ w: 5 }, { w: 'name 5' }, { w: 'no' }],
 ];
 
+const matrix3 = [
+  [undefined, { w: 'Table 3' }],
+  [{ w: 'id' }, { w: 'name' }],
+  [{ w: 1 }, { w: 'name 1' }],
+];
+
 describe('XTable', () => {
   describe('Constructor', () => {
     test('It should create an instance', () => {
@@ -41,6 +47,11 @@ describe('XTable', () => {
       const table = new XTable(matrix2);
       expect(table.name).toEqual('Table 2');
       expect(table.keys).toEqual(['id', 'name', '_column_2']);
+    });
+    test('It should use a title outside the first column', () => {
+      const table = new XTable(matrix3);
+      expect(table.name).toEqual('Table 3');
+      expect(table.keys).toEqual(['id', 'name']);
     });
   });
   describe('Match', () => {

@@ -27,7 +27,8 @@ class XTable {
       this.name = '';
       return;
     }
-    this.name = matrix[0][0].w;
+    const titleCell = matrix[0].find((cell) => cell && cell.w !== undefined);
+    this.name = titleCell ? titleCell.w : '';
     let row = matrix[1];
     for (let i = 0, l = row.length; i < l; i += 1) {
       if (row[i] && row[i].w) {
