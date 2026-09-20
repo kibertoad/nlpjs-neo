@@ -378,7 +378,7 @@ class Nlu extends Clonable {
     let nonedelta =
       input.settings.nonedeltaValue === undefined
         ? this.numIntents / this.numFeatures
-        : this.settings.nonedeltaValue;
+        : input.settings.nonedeltaValue;
     let nonevalue = 0;
     for (let i = 0; i < unknownTokens; i += 1) {
       nonevalue += nonedelta;
