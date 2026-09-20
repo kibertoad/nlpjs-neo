@@ -7,7 +7,6 @@ import type {
   DucklingEdge,
   DucklingEntity,
   DucklingInput,
-  DucklingResolution,
 } from './types.js';
 
 /** An extractor registered for a locale, which this one defers to. */

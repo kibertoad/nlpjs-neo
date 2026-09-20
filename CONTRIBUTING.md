@@ -79,26 +79,30 @@ pnpm check:exports  # are-the-types-wrong + publint for every package
 ### Typing the converted sources
 
 The conversion from JavaScript was mechanical: it kept the original runtime behaviour and left
-the types behind, so the compiler still runs without `strict` and with `noImplicitAny`
-disabled.
+the types behind. Writing them down is done — every package describes its inputs and its
+results, in its sources and in its tests — so `typescript/no-explicit-any` is an error and
+`pnpm lint` fails on a new `any`. The compiler still runs without `strict` and with
+`noImplicitAny` disabled; tightening those two is the next step, and it is a step at a time.
 
-Tightening this package by package is the plan, and part of it is done. `core`, `similarity`,
-`neural`, `slot` and `sentiment` describe their inputs and results with real types. The shared
-vocabulary of the pipeline packages — tokens and token maps, settings, pipeline input, the
-storage and logger contracts, the container registry types — lives in `@nlpjs-neo/core`, and a
-package that owns a domain keeps its own types in `src/types.ts` and exports them from its
-index. The remaining packages still declare their instance properties as `any`.
+The shared vocabulary of the pipeline packages — tokens and token maps, settings, pipeline
+input, the storage and logger contracts, the container registry types — lives in
+`@nlpjs-neo/core`. A package that owns a domain keeps its own types in `src/types.ts` and
+exports them from its index.
 
-When you touch one of them, prefer replacing an `any` with a real type over adding new ones:
+When you add to any of this:
 
 - Put the types of a package in `src/types.ts` and export them from `src/index.ts`, so that
   consumers can name them.
 - Where a value is only known at runtime, take the contract as a type argument instead of
-  handing back an `any`: `container.get<Storage>('storage')` keeps the service locator
+  handing it back untyped: `container.get<Storage>('storage')` keeps the service locator
   dynamic and still types the call site.
-- A few places stay `any` on purpose: path resolution, pipeline execution and JSON
-  rehydration are interpreters whose result only the caller knows. Comment such a boundary,
-  so it does not read as a leftover.
+- Where nothing is known, `unknown` is the answer. It says the same thing and makes the cast
+  that follows visible.
+- Five boundaries stay `any` on purpose, and each is a named type with a disable comment
+  saying why: `PipelineResult`, `RehydratedInstance`, `ResolvedValue` and `ServiceConstructor`
+  in `core`, and `EvaluatedValue` in `evaluator`. They are interpreters and service
+  resolution, whose result only the caller knows. If you find you need another, name it the
+  same way rather than spreading an `any` through a signature.
 
 ## Dependencies
 

@@ -5,12 +5,21 @@ import type {
   RegisteredPipeline,
   Settings,
   Token,
+  TokenizerService,
 } from '@nlpjs-neo/core';
 import type {
   SentimentDictionaries,
   SentimentDictionaryType,
   SentimentInput,
 } from './types.js';
+
+/**
+ * A stemmer that tokenizes as well, which is how this analyzer reaches the
+ * words of an utterance when a locale has one.
+ */
+interface StemmingService {
+  tokenizeAndStem(text: string, keepStops?: boolean): Token[];
+}
 
 class SentimentAnalyzer extends Clonable {
   declare pipelineProcess: string | string[] | RegisteredPipeline | undefined;
@@ -61,17 +70,17 @@ class SentimentAnalyzer extends Clonable {
     }
     if (stemmed) {
       const stemmer =
-        this.container.get(`stemmer-${locale}`) ||
-        this.container.get(`stemmer-en`);
+        this.container.get<StemmingService>(`stemmer-${locale}`) ||
+        this.container.get<StemmingService>(`stemmer-en`);
       if (stemmer) {
         return stemmer.tokenizeAndStem(text);
       }
     }
     const tokenizer =
-      this.container.get(`tokenizer-${locale}`) ||
-      this.container.get(`tokenizer-en`);
+      this.container.get<TokenizerService>(`tokenizer-${locale}`) ||
+      this.container.get<TokenizerService>(`tokenizer-en`);
     if (tokenizer) {
-      return tokenizer.tokenize(text, true);
+      return tokenizer.tokenize(text, true) as Token[];
     }
     const normalized = text
       .normalize('NFD')

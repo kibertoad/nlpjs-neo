@@ -21,7 +21,14 @@
     "no-await-in-loop": "off",
     "no-misleading-character-class": "off",
     "vitest/expect-expect": "off",
-    "vitest/no-commented-out-tests": "off"
+    "vitest/no-commented-out-tests": "off",
+    // The conversion from JavaScript is done: every package states its types.
+    // A value whose type really is not known belongs in `unknown`, and the
+    // few places where neither will do carry a disable comment saying why.
+    "typescript/no-explicit-any": "error",
+    // `NlpUtil`, `XTableUtils` and `Handlebars` are static-only classes of
+    // the published API, so they stay classes until a major version.
+    "typescript/no-extraneous-class": "off"
   },
   "ignorePatterns": [
     "coverage/**",

@@ -1,5 +1,5 @@
 import { Evaluator, JavascriptCompiler } from '../src/index.js';
-import type { EvaluationContext, EvaluatorNode } from '../src/index.js';
+import type { EvaluationContext } from '../src/index.js';
 
 const container = {
   get() {

@@ -1,5 +1,4 @@
 import { NlpManager } from '../../src/index.js';
-import type { NlpResult } from '@nlpjs-neo/nlp';
 import type { ProcessTransformer } from '../../src/types.js';
 import corpus from './corpus-en.json' with { type: 'json' };
 

@@ -356,6 +356,10 @@ class Recognizer {
     if (!activateRouting) {
       return;
     }
+    // The route below is installed on the bot, which calls it with a `this`
+    // of its own, so the recognizer is reached through a binding rather than
+    // through `this`.
+    // oxlint-disable-next-line typescript/no-this-alias
     const self = this;
     // oxlint-disable-next-line no-underscore-dangle, no-param-reassign
     bot._onDisambiguateRoute = function disambiguate(

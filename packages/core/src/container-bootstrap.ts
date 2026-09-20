@@ -106,7 +106,7 @@ function containerBootstrap(
   if (configuration.terraform) {
     for (let i = 0; i < configuration.terraform.length; i += 1) {
       const current = configuration.terraform[i];
-      const terra = instance.get(current.className);
+      const terra = instance.get<ServiceInstance>(current.className);
       instance.register(current.name, terra, true);
     }
   }

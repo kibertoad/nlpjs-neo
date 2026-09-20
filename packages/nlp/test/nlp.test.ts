@@ -1,4 +1,5 @@
 import { Nlp } from '../src/index.js';
+import type { Language } from '@nlpjs-neo/language-min';
 import type { Context } from '../src/index.js';
 import TemplateMock from './template-mock.js';
 
@@ -40,7 +41,7 @@ describe('NLP', () => {
   describe('Guess language', () => {
     test('Should guess the language of an utterance', () => {
       const manager = new Nlp();
-      const lang = manager.container.get('Language');
+      const lang = manager.container.get<Language>('Language');
       lang.addModel(
         'Latin',
         'eng',

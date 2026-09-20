@@ -37,7 +37,7 @@ describe('ArrToObj', () => {
       const container = new Container();
       container.use(ArrToObj);
       const arr = ['when', 'the', 'moon'];
-      const arrToObj = container.get('arrToObj');
+      const arrToObj = container.get<ArrToObj>('arrToObj');
       const actual = arrToObj.run(arr);
       const expected = { when: 1, the: 1, moon: 1 };
       expect(actual).toEqual(expected);
@@ -46,7 +46,7 @@ describe('ArrToObj', () => {
       const container = new Container();
       container.use(ArrToObj);
       const arr = ['when', 'the', 'moon'];
-      const arrToObj = container.get('arrToObj');
+      const arrToObj = container.get<ArrToObj>('arrToObj');
       const actual = arrToObj.run({ tokens: arr });
       const expected = { tokens: { when: 1, the: 1, moon: 1 } };
       expect(actual).toEqual(expected);
@@ -57,7 +57,7 @@ describe('ArrToObj', () => {
     test('It is already registered as a plugin', () => {
       const container = containerBootstrap();
       const arr = ['when', 'the', 'moon'];
-      const arrToObj = container.get('arrToObj');
+      const arrToObj = container.get<ArrToObj>('arrToObj');
       const actual = arrToObj.run(arr);
       const expected = { when: 1, the: 1, moon: 1 };
       expect(actual).toEqual(expected);
@@ -65,7 +65,7 @@ describe('ArrToObj', () => {
     test('It is already registered as a plugin and can use it inside an input as tokens property', () => {
       const container = containerBootstrap();
       const arr = ['when', 'the', 'moon'];
-      const arrToObj = container.get('arrToObj');
+      const arrToObj = container.get<ArrToObj>('arrToObj');
       const actual = arrToObj.run({ tokens: arr });
       const expected = { tokens: { when: 1, the: 1, moon: 1 } };
       expect(actual).toEqual(expected);

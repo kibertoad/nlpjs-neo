@@ -26,9 +26,9 @@
     "skipLibCheck": true,
     "types": ["node"],
 
-    // The migration from JavaScript is mechanical: implicit `any` is still
-    // allowed so that untyped legacy code compiles. Tightening this (and then
-    // `strict`) is tracked as follow-up work, package by package.
+    // Explicit `any` is banned by the linter, but the generated Snowball
+    // stemmers still declare untyped parameters, so implicit `any` stays
+    // allowed. Tightening this (and then `strict`) is the next step.
     "strict": false,
     "noImplicitAny": false
   }

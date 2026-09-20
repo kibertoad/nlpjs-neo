@@ -1,4 +1,5 @@
 import { Container, containerBootstrap } from '@nlpjs-neo/core';
+import type { Logger } from '@nlpjs-neo/core';
 import type { RegisteredPipeline } from '@nlpjs-neo/core';
 import type { ConnectorSettings } from '@nlpjs-neo/connector';
 import { ConsoleConnector } from '../src/index.js';
@@ -65,7 +66,7 @@ describe('Console Connector', () => {
       const testContainer = containerBootstrap();
       const pipeline = {} as RegisteredPipeline;
       const error = new Error('pipeline failed');
-      const logger = testContainer.get('logger');
+      const logger = testContainer.get<Logger>('logger');
       const logError = vi
         .spyOn(logger, 'error')
         .mockImplementation(() => undefined);

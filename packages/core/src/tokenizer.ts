@@ -121,6 +121,9 @@ class Tokenizer implements TokenizerService {
       if (tokenizerBert && tokenizerBert.activeFor(locale)) {
         tokenizer = tokenizerBert;
       } else {
+        // No tokenizer for this locale, so this one -- which splits on
+        // whitespace and punctuation -- is the fallback.
+        // oxlint-disable-next-line typescript/no-this-alias
         tokenizer = this;
       }
     }

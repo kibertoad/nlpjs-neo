@@ -317,7 +317,9 @@ class NlpManager {
   async trainAndEvaluate(fileName) {
     let corpus = fileName;
     if (typeof fileName === 'string') {
-      const nlpfs = this.container.get('fs');
+      const nlpfs = this.container.get<{
+        readFile(name: string): Promise<string>;
+      }>('fs');
       const fileData = await nlpfs.readFile(fileName);
       if (!fileData) {
         throw new Error(`Corpus not found "${fileName}"`);

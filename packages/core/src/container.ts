@@ -161,8 +161,7 @@ class Container {
    * @returns The service, or `undefined` when no name and no wildcard of
    * this container or of its parents matches.
    */
-  // oxlint-disable-next-line typescript/no-explicit-any -- service locator
-  get<T = any>(name: string, settings?: unknown): T | undefined {
+  get<T = unknown>(name: string, settings?: unknown): T | undefined {
     let item = this.factory[name];
     if (!item) {
       if (this.parent) {

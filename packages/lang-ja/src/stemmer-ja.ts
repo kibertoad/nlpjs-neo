@@ -422,7 +422,7 @@ class StemmerJa extends BaseStemmer {
   run(srcInput) {
     const input = srcInput;
     const locale = input.locale || 'en';
-    const stemmer = this.container.get(`stemmer-${locale}`) || this;
+    const stemmer = this.container.get<StemmerJa>(`stemmer-${locale}`) || this;
     input.tokens = stemmer.stem(input.text || input.tokens.join(' '), input);
     return input;
   }

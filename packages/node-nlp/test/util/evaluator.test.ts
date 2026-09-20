@@ -1,5 +1,5 @@
 import { Evaluator } from '../../src/index.js';
-import type { EvaluationContext, EvaluatorNode } from '@nlpjs-neo/evaluator';
+import type { EvaluationContext } from '@nlpjs-neo/evaluator';
 import type {
   Identifier,
   Literal,

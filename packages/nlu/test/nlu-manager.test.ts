@@ -1,4 +1,5 @@
 import { NluManager } from '../src/index.js';
+import type { Language } from '@nlpjs-neo/language-min';
 import type { Classification } from '../src/index.js';
 import container from './bootstrap.js';
 import {
@@ -40,7 +41,7 @@ describe('NLU Manager', () => {
   describe('Guess language', () => {
     test('If there is only one language, then return this one', () => {
       const manager = new NluManager({ container });
-      const lang = manager.container.get('Language');
+      const lang = manager.container.get<Language>('Language');
       lang.addModel(
         'Latin',
         'eng',
