@@ -85,7 +85,24 @@ class ConsoleConnector extends Connector {
     try {
       await this.hear(line);
     } catch (error) {
-      this.container.get('logger').error(error);
+      this.logError(error);
+    }
+  }
+
+  logError(error) {
+    // The line listener discards this promise, so reporting the error must
+    // never throw: an unregistered or incomplete logger would otherwise turn
+    // into the unhandled rejection that handleLine exists to prevent.
+    try {
+      const logger = this.logger;
+      if (logger && typeof logger.error === 'function') {
+        logger.error(error);
+      } else if (typeof console.error === 'function') {
+        // oxlint-disable-next-line no-console
+        console.error(error);
+      }
+    } catch {
+      // Ignore: there is no usable channel left to report through.
     }
   }
 
