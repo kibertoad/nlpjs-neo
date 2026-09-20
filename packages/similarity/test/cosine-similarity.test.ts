@@ -40,9 +40,7 @@ describe('Cosine similarity', () => {
       }),
     });
 
-    expect(cosineSimilarity.similarity('...', 'hello world', 'en')).toEqual(
-      0
-    );
+    expect(cosineSimilarity.similarity('...', 'hello world', 'en')).toEqual(0);
   });
 
   test('Should give max similarity although two sentences are not strictly equal', () => {

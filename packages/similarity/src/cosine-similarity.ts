@@ -120,11 +120,7 @@ class CosineSimilarity {
       return 1;
     }
 
-    const vectors = this.getTermFreqVectors(
-      strA,
-      strB,
-      locale
-    );
+    const vectors = this.getTermFreqVectors(strA, strB, locale);
     if (vectors === 0) {
       return 0;
     }
