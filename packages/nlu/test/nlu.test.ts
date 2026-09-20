@@ -264,11 +264,13 @@ describe('NLU', () => {
         settings: nlu.settings,
       });
 
-      const classifications = nlu.convertToArray({
+      const result = nlu.convertToArray({
         classifications: { food: 0.75 },
         settings: nlu.settings,
       });
-      expect(classifications).toEqual([{ intent: 'food', score: 0.75 }]);
+      expect(result.classifications).toEqual([
+        { intent: 'food', score: 0.75 },
+      ]);
     });
   });
 
