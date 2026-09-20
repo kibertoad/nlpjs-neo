@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/language-min",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Small-footprint language guesser: the Language class of NLP.js Neo without the bundled trigram models",
   "keywords": [
     "nlp",

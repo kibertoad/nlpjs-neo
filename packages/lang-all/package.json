@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/lang-all",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Every language supported by NLP.js Neo, in a single plugin",
   "keywords": [
     "nlp",

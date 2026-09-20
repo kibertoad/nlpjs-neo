@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/lang-gl",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Galician language support for NLP.js Neo",
   "keywords": [
     "nlp",

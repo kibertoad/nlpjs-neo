@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/core-loader",
-  "version": "6.1.0",
+  "version": "6.1.1",
   "description": "Container loader: builds a container from conf.json, pipelines and plugins",
   "keywords": [
     "nlp",

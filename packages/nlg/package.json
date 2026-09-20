@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/nlg",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Natural Language Generation: picks the answer of an intent from the registered responses and their conditions",
   "keywords": [
     "nlp",

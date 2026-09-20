@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/slot",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "description": "Slot filling manager that tracks the entities an intent still needs and the question to ask for each one",
   "keywords": [
     "nlp",

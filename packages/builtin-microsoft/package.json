@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/builtin-microsoft",
-  "version": "5.1.2",
+  "version": "5.1.3",
   "description": "Builtin Named Entity Recognition with Microsoft Recognizers",
   "keywords": [
     "nlp",

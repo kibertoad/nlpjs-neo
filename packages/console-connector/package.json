@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/console-connector",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Console connector for running an NLP.js Neo bot in the terminal",
   "keywords": [
     "nlp",

@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/language",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Language guesser that identifies the language of a text from its trigrams",
   "keywords": [
     "nlp",

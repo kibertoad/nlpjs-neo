@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/lang-ar",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Arabic language support for NLP.js Neo",
   "keywords": [
     "nlp",

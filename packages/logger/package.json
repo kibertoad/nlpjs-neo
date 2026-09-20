@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/logger",
-  "version": "5.2.1",
+  "version": "5.2.2",
   "description": "Logger plugin for the NLP.js Neo container",
   "keywords": [
     "nlp",

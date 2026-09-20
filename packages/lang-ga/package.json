@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/lang-ga",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Irish language support for NLP.js Neo",
   "keywords": [
     "nlp",

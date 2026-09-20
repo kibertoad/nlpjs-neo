@@ -1,5 +1,14 @@
 # @nlpjs-neo/core
 
+## 6.1.1
+
+### Patch Changes
+
+- 8a2ba07: Complete the publishing metadata of every package: a `prepublishOnly` hook that compiles
+  the package so a manual publish can never ship a stale `dist`, `publishConfig.access`, npm
+  keywords, `repository.directory`, fuller descriptions, and a `files` field that ships the
+  README, the licence and the changelog while leaving the TypeScript build cache behind.
+
 ## 6.1.0
 
 ### Minor Changes

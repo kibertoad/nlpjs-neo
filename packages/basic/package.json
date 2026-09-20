@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/basic",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "description": "Batteries-included NLP.js Neo container, preloaded with the logger, the evaluator, the NLP classes and English language support",
   "keywords": [
     "nlp",

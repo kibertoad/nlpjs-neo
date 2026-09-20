@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/builtin-duckling",
-  "version": "5.2.1",
+  "version": "5.2.2",
   "description": "Builtin Named Entity Recognition with Duckling",
   "keywords": [
     "nlp",

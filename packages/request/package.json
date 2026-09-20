@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/request",
-  "version": "5.2.2",
+  "version": "5.2.3",
   "description": "HTTP client for NLP.js Neo, plus a file system plugin that loads corpora, configuration and models from a path or a URL",
   "keywords": [
     "nlp",

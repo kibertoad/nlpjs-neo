@@ -1,5 +1,30 @@
 # node-nlp-neo
 
+## 6.0.1
+
+### Patch Changes
+
+- 8a2ba07: Complete the publishing metadata of every package: a `prepublishOnly` hook that compiles
+  the package so a manual publish can never ship a stale `dist`, `publishConfig.access`, npm
+  keywords, `repository.directory`, fuller descriptions, and a `files` field that ships the
+  README, the licence and the changelog while leaving the TypeScript build cache behind.
+- Updated dependencies [8a2ba07]
+  - @nlpjs-neo/builtin-duckling@5.2.2
+  - @nlpjs-neo/builtin-microsoft@5.1.3
+  - @nlpjs-neo/core-loader@6.1.1
+  - @nlpjs-neo/emoji@5.1.2
+  - @nlpjs-neo/evaluator@5.2.2
+  - @nlpjs-neo/lang-all@5.1.2
+  - @nlpjs-neo/language@5.1.2
+  - @nlpjs-neo/neural@5.2.1
+  - @nlpjs-neo/nlg@5.1.2
+  - @nlpjs-neo/nlp@5.1.2
+  - @nlpjs-neo/nlu@5.1.2
+  - @nlpjs-neo/request@5.2.3
+  - @nlpjs-neo/sentiment@5.2.1
+  - @nlpjs-neo/similarity@5.2.1
+  - @nlpjs-neo/xtables@6.0.1
+
 ## 6.0.0
 
 ### Major Changes

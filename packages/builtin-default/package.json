@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/builtin-default",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Builtin entity extraction for NLP.js Neo, covering email, phone number, URL, number, date and similar golden entities",
   "keywords": [
     "nlp",

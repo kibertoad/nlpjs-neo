@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/emoji",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Plugin that replaces the emojis of an utterance with their word equivalents",
   "keywords": [
     "nlp",

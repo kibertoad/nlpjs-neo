@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/nlp",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Natural Language Processing manager tying together language detection, NER, NLU, sentiment analysis and NLG",
   "keywords": [
     "nlp",

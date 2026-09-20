@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/core",
-  "version": "6.1.0",
+  "version": "6.1.1",
   "description": "Plugin container, pipelines and shared primitives that the NLP.js Neo packages are built on",
   "keywords": [
     "nlp",

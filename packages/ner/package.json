@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/ner",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Named Entity Recognition for NLP.js Neo: enumerated, regular expression, trim and builtin entity extractors",
   "keywords": [
     "nlp",

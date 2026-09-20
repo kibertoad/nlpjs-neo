@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/connector",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Base connector class for wiring an NLP.js Neo bot to a chat channel",
   "keywords": [
     "nlp",

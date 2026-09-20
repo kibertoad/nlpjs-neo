@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/lang-ja",
-  "version": "5.1.2",
+  "version": "5.1.3",
   "description": "Japanese language support for NLP.js Neo",
   "keywords": [
     "nlp",

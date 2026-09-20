@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/evaluator",
-  "version": "5.2.1",
+  "version": "5.2.2",
   "description": "JavaScript expression evaluator, template renderer and pipeline compiler for NLP.js Neo",
   "keywords": [
     "nlp",

@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/nlu",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Natural Language Understanding: trains and runs the intent classifiers of a domain",
   "keywords": [
     "nlp",

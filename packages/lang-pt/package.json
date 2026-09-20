@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/lang-pt",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Portuguese language support for NLP.js Neo",
   "keywords": [
     "nlp",

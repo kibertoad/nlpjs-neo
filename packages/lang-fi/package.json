@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/lang-fi",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Finnish language support for NLP.js Neo",
   "keywords": [
     "nlp",

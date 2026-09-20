@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/similarity",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "description": "String similarity helpers for NLP.js Neo: Levenshtein distance, cosine similarity and spell checking",
   "keywords": [
     "nlp",
