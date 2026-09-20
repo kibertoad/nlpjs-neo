@@ -1,5 +1,35 @@
 # @nlpjs-neo/fullbot
 
+## 5.1.0
+
+### Minor Changes
+
+- 468d66f: Migrate the sources to TypeScript and publish compiled ESM with bundled type
+  declarations.
+  
+  Every package is now written in TypeScript, compiled with TypeScript 7 and published from
+  `dist/` as ES modules alongside `.d.ts`, `.d.ts.map` and `.js.map` files, so consumers get
+  types and working go-to-definition out of the box. The `exports` map gained a `types`
+  condition and the packages declare `files` so only the build output ships.
+  
+  There is no CommonJS build, as before. The public API is unchanged, apart from three latent
+  bugs that the type checker surfaced: `BaseStemmer` now implements the `copy_from` that every
+  generated stemmer chains up to, `MemorydbAdapter.find` no longer misspells `conditionKeys.length`,
+  and `StemmerTl.removeInfix` no longer compares its loop condition against `0`.
+
+### Patch Changes
+
+- Updated dependencies [468d66f]
+  - @nlpjs-neo/basic@5.1.0
+  - @nlpjs-neo/bot@5.1.0
+  - @nlpjs-neo/builtin-duckling@5.1.0
+  - @nlpjs-neo/builtin-microsoft@5.1.0
+  - @nlpjs-neo/database@5.1.0
+  - @nlpjs-neo/directline-connector@5.1.0
+  - @nlpjs-neo/express-api-server@5.1.0
+  - @nlpjs-neo/mongodb-adapter@5.1.0
+  - @nlpjs-neo/utils@5.1.0
+
 ## 5.0.0
 
 ### Major Changes

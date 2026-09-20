@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/python-compiler",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "Python Compiler",
   "author": {
     "email": "opensource@axa.com",

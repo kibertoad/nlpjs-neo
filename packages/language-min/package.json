@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/language-min",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "Language guesser",
   "author": {
     "email": "opensource@axa.com",

@@ -1,5 +1,68 @@
 # @nlpjs-neo/lang-all
 
+## 5.1.0
+
+### Minor Changes
+
+- 468d66f: Migrate the sources to TypeScript and publish compiled ESM with bundled type
+  declarations.
+  
+  Every package is now written in TypeScript, compiled with TypeScript 7 and published from
+  `dist/` as ES modules alongside `.d.ts`, `.d.ts.map` and `.js.map` files, so consumers get
+  types and working go-to-definition out of the box. The `exports` map gained a `types`
+  condition and the packages declare `files` so only the build output ships.
+  
+  There is no CommonJS build, as before. The public API is unchanged, apart from three latent
+  bugs that the type checker surfaced: `BaseStemmer` now implements the `copy_from` that every
+  generated stemmer chains up to, `MemorydbAdapter.find` no longer misspells `conditionKeys.length`,
+  and `StemmerTl.removeInfix` no longer compares its loop condition against `0`.
+
+### Patch Changes
+
+- Updated dependencies [468d66f]
+  - @nlpjs-neo/core@5.1.0
+  - @nlpjs-neo/lang-ar@5.1.0
+  - @nlpjs-neo/lang-bn@5.1.0
+  - @nlpjs-neo/lang-ca@5.1.0
+  - @nlpjs-neo/lang-cs@5.1.0
+  - @nlpjs-neo/lang-da@5.1.0
+  - @nlpjs-neo/lang-de@5.1.0
+  - @nlpjs-neo/lang-el@5.1.0
+  - @nlpjs-neo/lang-en@5.1.0
+  - @nlpjs-neo/lang-es@5.1.0
+  - @nlpjs-neo/lang-eu@5.1.0
+  - @nlpjs-neo/lang-fa@5.1.0
+  - @nlpjs-neo/lang-fi@5.1.0
+  - @nlpjs-neo/lang-fr@5.1.0
+  - @nlpjs-neo/lang-ga@5.1.0
+  - @nlpjs-neo/lang-gl@5.1.0
+  - @nlpjs-neo/lang-hi@5.1.0
+  - @nlpjs-neo/lang-hu@5.1.0
+  - @nlpjs-neo/lang-hy@5.1.0
+  - @nlpjs-neo/lang-id@5.1.0
+  - @nlpjs-neo/lang-it@5.1.0
+  - @nlpjs-neo/lang-ja@5.1.0
+  - @nlpjs-neo/lang-ko@5.1.0
+  - @nlpjs-neo/lang-lt@5.1.0
+  - @nlpjs-neo/lang-ms@5.1.0
+  - @nlpjs-neo/lang-ne@5.1.0
+  - @nlpjs-neo/lang-nl@5.1.0
+  - @nlpjs-neo/lang-no@5.1.0
+  - @nlpjs-neo/lang-pl@5.1.0
+  - @nlpjs-neo/lang-pt@5.1.0
+  - @nlpjs-neo/lang-ro@5.1.0
+  - @nlpjs-neo/lang-ru@5.1.0
+  - @nlpjs-neo/lang-sl@5.1.0
+  - @nlpjs-neo/lang-sr@5.1.0
+  - @nlpjs-neo/lang-sv@5.1.0
+  - @nlpjs-neo/lang-ta@5.1.0
+  - @nlpjs-neo/lang-th@5.1.0
+  - @nlpjs-neo/lang-tl@5.1.0
+  - @nlpjs-neo/lang-tr@5.1.0
+  - @nlpjs-neo/lang-uk@5.1.0
+  - @nlpjs-neo/lang-zh@5.1.0
+  - @nlpjs-neo/language@5.1.0
+
 ## 5.0.0
 
 ### Major Changes

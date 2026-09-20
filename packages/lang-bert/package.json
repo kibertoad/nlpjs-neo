@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/lang-bert",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "BERT language base",
   "author": {
     "email": "opensource@axa.com",

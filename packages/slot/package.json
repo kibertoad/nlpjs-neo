@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/slot",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "Slot filling manager",
   "author": {
     "email": "opensource@axa.com",
