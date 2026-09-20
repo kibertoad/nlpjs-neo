@@ -33,6 +33,18 @@ describe('Cosine similarity', () => {
     expect(cosineSimilarityTools.similarity('123', '')).toEqual(0);
   });
 
+  test('Should return 0 similarity when a tokenizer removes one input', () => {
+    const cosineSimilarity = new CosineSimilarity({
+      get: () => ({
+        tokenize: (text) => (text === '...' ? [] : ['hello', 'world']),
+      }),
+    });
+
+    expect(cosineSimilarity.similarity('...', 'hello world', 'en')).toEqual(
+      0
+    );
+  });
+
   test('Should give max similarity although two sentences are not strictly equal', () => {
     expect(cosineSimilarityTools.similarity('hello', 'hello hello')).toEqual(1);
     expect(
