@@ -11,7 +11,7 @@
   "author": "Eric Lara <ericzon@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "@nlpjs-neo/builtin-microsoft": "^4.22.7",
-    "@nlpjs-neo/ner": "^4.22.9"
+    "@nlpjs-neo/builtin-microsoft": "^5.1.2",
+    "@nlpjs-neo/ner": "^5.1.1"
   }
 }

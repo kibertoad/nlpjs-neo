@@ -11,6 +11,6 @@
   "author": "Eric Lara <ericzon@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "@nlpjs-neo/basic": "^4.22.14"
+    "@nlpjs-neo/basic": "^5.1.2"
   }
 }
