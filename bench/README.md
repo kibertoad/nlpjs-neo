@@ -76,11 +76,11 @@ await bench.compare(
 
 ## In CI
 
-The `Benchmarks` job runs only on pull requests labelled `perf`, because it benchmarks both
-sides and the numbers only mean something when somebody is reading them. Label the pull
-request and push (or re-run the job): the job benchmarks the branch, checks out the base
-commit, benchmarks that, and prints the comparison to the job summary, failing if a benchmark
-got more than 30% slower.
+`.github/workflows/benchmarks.yml` runs only on pull requests labelled `perf`, because it
+benchmarks both sides and the numbers only mean something when somebody is reading them.
+Adding the label starts a run, and every later push to a labelled pull request refreshes it:
+the job benchmarks the branch, checks out the base commit, benchmarks that, and prints the
+comparison to the job summary, failing if a benchmark got more than 30% slower.
 
 Both halves run back to back on the same runner, which is what makes the comparison readable
 at all — but it is still a shared runner. Use the job to catch the large regressions it is
