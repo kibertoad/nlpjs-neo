@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/api-auth-jwt",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "description": "JWT API Authorization",
   "author": {
     "email": "opensource@axa.com",

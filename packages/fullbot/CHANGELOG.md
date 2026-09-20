@@ -1,5 +1,70 @@
 # @nlpjs-neo/fullbot
 
+## 6.0.0
+
+### Major Changes
+
+- 6476876: Replace `decompress` with `node-stream-zip`.
+  
+  `decompress` 4.2.1 has three open advisories, one of them a critical arbitrary
+  file write outside the extraction folder (zip slip). It has had no release since
+  April 2020 and no patched version exists. `node-stream-zip` 1.16.0 has no
+  dependencies and refuses entries that resolve outside the target folder.
+  
+  `restore` changes in two ways:
+  
+  - It rejects on an archive it cannot read, where `decompress` resolved with an
+    empty list. `mount` relies on that rejection to roll back to its backup, so a
+    corrupt download no longer leaves the bot folder empty.
+  - It resolves with the number of extracted entries instead of a list of file
+    descriptors.
+
+### Minor Changes
+
+- 6476876: Replace dependencies that Node has covered with built-ins since the engine
+  floor of 22.12.
+  
+  - `@nlpjs-neo/request-rn` no longer depends on `axios`; it is built on the
+    global `fetch`, which both Node and React Native provide. The option shape
+    (`url`, `method`, `data`, `params`, `headers`) and the rejection on an error
+    status are unchanged, but a thrown error is now a plain `Error` carrying
+    `status` and `data` rather than an `AxiosError`.
+  - `@nlpjs-neo/directline-connector` no longer depends on `node-fetch`.
+  - `@nlpjs-neo/fullbot` no longer depends on `rimraf`; `removeDir` uses
+    `fs.rmSync`.
+  - `@nlpjs-neo/request` and `@nlpjs-neo/builtin-duckling` no longer use the
+    deprecated `url.parse` or `querystring`. Two consequences for `request`: a
+    url-encoded body now encodes a space as `+` instead of `%20` (both decode
+    identically), and the form content type is now the correct
+    `application/x-www-form-urlencoded` rather than the misspelled
+    `application/x-wwww-form-urlencoded`.
+  - `Content-Length` is measured in bytes in both packages, so a body with
+    non-ASCII characters is no longer truncated.
+- 6476876: Upgrade the dependencies that carry security advisories, with no change to the
+  public API of any package.
+  
+  - `tar` moves from 6 to `^7.5.22`, the only line that carries the fixes for the
+    13 advisories against 6 and 4. A workspace-wide `tar` override pulls the copy
+    under `@tensorflow/tfjs-node` onto the same version.
+  - `https-proxy-agent` and `http-proxy-agent` move from 5 to `^9.1.0`. Both now
+    export a class, so a proxy URL has to be a full URL (`http://host:port`); a
+    bare `host:port` string no longer parses.
+  - `archiver` moves from 5 to `^8.0.0`, which replaces the `archiver('zip')`
+    factory with a `ZipArchive` class.
+  - `bcryptjs` moves to `^3.0.3` and `passport` to `^0.7.0`.
+  - `@microsoft/recognizers-text-suite` is no longer pinned exactly; it tracks
+    `^1.3.1`.
+
+### Patch Changes
+
+- Updated dependencies [6476876]
+- Updated dependencies [6476876]
+- Updated dependencies [6476876]
+  - @nlpjs-neo/directline-connector@5.2.0
+  - @nlpjs-neo/builtin-duckling@5.2.0
+  - @nlpjs-neo/utils@5.2.0
+  - @nlpjs-neo/builtin-microsoft@5.1.1
+
 ## 5.1.0
 
 ### Minor Changes

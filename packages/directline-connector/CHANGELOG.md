@@ -1,5 +1,40 @@
 # @nlpjs-neo/directline-connector
 
+## 5.2.0
+
+### Minor Changes
+
+- 6476876: Upgrade `formidable` from 2 to `^3.5.4`, and repair the upload route.
+  
+  The handler read `files.activity.path`, which formidable renamed to `filepath`
+  in version 2, so `POST /directline/conversations/:conversationId/upload` threw
+  for every request. Version 3 also groups every field into an array and resolves
+  from `form.parse` instead of taking a callback, so the handler now reads
+  `files.activity[0].filepath` and awaits the parse.
+  
+  The route gains an integration suite, and two behaviour improvements come with
+  it: the upload folder is created if it does not exist, and temporary files are
+  removed on the error path too, not only on success.
+- 6476876: Replace dependencies that Node has covered with built-ins since the engine
+  floor of 22.12.
+  
+  - `@nlpjs-neo/request-rn` no longer depends on `axios`; it is built on the
+    global `fetch`, which both Node and React Native provide. The option shape
+    (`url`, `method`, `data`, `params`, `headers`) and the rejection on an error
+    status are unchanged, but a thrown error is now a plain `Error` carrying
+    `status` and `data` rather than an `AxiosError`.
+  - `@nlpjs-neo/directline-connector` no longer depends on `node-fetch`.
+  - `@nlpjs-neo/fullbot` no longer depends on `rimraf`; `removeDir` uses
+    `fs.rmSync`.
+  - `@nlpjs-neo/request` and `@nlpjs-neo/builtin-duckling` no longer use the
+    deprecated `url.parse` or `querystring`. Two consequences for `request`: a
+    url-encoded body now encodes a space as `+` instead of `%20` (both decode
+    identically), and the form content type is now the correct
+    `application/x-www-form-urlencoded` rather than the misspelled
+    `application/x-wwww-form-urlencoded`.
+  - `Content-Length` is measured in bytes in both packages, so a body with
+    non-ASCII characters is no longer truncated.
+
 ## 5.1.0
 
 ### Minor Changes
