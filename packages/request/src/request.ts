@@ -66,6 +66,12 @@ function request(options) {
   if (!options.method) {
     options.method = 'GET';
   }
+  /*
+   * Node 24 reads the proxy environment variables itself when
+   * `NODE_USE_ENV_PROXY=1`, which makes both proxy-agent dependencies and the
+   * block below redundant. The engine floor is Node 22.12, so they stay until
+   * it moves; drop them and the two dependencies at that point.
+   */
   const proxyServer =
     options.proxy ||
     process.env.https_proxy ||

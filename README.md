@@ -39,8 +39,9 @@ around it has moved:
   declarations, so no `@types/*` packages are needed.
 - **ESM only.** There is no CommonJS build; `require('node-nlp-neo')` does not work.
 - **Node.js 22.12 or later.** Older runtimes are not supported.
-- **Modernized dependencies.** The dependency tree was audited and updated; see
-  [the dependency audit](docs/dependency-audit-2026-09.md) for the details.
+- **Modernized dependencies.** The dependency tree was audited and rebuilt: unmaintained
+  and vulnerable packages were replaced or dropped, and `pnpm audit` reports no known
+  vulnerabilities.
 - **A smaller surface.** 25 rarely used packages were dropped in the September 2026 cull:
   the bot framework, the database adapters, the API servers, the Facebook, Dialogflow,
   Direct Line and Microsoft Bot Framework connectors, the LUIS NLU plugin, the BERT

@@ -14,6 +14,12 @@ it: every example has the published import next to the workspace one, commented 
 the relative import for `node-nlp-neo` or for the `@nlpjs-neo/*` package named in the
 example.
 
+Two examples still carry dependencies of their own that are behind the rest of the
+repository: `07-nlpjs-on-aws-lambda` pins `aws-sdk` 2 (out of support since September 2025)
+and `node-nlp` 4 rather than `node-nlp-neo`, and `hello_world` uses `axios` 0.21 with
+`mocha`/`chai` where the workspace uses `vitest`. They have their own lockfiles and are not
+part of the pnpm workspace, so neither affects the published packages.
+
 | Example | What it shows |
 | ------- | ------------- |
 | [01-container](./01-container) | The IoC container: registering plugins, settings and pipelines by hand |

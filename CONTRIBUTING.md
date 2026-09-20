@@ -63,6 +63,16 @@ The port from JavaScript was mechanical, so the compiler runs without `strict` a
 this package by package is welcome: prefer replacing an `any` with a real type over adding new
 ones.
 
+## Dependencies
+
+`@types/node` deliberately tracks the `engines.node` floor (the 22 line) rather than the
+latest release, so that the types cannot promise APIs the supported runtimes do not have.
+Raise it together with the floor, not on its own.
+
+`packages/request` still depends on `http-proxy-agent` and `https-proxy-agent`. Node 24
+reads the proxy environment variables natively under `NODE_USE_ENV_PROXY`, so both come out
+when the floor moves to 24.
+
 ## Changesets
 
 Any pull request that changes published code needs a changeset. From the root directory:
