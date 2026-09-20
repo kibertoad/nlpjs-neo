@@ -6,9 +6,11 @@ recommendations table and the checklist under "Suggested order of work" are the 
 what is done; **Progress log** at the end of the document records each landed step,
 including the places where the original finding turned out to be wrong.
 
-Items 1 to 4, 7, 8, 16, 19 to 24 are done. `pnpm audit` is down from 51 advisories
+Items 1 to 4, 7, 8, 12 to 16, 19 to 24 are done. `pnpm audit` is down from 51 advisories
 (3 critical, 23 high, 24 moderate, 1 low) to 6 (4 high, 2 moderate), all of which belong
-to items 5, 6, 9 and 10.
+to items 5, 6, 9 and 10. Step 4 moved no advisory, because none of the four dependencies it
+replaced carried one; what it removed was unmaintained code and four defects that the
+packages' own tests were hiding.
 
 Scope: every third-party dependency declared in the root `package.json` and in
 `packages/*/package.json`. The `examples/` folders are not part of the pnpm workspace and
@@ -47,10 +49,10 @@ Ordered by how much risk each item removes per unit of work.
 | 9 | `actions-on-google` 3.0.0 | dialogflow-connector | Platform shut down June 2023, library archived | Retire the package or rewrite as a plain Dialogflow ES webhook | Open |
 | 10 | `botbuilder-adapter-facebook` 1.0.12 | fb-connector | Botkit adapter, last release 2022, pulls all of Botkit and Bot Framework | Replace with a small Graph API client on `fetch` | Open |
 | 11 | `serverless-express` 2.0.12 | express-api-serverless | Abandoned fork, last release 2021 | Replace with `@codegenie/serverless-express` | Open |
-| 12 | `esprima` 4.0.1 + `escodegen` 2.1.0 | evaluator | Parser frozen since 2018, no ES2020+ syntax | Replace with `acorn` + `astring` | Open |
-| 13 | `mongodb` 3.7.4 | mongodb-adapter | Four majors behind, uses removed APIs | Upgrade to `^7.6.0` and update the adapter | Open |
-| 14 | `compromise` 13 + `compromise-numbers` + `compromise-dates` 1 | builtin-compromise | One major behind, numbers plugin folded into core | Upgrade to `compromise` 14 + `compromise-dates` 3, drop `compromise-numbers` | Open |
-| 15 | `pino` 7 + `pino-pretty` 7 | logger | Three and six majors behind, `prettyPrint` option no longer exists | Upgrade and switch to `transport` | Open |
+| 12 | `esprima` 4.0.1 + `escodegen` 2.1.0 | evaluator | Parser frozen since 2018, no ES2020+ syntax | Replace with `acorn` + `astring` | Done |
+| 13 | `mongodb` 3.7.4 | mongodb-adapter | Four majors behind, uses removed APIs | Upgrade to `^7.6.0` and update the adapter | Done |
+| 14 | `compromise` 13 + `compromise-numbers` + `compromise-dates` 1 | builtin-compromise | One major behind, numbers plugin folded into core | Upgrade to `compromise` 14 + `compromise-dates` 3, drop `compromise-numbers` | Done |
+| 15 | `pino` 7 + `pino-pretty` 7 | logger | Three and six majors behind, `prettyPrint` option no longer exists | Upgrade; `pino-pretty` as a stream, not a `transport` | Done |
 | 16 | `https-proxy-agent` 5 + `http-proxy-agent` 5 | request, utils, root dev | Four majors behind; Node 24 has built-in env proxy support | Upgrade to `^9.1.0` now, drop once the floor is Node 24 | Done (upgraded; removal waits for Node 24) |
 | 17 | `kuromoji` 0.1.2 | lang-ja | Last release 2018, callback API, dictionary path hand-resolved | Switch to `@patdx/kuromoji` | Open |
 | 18 | `express` 4 | express-api-server | One major behind, still patched | Upgrade to 5 when convenient, one line to verify | Open |
@@ -254,6 +256,19 @@ so the replacement is mechanical:
 `meriyah` 7.3.3 is a faster parser with the same output if parse speed becomes a concern;
 `acorn` is the safer default because of its ecosystem.
 
+Done. The acorn options live in one `parse` module that both files share rather than being
+repeated at each call site. Two things the item did not mention:
+
+- A mechanical swap on its own changes nothing a caller can see, because the walkers
+  interpret a fixed set of ESTree node types and had no case for the syntax the new parser
+  unlocks. They now handle `??`, with its short circuit, and optional chaining for member,
+  computed and call links. Only a link carrying `?.` short-circuits, so `a?.b.c` still
+  throws on the plain `.c` when `a` is missing; the suite states that as a limitation.
+- The wording of a parse error is caller-visible. `acorn` says `Unexpected token (1:6)`
+  where `esprima` said `Line 1: Unexpected token ^`. Two tests asserted the old message
+  verbatim, one of them a copy in `node-nlp`, and now assert the error type and that a
+  position is reported.
+
 #### `kuromoji` ^0.1.2 in `@nlpjs-neo/lang-ja`
 
 Last release March 2018, callback-only API, and `stemmer-ja.ts` locates the bundled
@@ -340,6 +355,15 @@ Everything else the adapter calls (`find`, `findOne`, `insertMany`, `updateOne`,
 `deleteOne`, `deleteMany`, `ObjectId`) is unchanged. The test's `collection-mock.ts` imports
 types from `mongodb` and needs the same bump.
 
+Done, and the paragraph above was wrong twice. Callbacks were not removed from `connect`
+alone: driver 5 removed them from every operation, so `find`, `findOne`, `insertOne`,
+`insertMany`, `updateOne`, `deleteOne` and `deleteMany` all had to be rewritten, and
+`executeInCollection` became a plain async call instead of a callback wrapped in a promise.
+And `collection-mock.ts` did not need a bump, it needed deleting: it and `mongodb-mock.ts`
+were hand-written imitations of the driver 3 callback API, which is the thing being
+replaced, and they were wrong about what the driver returns. See the progress log for the
+four defects they were hiding.
+
 #### `compromise` ^13.7.0, `compromise-numbers` ^1.0.0, `compromise-dates` ^1.2.0
 
 `compromise` 14.17.0 (September 2026) is ESM-native. In 14 the numbers plugin was merged
@@ -347,6 +371,19 @@ into core, so `compromise-numbers` (last release June 2021) is deleted rather th
 `compromise-dates` 3.9.0 (September 2026) declares a peer of `compromise >=14.2.0`.
 `builtin-compromise.ts` can then drop the three `typeof x.default === 'function'` shims and
 call `nlp.extend(dates)` only.
+
+Done, and this is more than an upgrade with a plugin removal: two shapes the entity
+handlers read moved.
+
+- `compromise-dates` 3 reports the resolved range under `dates`, where version 1 used
+  `date`. Every date entity resolved to the empty string until this was mapped.
+- `compromise` 14 reports a number as `number.num` and no longer supplies the `cardinal`,
+  `ordinal` and `textOrdinal` spellings the plugin added, all three of which the number
+  handler read. An ordinal is now recognised from the `Ordinal` tag on its terms, which
+  avoids parsing the matched text a second time, and the `2nd`-style resolution value is
+  formatted from the number.
+
+The entities the package emits are unchanged.
 
 #### `pino` ^7.6.1 and `pino-pretty` ^7.2.0 in `@nlpjs-neo/logger`
 
@@ -364,6 +401,23 @@ this.logger = pino(
 
 `pino-pretty` then becomes an optional peer or a plain dependency depending on whether
 production installs should carry it.
+
+Done, with one deviation and one correction.
+
+The deviation: `pino-pretty` is wired up as a destination stream, not as a `transport`. A
+transport runs in a worker thread, and this package builds its logger at module scope, so a
+transport would leak a thread into every process that imports `@nlpjs-neo/logger` and lose
+records unless every caller flushed on exit. A stream keeps the logging synchronous and
+thread-free.
+
+The correction: `pino` 10 does not ignore `prettyPrint`, it throws on it. Because the
+logger is built at module scope, importing `@nlpjs-neo/logger` -- or `@nlpjs-neo/basic`,
+which re-exports it -- would have thrown on load. This was the highest-severity item in
+step 4 and the audit had it as a medium-priority upgrade.
+
+`pino-pretty` stays a plain dependency, as it already was. `Logger` also takes an optional
+destination stream now and is exported beside the singleton, which is what let the suite
+assert what is written rather than that a method was called.
 
 #### `express` ^4.17.1 (resolved 4.22.3) and `cors` in `@nlpjs-neo/express-api-server`
 
@@ -462,7 +516,7 @@ These do not affect the published packages but are what new users copy.
 2. **[x] Built-in replacements:** delete `node-fetch`, `rimraf`, `axios`; migrate `url.parse`
    and `querystring` in the same files. Clears the 23 `axios` advisories.
 3. **[x] `decompress` to `node-stream-zip`** in `fullbot`. Clears the last unfixed critical.
-4. **[ ] `pino` 10, `compromise` 14, `mongodb` 7, `esprima`/`escodegen` to `acorn`/`astring`.**
+4. **[x] `pino` 10, `compromise` 14, `mongodb` 7, `esprima`/`escodegen` to `acorn`/`astring`.**
    Each is a contained change to one package with its own tests.
 5. **[ ] `xlsx` to `@office-kit/xlsx`** per the existing plan, then `exceljs` onto the same library.
 6. **[ ] Connector clean-up:** rewrite `fb-connector` on `fetch`, replace `serverless-express`
@@ -527,6 +581,65 @@ to `filepath` in version 2. The upgrade to 3 repairs the route (fields are array
 `form.parse` resolves instead of taking a callback), creates the upload folder if it is
 missing, removes temporary files on the error path as well, and answers 500 instead of
 throwing for a malformed upload.
+
+### 2026-09-20 — coverage for step 4
+
+Same order as before: the coverage went in first, against the four dependencies as they were
+still declared, and it is what turned up most of what follows.
+
+- `logger`: the suite spied on `logger.logger[level]` and asserted the spy was called, which
+  would pass against a `pino` that emitted nothing. `Logger` now takes an optional
+  destination stream, and the tests read the records back: level numbers, level filtering,
+  `log` mapping to info, merged objects, error serialization, format-string interpolation,
+  and the formatted line `pino-pretty` produces. Two construction tests cover the
+  development and production branches.
+- `evaluator`: the existing suites covered the walkers thoroughly but never stated what the
+  package needs from the parser and the generator. A new suite runs the literal kinds,
+  precedence, member and computed access, several statements, an empty source and invalid
+  syntax through both `Evaluator` and `JavascriptCompiler`, plus the one path that reaches
+  the code generator, a `FunctionExpression` compiled with `Function`.
+- `builtin-compromise`: the suite drove real `compromise` for every entity kind but stopped
+  at a single match. Added: the `entity_0`/`entity_1` numbering for a repeated kind,
+  `extract` appending to edges the input already carries and preferring `text` over
+  `utterance`, the `catch` path, and `run`, which had no test at all.
+- `mongodb-adapter`: replaced the hand-written callback mocks with a real `mongod` from
+  `mongodb-memory-server`, driving the adapter's public API against it. CI caches the
+  downloaded binary.
+
+### 2026-09-20 — step 4, the four contained upgrades
+
+Items 12, 13, 14 and 15. The audit called these "a contained change to one package with its
+own tests". The changes were contained; the tests were not as good as the sentence assumed,
+and six defects came out of writing them, five of them in `mongodb-adapter`:
+
+- **`insertMany` never returned the inserted documents.** It answered with the driver's own
+  result, counts and ids, so no caller could read back what it stored. `CollectionMock`
+  called back with the items, so the test passed.
+- **`save` on an existing item returned the raw `updateOne` result**, which carries no
+  document. Same cause: `CollectionMock.updateOne` called back with the item.
+- **`convertOut` turned a document that was not found into an empty object**, which reads as
+  a hit to every caller. This also broke `save`: an item carrying a well formed id that
+  nothing was stored under took the update path and silently stored nothing. Only the
+  existing test's invalid id (`'patata'`) kept that path from being exercised.
+- **`convertIn` converted the elements of an array with `convertOut`**, so an explicit `id`
+  on a bulk insert was dropped and replaced by a generated one.
+- **`connect` read `this.dbName`, which is never assigned**, so the database always came from
+  the connection string and `settings.dbName` was ignored. Deriving `settings.dbName` from
+  the url also took any query string with it.
+- **Every date entity from `builtin-compromise` would have resolved to the empty string**
+  after the upgrade, because `compromise-dates` 3 moved the range from `date` to `dates`.
+
+Two further notes:
+
+- `pino` 10 throws on the removed `prettyPrint` option rather than ignoring it, and the
+  logger is built at module scope, so this item was an import-time crash waiting for the
+  upgrade, not the medium-priority tidy-up the table implied.
+- Replacing `esprima` with `acorn` changes the wording of a parse error, which two tests
+  asserted verbatim.
+
+The audit's own framing was wrong in one place worth recording: item 13 listed three removed
+APIs to deal with, but driver 5 removed callbacks from every operation, not from `connect`
+alone, so the whole adapter had to be rewritten rather than patched in three places.
 
 ### Remaining advisories
 
