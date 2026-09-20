@@ -3,7 +3,7 @@ import { createRequire } from 'module';
 // The dictionary is ~9MB, so it is only pulled in when `start()` is called.
 const require = createRequire(import.meta.url);
 
-class Dictionary {
+export class Dictionary {
   declare cache: any;
   declare cedict: any;
   declare simplified: any;
@@ -33,6 +33,8 @@ class Dictionary {
   start() {
     if (!this.cedict) {
       this.cedict = require('./cedict_ts.u8.js').default;
+    }
+    if (!this.simplified) {
       console.log('Compiling dictionary');
       this.cache = {};
       this.simplified = {};
@@ -40,11 +42,12 @@ class Dictionary {
       const lines = this.cedict.split(/\r?\n/);
       for (let i = 0; i < lines.length; i += 1) {
         const line = lines[i];
-        if (!line.startsWith('#')) {
+        if (line && !line.startsWith('#')) {
           const current = this.getElement(line);
           const definitions = [current];
           let nextDefinition = this.getElement(lines[i + 1]);
           while (
+            i + 1 < lines.length &&
             nextDefinition.traditional === current.traditional &&
             nextDefinition.simplified === current.simplified
           ) {
