@@ -1,4 +1,5 @@
 import { expect, test } from 'vitest';
+import { clearUtteranceCaches } from '#bench/caches.js';
 import corpus from '#bench/fixtures/corpus-en.json' with { type: 'json' };
 import { pipelineBudget, trainingBudget } from '#bench/options.js';
 import { LangEn } from '../../lang-en/src/index.js';
@@ -32,12 +33,20 @@ test('Nlp#process', async ({ bench }) => {
   const sample = await nlp.process('en', testUtterances[0]);
   expect(sample.intent).toEqual(corpus.data[0].intent);
 
+  // Every utterance the NLU prepares is memoized, tokens and all, so a
+  // benchmark that repeats or rotates over a fixed set of texts soon measures
+  // that memo instead of the pipeline. Emptying it in `beforeEach` — untimed —
+  // makes every iteration pay the real cost, which is what a bot pays: it sees
+  // a new sentence per message. The utterances still rotate so that the
+  // measured cost is an average over real traffic rather than one sentence.
+  const coldPath = { beforeEach: () => clearUtteranceCaches(nlp.nluManager) };
+
   let index = 0;
   await bench.compare(
-    bench('unseen utterance', async () => {
+    bench('unseen utterance', coldPath, async () => {
       await nlp.process('en', testUtterances[index++ % testUtterances.length]);
     }),
-    bench('utterance of unknown words', async () => {
+    bench('utterance of unknown words', coldPath, async () => {
       await nlp.process('en', 'qwerty uiop asdfgh jklzxcv bnm');
     }),
     pipelineBudget

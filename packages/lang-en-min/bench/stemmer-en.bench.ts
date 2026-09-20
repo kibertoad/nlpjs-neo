@@ -1,4 +1,5 @@
 import { test } from 'vitest';
+import { clearStemmerCache } from '#bench/caches.js';
 import { longText, tokens } from '#bench/fixtures/texts.js';
 import { microBudget } from '#bench/options.js';
 import { StemmerEn } from '../src/index.js';
@@ -19,7 +20,7 @@ test('StemmerEn#stem', async ({ bench }) => {
       'tokenized utterance, cold cache',
       {
         beforeEach: () => {
-          stemmer.cache = {};
+          clearStemmerCache(stemmer);
         },
       },
       () => {
@@ -31,11 +32,14 @@ test('StemmerEn#stem', async ({ bench }) => {
 });
 
 test('StemmerEn#tokenizeAndStem', async ({ bench }) => {
+  // This one tokenizes before it stems, and the tokenizer memoizes per text as
+  // well, so both memos are emptied: clearing only the stems would leave the
+  // paragraph tokenized from the first iteration onwards.
   await bench(
     'paragraph, cold cache',
     {
       beforeEach: () => {
-        stemmer.cache = {};
+        clearStemmerCache(stemmer);
       },
     },
     () => {

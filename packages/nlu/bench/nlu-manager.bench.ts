@@ -1,5 +1,6 @@
 import { containerBootstrap } from '@nlpjs-neo/core';
 import { expect, test } from 'vitest';
+import { clearUtteranceCaches } from '#bench/caches.js';
 import corpus from '#bench/fixtures/corpus-en.json' with { type: 'json' };
 import { pipelineBudget, trainingBudget } from '#bench/options.js';
 import { LangEn } from '../../lang-en/src/index.js';
@@ -34,15 +35,20 @@ test('NluManager#process', async ({ bench }) => {
   const sample = await manager.process('en', testUtterances[0]);
   expect(sample.intent).toEqual(corpus.data[0].intent);
 
+  // The prepare step memoizes its tokens per utterance, so without a reset the
+  // rotation below would measure that memo rather than the pipeline. It is
+  // emptied per iteration, in the untimed `beforeEach` hook.
+  const coldPath = { beforeEach: () => clearUtteranceCaches(manager) };
+
   let index = 0;
   await bench.compare(
-    bench('unseen utterance', async () => {
+    bench('unseen utterance', coldPath, async () => {
       await manager.process(
         'en',
         testUtterances[index++ % testUtterances.length]
       );
     }),
-    bench('utterance of unknown words', async () => {
+    bench('utterance of unknown words', coldPath, async () => {
       await manager.process('en', 'qwerty uiop asdfgh jklzxcv bnm');
     }),
     pipelineBudget

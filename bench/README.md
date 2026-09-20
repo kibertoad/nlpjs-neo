@@ -114,9 +114,19 @@ A few conventions keep the suite honest and comparable:
   `trainingBudget` for training a model.
 - Keep setup out of the measured function. Anything that has to run per iteration, like
   clearing a cache or rebuilding an untrained model, belongs in the `beforeEach` or `afterEach`
-  hook of `bench(name, options, fn)`, which is not timed.
+  hook of `bench(name, options, fn)`, which is not timed. Never construct the object under test
+  inside the measured function: the numbers then include an allocation and the collection of the
+  previous one.
+- Measure a cold path by emptying the memo, not by feeding the code new inputs. The library
+  memoizes in several places — `Tokenizer` per text, `BaseStemmer` per word, `Nlu` for the whole
+  prepare step — so a benchmark that rotates over a fixed set of utterances is served from the
+  memo after its first pass over them. `#bench/caches.js` has one helper per memo, meant for a
+  `beforeEach` hook; use them rather than reaching into `cache` from the benchmark, so that the
+  memos worth clearing stay listed in one place.
 - Assert once, before the benchmark, that the code still does what it is supposed to. A
-  pipeline that silently stopped matching anything benchmarks beautifully.
+  pipeline that silently stopped matching anything benchmarks beautifully. The same goes for the
+  setup around it: a container registration that no longer matches the tag it was meant for
+  leaves the benchmark measuring some other path, quietly, so assert that it took effect.
 - Reuse the fixtures in `#bench/fixtures/`. `corpus-en.json` is the 51-intent corpus that the
   NLU, NLP and neural benchmarks train on; `texts.ts` holds the utterances, paragraph and token
   lists everything else works from.

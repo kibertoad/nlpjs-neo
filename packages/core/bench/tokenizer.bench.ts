@@ -1,5 +1,6 @@
 import { test } from 'vitest';
-import { longText, shortUtterance, utterances } from '#bench/fixtures/texts.js';
+import { clearTokenizerCache } from '#bench/caches.js';
+import { longText, shortUtterance } from '#bench/fixtures/texts.js';
 import { microBudget } from '#bench/options.js';
 import { Tokenizer } from '../src/index.js';
 
@@ -7,9 +8,11 @@ import { Tokenizer } from '../src/index.js';
 // through a module runner getter, which shows up in the numbers.
 const short = shortUtterance;
 const paragraph = longText;
-const texts = utterances;
 
 const tokenizer = new Tokenizer();
+// A second instance for the cold path, so emptying its memo cannot disturb the
+// warm benchmark running beside it.
+const coldTokenizer = new Tokenizer();
 
 test('Tokenizer#innerTokenize', async ({ bench }) => {
   await bench.compare(
@@ -24,17 +27,24 @@ test('Tokenizer#innerTokenize', async ({ bench }) => {
 });
 
 test('Tokenizer#tokenize', async ({ bench }) => {
-  // `tokenize` memoizes per text, so a repeated utterance measures the cache
-  // lookup, while rotating over unseen texts measures the split itself.
-  let index = 0;
+  // `tokenize` memoizes per text, so the same utterance measures the cache
+  // lookup once it is warm and the split itself once the memo is emptied. The
+  // reset runs in `beforeEach`, outside the measured call.
   await bench.compare(
-    bench('cached text', () => {
+    bench('short utterance, warm cache', () => {
       tokenizer.tokenize(short);
     }),
-    bench('unseen text', () => {
-      const cold = new Tokenizer();
-      cold.tokenize(texts[index++ % texts.length]);
-    }),
+    bench(
+      'short utterance, cold cache',
+      {
+        beforeEach: () => {
+          clearTokenizerCache(coldTokenizer);
+        },
+      },
+      () => {
+        coldTokenizer.tokenize(short);
+      }
+    ),
     microBudget
   );
 });

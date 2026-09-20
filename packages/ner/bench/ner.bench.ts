@@ -94,6 +94,11 @@ test('Ner#process, 20 enum options', async ({ bench }) => {
 });
 
 test('Ner#process, 200 enum options', async ({ bench }) => {
+  // Checked here too: a rule set that grew past the point of matching anything
+  // would report a speedup rather than a failure.
+  const sample = await largeNer.process({ ...fuzzyMatch });
+  expect(sample.entities[0].entity).toEqual('city');
+
   await bench.compare(
     bench('exact match', async () => {
       await largeNer.process({ ...exactMatch });
