@@ -1,28 +1,64 @@
 import { Clonable } from '@nlpjs-neo/core';
+import type {
+  Container,
+  ContainerHolder,
+  Locale,
+  RegisteredPipeline,
+} from '@nlpjs-neo/core';
 import ExtractorEnum from './extractor-enum.js';
 import ExtractorRegex from './extractor-regex.js';
 import ExtractorTrim from './extractor-trim.js';
 import ExtractorBuiltin from './extractor-builtin.js';
 
 import { TrimType } from './trim-types.js';
+import type {
+  BetweenTrimRule,
+  Edge,
+  EntityName,
+  EnumRuleOption,
+  Extractor,
+  NerInput,
+  NerJson,
+  NerSettings,
+  PositionTrimRule,
+  Rule,
+  RuleCondition,
+  RulesByLocale,
+  RuleType,
+  TrimOptions,
+  TrimTypeValue,
+} from './types.js';
 
-function isObject(obj) {
+/** The four extractors, resolved from the container once and kept. */
+interface ExtractorCache {
+  extractEnum: Extractor | undefined;
+  extractRegex: Extractor | undefined;
+  extractTrim: Extractor | undefined;
+  extractBuiltin: Extractor | undefined;
+}
+
+function isObject(obj: unknown): boolean {
   return obj !== undefined && obj !== null && obj.constructor === Object;
 }
 
 class Ner extends Clonable {
-  declare cache: any;
-  declare pipelineProcess: any;
-  declare rules: any;
-  declare settings: any;
+  declare cache: ExtractorCache | undefined;
+  declare pipelineProcess: RegisteredPipeline | undefined;
+  /** Every rule this was taught, by locale and then by entity name. */
+  declare rules: RulesByLocale;
+  declare settings: NerSettings;
 
-  constructor(settings: any = {}, container = undefined) {
+  constructor(settings: NerSettings = {}, container?: ContainerHolder) {
     super(
       {
         settings: {},
-        container: settings.container || container,
+        container:
+          settings.container ||
+          (container &&
+            ((container as { container?: Container }).container ||
+              (container as Container))),
       },
-      container
+      container as Container
     );
     this.applySettings(this.settings, settings);
     this.applySettings(this.settings);
@@ -40,9 +76,9 @@ class Ner extends Clonable {
     });
   }
 
-  registerDefault() {}
+  registerDefault(): void {}
 
-  getRulesByName(locale = '*', name = '', force = false) {
+  getRulesByName(locale = '*', name = '', force = false): Rule | undefined {
     if (!this.rules[locale]) {
       if (!force) {
         return undefined;
@@ -62,7 +98,12 @@ class Ner extends Clonable {
     return this.rules[locale][name];
   }
 
-  addRule(locale = '*', name, type, rule) {
+  addRule(
+    locale: Locale | Locale[] = '*',
+    name: EntityName,
+    type: RuleType,
+    rule: RuleCondition
+  ): void {
     if (Array.isArray(locale)) {
       for (let i = 0; i < locale.length; i += 1) {
         this.addRule(locale[i], name, type, rule);
@@ -82,7 +123,7 @@ class Ner extends Clonable {
     }
   }
 
-  asString(item) {
+  asString(item: unknown): string {
     if (item) {
       if (isObject(item)) {
         return JSON.stringify(item);
@@ -94,7 +135,7 @@ class Ner extends Clonable {
     return '';
   }
 
-  findRule(rules, rule) {
+  findRule(rules: RuleCondition[], rule: RuleCondition): number {
     const str = this.asString(rule);
     for (let i = 0; i < rules.length; i += 1) {
       if (this.asString(rules[i]) === str) {
@@ -104,7 +145,11 @@ class Ner extends Clonable {
     return -1;
   }
 
-  removeRule(locale = '*', name, rule?) {
+  removeRule(
+    locale: Locale = '*',
+    name: EntityName,
+    rule?: RuleCondition
+  ): void {
     if (this.rules[locale]) {
       if (this.rules[locale][name]) {
         if (!rule) {
@@ -119,8 +164,9 @@ class Ner extends Clonable {
     }
   }
 
-  getRules(locale = '*') {
-    const result: any[] = [];
+  /** Rules of a locale, followed by the ones taught for every locale. */
+  getRules(locale: Locale = '*'): Rule[] {
+    const result: Rule[] = [];
     if (this.rules[locale]) {
       const keys = Object.keys(this.rules[locale]);
       for (let i = 0; i < keys.length; i += 1) {
@@ -136,7 +182,12 @@ class Ner extends Clonable {
     return result;
   }
 
-  decideRules(srcInput, intentEntities) {
+  /**
+   * Chooses the rules an utterance is extracted with. Entities the recognized
+   * intent is trained with go first, so an overlap is resolved in their
+   * favour, or are the only ones kept when the settings say so.
+   */
+  decideRules(srcInput: NerInput, intentEntities?: EntityName[]): NerInput {
     const input = srcInput;
     let nerRules = this.getRules(input.locale || 'en');
     if (intentEntities && this.settings.considerOnlyIntentEntities) {
@@ -144,8 +195,8 @@ class Ner extends Clonable {
     } else if (intentEntities) {
       // entities in the current intent get a higher priority when
       // sorting out overlapping matches
-      const intentRelevantRule: any[] = [];
-      const nonIntentRelevantRule: any[] = [];
+      const intentRelevantRule: Rule[] = [];
+      const nonIntentRelevantRule: Rule[] = [];
       nerRules.forEach((rule) => {
         if (intentEntities.includes(rule.name)) {
           intentRelevantRule.push(rule);
@@ -161,16 +212,24 @@ class Ner extends Clonable {
     return input;
   }
 
-  getRuleOption(rules, option) {
+  getRuleOption(
+    rules: RuleCondition[],
+    option: string
+  ): EnumRuleOption | undefined {
     for (let i = 0; i < rules.length; i += 1) {
-      if (rules[i].option === option) {
-        return rules[i];
+      if ((rules[i] as EnumRuleOption).option === option) {
+        return rules[i] as EnumRuleOption;
       }
     }
     return undefined;
   }
 
-  addRuleOptionTexts(locale, name, option, srcTexts?) {
+  addRuleOptionTexts(
+    locale: Locale | Locale[],
+    name: EntityName,
+    option: string,
+    srcTexts?: string | string[]
+  ): void {
     if (Array.isArray(locale)) {
       for (let i = 0; i < locale.length; i += 1) {
         this.addRuleOptionTexts(locale[i], name, option, srcTexts);
@@ -189,7 +248,7 @@ class Ner extends Clonable {
         };
         rules.rules.push(ruleOption);
       } else {
-        const dict: any = {};
+        const dict: Record<string, 1> = {};
         for (let i = 0; i < ruleOption.texts.length; i += 1) {
           dict[ruleOption.texts[i]] = 1;
         }
@@ -201,7 +260,12 @@ class Ner extends Clonable {
     }
   }
 
-  removeRuleOptionTexts(locale, name, option, srcTexts?) {
+  removeRuleOptionTexts(
+    locale: Locale | Locale[],
+    name: EntityName,
+    option: string,
+    srcTexts?: string | string[]
+  ): void {
     if (Array.isArray(locale)) {
       for (let i = 0; i < locale.length; i += 1) {
         this.removeRuleOptionTexts(locale[i], name, option, srcTexts);
@@ -215,7 +279,7 @@ class Ner extends Clonable {
       if (rules) {
         const ruleOption = this.getRuleOption(rules.rules, option);
         if (ruleOption) {
-          const dict: any = {};
+          const dict: Record<string, 1> = {};
           for (let i = 0; i < ruleOption.texts.length; i += 1) {
             dict[ruleOption.texts[i]] = 1;
           }
@@ -228,16 +292,20 @@ class Ner extends Clonable {
     }
   }
 
-  static str2regex(str) {
+  static str2regex(str: string): RegExp {
     const index = str.lastIndexOf('/');
     return new RegExp(str.slice(1, index), str.slice(index + 1));
   }
 
-  static regex2str(regex) {
+  static regex2str(regex: RegExp): string {
     return regex.toString();
   }
 
-  addRegexRule(locale, name, srcRegex) {
+  addRegexRule(
+    locale: Locale | Locale[],
+    name: EntityName,
+    srcRegex: string | RegExp
+  ): void {
     const regex =
       typeof srcRegex === 'string' ? Ner.str2regex(srcRegex) : srcRegex;
     const globalFlag = 'g';
@@ -248,12 +316,12 @@ class Ner extends Clonable {
   }
 
   addBetweenLastCondition(
-    locale,
-    name,
-    srcLeftWords,
-    srcRightWords,
-    srcOptions: any = {}
-  ) {
+    locale: Locale | Locale[],
+    name: EntityName,
+    srcLeftWords: string | string[],
+    srcRightWords: string | string[],
+    srcOptions: TrimOptions = {}
+  ): void {
     const options = {
       ...srcOptions,
       closest: true,
@@ -267,7 +335,13 @@ class Ner extends Clonable {
     );
   }
 
-  addBetweenCondition(locale, name, srcLeftWords, srcRightWords, srcOptions?) {
+  addBetweenCondition(
+    locale: Locale | Locale[],
+    name: EntityName,
+    srcLeftWords: string | string[],
+    srcRightWords: string | string[],
+    srcOptions?: TrimOptions
+  ): void {
     const options = srcOptions || {};
     const leftWords = Array.isArray(srcLeftWords)
       ? srcLeftWords
@@ -275,14 +349,14 @@ class Ner extends Clonable {
     const rightWords = Array.isArray(srcRightWords)
       ? srcRightWords
       : [srcRightWords];
-    const conditions: any[] = [];
+    const conditions: string[] = [];
     for (let i = 0; i < leftWords.length; i += 1) {
       for (let j = 0; j < rightWords.length; j += 1) {
         const leftWord =
           options.noSpaces === true ? leftWords[i] : ` ${leftWords[i]} `;
         const rightWord =
           options.noSpaces === true ? rightWords[j] : ` ${rightWords[j]} `;
-        let regex;
+        let regex: string;
         if (options.closest === true) {
           regex = `${leftWord}(?!.*${leftWord}.*)(.*)${rightWord}`;
         } else {
@@ -295,7 +369,7 @@ class Ner extends Clonable {
     if (options.caseSensitive !== true) {
       regex += 'i';
     }
-    const rule = {
+    const rule: BetweenTrimRule = {
       type: 'between',
       leftWords,
       rightWords,
@@ -305,10 +379,16 @@ class Ner extends Clonable {
     this.addRule(locale, name, 'trim', rule);
   }
 
-  addPositionCondition(locale, name, position, srcWords, srcOptions) {
+  addPositionCondition(
+    locale: Locale | Locale[],
+    name: EntityName,
+    position: TrimTypeValue,
+    srcWords: string | string[],
+    srcOptions?: TrimOptions
+  ): void {
     const options = srcOptions || {};
     const words = Array.isArray(srcWords) ? srcWords : [srcWords];
-    const rule = {
+    const rule: PositionTrimRule = {
       type: position,
       words,
       options,
@@ -340,7 +420,7 @@ class Ner extends Clonable {
     this.addPositionCondition(locale, name, TrimType.BeforeLast, words, opts);
   }
 
-  reduceEdges(input) {
+  reduceEdges(input: NerInput): NerInput {
     input.entities = input.edges;
     delete input.edges;
     delete input.nerRules;
@@ -349,29 +429,34 @@ class Ner extends Clonable {
     return input;
   }
 
-  async defaultPipelineProcess(input, intentEntities) {
+  async defaultPipelineProcess(
+    input: NerInput,
+    intentEntities?: EntityName[]
+  ): Promise<NerInput> {
     if (!this.cache) {
       this.cache = {
-        extractEnum: this.container.get('extract-enum'),
-        extractRegex: this.container.get('extract-regex'),
-        extractTrim: this.container.get('extract-trim'),
-        extractBuiltin: this.container.get('extract-builtin'),
+        extractEnum: this.container.get<Extractor>('extract-enum'),
+        extractRegex: this.container.get<Extractor>('extract-regex'),
+        extractTrim: this.container.get<Extractor>('extract-trim'),
+        extractBuiltin: this.container.get<Extractor>('extract-builtin'),
       };
       if (!this.cache.extractEnum) {
         this.container.use(ExtractorEnum);
-        this.cache.extractEnum = this.container.get('extract-enum');
+        this.cache.extractEnum = this.container.get<Extractor>('extract-enum');
       }
       if (!this.cache.extractRegex) {
         this.container.use(ExtractorRegex);
-        this.cache.extractRegex = this.container.get('extract-regex');
+        this.cache.extractRegex =
+          this.container.get<Extractor>('extract-regex');
       }
       if (!this.cache.extractTrim) {
         this.container.use(ExtractorTrim);
-        this.cache.extractTrim = this.container.get('extract-trim');
+        this.cache.extractTrim = this.container.get<Extractor>('extract-trim');
       }
       if (!this.cache.extractBuiltin) {
         this.container.use(ExtractorBuiltin);
-        this.cache.extractBuiltin = this.container.get('extract-builtin');
+        this.cache.extractBuiltin =
+          this.container.get<Extractor>('extract-builtin');
       }
     }
     let output = await this.decideRules(input, intentEntities);
@@ -391,12 +476,17 @@ class Ner extends Clonable {
     return output;
   }
 
-  async process(srcInput, consideredEntities?, _utterance?, _arg3?) {
-    const input = {
+  async process(
+    srcInput: NerInput,
+    consideredEntities?: EntityName[],
+    _utterance?: unknown,
+    _arg3?: unknown
+  ): Promise<NerInput> {
+    const input: NerInput = {
       threshold: this.settings.threshold || 0.8,
       ...srcInput,
     };
-    let result;
+    let result: NerInput | undefined;
     if (input.locale) {
       const pipeline = this.container.getPipeline(
         `${this.settings.tag}-${input.locale}-process`
@@ -419,7 +509,7 @@ class Ner extends Clonable {
     return result;
   }
 
-  nameToEntity(name) {
+  nameToEntity(name: EntityName): string {
     const preffix =
       this.settings.entityPreffix === undefined
         ? '@'
@@ -431,7 +521,7 @@ class Ner extends Clonable {
     return `${preffix}${name}${suffix}`;
   }
 
-  entityToName(entity) {
+  entityToName(entity: string): string {
     if (!entity) {
       return entity;
     }
@@ -459,18 +549,19 @@ class Ner extends Clonable {
     return name;
   }
 
-  isEntity(entity) {
+  isEntity(entity: string): boolean {
     const name = this.entityToName(entity);
     return name !== entity;
   }
 
-  getEntitiesFromUtterance(locale, utterance) {
+  /** The entities an utterance refers to by name, such as `@hero`. */
+  getEntitiesFromUtterance(locale: Locale, utterance?: string): EntityName[] {
     if (!utterance) {
       utterance = locale;
       locale = 'es';
     }
     const tokens = utterance.split(/[\s,.!?;:([\]'"¡¿)/]+/).filter((x) => x);
-    const result: any[] = [];
+    const result: EntityName[] = [];
     for (let i = 0; i < tokens.length; i += 1) {
       const token = tokens[i];
       if (this.isEntity(token)) {
@@ -480,13 +571,17 @@ class Ner extends Clonable {
     return result;
   }
 
-  async generateEntityUtterance(locale, utterance) {
-    let input: any = {
+  /** Rewrites the entities an utterance holds as their names. */
+  async generateEntityUtterance(
+    locale: Locale,
+    utterance: string
+  ): Promise<string> {
+    let input: NerInput = {
       locale,
       utterance,
     };
     input = await this.process(input);
-    const { entities } = input;
+    const entities = input.entities as Edge[];
     if (!entities || !entities.length) {
       return utterance;
     }
@@ -505,12 +600,13 @@ class Ner extends Clonable {
     return result;
   }
 
-  toJSON() {
+  toJSON(): NerJson {
     // easy RegExp serialization: https://stackoverflow.com/questions/12075927/serialization-of-regexp
     // oxlint-disable-next-line no-extend-native
-    (RegExp.prototype as any).toJSON = RegExp.prototype.toString;
+    (RegExp.prototype as { toJSON?: () => string }).toJSON =
+      RegExp.prototype.toString;
 
-    const result = {
+    const result: NerJson = {
       settings: { ...this.settings },
       rules: { ...this.rules },
     };
@@ -519,7 +615,7 @@ class Ner extends Clonable {
     return result;
   }
 
-  fromJSON(json) {
+  fromJSON(json: NerJson): void {
     this.applySettings(this.settings, json.settings);
 
     const rulesKeys = Object.keys(json.rules);
@@ -530,15 +626,18 @@ class Ner extends Clonable {
       entityKeys.forEach((eKey) => {
         json.rules[rKey][eKey].rules =
           json.rules[rKey][eKey].type === 'regex'
-            ? json.rules[rKey][eKey].rules.map((rule) => Ner.str2regex(rule))
-            : json.rules[rKey][eKey].rules.map((rule) =>
-                typeof rule.regex === 'string'
+            ? json.rules[rKey][eKey].rules.map((rule) =>
+                Ner.str2regex(rule as unknown as string)
+              )
+            : json.rules[rKey][eKey].rules.map((rule) => {
+                const trim = rule as { regex?: string | RegExp };
+                return typeof trim.regex === 'string'
                   ? {
                       ...rule,
-                      regex: Ner.str2regex(rule.regex),
+                      regex: Ner.str2regex(trim.regex),
                     }
-                  : rule
-              );
+                  : rule;
+              });
       });
     });
 

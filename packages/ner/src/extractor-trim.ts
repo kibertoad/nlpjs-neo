@@ -1,17 +1,33 @@
 import { defaultContainer } from '@nlpjs-neo/core';
+import type { Container, ContainerHolder } from '@nlpjs-neo/core';
 import reduceEdges from './reduce-edges.js';
 import { TrimType } from './trim-types.js';
+import type {
+  BetweenTrimRule,
+  Edge,
+  EntityName,
+  Extractor,
+  NerInput,
+  PositionTrimRule,
+  Rule,
+  TrimRule,
+  TrimTypeValue,
+  WordPosition,
+} from './types.js';
 
-class ExtractorTrim {
-  declare container: any;
-  declare name: any;
+class ExtractorTrim implements Extractor {
+  declare container: Container;
+  declare name: string;
 
-  constructor(container = defaultContainer) {
-    this.container = container.container || container;
+  constructor(container: ContainerHolder = defaultContainer) {
+    this.container =
+      (container as { container?: Container }).container ||
+      (container as Container);
     this.name = 'extract-trim';
   }
 
-  mustSkip(word, condition) {
+  /** `true` when a match is one the rule was told to throw away. */
+  mustSkip(word: string, condition: TrimRule): boolean {
     if (
       condition.options &&
       condition.options.skip &&
@@ -31,8 +47,12 @@ class ExtractorTrim {
     return false;
   }
 
-  matchBetween(utterance, condition, name) {
-    const result: any[] = [];
+  matchBetween(
+    utterance: string,
+    condition: BetweenTrimRule,
+    name: EntityName
+  ): Edge[] {
+    const result: Edge[] = [];
     let matchFound;
     do {
       const match = condition.regex.exec(` ${utterance} `);
@@ -70,7 +90,7 @@ class ExtractorTrim {
         matchFound = false;
       }
     } while (matchFound);
-    const filteredResult: any[] = [];
+    const filteredResult: Edge[] = [];
     for (let i = 0; i < result.length; i += 1) {
       if (!this.mustSkip(result[i].utteranceText, condition)) {
         filteredResult.push(result[i]);
@@ -79,8 +99,14 @@ class ExtractorTrim {
     return filteredResult;
   }
 
-  findWord(utterance, word, caseSensitive = false, noSpaces = false) {
-    const result: any[] = [];
+  /** Every position one anchor word occupies in an utterance. */
+  findWord(
+    utterance: string,
+    word: string,
+    caseSensitive = false,
+    noSpaces = false
+  ): WordPosition[] {
+    const result: WordPosition[] = [];
     let matchFound;
     const regex = new RegExp(
       noSpaces ? word : ` ${word} | ${word}|${word} `,
@@ -101,8 +127,12 @@ class ExtractorTrim {
     return result;
   }
 
-  getBeforeResults(utterance, wordPositions, name) {
-    const result: any[] = [];
+  getBeforeResults(
+    utterance: string,
+    wordPositions: WordPosition[],
+    name: EntityName
+  ): Edge[] {
+    const result: Edge[] = [];
     let startPos = 0;
     let endPos = 0;
     for (let i = 0; i < wordPositions.length; i += 1) {
@@ -124,8 +154,12 @@ class ExtractorTrim {
     return result;
   }
 
-  getBeforeFirstResults(utterance, wordPositions, name) {
-    const result: any[] = [];
+  getBeforeFirstResults(
+    utterance: string,
+    wordPositions: WordPosition[],
+    name: EntityName
+  ): Edge[] {
+    const result: Edge[] = [];
     const startPos = 0;
     const endPos = wordPositions[0].start;
     const text = utterance.substring(startPos, endPos);
@@ -143,8 +177,12 @@ class ExtractorTrim {
     return result;
   }
 
-  getBeforeLastResults(utterance, wordPositions, name) {
-    const result: any[] = [];
+  getBeforeLastResults(
+    utterance: string,
+    wordPositions: WordPosition[],
+    name: EntityName
+  ): Edge[] {
+    const result: Edge[] = [];
     const startPos = 0;
     const endPos = wordPositions[wordPositions.length - 1].start;
     const text = utterance.substring(startPos, endPos);
@@ -162,8 +200,12 @@ class ExtractorTrim {
     return result;
   }
 
-  getAfterResults(utterance, wordPositions, name) {
-    const result: any[] = [];
+  getAfterResults(
+    utterance: string,
+    wordPositions: WordPosition[],
+    name: EntityName
+  ): Edge[] {
+    const result: Edge[] = [];
     let startPos = 0;
     let endPos = utterance.length;
     for (let i = wordPositions.length - 1; i >= 0; i -= 1) {
@@ -185,8 +227,12 @@ class ExtractorTrim {
     return result;
   }
 
-  getAfterFirstResults(utterance, wordPositions, name) {
-    const result: any[] = [];
+  getAfterFirstResults(
+    utterance: string,
+    wordPositions: WordPosition[],
+    name: EntityName
+  ): Edge[] {
+    const result: Edge[] = [];
     const startPos = wordPositions[0].end;
     const endPos = utterance.length;
     const text = utterance.substring(startPos, endPos);
@@ -204,8 +250,12 @@ class ExtractorTrim {
     return result;
   }
 
-  getAfterLastResults(utterance, wordPositions, name) {
-    const result: any[] = [];
+  getAfterLastResults(
+    utterance: string,
+    wordPositions: WordPosition[],
+    name: EntityName
+  ): Edge[] {
+    const result: Edge[] = [];
     const startPos = wordPositions[wordPositions.length - 1].end;
     const endPos = utterance.length;
     const text = utterance.substring(startPos, endPos);
@@ -223,7 +273,13 @@ class ExtractorTrim {
     return result;
   }
 
-  getResults(utterance, wordPositions, type, name) {
+  /** Dispatches to the helper of one trim type. */
+  getResults(
+    utterance: string,
+    wordPositions: WordPosition[],
+    type: TrimTypeValue,
+    name: EntityName
+  ): Edge[] {
     switch (type) {
       case TrimType.Before:
         return this.getBeforeResults(utterance, wordPositions, name);
@@ -242,8 +298,13 @@ class ExtractorTrim {
     }
   }
 
-  match(utterance, condition, type, name) {
-    const result: any[] = [];
+  match(
+    utterance: string,
+    condition: PositionTrimRule,
+    type: TrimTypeValue,
+    name: EntityName
+  ): Edge[] {
+    const result: Edge[] = [];
     if (condition && Array.isArray(condition.words)) {
       for (let i = 0; i < condition.words.length; i += 1) {
         const word = condition.options.noSpaces
@@ -261,7 +322,7 @@ class ExtractorTrim {
         }
       }
     }
-    const filteredResult: any[] = [];
+    const filteredResult: Edge[] = [];
     for (let i = 0; i < result.length; i += 1) {
       // Remove common whitespace characters
       result[i].sourceText = result[i].sourceText.replace(
@@ -275,7 +336,7 @@ class ExtractorTrim {
     return filteredResult;
   }
 
-  getRules(input) {
+  getRules(input: NerInput): Rule[] {
     const allRules = input.nerRules;
     if (!allRules) {
       return [];
@@ -283,23 +344,28 @@ class ExtractorTrim {
     return allRules;
   }
 
-  extractFromRule(utterance, rule) {
-    const edges: any[] = [];
+  extractFromRule(utterance: string, rule: Rule): Edge[] {
+    const edges: Edge[] = [];
     for (let i = 0; i < rule.rules.length; i += 1) {
-      const current = rule.rules[i];
+      const current = rule.rules[i] as TrimRule;
       if (current.type === TrimType.Between) {
-        edges.push(...this.matchBetween(utterance, current, rule.name));
+        edges.push(
+          ...this.matchBetween(utterance, current as BetweenTrimRule, rule.name)
+        );
       } else {
-        edges.push(...this.match(utterance, current, current.type, rule.name));
+        const position = current as PositionTrimRule;
+        edges.push(
+          ...this.match(utterance, position, position.type, rule.name)
+        );
       }
     }
     return edges;
   }
 
-  extract(srcInput) {
+  extract(srcInput: NerInput): NerInput {
     const input = srcInput;
     const rules = this.getRules(input);
-    const edges = input.edges || [];
+    const edges: Edge[] = input.edges || [];
     for (let i = 0; i < rules.length; i += 1) {
       const newEdges = this.extractFromRule(
         input.text || input.utterance,
@@ -314,10 +380,11 @@ class ExtractorTrim {
     return input;
   }
 
-  run(srcInput) {
+  run(srcInput: NerInput): NerInput | Promise<NerInput> {
     const input = srcInput;
     const locale = input.locale || 'en';
-    const extractor = this.container.get(`extract-trim-${locale}`) || this;
+    const extractor =
+      this.container.get<Extractor>(`extract-trim-${locale}`) || this;
     return extractor.extract(input);
   }
 }

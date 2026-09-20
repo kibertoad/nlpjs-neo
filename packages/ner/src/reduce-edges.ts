@@ -1,17 +1,23 @@
 import { TrimTypesList } from './trim-types.js';
+import type { Edge, EntityName, TrimTypeValue } from './types.js';
 
+/**
+ * Marks the weaker of two overlapping candidates as discarded. The stronger
+ * one is the more accurate, then the longer; entities the recognized intent
+ * is trained with win a tie between two enum matches.
+ */
 function runDiscard(
-  srcEdge,
-  srcOther,
-  useMaxLength,
-  intentEntities: any[] = []
-) {
-  let edge;
-  let other;
-  if (
-    srcEdge.accuracy > srcOther.accuracy ||
-    (srcEdge.accuracy === srcOther.accuracy && srcEdge.length > srcOther.length)
-  ) {
+  srcEdge: Edge,
+  srcOther: Edge,
+  useMaxLength: boolean,
+  intentEntities: EntityName[] = []
+): void {
+  let edge: Edge;
+  let other: Edge;
+  // The tie on accuracy used to be broken by `length`, which an edge does not
+  // carry -- it carries `len` -- so that comparison never fired and the
+  // condition is the accuracy alone.
+  if (srcEdge.accuracy > srcOther.accuracy) {
     edge = srcEdge;
     other = srcOther;
   } else {
@@ -93,10 +99,13 @@ function runDiscard(
  * @param {Object[]} edges Edges to be splitted
  * @returns {Object[]} Splitted edges.
  */
-function splitEdges(edges) {
+function splitEdges(edges: Edge[]): Edge[] {
   for (let i = 0, l = edges.length; i < l; i += 1) {
     const edge = edges[i];
-    if (edge.type === 'trim' && TrimTypesList.includes(edge.subtype)) {
+    if (
+      edge.type === 'trim' &&
+      TrimTypesList.includes(edge.subtype as TrimTypeValue)
+    ) {
       for (let j = 0; j < edges.length; j += 1) {
         const other = edges[j];
         if (
@@ -129,7 +138,11 @@ function splitEdges(edges) {
   return edges;
 }
 
-function reduceEdges(edges, useMaxLength = true, intentEntities: any[] = []) {
+function reduceEdges(
+  edges: Edge[],
+  useMaxLength = true,
+  intentEntities: EntityName[] = []
+): Edge[] {
   edges = splitEdges(edges);
   const edgeslen = edges.length;
   for (let i = 0; i < edgeslen; i += 1) {

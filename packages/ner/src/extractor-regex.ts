@@ -1,16 +1,20 @@
 import { defaultContainer } from '@nlpjs-neo/core';
+import type { Container, ContainerHolder } from '@nlpjs-neo/core';
 import reduceEdges from './reduce-edges.js';
+import type { Edge, Extractor, NerInput, Rule } from './types.js';
 
-class ExtractorRegex {
-  declare container: any;
-  declare name: any;
+class ExtractorRegex implements Extractor {
+  declare container: Container;
+  declare name: string;
 
-  constructor(container = defaultContainer) {
-    this.container = container.container || container;
+  constructor(container: ContainerHolder = defaultContainer) {
+    this.container =
+      (container as { container?: Container }).container ||
+      (container as Container);
     this.name = 'extract-regex';
   }
 
-  getRules(input) {
+  getRules(input: NerInput): Rule[] {
     const allRules = input.nerRules;
     if (!allRules) {
       return [];
@@ -18,8 +22,9 @@ class ExtractorRegex {
     return allRules;
   }
 
-  getMatchs(utterance, regex) {
-    const result: any[] = [];
+  /** Every match of one regular expression, as candidate entities. */
+  getMatchs(utterance: string, regex: RegExp): Edge[] {
+    const result: Edge[] = [];
     let matchFound;
     do {
       const match = regex instanceof RegExp ? regex.exec(utterance) : null;
@@ -48,10 +53,10 @@ class ExtractorRegex {
     return result;
   }
 
-  extractFromRule(text, rule) {
-    const edges: any[] = [];
+  extractFromRule(text: string, rule: Rule): Edge[] {
+    const edges: Edge[] = [];
     for (let i = 0; i < rule.rules.length; i += 1) {
-      const newEdges = this.getMatchs(text, rule.rules[i]);
+      const newEdges = this.getMatchs(text, rule.rules[i] as RegExp);
       for (let j = 0; j < newEdges.length; j += 1) {
         const edge = newEdges[j];
         edge.entity = rule.name;
@@ -64,10 +69,10 @@ class ExtractorRegex {
     return edges;
   }
 
-  extract(srcInput) {
+  extract(srcInput: NerInput): NerInput {
     const input = srcInput;
     const rules = this.getRules(input);
-    const edges = input.edges || [];
+    const edges: Edge[] = input.edges || [];
     for (let i = 0; i < rules.length; i += 1) {
       const newEdges = this.extractFromRule(
         input.text || input.utterance,
@@ -82,10 +87,11 @@ class ExtractorRegex {
     return input;
   }
 
-  run(srcInput) {
+  run(srcInput: NerInput): NerInput | Promise<NerInput> {
     const input = srcInput;
     const locale = input.locale || 'en';
-    const extractor = this.container.get(`extract-regex-${locale}`) || this;
+    const extractor =
+      this.container.get<Extractor>(`extract-regex-${locale}`) || this;
     return extractor.extract(input);
   }
 }

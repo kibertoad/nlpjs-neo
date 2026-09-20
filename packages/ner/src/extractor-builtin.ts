@@ -1,23 +1,33 @@
 import { defaultContainer } from '@nlpjs-neo/core';
+import type { Container, ContainerHolder } from '@nlpjs-neo/core';
 import reduceEdges from './reduce-edges.js';
+import type { Extractor, NerInput } from './types.js';
 
-class ExtractorBuiltin {
-  declare container: any;
-  declare name: any;
+/**
+ * Entry point of the builtin extractors. It holds no rules of its own: it
+ * resolves the extractor registered for the locale -- Duckling, the Microsoft
+ * recognizers, the default one -- and merges what it found into the input.
+ */
+class ExtractorBuiltin implements Extractor {
+  declare container: Container;
+  declare name: string;
 
-  constructor(container = defaultContainer) {
-    this.container = container.container || container;
+  constructor(container: ContainerHolder = defaultContainer) {
+    this.container =
+      (container as { container?: Container }).container ||
+      (container as Container);
     this.name = 'extract-builtin';
   }
 
-  extract(srcInput) {
+  extract(srcInput: NerInput): NerInput {
     return srcInput;
   }
 
-  async run(srcInput) {
+  async run(srcInput: NerInput): Promise<NerInput> {
     const input = srcInput;
     const locale = input.locale || 'en';
-    const extractor = this.container.get(`extract-builtin-${locale}`) || this;
+    const extractor =
+      this.container.get<Extractor>(`extract-builtin-${locale}`) || this;
     const newInput = await extractor.extract({
       text: input.text || input.utterance,
       locale: input.locale,

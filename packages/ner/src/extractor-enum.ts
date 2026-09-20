@@ -1,19 +1,42 @@
 import { defaultContainer } from '@nlpjs-neo/core';
+import type {
+  Container,
+  ContainerHolder,
+  PipelineInput,
+} from '@nlpjs-neo/core';
 import { Language } from '@nlpjs-neo/language-min';
+import type { TopScript } from '@nlpjs-neo/language-min';
 import { similarity } from '@nlpjs-neo/similarity';
 import reduceEdges from './reduce-edges.js';
+import type {
+  Edge,
+  EnumRuleOption,
+  Extractor,
+  NerInput,
+  Rule,
+  SubstringMatch,
+  WordPosition,
+} from './types.js';
 
-class ExtractorEnum {
-  declare container: any;
-  declare name: any;
+/** The tokenizing stage, when one is registered in the container. */
+interface TokenizeStage {
+  run(input: PipelineInput): Promise<PipelineInput>;
+}
 
-  constructor(container = defaultContainer) {
-    this.container = container.container || container;
+class ExtractorEnum implements Extractor {
+  declare container: Container;
+  declare name: string;
+
+  constructor(container: ContainerHolder = defaultContainer) {
+    this.container =
+      (container as { container?: Container }).container ||
+      (container as Container);
     this.name = 'extract-enum';
   }
 
-  getScripts(str) {
-    const result: any[] = [];
+  /** Script of every character of a text, in order. */
+  getScripts(str: string): TopScript[] {
+    const result: TopScript[] = [];
     const chars = str.split('');
     for (let i = 0; i < chars.length; i += 1) {
       result.push(Language.getTopScript(chars[i]));
@@ -21,17 +44,21 @@ class ExtractorEnum {
     return result;
   }
 
-  isAlphanumeric(c) {
+  isAlphanumeric(c: string): boolean {
     return /[\u00C0-\u1FFF\u2C00-\uD7FF\w]/.test(c) && c !== '_';
   }
 
-  getWordPositions(str) {
+  /**
+   * Spans of the words of a text. A Chinese character is a word of its own;
+   * anything else runs until the next non alphanumeric character.
+   */
+  getWordPositions(str: string): WordPosition[] {
     const scripts = this.getScripts(str);
     let atWhiteSpace = true;
     let lastIndex = 0;
     let currentIndex = 0;
     const strlen = str.length;
-    const result: any[] = [];
+    const result: WordPosition[] = [];
     while (currentIndex < strlen) {
       if (this.isAlphanumeric(str.charAt(currentIndex))) {
         if (atWhiteSpace) {
@@ -67,22 +94,28 @@ class ExtractorEnum {
     return result;
   }
 
-  getBestSubstring(str1, str2, words1?) {
+  /** The run of words of `str1` that is closest to `str2`. */
+  getBestSubstring(
+    str1: string,
+    str2: string,
+    words1?: WordPosition[]
+  ): SubstringMatch {
     const str1len = str1.length;
     const str2len = str2.length;
     if (str1len <= str2len) {
-      const result: any = {
+      const result: SubstringMatch = {
         start: 0,
         end: str1len - 1,
         len: str1len,
         levenshtein: similarity(str1, str2, true),
+        accuracy: 0,
       };
       result.accuracy = (str2len - result.levenshtein) / str2len;
       return result;
     }
     const wordPositions = words1 || this.getWordPositions(str1);
     const wordPositionsLen = wordPositions.length;
-    const best = {
+    const best: SubstringMatch = {
       start: 0,
       end: 0,
       len: 0,
@@ -108,10 +141,16 @@ class ExtractorEnum {
     return best;
   }
 
-  getBestSubstringList(str1, str2, words1?, threshold = 1) {
+  /** Every run of words of `str1` that is close enough to `str2`. */
+  getBestSubstringList(
+    str1: string,
+    str2: string,
+    words1?: WordPosition[],
+    threshold = 1
+  ): SubstringMatch[] {
     const str1len = str1.length;
     const str2len = str2.length;
-    const result: any[] = [];
+    const result: SubstringMatch[] = [];
     if (str1len <= str2len) {
       const levenshtein = similarity(str1, str2, true);
       const accuracy = (str2len - levenshtein) / str2len;
@@ -157,7 +196,7 @@ class ExtractorEnum {
     return result;
   }
 
-  getRules(input) {
+  getRules(input: NerInput): Rule[] {
     const allRules = input.nerRules;
     if (!allRules) {
       return [];
@@ -165,18 +204,19 @@ class ExtractorEnum {
     return allRules;
   }
 
-  normalize(str, _input?) {
+  normalize(str: string, _input?: NerInput): string {
     return str
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .toLowerCase();
   }
 
-  buildRuleDict(rule) {
-    const dict: any = {};
-    const inverse: any = {};
+  /** Indexes an enum rule by the normalized form of each of its texts. */
+  buildRuleDict(rule: Rule): void {
+    const dict: Record<string, EnumRuleOption[]> = {};
+    const inverse: Record<string, string> = {};
     for (let i = 0; i < rule.rules.length; i += 1) {
-      const current = rule.rules[i];
+      const current = rule.rules[i] as EnumRuleOption;
       for (let j = 0; j < current.texts.length; j += 1) {
         const source = current.texts[j];
         const key = this.normalize(current.texts[j]);
@@ -191,11 +231,16 @@ class ExtractorEnum {
     rule.inverseDict = inverse;
   }
 
-  getBestExact(srcText, words, rule) {
+  /** Every run of words of a text that one of the rule's texts spells. */
+  getBestExact(
+    srcText: string,
+    words: WordPosition[] | undefined,
+    rule: Rule
+  ): Edge[] {
     const text = this.normalize(srcText);
     const wordPositions = words || this.getWordPositions(text);
     const wordPositionsLen = wordPositions.length;
-    const result: any[] = [];
+    const result: Edge[] = [];
     for (let i = 0; i < wordPositionsLen; i += 1) {
       for (let j = i; j < wordPositionsLen; j += 1) {
         const str = text.substring(
@@ -227,9 +272,14 @@ class ExtractorEnum {
     return result;
   }
 
-  extractFromRule(text, rule, words, threshold) {
+  extractFromRule(
+    text: string,
+    rule: Rule,
+    words: WordPosition[],
+    threshold: number
+  ): Edge[] {
     if (rule.type === 'enum') {
-      const edges: any[] = [];
+      const edges: Edge[] = [];
       if (threshold >= 1) {
         if (!rule.dict) {
           this.buildRuleDict(rule);
@@ -240,7 +290,7 @@ class ExtractorEnum {
         }
       } else {
         for (let i = 0; i < rule.rules.length; i += 1) {
-          const current = rule.rules[i];
+          const current = rule.rules[i] as EnumRuleOption;
           if (current && current.option && Array.isArray(current.texts)) {
             for (let j = 0; j < current.texts.length; j += 1) {
               const newEdges = this.getBestSubstringList(
@@ -254,7 +304,7 @@ class ExtractorEnum {
                   ...newEdges[k],
                   entity: rule.name,
                   type: rule.type,
-                  option: rule.rules[i].option,
+                  option: current.option,
                   sourceText: current.texts[j],
                   utteranceText: text.substring(
                     newEdges[k].start,
@@ -271,38 +321,41 @@ class ExtractorEnum {
     return [];
   }
 
-  async extract(srcInput) {
+  async extract(srcInput: NerInput): Promise<NerInput> {
     const input = srcInput;
     const originalInputText = input.text || input.utterance;
     let tokenizedText = originalInputText;
-    const originalPositionMap: any[] = [];
-    const tokenizer = this.container.get('tokenize');
+    // Position in the original text of every character of the tokenized one,
+    // so the edges can be reported against the text the caller passed in.
+    const originalPositionMap: number[] = [];
+    const tokenizer = this.container.get<TokenizeStage>('tokenize');
     if (tokenizer) {
       const tokenizeResult = await tokenizer.run({
         locale: input.locale,
         text: tokenizedText,
       });
-      tokenizedText = tokenizeResult.tokens.join(' ');
+      const tokens = tokenizeResult.tokens as string[];
+      tokenizedText = tokens.join(' ');
       if (tokenizedText !== originalInputText) {
         let originalTextIndex = 0;
         let tokenizedTextIndex = 0;
-        for (let i = 0; i < tokenizeResult.tokens.length; i += 1) {
+        for (let i = 0; i < tokens.length; i += 1) {
           const originaltextPos = originalInputText.indexOf(
-            tokenizeResult.tokens[i],
+            tokens[i],
             originalTextIndex
           );
-          for (let idx = 0; idx < tokenizeResult.tokens[i].length; idx += 1) {
+          for (let idx = 0; idx < tokens[i].length; idx += 1) {
             originalPositionMap[tokenizedTextIndex + idx] =
               originaltextPos + idx;
           }
-          originalTextIndex += tokenizeResult.tokens[i].length;
-          tokenizedTextIndex += tokenizeResult.tokens[i].length + 1;
+          originalTextIndex += tokens[i].length;
+          tokenizedTextIndex += tokens[i].length + 1;
         }
       }
     }
     const wordPositions = this.getWordPositions(tokenizedText);
     const rules = this.getRules(input);
-    const edges = input.edges || [];
+    const edges: Edge[] = input.edges || [];
     for (let i = 0; i < rules.length; i += 1) {
       const newEdges = this.extractFromRule(
         tokenizedText,
@@ -326,10 +379,11 @@ class ExtractorEnum {
     return input;
   }
 
-  run(srcInput) {
+  run(srcInput: NerInput): NerInput | Promise<NerInput> {
     const input = srcInput;
     const locale = input.locale || 'en';
-    const extractor = this.container.get(`extract-enum-${locale}`) || this;
+    const extractor =
+      this.container.get<Extractor>(`extract-enum-${locale}`) || this;
     return extractor.extract(input);
   }
 }
