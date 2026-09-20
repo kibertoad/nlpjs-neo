@@ -440,7 +440,7 @@ class Container {
     let currentTitle = '';
     for (let i = 0; i < lines.length; i += 1) {
       const line = lines[i];
-      if (line !== '') {
+      if (line.trim() !== '') {
         if (line.startsWith('# ')) {
           if (currentName) {
             if (

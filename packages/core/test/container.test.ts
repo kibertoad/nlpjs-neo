@@ -301,6 +301,28 @@ describe('Container', () => {
         excludeChars: 'e',
       });
     });
+    test('Pipelines ignore whitespace-only array steps', async () => {
+      const instance = new Container();
+      const pipeline = instance.buildPipeline([
+        'set input.value 1',
+        '   ',
+        'get input.value',
+      ]);
+
+      const actual = await instance.runPipeline(pipeline, {}, new Other());
+
+      expect(actual).toEqual(1);
+    });
+    test('String pipelines ignore whitespace-only lines', async () => {
+      const instance = new Container();
+      instance.loadPipelinesFromString(
+        '## main\\nset input.value 1\\n  \\nget input.value'
+      );
+
+      const actual = await instance.runPipeline('main', {}, new Other());
+
+      expect(actual).toEqual(1);
+    });
     test('Pipelines can have comments', async () => {
       const instance = new Container();
       instance.register('lower', Lower);
