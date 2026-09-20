@@ -183,10 +183,9 @@ describe('XDoc', () => {
 
     /*
      * Pins how a General-format number reaches the tables: as the display text
-     * the spreadsheet library produces, never as a number. SheetJS capped a
-     * General number at 11 characters, `@office-kit/xlsx` keeps 15 significant
-     * digits, so a model with a computed decimal column reads differently
-     * after the migration. Integers and strings are unaffected.
+     * the spreadsheet library produces, never as a number, and at full
+     * precision. SheetJS truncated General to 11 characters and lost the rest
+     * of the value; 15 significant digits is what the cell actually holds.
      */
     test('It should read a number as its display text', async () => {
       const xdoc = new XDoc();

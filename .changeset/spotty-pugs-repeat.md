@@ -22,7 +22,12 @@ Also fixed: `Recognizer.loadExcel` did not await the workbook load, so training 
 start before the model was read. That was latent while the load was synchronous and would
 have become a silent "model comes out empty" bug with this change.
 
-One behaviour difference to know about: for a number in `General` format, SheetJS capped
-the displayed text at 11 characters and `@office-kit/xlsx` keeps 15 significant digits
-(`0.990566038` becomes `0.990566037735849`). Strings and integers are unaffected, so a
-model only sees this in a computed decimal column.
+Improved: a number in `General` format now keeps its precision. SheetJS truncated the
+displayed text to 11 characters, so `0.990566037735849` reached a model as
+`0.990566038` and the rest of the value was simply lost. `@office-kit/xlsx` keeps 15
+significant digits, which is what the cell actually holds.
+
+This is visible to anyone whose workbook has a computed decimal column: those values
+arrive longer and more accurate than before. Strings and integers are unchanged. If you
+were relying on the old truncation as rounding, round explicitly where you consume the
+value.

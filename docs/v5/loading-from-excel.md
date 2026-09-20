@@ -45,6 +45,10 @@ Notes:
   `who is %hero%?`.
 - In `Responses`, `condition` is an optional JavaScript expression over the entities, such as
   `hero === 'spiderman'`, and `url` is optional.
+- Every cell is read as the text the spreadsheet displays, never as a number or a date. A
+  `General`-format number keeps 15 significant digits, so a computed decimal arrives as
+  `0.990566037735849` rather than truncated; round it where you consume it if you want
+  fewer.
 
 ![Tables](../../screenshots/screenshot01.png)
 ![Tables2](../../screenshots/screenshot02.png)
