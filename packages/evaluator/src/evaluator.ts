@@ -1,5 +1,5 @@
-import { generate as unparse } from 'astring';
 import parse from './parse.js';
+import createScopedFunction from './scoped-function.js';
 
 class Evaluator {
   declare context: any;
@@ -238,12 +238,7 @@ class Evaluator {
         return this.failResult;
       }
     }
-    const vals = keys.map((key) => context[key]);
-    // oxlint-disable-next-line
-    return Function(keys.join(', '), 'return ' + unparse(node)).apply(
-      null,
-      vals
-    );
+    return createScopedFunction(node, context);
   }
 
   walkTemplateLiteral(node, context) {
