@@ -1,29 +1,78 @@
 import { Clonable, compareWildcars } from '@nlpjs-neo/core';
+import type {
+  Container,
+  ContainerHolder,
+  Locale,
+  PipelineInput,
+  RegisteredPipeline,
+  Token,
+  TokenMap,
+} from '@nlpjs-neo/core';
 import { SpellCheck } from '@nlpjs-neo/similarity';
+import type {
+  AllowList,
+  Classification,
+  CorpusEntry,
+  ExplanationEntry,
+  Feature,
+  FeatureSet,
+  FeaturesToIntent,
+  Intent,
+  IntentFeatures,
+  IntentSet,
+  NeuralExplanation,
+  NluInput,
+  NluJson,
+  NluResult,
+  NluSettings,
+  PipelineStage,
+  PreparedCorpusEntry,
+  SyncPipelineStage,
+} from './types.js';
+
+/**
+ * Pipeline stages the default prepare path resolves once and keeps, together
+ * with the tokens it has already produced per locale and utterance.
+ */
+interface PrepareCache {
+  created: number;
+  results: Record<Locale, Record<string, TokenMap>>;
+  normalize: SyncPipelineStage;
+  tokenize: PipelineStage;
+  removeStopwords: SyncPipelineStage;
+  stem: PipelineStage;
+  arrToObj: SyncPipelineStage;
+}
 
 class Nlu extends Clonable {
-  declare cache: any;
-  declare features: any;
-  declare featuresToIntent: any;
-  declare intentFeatures: any;
-  declare intents: any;
-  declare intentsArr: any;
-  declare nonefeatureValue: any;
-  declare numFeatures: any;
-  declare numIntents: any;
-  declare pipelinePrepare: any;
-  declare pipelineProcess: any;
-  declare pipelineTrain: any;
-  declare settings: any;
-  declare spellCheck: any;
+  /** Prepare stages and their memoized results; built on first use. */
+  declare cache: PrepareCache | undefined;
+  declare features: FeatureSet;
+  declare featuresToIntent: FeaturesToIntent;
+  declare intentFeatures: IntentFeatures;
+  declare intents: IntentSet;
+  /** Known intents in answer order, `None` last; rebuilt after training. */
+  declare intentsArr: Intent[] | undefined;
+  declare nonefeatureValue: number;
+  declare numFeatures: number;
+  declare numIntents: number;
+  declare pipelinePrepare: RegisteredPipeline | undefined;
+  declare pipelineProcess: RegisteredPipeline | undefined;
+  declare pipelineTrain: RegisteredPipeline | undefined;
+  declare settings: NluSettings;
+  declare spellCheck: SpellCheck;
 
-  constructor(settings: any = {}, container?) {
+  constructor(settings: NluSettings = {}, container?: ContainerHolder) {
     super(
       {
         settings: {},
-        container: settings.container || container,
+        container:
+          settings.container ||
+          (container &&
+            ((container as { container?: Container }).container ||
+              (container as Container))),
       },
-      container
+      container as Container
     );
     this.applySettings(this.settings, settings);
     this.applySettings(this.settings, { locale: 'en' });
@@ -43,7 +92,7 @@ class Nlu extends Clonable {
     this.spellCheck = new SpellCheck(this.settings);
   }
 
-  registerDefault() {
+  registerDefault(): void {
     this.container.registerConfiguration(
       'nlu-??',
       {
@@ -64,8 +113,8 @@ class Nlu extends Clonable {
     );
   }
 
-  async defaultPipelinePrepare(input) {
-    let result;
+  async defaultPipelinePrepare(input: NluInput): Promise<TokenMap> {
+    let result: TokenMap | undefined;
     if (this.cache) {
       const now = new Date();
       const diff = Math.abs(now.getTime() - this.cache.created) / 3600000;
@@ -99,7 +148,7 @@ class Nlu extends Clonable {
     output = this.cache.removeStopwords.run(output);
     output = await this.cache.stem.run(output);
     output = this.cache.arrToObj.run(output);
-    result = output.tokens;
+    result = output.tokens as TokenMap;
     if (!this.cache.results[input.settings.locale]) {
       this.cache.results[input.settings.locale] = {};
     }
@@ -108,8 +157,8 @@ class Nlu extends Clonable {
     return result;
   }
 
-  async defaultPipelineProcess(input) {
-    let output = await this.prepare(input);
+  async defaultPipelineProcess(input: NluInput): Promise<NluInput> {
+    let output = (await this.prepare(input)) as NluInput;
     output = await this.doSpellCheck(output);
     output = await this.textToFeatures(output);
     output = await this.innerProcess(output);
@@ -118,10 +167,17 @@ class Nlu extends Clonable {
     return output;
   }
 
-  async prepare(text, srcSettings?) {
+  /**
+   * Turns a text, a list of them or an object carrying one into the features
+   * a classifier is trained and queried with.
+   */
+  async prepare(
+    text: string | string[] | NluInput,
+    srcSettings?: NluSettings
+  ): Promise<TokenMap | TokenMap[] | NluInput> {
     const settings = srcSettings || this.settings;
     if (typeof text === 'string') {
-      const input = {
+      const input: NluInput = {
         locale: this.settings.locale,
         text,
         settings,
@@ -133,9 +189,9 @@ class Nlu extends Clonable {
     }
     if (typeof text === 'object') {
       if (Array.isArray(text)) {
-        const result: any[] = [];
+        const result: TokenMap[] = [];
         for (let i = 0; i < text.length; i += 1) {
-          result.push(await this.prepare(text[i], settings));
+          result.push((await this.prepare(text[i], settings)) as TokenMap);
         }
         return result;
       }
@@ -150,7 +206,10 @@ class Nlu extends Clonable {
         }
       }
       if (item || typeof item === 'string') {
-        const result = await this.prepare(item, settings);
+        const result = await this.prepare(
+          item as string | string[] | NluInput,
+          settings
+        );
         const targetField = settings.fieldNameTgt || 'tokens';
         return { [targetField]: result, ...text };
       }
@@ -160,7 +219,10 @@ class Nlu extends Clonable {
     );
   }
 
-  async doSpellCheck(input, srcSettings?) {
+  async doSpellCheck(
+    input: NluInput,
+    srcSettings?: NluSettings
+  ): Promise<NluInput> {
     const settings = this.applySettings(srcSettings || {}, this.settings);
     let shouldSpellCheck =
       input.settings.spellCheck === undefined
@@ -181,24 +243,30 @@ class Nlu extends Clonable {
           : settings.spellCheckDistance;
     }
     if (shouldSpellCheck) {
-      const tokens = this.spellCheck.check(input.tokens, spellCheckDistance);
+      const tokens = this.spellCheck.check(
+        input.tokens as TokenMap,
+        spellCheckDistance
+      );
       input.tokens = tokens;
     }
     return input;
   }
 
-  async prepareCorpus(srcInput) {
+  async prepareCorpus(srcInput: NluInput): Promise<NluInput> {
     this.features = {};
     this.intents = {};
     this.intentsArr = undefined;
     this.intentFeatures = {};
     const input = srcInput;
-    const { corpus } = input;
-    const result: any[] = [];
+    const corpus = input.corpus as CorpusEntry[];
+    const result: PreparedCorpusEntry[] = [];
     for (let i = 0; i < corpus.length; i += 1) {
       const { intent } = corpus[i];
-      const item = {
-        input: await this.prepare(corpus[i].utterance, input.settings),
+      const item: PreparedCorpusEntry = {
+        input: (await this.prepare(
+          corpus[i].utterance,
+          input.settings
+        )) as TokenMap,
         output: { [intent]: 1 },
       };
       const keys = Object.keys(item.input);
@@ -234,17 +302,18 @@ class Nlu extends Clonable {
     return input;
   }
 
-  addNoneFeature(input) {
-    const { corpus } = input;
+  addNoneFeature(input: NluInput): NluInput {
+    const corpus = input.corpus as PreparedCorpusEntry[];
     if (input.settings && input.settings.useNoneFeature) {
       corpus.push({ input: { nonefeature: 1 }, output: { None: 1 } });
     }
     return input;
   }
 
-  convertToArray(srcInput) {
+  /** Turns the score per intent a classifier produced into a sorted answer. */
+  convertToArray(srcInput: NluInput): NluInput {
     const input = srcInput;
-    const { classifications } = input;
+    const classifications = input.classifications as Record<Intent, number>;
     if (classifications) {
       if (!this.intentsArr) {
         if (this.intents) {
@@ -257,7 +326,7 @@ class Nlu extends Clonable {
         }
       }
       const keys = this.intentsArr;
-      const result: any[] = [];
+      const result: Classification[] = [];
       for (let i = 0; i < keys.length; i += 1) {
         const intent = keys[i];
         const score = classifications[intent];
@@ -273,7 +342,7 @@ class Nlu extends Clonable {
     return input;
   }
 
-  someSimilar(tokensA, tokensB) {
+  someSimilar(tokensA: TokenMap, tokensB: Token[]): boolean {
     for (let i = 0; i < tokensB.length; i += 1) {
       if (tokensA[tokensB[i]]) {
         return true;
@@ -282,7 +351,7 @@ class Nlu extends Clonable {
     return false;
   }
 
-  matchAllowList(intent, allowList) {
+  matchAllowList(intent: Intent, allowList: string[]): boolean {
     for (let i = 0; i < allowList.length; i += 1) {
       if (compareWildcars(intent, allowList[i])) {
         return true;
@@ -291,7 +360,11 @@ class Nlu extends Clonable {
     return false;
   }
 
-  intentIsActivated(intent, tokens, allowList) {
+  intentIsActivated(
+    intent: Intent,
+    tokens: TokenMap,
+    allowList?: AllowList
+  ): boolean {
     if (allowList) {
       if (Array.isArray(allowList)) {
         return this.matchAllowList(intent, allowList);
@@ -313,9 +386,11 @@ class Nlu extends Clonable {
     return false;
   }
 
-  filterNonActivated(srcInput) {
-    if (this.intentFeatures && srcInput.classifications) {
-      const intents = srcInput.classifications.map((x) => x.intent);
+  /** Zeroes the score of any intent none of the utterance's stems trained. */
+  filterNonActivated(srcInput: NluInput): NluInput {
+    const classifications = srcInput.classifications as Classification[];
+    if (this.intentFeatures && classifications) {
+      const intents = classifications.map((x) => x.intent);
       let someModified = false;
       for (let i = 0; i < intents.length; i += 1) {
         const intent = intents[i];
@@ -323,25 +398,26 @@ class Nlu extends Clonable {
           if (
             !this.intentIsActivated(
               intent,
-              srcInput.tokens,
+              srcInput.tokens as TokenMap,
               srcInput.settings.allowList
             )
           ) {
-            srcInput.classifications[i].score = 0;
+            classifications[i].score = 0;
             someModified = true;
           }
         }
       }
       if (someModified) {
-        srcInput.classifications.sort((a, b) => b.score - a.score);
+        classifications.sort((a, b) => b.score - a.score);
       }
     }
     return srcInput;
   }
 
-  normalizeClassifications(srcInput) {
+  /** Squares the scores and scales them so that they add up to one. */
+  normalizeClassifications(srcInput: NluInput): NluInput {
     const input = srcInput;
-    const { classifications } = input;
+    const classifications = input.classifications as Classification[];
     if (classifications) {
       let total = 0;
       for (let i = 0; i < classifications.length; i += 1) {
@@ -359,12 +435,16 @@ class Nlu extends Clonable {
     return input;
   }
 
-  textToFeatures(srcInput) {
+  /**
+   * Keeps the tokens the classifier was trained on, and turns the rest into
+   * the artificial `nonefeature` whose weight grows with how many there were.
+   */
+  textToFeatures(srcInput: NluInput): NluInput {
     const input = srcInput;
-    const { tokens } = input;
+    const tokens = input.tokens as TokenMap;
     const keys = Object.keys(tokens);
     let unknownTokens = 0;
-    const features: any = {};
+    const features: TokenMap = {};
     for (let i = 0; i < keys.length; i += 1) {
       const token = keys[i];
       if (token === 'nonefeature') {
@@ -391,32 +471,45 @@ class Nlu extends Clonable {
     return input;
   }
 
-  async innerTrain(_srcInput?) {
+  async innerTrain(_srcInput?: NluInput): Promise<NluInput> {
     throw new Error('This method should be implemented by child classes');
   }
 
-  innerProcess(_srcInput?): any {
+  innerProcess(_srcInput?: NluInput): NluInput {
     throw new Error('This method should be implemented by child classes');
   }
 
-  async train(corpus?, settings?) {
-    const input = {
+  async train(
+    corpus?: CorpusEntry[],
+    settings?: NluSettings
+  ): Promise<NluInput> {
+    const input: NluInput = {
       corpus,
       settings: this.applySettings(settings, this.settings),
     };
     return this.runPipeline(input, this.pipelineTrain);
   }
 
-  async getExplanation(input, explanation) {
+  /** Pairs every stem of an utterance with the weight it carried. */
+  async getExplanation(
+    input: NluInput,
+    explanation?: NeuralExplanation
+  ): Promise<ExplanationEntry[] | undefined> {
     if (!explanation) {
       return undefined;
     }
-    const normalized = await this.container.get('normalize').run(input);
-    const tokenized = await this.container.get('tokenize').run(normalized);
-    const { tokens } = tokenized;
-    const stemmed = await this.container.get('stem').run(tokenized);
-    const stems = stemmed.tokens;
-    const result: any[] = [];
+    const normalized = await this.container
+      .get<PipelineStage>('normalize')
+      .run(input);
+    const tokenized = await this.container
+      .get<PipelineStage>('tokenize')
+      .run(normalized);
+    const tokens = tokenized.tokens as Token[];
+    const stemmed = await this.container
+      .get<PipelineStage>('stem')
+      .run(tokenized);
+    const stems = stemmed.tokens as Token[];
+    const result: ExplanationEntry[] = [];
     result.push({
       token: '',
       stem: '##bias',
@@ -433,12 +526,17 @@ class Nlu extends Clonable {
     return result;
   }
 
-  async process(utterance, settings?, _arg2?, _arg3?) {
-    const input = {
+  async process(
+    utterance: string,
+    settings?: NluSettings,
+    _arg2?: unknown,
+    _arg3?: unknown
+  ): Promise<NluResult | NluInput> {
+    const input: NluInput = {
       text: utterance,
       settings: this.applySettings(settings || {}, this.settings),
     };
-    let output;
+    let output: NluInput;
     if (this.pipelineProcess) {
       output = await this.runPipeline(input, this.pipelineProcess);
     } else {
@@ -461,8 +559,8 @@ class Nlu extends Clonable {
     return output;
   }
 
-  toJSON() {
-    const result = {
+  toJSON(): NluJson {
+    const result: NluJson = {
       settings: { ...this.settings },
       features: this.features,
       intents: this.intents,
@@ -473,7 +571,7 @@ class Nlu extends Clonable {
     return result;
   }
 
-  fromJSON(json) {
+  fromJSON(json: NluJson): void {
     this.applySettings(this.settings, json.settings);
     this.features = json.features || {};
     this.intents = json.intents || {};

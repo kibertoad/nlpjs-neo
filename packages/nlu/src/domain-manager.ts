@@ -1,24 +1,66 @@
 import { Clonable, compareWildcars } from '@nlpjs-neo/core';
+import type {
+  Container,
+  ContainerHolder,
+  Logger,
+  RegisteredPipeline,
+  Token,
+  TokenMap,
+} from '@nlpjs-neo/core';
+import type Nlu from './nlu.js';
+import type {
+  AllowList,
+  Classification,
+  CorpusEntry,
+  Domain,
+  DomainClassification,
+  DomainManagerInput,
+  DomainManagerJson,
+  DomainManagerSettings,
+  DomainSentence,
+  Intent,
+  NluResult,
+  NluSettings,
+  StemDictEntry,
+} from './types.js';
 
 const defaultDomainName = 'master_domain';
 
-class DomainManager extends Clonable {
-  declare cache: any;
-  declare domains: any;
-  declare intentDict: any;
-  declare pipelineProcess: any;
-  declare pipelineTrain: any;
-  declare sentences: any;
-  declare settings: any;
-  declare stemDict: any;
+/** The stemmer stage, resolved once and reused while training. */
+interface TrainCache {
+  stem: {
+    addForTraining(input: DomainManagerInput): Promise<unknown>;
+    train(input: DomainManagerInput): Promise<unknown>;
+  };
+}
 
-  constructor(settings: any = {}, container?) {
+class DomainManager extends Clonable {
+  declare cache: TrainCache | undefined;
+  /** One classifier per domain, plus the one that classifies the domains. */
+  declare domains: Record<Domain, Nlu>;
+  /** Domain each known intent belongs to. */
+  declare intentDict: Record<Intent, Domain>;
+  declare pipelineProcess: RegisteredPipeline | undefined;
+  declare pipelineTrain: RegisteredPipeline | undefined;
+  declare sentences: DomainSentence[];
+  declare settings: DomainManagerSettings;
+  /** Sorted stems of a training utterance mapped to what it resolves to. */
+  declare stemDict: Record<string, StemDictEntry>;
+
+  constructor(
+    settings: DomainManagerSettings = {},
+    container?: ContainerHolder
+  ) {
     super(
       {
         settings: {},
-        container: settings.container || container,
+        container:
+          settings.container ||
+          (container &&
+            ((container as { container?: Container }).container ||
+              (container as Container))),
       },
-      container
+      container as Container
     );
     this.applySettings(this.settings, settings);
     this.applySettings(this.settings, { locale: 'en' });
@@ -41,7 +83,7 @@ class DomainManager extends Clonable {
     });
   }
 
-  registerDefault() {
+  registerDefault(): void {
     this.container.registerConfiguration(
       'domain-manager-??',
       {
@@ -69,7 +111,7 @@ class DomainManager extends Clonable {
     );
   }
 
-  getDomainInstance(domainName) {
+  getDomainInstance(domainName: Domain): Nlu {
     if (!this.settings.nluByDomain) {
       this.settings.nluByDomain = {};
     }
@@ -78,7 +120,7 @@ class DomainManager extends Clonable {
         className: 'NeuralNlu',
         settings: {},
       };
-    return this.container.get(
+    return this.container.get<Nlu>(
       domainSettings.className || 'NeuralNlu',
       this.applySettings(
         { locale: this.settings.locale },
@@ -87,32 +129,36 @@ class DomainManager extends Clonable {
     );
   }
 
-  addDomain(name) {
+  addDomain(name: Domain): Nlu {
     if (!this.domains[name]) {
       this.domains[name] = this.getDomainInstance(name);
     }
     return this.domains[name];
   }
 
-  removeDomain(name) {
+  removeDomain(name: Domain): void {
     delete this.domains[name];
   }
 
-  async generateStemKey(srcTokens) {
-    let tokens;
+  /** Key an utterance is remembered under: its stems, sorted and joined. */
+  async generateStemKey(
+    srcTokens: string | TokenMap | Token[]
+  ): Promise<string> {
+    let stems: TokenMap | Token[];
     if (typeof srcTokens !== 'string') {
-      tokens = srcTokens;
+      stems = srcTokens;
     } else {
-      const input = await this.prepare({ utterance: srcTokens });
-      tokens = await input.stems;
+      const input = (await this.prepare({
+        utterance: srcTokens,
+      })) as DomainManagerInput;
+      stems = (await input.stems) as TokenMap;
     }
-    if (!Array.isArray(tokens)) {
-      tokens = Object.keys(tokens);
-    }
+    const tokens: Token[] = Array.isArray(stems) ? stems : Object.keys(stems);
     return tokens.slice().sort().join();
   }
 
-  add(domain, utterance, intent?) {
+  /** Adds an utterance, with the domain defaulted when only two are given. */
+  add(domain: Domain, utterance: string, intent?: Intent): void {
     if (!intent) {
       this.sentences.push({
         domain: defaultDomainName,
@@ -124,11 +170,11 @@ class DomainManager extends Clonable {
     }
   }
 
-  getSentences() {
+  getSentences(): DomainSentence[] {
     return this.sentences;
   }
 
-  remove(srcDomain, srcUtterance, srcIntent?) {
+  remove(srcDomain: string, srcUtterance: string, srcIntent?: Intent): boolean {
     const domain = srcIntent ? srcDomain : defaultDomainName;
     const utterance = srcIntent ? srcUtterance : srcDomain;
     const intent = srcIntent || srcUtterance;
@@ -146,11 +192,13 @@ class DomainManager extends Clonable {
     return false;
   }
 
-  async trainStemmer(srcInput) {
+  async trainStemmer(
+    srcInput: DomainManagerInput
+  ): Promise<DomainManagerInput> {
     const input = srcInput;
     if (!this.cache) {
       this.cache = {
-        stem: this.container.get('stem'),
+        stem: this.container.get<TrainCache['stem']>('stem'),
       };
     }
     for (let i = 0; i < this.sentences.length; i += 1) {
@@ -162,9 +210,14 @@ class DomainManager extends Clonable {
     return input;
   }
 
-  innerGenerateCorpus(domainName) {
+  /**
+   * Groups the utterances by domain. Without a domain name every domain gets
+   * its own corpus and the master domain learns which domain an utterance is
+   * in; with one, every utterance goes into that single corpus.
+   */
+  innerGenerateCorpus(domainName?: Domain): Record<Domain, CorpusEntry[]> {
     this.intentDict = {};
-    const result: any = {};
+    const result: Record<Domain, CorpusEntry[]> = {};
     result[defaultDomainName] = [];
     for (let i = 0; i < this.sentences.length; i += 1) {
       const sentence = this.sentences[i];
@@ -188,7 +241,9 @@ class DomainManager extends Clonable {
     return result;
   }
 
-  async generateCorpus(srcInput) {
+  async generateCorpus(
+    srcInput: DomainManagerInput
+  ): Promise<DomainManagerInput> {
     const input = srcInput;
     input.corpus = this.innerGenerateCorpus(
       this.settings.trainByDomain ? undefined : defaultDomainName
@@ -196,12 +251,14 @@ class DomainManager extends Clonable {
     return input;
   }
 
-  async prepare(srcInput) {
+  async prepare(
+    srcInput: string | DomainManagerInput
+  ): Promise<TokenMap | DomainManagerInput> {
     const input = srcInput;
     const isString = typeof input === 'string';
     const utterance = isString ? input : input.utterance;
     const nlu = this.addDomain(defaultDomainName);
-    const tokens = nlu.prepare(utterance);
+    const tokens = nlu.prepare(utterance) as Promise<TokenMap>;
     if (isString) {
       return tokens;
     }
@@ -209,14 +266,16 @@ class DomainManager extends Clonable {
     return input;
   }
 
-  async fillStemDict(srcInput) {
+  async fillStemDict(
+    srcInput: DomainManagerInput
+  ): Promise<DomainManagerInput> {
     this.stemDict = {};
     for (let i = 0; i < this.sentences.length; i += 1) {
       const { utterance, intent, domain } = this.sentences[i];
       const key = await this.generateStemKey(utterance);
       if (!key || key === '') {
         this.container
-          .get('logger')
+          .get<Logger>('logger')
           .warn(`This utterance: "${utterance}" contains only stop words`);
       }
       this.stemDict[key] = {
@@ -227,14 +286,16 @@ class DomainManager extends Clonable {
     return srcInput;
   }
 
-  async innerTrain(srcInput) {
+  async innerTrain(srcInput: DomainManagerInput): Promise<DomainManagerInput> {
     const input = srcInput;
-    const { corpus } = input;
+    const corpus = input.corpus as Record<Domain, CorpusEntry[]>;
     const keys = Object.keys(corpus);
-    const status: any = {};
+    const status: Record<Domain, unknown> = {};
     for (let i = 0; i < keys.length; i += 1) {
       const nlu = this.addDomain(keys[i]);
-      const options: any = { useNoneFeature: this.settings.useNoneFeature };
+      const options: NluSettings = {
+        useNoneFeature: this.settings.useNoneFeature,
+      };
       if (srcInput.settings && srcInput.settings.log !== undefined) {
         options.log = srcInput.settings.log;
       }
@@ -245,7 +306,7 @@ class DomainManager extends Clonable {
     return input;
   }
 
-  async train(settings?) {
+  async train(settings?: DomainManagerSettings): Promise<DomainManagerInput> {
     const input = {
       domainManager: this,
       settings: settings || this.settings,
@@ -253,7 +314,7 @@ class DomainManager extends Clonable {
     return this.runPipeline(input, this.pipelineTrain);
   }
 
-  matchAllowList(intent, allowList) {
+  matchAllowList(intent: Intent, allowList: string[]): boolean {
     for (let i = 0; i < allowList.length; i += 1) {
       if (compareWildcars(intent, allowList[i])) {
         return true;
@@ -262,14 +323,24 @@ class DomainManager extends Clonable {
     return false;
   }
 
-  async classifyByStemDict(utterance, domainName, allowList) {
+  /** Answers an utterance whose exact stems were seen while training. */
+  async classifyByStemDict(
+    utterance: string,
+    domainName?: Domain,
+    allowList?: AllowList
+  ): Promise<DomainClassification | undefined> {
     const key = await this.generateStemKey(utterance);
     const resolved = this.stemDict[key];
     if (resolved && (!domainName || resolved.domain === domainName)) {
-      if (allowList && !this.matchAllowList(resolved.intent, allowList)) {
+      // Only the pattern list form is honoured here: a lookup set has no
+      // `length`, so no pattern matches and the shortcut is skipped.
+      if (
+        allowList &&
+        !this.matchAllowList(resolved.intent, allowList as string[])
+      ) {
         return undefined;
       }
-      const classifications: any[] = [];
+      const classifications: Classification[] = [];
       classifications.push({
         intent: resolved.intent,
         score: 1,
@@ -285,7 +356,10 @@ class DomainManager extends Clonable {
     return undefined;
   }
 
-  async innerClassify(srcInput, domainName?) {
+  async innerClassify(
+    srcInput: DomainManagerInput,
+    domainName?: Domain
+  ): Promise<DomainManagerInput> {
     const input = srcInput;
     const settings = this.applySettings({ ...input.settings }, this.settings);
     if (settings.useStemDict) {
@@ -319,14 +393,14 @@ class DomainManager extends Clonable {
         input.utterance,
         input.settings || this.settings
       );
-      let classifications;
+      let classifications: Classification[];
       if (Array.isArray(nluAnswer)) {
         classifications = nluAnswer;
       } else {
-        classifications = nluAnswer.classifications;
-        input.nluAnswer = nluAnswer;
+        classifications = (nluAnswer as NluResult).classifications;
+        input.nluAnswer = classifications;
       }
-      let finalDomain;
+      let finalDomain: Domain;
       if (domainName === defaultDomainName) {
         if (classifications && classifications.length) {
           finalDomain = this.intentDict[classifications[0].intent];
@@ -349,10 +423,12 @@ class DomainManager extends Clonable {
       input.settings.trainByDomain
     ) {
       const nlu = this.domains[defaultDomainName];
-      let classifications = await nlu.process(input.utterance);
-      if (classifications.classifications) {
-        classifications = classifications.classifications;
-      }
+      const answer = await nlu.process(input.utterance);
+      const classifications = (
+        (answer as NluResult).classifications
+          ? (answer as NluResult).classifications
+          : answer
+      ) as Classification[];
       if (Object.keys(this.domains).length === 1) {
         input.classification = {
           domain: 'default',
@@ -372,13 +448,20 @@ class DomainManager extends Clonable {
     return this.innerClassify(input, domain);
   }
 
-  async defaultPipelineProcess(input) {
+  async defaultPipelineProcess(
+    input: DomainManagerInput
+  ): Promise<DomainClassification | undefined> {
     const output = await this.innerClassify(input);
     return output.classification;
   }
 
-  async process(utterance, settings?, _arg2?, _arg3?) {
-    const input =
+  async process(
+    utterance: string | DomainManagerInput,
+    settings?: DomainManagerSettings,
+    _arg2?: unknown,
+    _arg3?: unknown
+  ): Promise<DomainClassification | undefined> {
+    const input: DomainManagerInput =
       typeof utterance === 'string'
         ? {
             utterance,
@@ -391,8 +474,8 @@ class DomainManager extends Clonable {
     return this.defaultPipelineProcess(input);
   }
 
-  toJSON() {
-    const result = {
+  toJSON(): DomainManagerJson {
+    const result: DomainManagerJson = {
       settings: this.settings,
       stemDict: this.stemDict,
       intentDict: this.intentDict,
@@ -407,7 +490,7 @@ class DomainManager extends Clonable {
     return result;
   }
 
-  fromJSON(json) {
+  fromJSON(json: DomainManagerJson): void {
     this.applySettings(this.settings, json.settings);
     this.stemDict = json.stemDict;
     this.intentDict = json.intentDict;

@@ -1,24 +1,48 @@
 import { Clonable } from '@nlpjs-neo/core';
+import type {
+  Container,
+  ContainerHolder,
+  Locale,
+  RegisteredPipeline,
+} from '@nlpjs-neo/core';
 import { Language } from '@nlpjs-neo/language-min';
 import DomainManager from './domain-manager.js';
+import type {
+  Classification,
+  Domain,
+  DomainClassification,
+  DomainManagerSettings,
+  Intent,
+  NluManagerInput,
+  NluManagerJson,
+  NluManagerSettings,
+} from './types.js';
 
 class NluManager extends Clonable {
-  declare domainManagers: any;
-  declare guesser: any;
-  declare intentDomains: any;
-  declare languageNames: any;
-  declare locales: any;
-  declare pipelineProcess: any;
-  declare pipelineTrain: any;
-  declare settings: any;
+  /** One domain manager per locale this manager was taught. */
+  declare domainManagers: Record<Locale, DomainManager>;
+  /** Language guesser, used when an utterance arrives without a locale. */
+  declare guesser: Language;
+  /** Domain each intent belongs to, per locale. */
+  declare intentDomains: Record<Locale, Record<Intent, Domain>>;
+  /** Display name of a locale, when one was described. */
+  declare languageNames: Record<Locale, { locale: Locale; name: string }>;
+  declare locales: Locale[];
+  declare pipelineProcess: RegisteredPipeline | undefined;
+  declare pipelineTrain: RegisteredPipeline | undefined;
+  declare settings: NluManagerSettings;
 
-  constructor(settings: any = {}, container?) {
+  constructor(settings: NluManagerSettings = {}, container?: ContainerHolder) {
     super(
       {
         settings: {},
-        container: settings.container || container,
+        container:
+          settings.container ||
+          (container &&
+            ((container as { container?: Container }).container ||
+              (container as Container))),
       },
-      container
+      container as Container
     );
     this.applySettings(this.settings, settings);
     if (!this.settings.tag) {
@@ -32,7 +56,7 @@ class NluManager extends Clonable {
     if (!this.container.get('Language')) {
       this.container.register('Language', Language, false);
     }
-    this.guesser = this.container.get('Language');
+    this.guesser = this.container.get<Language>('Language');
     this.locales = [];
     this.languageNames = {};
     this.domainManagers = {};
@@ -46,7 +70,7 @@ class NluManager extends Clonable {
     });
   }
 
-  registerDefault() {
+  registerDefault(): void {
     this.container.registerConfiguration('nlu-manager', {}, false);
     this.container.registerPipeline(
       'nlu-manager-train',
@@ -55,11 +79,11 @@ class NluManager extends Clonable {
     );
   }
 
-  describeLanguage(locale, name) {
+  describeLanguage(locale: Locale, name: string): void {
     this.languageNames[locale] = { locale, name };
   }
 
-  addLanguage(srcLocales) {
+  addLanguage(srcLocales: Locale | Locale[] | undefined): void {
     if (srcLocales) {
       const locales = Array.isArray(srcLocales) ? srcLocales : [srcLocales];
       for (let i = 0; i < locales.length; i += 1) {
@@ -82,7 +106,7 @@ class NluManager extends Clonable {
     }
   }
 
-  removeLanguage(locales) {
+  removeLanguage(locales: Locale | Locale[]): void {
     if (Array.isArray(locales)) {
       locales.forEach((locale) => this.removeLanguage(locale));
     } else {
@@ -94,7 +118,13 @@ class NluManager extends Clonable {
     }
   }
 
-  guessLanguage(srcInput) {
+  /**
+   * Fills in the locale of an input, or answers the locale of a text. With a
+   * single language taught, that language is the answer.
+   */
+  guessLanguage(
+    srcInput: string | NluManagerInput | undefined
+  ): Locale | NluManagerInput | undefined {
     const input = srcInput;
     const isString = typeof input === 'string';
     if (this.locales.length === 1) {
@@ -126,7 +156,7 @@ class NluManager extends Clonable {
     return input;
   }
 
-  assignDomain(srcLocale, srcIntent, srcDomain?) {
+  assignDomain(srcLocale: string, srcIntent: string, srcDomain?: Domain): void {
     const locale = srcDomain ? srcLocale.substr(0, 2).toLowerCase() : undefined;
     const intent = srcDomain ? srcIntent : srcLocale;
     const domain = srcDomain || srcIntent;
@@ -142,7 +172,7 @@ class NluManager extends Clonable {
     }
   }
 
-  getIntentDomain(srcLocale, intent) {
+  getIntentDomain(srcLocale: Locale, intent: Intent): Domain {
     const locale = srcLocale.substr(0, 2).toLowerCase();
     if (!this.intentDomains[locale]) {
       return 'default';
@@ -150,8 +180,9 @@ class NluManager extends Clonable {
     return this.intentDomains[locale][intent] || 'default';
   }
 
-  getDomains() {
-    const result: any = {};
+  /** Intents grouped by domain, per locale. */
+  getDomains(): Record<Locale, Record<Domain, Intent[]>> {
+    const result: Record<Locale, Record<Domain, Intent[]>> = {};
     const locales = Object.keys(this.intentDomains);
     for (let i = 0; i < locales.length; i += 1) {
       const locale = locales[i];
@@ -169,17 +200,18 @@ class NluManager extends Clonable {
     return result;
   }
 
-  consolidateLocale(srcLocale, utterance) {
+  consolidateLocale(srcLocale: Locale | undefined, utterance: string): Locale {
+    // A text in, so the guess is a locale rather than a filled in input.
     const locale = srcLocale
       ? srcLocale.substr(0, 2).toLowerCase()
-      : this.guessLanguage(utterance);
+      : (this.guessLanguage(utterance) as Locale | undefined);
     if (!locale) {
       throw new Error('Locale must be defined');
     }
     return locale;
   }
 
-  consolidateManager(locale) {
+  consolidateManager(locale: Locale): DomainManager {
     const manager = this.domainManagers[locale];
     if (!manager) {
       throw new Error(`Domain Manager not found for locale ${locale}`);
@@ -187,7 +219,7 @@ class NluManager extends Clonable {
     return manager;
   }
 
-  add(srcLocale, utterance, intent?) {
+  add(srcLocale: Locale, utterance: string, intent?: Intent): void {
     const locale = this.consolidateLocale(srcLocale, utterance);
     const manager = this.consolidateManager(locale);
     const domain = this.getIntentDomain(locale, intent);
@@ -195,25 +227,31 @@ class NluManager extends Clonable {
     manager.add(domain, utterance, intent);
   }
 
-  remove(srcLocale, utterance, intent?) {
+  remove(srcLocale: Locale, utterance: string, intent?: Intent): void {
     const locale = this.consolidateLocale(srcLocale, utterance);
     const manager = this.consolidateManager(locale);
     const domain = this.getIntentDomain(locale, intent);
     manager.remove(domain, utterance, intent);
   }
 
-  async innerTrain(settings) {
-    let locales = settings.locales || this.locales;
+  async innerTrain(settings: NluManagerInput): Promise<unknown[]> {
+    let locales =
+      (settings.settings ? settings.settings.locales : undefined) ||
+      this.locales;
     if (!Array.isArray(locales)) {
       locales = [locales];
     }
     const promises = locales
       .filter((locale) => this.domainManagers[locale])
-      .map((locale) => this.domainManagers[locale].train(settings.settings));
+      .map((locale) =>
+        this.domainManagers[locale].train(
+          settings.settings as DomainManagerSettings
+        )
+      );
     return Promise.all(promises);
   }
 
-  async train(settings?) {
+  async train(settings?: NluManagerSettings): Promise<unknown> {
     const input = {
       nluManager: this,
       settings: this.applySettings(settings, this.settings),
@@ -222,11 +260,12 @@ class NluManager extends Clonable {
     return this.runPipeline(input, this.pipelineTrain);
   }
 
-  fillLanguage(srcInput) {
+  /** Resolves the locale of an input and the display name of its language. */
+  fillLanguage(srcInput: NluManagerInput): NluManagerInput {
     const input = srcInput;
     input.languageGuessed = false;
     if (!input.locale) {
-      input.locale = this.guessLanguage(input.utterance);
+      input.locale = this.guessLanguage(input.utterance) as Locale;
       input.languageGuessed = true;
     }
     if (input.locale) {
@@ -240,7 +279,8 @@ class NluManager extends Clonable {
     return input;
   }
 
-  classificationsIsNone(classifications) {
+  /** `true` when the answer does not single out one intent. */
+  classificationsIsNone(classifications: Classification[]): boolean {
     if (classifications.length === 1) {
       return false;
     }
@@ -250,7 +290,7 @@ class NluManager extends Clonable {
     return classifications[0].score === classifications[1].score;
   }
 
-  checkIfIsNone(srcInput) {
+  checkIfIsNone(srcInput: NluManagerInput): NluManagerInput {
     const input = srcInput;
     if (this.classificationsIsNone(input.classifications)) {
       input.intent = 'None';
@@ -259,7 +299,7 @@ class NluManager extends Clonable {
     return input;
   }
 
-  async innerClassify(srcInput) {
+  async innerClassify(srcInput: NluManagerInput): Promise<NluManagerInput> {
     const input = srcInput;
     const domain = this.domainManagers[input.localeIso2];
     if (!domain) {
@@ -269,7 +309,9 @@ class NluManager extends Clonable {
       input.score = undefined;
       return input;
     }
-    const classifications = await domain.process(srcInput);
+    const classifications = (await domain.process(
+      srcInput
+    )) as DomainClassification;
     input.classifications = classifications.classifications.sort(
       (a, b) => b.score - a.score
     );
@@ -289,7 +331,9 @@ class NluManager extends Clonable {
     return input;
   }
 
-  async defaultPipelineProcess(input) {
+  async defaultPipelineProcess(
+    input: NluManagerInput
+  ): Promise<NluManagerInput> {
     let output = await this.fillLanguage(input);
     output = await this.innerClassify(output);
     output = await this.checkIfIsNone(output);
@@ -298,8 +342,13 @@ class NluManager extends Clonable {
     return output;
   }
 
-  process(locale, utterance?, domain?, settings?) {
-    const input =
+  process(
+    locale: Locale | NluManagerInput,
+    utterance?: string,
+    domain?: Domain,
+    settings?: NluManagerSettings
+  ): Promise<NluManagerInput> {
+    const input: NluManagerInput =
       typeof locale === 'object'
         ? locale
         : {
@@ -314,8 +363,8 @@ class NluManager extends Clonable {
     return this.defaultPipelineProcess(input);
   }
 
-  toJSON() {
-    const result = {
+  toJSON(): NluManagerJson {
+    const result: NluManagerJson = {
       settings: this.settings,
       locales: this.locales,
       languageNames: this.languageNames,
@@ -332,7 +381,7 @@ class NluManager extends Clonable {
     return result;
   }
 
-  fromJSON(json) {
+  fromJSON(json: NluManagerJson): void {
     this.applySettings(this.settings, json.settings);
     for (let i = 0; i < json.locales.length; i += 1) {
       this.addLanguage(json.locales[i]);
