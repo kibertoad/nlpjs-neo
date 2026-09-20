@@ -604,7 +604,10 @@ still declared, and it is what turned up most of what follows.
   `utterance`, the `catch` path, and `run`, which had no test at all.
 - `mongodb-adapter`: replaced the hand-written callback mocks with a real `mongod` from
   `mongodb-memory-server`, driving the adapter's public API against it. CI caches the
-  downloaded binary.
+  downloaded binary, with `MONGOMS_DOWNLOAD_DIR` pinning where it lands: left to itself
+  `mongodb-memory-server` picks `node_modules/.cache` or the home cache depending on how it
+  was installed, and the first version of the cache step guessed the wrong one and silently
+  cached nothing.
 
 ### 2026-09-20 — step 4, the four contained upgrades
 
