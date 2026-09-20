@@ -52,9 +52,9 @@
   "gitHead": "cc4249fa994c58d220e6f10a6c94fdad05df32fd",
   "dependencies": {
     "@nlpjs-neo/core": "workspace:^",
-    "bcryptjs": "^2.4.3",
+    "bcryptjs": "^3.0.3",
     "jsonwebtoken": "^9.0.0",
-    "passport": "^0.6.0",
+    "passport": "^0.7.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0"
   },

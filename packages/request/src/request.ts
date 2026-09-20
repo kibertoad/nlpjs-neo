@@ -23,8 +23,8 @@
 
 import http from 'http';
 import https from 'https';
-import HttpsProxyAgent from 'https-proxy-agent';
-import HttpProxyAgent from 'http-proxy-agent';
+import { HttpsProxyAgent } from 'https-proxy-agent';
+import { HttpProxyAgent } from 'http-proxy-agent';
 import querystring from 'querystring';
 import url from 'url';
 
@@ -77,9 +77,9 @@ function request(options) {
   if (proxyServer) {
     delete options.proxy;
     if (client === https) {
-      options.agent = HttpsProxyAgent(proxyServer);
+      options.agent = new HttpsProxyAgent(proxyServer);
     } else {
-      options.agent = HttpProxyAgent(proxyServer);
+      options.agent = new HttpProxyAgent(proxyServer);
     }
     if (!options.headers) {
       options.headers = {};

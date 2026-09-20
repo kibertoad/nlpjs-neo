@@ -48,7 +48,7 @@
   },
   "gitHead": "cc4249fa994c58d220e6f10a6c94fdad05df32fd",
   "dependencies": {
-    "http-proxy-agent": "^5.0.0",
-    "https-proxy-agent": "^5.0.0"
+    "http-proxy-agent": "^9.1.0",
+    "https-proxy-agent": "^9.1.0"
   }
 }

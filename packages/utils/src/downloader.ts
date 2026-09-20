@@ -24,9 +24,9 @@
 import fs from 'fs';
 import http from 'http';
 import https from 'https';
-import HttpsProxyAgent from 'https-proxy-agent';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import path from 'path';
-import tar from 'tar';
+import { extract } from 'tar';
 import url from 'url';
 import ProgressBar from './progress-bar.js';
 import { getAbsolutePath } from './fs-extra.js';
@@ -61,7 +61,7 @@ class Downloader {
         process.env.HTTPS_PROXY;
     }
     if (this.proxy) {
-      this.agent = HttpsProxyAgent(this.proxy);
+      this.agent = new HttpsProxyAgent(this.proxy);
     }
   }
 
@@ -124,9 +124,9 @@ class Downloader {
       });
       file.on('finish', () => {
         if (isTar) {
-          tar
-            .x({ file: absolutePath, strip: 1, C: downloadDir })
-            .then(() => resolve(fileInfo));
+          extract({ file: absolutePath, strip: 1, cwd: downloadDir }).then(() =>
+            resolve(fileInfo)
+          );
         } else {
           resolve(fileInfo);
         }

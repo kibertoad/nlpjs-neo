@@ -48,7 +48,7 @@
   },
   "gitHead": "cc4249fa994c58d220e6f10a6c94fdad05df32fd",
   "dependencies": {
-    "@microsoft/recognizers-text-suite": "1.3.0",
+    "@microsoft/recognizers-text-suite": "^1.3.1",
     "@nlpjs-neo/core": "workspace:^"
   }
 }

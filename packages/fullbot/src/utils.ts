@@ -22,7 +22,7 @@
  */
 
 import fs from 'fs';
-import archiver from 'archiver';
+import { ZipArchive } from 'archiver';
 import rimraf from 'rimraf';
 import path from 'path';
 import decompress from 'decompress';
@@ -53,7 +53,7 @@ const removeDir = (dirPath) => rimraf.sync(dirPath);
 function compressFolder(folder, fileName) {
   return new Promise<void>((resolve, reject) => {
     const output = fs.createWriteStream(fileName);
-    const archive = archiver('zip');
+    const archive = new ZipArchive();
     output.on('close', () => resolve());
     archive.on('error', reject);
     archive.pipe(output);

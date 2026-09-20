@@ -64,8 +64,11 @@
     "@nlpjs-neo/express-api-server": "workspace:^",
     "@nlpjs-neo/mongodb-adapter": "workspace:^",
     "@nlpjs-neo/utils": "workspace:^",
-    "archiver": "^5.2.0",
+    "archiver": "^8.0.0",
     "decompress": "^4.2.1",
     "rimraf": "^3.0.2"
+  },
+  "devDependencies": {
+    "@types/archiver": "^8.0.0"
   }
 }
