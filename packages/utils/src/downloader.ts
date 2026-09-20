@@ -71,7 +71,7 @@ class Downloader {
     }
   }
 
-  download(urlPath, filePath) {
+  download(urlPath, filePath?) {
     return new Promise((resolve, reject) => {
       const parsed = url.parse(urlPath);
       let relativePath = filePath;
