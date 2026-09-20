@@ -1,9 +1,25 @@
 import { Clonable, defaultContainer } from '@nlpjs-neo/core';
+import type { Container, Locale } from '@nlpjs-neo/core';
 import Recognizers, {
   recognizeNumber,
 } from '@microsoft/recognizers-text-suite';
 import BuiltinDictionary from './builtin-dictionary.json' with { type: 'json' };
 import BuiltinInverse from './builtin-inverse.json' with { type: 'json' };
+import type {
+  BuiltinEdge,
+  BuiltinInput,
+  BuiltinMicrosoftSettings,
+  BuiltinResolution,
+  RecognizerEntity,
+} from './types.js';
+
+/** An extractor registered for a locale, which this one defers to. */
+interface LocaleExtractor {
+  extract(input: BuiltinInput): BuiltinInput | Promise<BuiltinInput>;
+}
+
+/** Recognizes one kind of entity in a text, given a culture. */
+type Recognizer = (text: string, culture: string) => RecognizerEntity[];
 
 const cultures = {
   bn: 'bn-bd',
@@ -28,8 +44,9 @@ const cultures = {
   zh: 'zh-cn',
 };
 
-function getCulture(locale?) {
-  const result: any = cultures[locale];
+/** Locale in the form the recognizers expect, such as `en-us`. */
+function getCulture(locale?: Locale): string {
+  const result = cultures[locale as keyof typeof cultures];
   if (result) {
     return result;
   }
@@ -37,9 +54,12 @@ function getCulture(locale?) {
 }
 
 class BuiltinMicrosoft extends Clonable {
-  declare settings: any;
+  declare settings: BuiltinMicrosoftSettings;
 
-  constructor(settings: any = {}, container = defaultContainer) {
+  constructor(
+    settings: BuiltinMicrosoftSettings = {},
+    container: Container = defaultContainer
+  ) {
     super(
       {
         settings: {},
@@ -62,7 +82,7 @@ class BuiltinMicrosoft extends Clonable {
     }
   }
 
-  registerDefault() {
+  registerDefault(): void {
     this.container.registerConfiguration(
       'builtin-microsoft',
       {
@@ -114,17 +134,24 @@ class BuiltinMicrosoft extends Clonable {
     );
   }
 
-  translate(str, locale) {
-    if (BuiltinDictionary[locale]) {
-      const translation = BuiltinDictionary[locale][str];
+  /** The unit of a locale, in that locale; the unit itself when unknown. */
+  translate(str: string, locale?: Locale): string {
+    const dictionary = BuiltinDictionary as Record<
+      string,
+      Record<string, string>
+    >;
+    if (dictionary[locale]) {
+      const translation = dictionary[locale][str];
       return translation !== '' ? translation : str;
     }
     return str;
   }
 
-  inverseTranslate(str, locale) {
-    if (BuiltinInverse[locale]) {
-      const translation = BuiltinInverse[locale][str];
+  /** The unit a localized one stands for; the unit itself when unknown. */
+  inverseTranslate(str: string, locale?: Locale): string {
+    const inverse = BuiltinInverse as Record<string, Record<string, string[]>>;
+    if (inverse[locale]) {
+      const translation = inverse[locale][str];
       if (translation && translation.length > 0) {
         return translation[0];
       }
@@ -132,7 +159,10 @@ class BuiltinMicrosoft extends Clonable {
     return str;
   }
 
-  calculateResolution(entity, locale) {
+  calculateResolution(
+    entity: RecognizerEntity,
+    locale?: Locale
+  ): BuiltinResolution | undefined {
     const { resolution } = entity;
     if (['number', 'ordinal', 'percentage'].includes(entity.typeName)) {
       let resValue = resolution.value;
@@ -157,7 +187,7 @@ class BuiltinMicrosoft extends Clonable {
       if (resolution.values) {
         if (resolution.values.length === 1) {
           const resValue = resolution.values[0];
-          const result: any = {
+          const result: BuiltinResolution = {
             type: resValue.type,
             timex: resValue.timex,
           };
@@ -172,7 +202,7 @@ class BuiltinMicrosoft extends Clonable {
           return result;
         }
         if (resolution.values.length === 2) {
-          const result: any = {
+          const result: BuiltinResolution = {
             type: 'interval',
             timex: resolution.values[0].timex,
           };
@@ -205,7 +235,7 @@ class BuiltinMicrosoft extends Clonable {
       }
     }
     if (resolution.unit) {
-      const srcUnit = resolution.unit;
+      const srcUnit = resolution.unit as string;
       resolution.srcUnit = srcUnit;
       resolution.unit = this.translate(srcUnit, locale);
       if (resolution.srcUnit === resolution.unit) {
@@ -223,7 +253,8 @@ class BuiltinMicrosoft extends Clonable {
     return resolution;
   }
 
-  prereduceEdges(edges) {
+  /** Drops an edge another one of the same span already accounts for. */
+  prereduceEdges(edges: BuiltinEdge[]): BuiltinEdge[] {
     for (let i = 0, l = edges.length; i < l; i += 1) {
       const edge = edges[i];
       if (!edge.discarded) {
@@ -273,7 +304,7 @@ class BuiltinMicrosoft extends Clonable {
         }
       }
     }
-    const result: any[] = [];
+    const result: BuiltinEdge[] = [];
     for (let i = 0, l = edges.length; i < l; i += 1) {
       if (!edges[i].discarded) {
         result.push(edges[i]);
@@ -282,17 +313,25 @@ class BuiltinMicrosoft extends Clonable {
     return result;
   }
 
-  findBuiltinEntities(utterance, locale, srcBuiltins?) {
-    const result: any[] = [];
-    const source: any[] = [];
+  findBuiltinEntities(
+    utterance: string,
+    locale?: Locale,
+    srcBuiltins?: string[]
+  ): { edges: BuiltinEdge[]; source: RecognizerEntity[] } {
+    const result: BuiltinEdge[] = [];
+    const source: RecognizerEntity[] = [];
     const culture = getCulture(locale);
     const builtins = srcBuiltins || this.settings.builtins;
+    // Recognizers are looked up by the name of the builtin, so the suite is
+    // read as the map of recognizers it is for that purpose.
+    const suite = Recognizers as unknown as Record<string, Recognizer>;
     builtins.forEach((name) => {
       try {
+        const recognize = suite[`recognize${name}`];
         const entities =
           name === 'Currency' && locale === 'pt'
-            ? Recognizers[`recognize${name}`](utterance, getCulture('en'))
-            : Recognizers[`recognize${name}`](utterance, culture);
+            ? recognize(utterance, getCulture('en'))
+            : recognize(utterance, culture);
         if (name === 'Number' && locale !== 'en') {
           entities.push(...recognizeNumber(utterance, getCulture('en')));
         }
@@ -308,7 +347,7 @@ class BuiltinMicrosoft extends Clonable {
           if (this.settings.builtinAllowList[entityName]) {
             const text = utterance.slice(entity.start, entity.end + 1);
             const accuracy = 0.95;
-            const edge: any = {
+            const edge: BuiltinEdge = {
               start: entity.start,
               end: entity.end,
               len: entity.end - entity.start + 1,
@@ -336,7 +375,7 @@ class BuiltinMicrosoft extends Clonable {
     };
   }
 
-  extract(srcInput) {
+  extract(srcInput: BuiltinInput): BuiltinInput {
     const input = srcInput;
     const entities = this.findBuiltinEntities(
       input.text || input.utterance,
@@ -358,10 +397,11 @@ class BuiltinMicrosoft extends Clonable {
     return input;
   }
 
-  run(srcInput) {
+  run(srcInput: BuiltinInput): BuiltinInput | Promise<BuiltinInput> {
     const input = srcInput;
     const locale = input.locale || 'en';
-    const extractor = this.container.get(`extract-builtin-${locale}`) || this;
+    const extractor =
+      this.container.get<LocaleExtractor>(`extract-builtin-${locale}`) || this;
     return extractor.extract(input);
   }
 }

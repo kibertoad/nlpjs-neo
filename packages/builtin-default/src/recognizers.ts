@@ -10,13 +10,20 @@ import {
   regexNumber,
   regexDate,
 } from './common-regex.js';
+import type { BuiltinEdge } from './types.js';
 
-function recognize(text, regex, entityName?, typeName?) {
+/** Every match of one expression, as entities of the given name and kind. */
+function recognize(
+  text: string,
+  regex: RegExp,
+  entityName?: string,
+  typeName?: string
+): BuiltinEdge[] {
   let match = regex.exec(text);
-  const result: any[] = [];
+  const result: BuiltinEdge[] = [];
   while (match !== null) {
     const utteranceText = match[0];
-    const obj = {
+    const obj: BuiltinEdge = {
       start: match.index,
       end: match.index + utteranceText.length - 1,
       len: utteranceText.length,
@@ -24,7 +31,7 @@ function recognize(text, regex, entityName?, typeName?) {
       sourceText: utteranceText,
       utteranceText,
       entity: entityName,
-      resolution: { value: utteranceText } as any,
+      resolution: { value: utteranceText },
     };
     if (typeName) {
       obj.resolution.type = typeName;
@@ -35,27 +42,30 @@ function recognize(text, regex, entityName?, typeName?) {
   return result;
 }
 
-const recognizeEmail = (text) => recognize(text, regexEmail, 'email');
-const recognizeURL = (text) => recognize(text, regexURL, 'url');
-const recognizeIPv4 = (text) => recognize(text, regexIPv4, 'ip', 'ipv4');
-const recognizeIPv6 = (text) => recognize(text, regexIPv6, 'ip', 'ipv6');
-const recognizeHexColor = (text) =>
+const recognizeEmail = (text: string) => recognize(text, regexEmail, 'email');
+const recognizeURL = (text: string) => recognize(text, regexURL, 'url');
+const recognizeIPv4 = (text: string) =>
+  recognize(text, regexIPv4, 'ip', 'ipv4');
+const recognizeIPv6 = (text: string) =>
+  recognize(text, regexIPv6, 'ip', 'ipv6');
+const recognizeHexColor = (text: string) =>
   recognize(text, regexHexColor, 'color', 'hexcolor');
-const recognizeTime = (text) => recognize(text, regexTime);
-const recognizePhoneNumber = (text) =>
+const recognizeTime = (text: string) => recognize(text, regexTime);
+const recognizePhoneNumber = (text: string) =>
   recognize(text, regexPhone, 'phonenumber');
-const recognizeIpAddress = (text) => {
+const recognizeIpAddress = (text: string) => {
   const ipv4 = recognizeIPv4(text);
   const ipv6 = recognizeIPv6(text);
   const result = [...ipv4, ...ipv6];
   return result;
 };
-const recognizeHashtag = (text) => recognize(text, regexHashtag, 'hashtag');
-const recognizeNumber = (text) => {
+const recognizeHashtag = (text: string) =>
+  recognize(text, regexHashtag, 'hashtag');
+const recognizeNumber = (text: string) => {
   const numbers = recognize(text, regexNumber, 'number');
   for (let i = 0; i < numbers.length; i += 1) {
     const number = numbers[i];
-    number.resolution.value = parseFloat(number.resolution.value);
+    number.resolution.value = parseFloat(number.resolution.value as string);
     number.resolution.type = Number.isInteger(number.resolution.value)
       ? 'integer'
       : 'float';
@@ -64,10 +74,10 @@ const recognizeNumber = (text) => {
   return numbers;
 };
 
-function toDate(s) {
-  let day;
-  let month;
-  let year;
+function toDate(s: string): Date | undefined {
+  let day: number;
+  let month: number;
+  let year: number;
   if (s.indexOf('-') === -1) {
     year = parseInt(s.slice(6, 10), 10);
     month = parseInt(s.slice(3, 5), 10) - 1;
@@ -84,9 +94,9 @@ function toDate(s) {
   return undefined;
 }
 
-const recognizeDate = (text) => {
+const recognizeDate = (text: string) => {
   let match = regexDate.exec(text);
-  const result: any[] = [];
+  const result: BuiltinEdge[] = [];
   while (match !== null) {
     const utteranceText = match[0];
     const date = toDate(utteranceText);

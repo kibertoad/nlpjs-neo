@@ -1,6 +1,19 @@
 import { Clonable, defaultContainer } from '@nlpjs-neo/core';
+import type { Container, Locale } from '@nlpjs-neo/core';
 import http from 'http';
 import https from 'https';
+import type {
+  BuiltinDucklingSettings,
+  DucklingEdge,
+  DucklingEntity,
+  DucklingInput,
+  DucklingResolution,
+} from './types.js';
+
+/** An extractor registered for a locale, which this one defers to. */
+interface LocaleExtractor {
+  extract(input: DucklingInput): DucklingInput | Promise<DucklingInput>;
+}
 
 const cultures = {
   bn: 'bn_BD',
@@ -27,12 +40,16 @@ const cultures = {
 };
 
 class BuiltinDuckling extends Clonable {
-  declare client: any;
-  declare port: any;
-  declare settings: any;
-  declare url: any;
+  /** `http` or `https`, chosen from the scheme of the service url. */
+  declare client: typeof http | typeof https;
+  declare port: string | number;
+  declare settings: BuiltinDucklingSettings;
+  declare url: URL;
 
-  constructor(settings: any = {}, container = defaultContainer) {
+  constructor(
+    settings: BuiltinDucklingSettings = {},
+    container: Container = defaultContainer
+  ) {
     super(
       {
         settings: {},
@@ -57,7 +74,7 @@ class BuiltinDuckling extends Clonable {
     }
   }
 
-  registerDefault() {
+  registerDefault(): void {
     this.container.registerConfiguration(
       this.settings.tag,
       {
@@ -68,8 +85,8 @@ class BuiltinDuckling extends Clonable {
   }
 
   // istanbul ignore next
-  request(utterance, language) {
-    return new Promise((resolve, reject) => {
+  request(utterance: string, language?: Locale): Promise<DucklingEntity[]> {
+    return new Promise<DucklingEntity[]>((resolve, reject) => {
       const postData = new URLSearchParams({
         text: utterance,
         locale: BuiltinDuckling.getCulture(language),
@@ -86,13 +103,13 @@ class BuiltinDuckling extends Clonable {
         },
       };
       const req = this.client.request(options, (res) => {
-        let result: any = '';
+        let result = '';
         res.on('data', (chunk) => {
           result += chunk;
         });
         res.on('end', () => {
           try {
-            const obj = JSON.parse(result);
+            const obj = JSON.parse(result) as DucklingEntity[];
             resolve(obj);
           } catch (err) {
             reject(err);
@@ -106,8 +123,9 @@ class BuiltinDuckling extends Clonable {
     });
   }
 
-  transformEntity(entity) {
-    const result: any = {
+  /** Turns one Duckling entity into the edge `ner` reduces. */
+  transformEntity(entity: DucklingEntity): DucklingEdge {
+    const result: DucklingEdge = {
       start: entity.start,
       end: entity.start + entity.body.length - 1,
       len: entity.body.length,
@@ -133,11 +151,13 @@ class BuiltinDuckling extends Clonable {
         domain: entity.value.domain,
       };
     } else if (entity.dim === 'number' || entity.dim === 'ordinal') {
+      // Duckling reports these as numbers, which is what the subtype tests.
+      const numeric = entity.value.value as number;
       result.entity = entity.dim;
       result.resolution = {
-        strValue: entity.value.value.toString(),
-        value: entity.value.value,
-        subtype: entity.value.value % 1 === 0 ? 'integer' : 'float',
+        strValue: numeric.toString(),
+        value: numeric,
+        subtype: numeric % 1 === 0 ? 'integer' : 'float',
       };
     } else if (entity.dim === 'distance') {
       result.entity = 'dimension';
@@ -195,11 +215,14 @@ class BuiltinDuckling extends Clonable {
     return result;
   }
 
-  transform(entities) {
+  transform(entities: DucklingEntity[]): DucklingEdge[] {
     return entities.map((x) => this.transformEntity(x));
   }
 
-  async findBuiltinEntities(utterance, language): Promise<any> {
+  async findBuiltinEntities(
+    utterance: string,
+    language?: Locale
+  ): Promise<{ edges: DucklingEdge[]; source?: DucklingEntity[] }> {
     try {
       const result = await this.request(utterance, language);
       return { edges: this.transform(result), source: result };
@@ -209,7 +232,7 @@ class BuiltinDuckling extends Clonable {
     }
   }
 
-  async extract(srcInput) {
+  async extract(srcInput: DucklingInput): Promise<DucklingInput> {
     const input = srcInput;
     const entities = await this.findBuiltinEntities(
       input.text || input.utterance,
@@ -234,15 +257,17 @@ class BuiltinDuckling extends Clonable {
     return input;
   }
 
-  run(srcInput) {
+  run(srcInput: DucklingInput): DucklingInput | Promise<DucklingInput> {
     const input = srcInput;
     const locale = input.locale || 'en';
-    const extractor = this.container.get(`extract-builtin-${locale}`) || this;
+    const extractor =
+      this.container.get<LocaleExtractor>(`extract-builtin-${locale}`) || this;
     return extractor.extract(input);
   }
 
-  static getCulture(locale?) {
-    const result = cultures[locale];
+  /** Locale in the form Duckling expects, such as `en_US`. */
+  static getCulture(locale?: Locale): string {
+    const result = cultures[locale as keyof typeof cultures];
     if (result) {
       return result;
     }

@@ -1,8 +1,10 @@
 import Evaluator from './evaluator.js';
+import type { EvaluationContext } from './types.js';
 
 const evaluator = new Evaluator();
 
-const dictionary: any = {};
+/** Template expressions of a string, keyed by the string, so it is matched once. */
+const dictionary: Record<string, string[]> = {};
 
 /**
  * Process a string using a dictionary to don't repeat the regex match.
@@ -10,7 +12,7 @@ const dictionary: any = {};
  * @param {object[]} context Context with the variables to be replaced.
  * @returns {string} String processed with context variables replaced.
  */
-function processString(str, context) {
+function processString(str: string, context?: EvaluationContext): string {
   if (dictionary[str] === undefined) {
     dictionary[str] = str.match(/{{\s*([^}]+)\s*}}/g) || [];
   }
@@ -29,26 +31,32 @@ function processString(str, context) {
  * @param {object} context Context variables
  * @returns {object} Object traversed in deep replacing strings.
  */
-function process(obj, context?, _utterance?, _arg3?) {
+function process<T>(
+  obj: T,
+  context?: EvaluationContext,
+  _utterance?: unknown,
+  _arg3?: unknown
+): T {
   if (typeof obj === 'string') {
-    return processString(obj, context);
+    return processString(obj, context) as T;
   }
   if (Array.isArray(obj)) {
-    return obj.map((x) => process(x, context));
+    return obj.map((x) => process(x, context)) as T;
   }
   if (obj !== null && typeof obj === 'object') {
-    const keys = Object.keys(obj);
-    const result: any = {};
+    const source = obj as Record<string, unknown>;
+    const keys = Object.keys(source);
+    const result: Record<string, unknown> = {};
     for (let i = 0; i < keys.length; i += 1) {
-      result[keys[i]] = process(obj[keys[i]], context);
+      result[keys[i]] = process(source[keys[i]], context);
     }
-    return result;
+    return result as T;
   }
   return obj;
 }
 
-function compile(str) {
-  return (context: any = {}) => process(str, context);
+function compile<T>(str: T): (context?: EvaluationContext) => T {
+  return (context: EvaluationContext = {}) => process(str, context);
 }
 
 export default compile;

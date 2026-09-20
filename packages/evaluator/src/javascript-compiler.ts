@@ -1,54 +1,107 @@
+import type {
+  ArrayExpression,
+  AssignmentExpression,
+  BinaryExpression,
+  BlockStatement,
+  CallExpression,
+  ChainExpression,
+  ConditionalExpression,
+  ExpressionStatement,
+  FunctionExpression,
+  Identifier,
+  IfStatement,
+  Literal,
+  LogicalExpression,
+  MemberExpression,
+  ObjectExpression,
+  Pattern,
+  ReturnStatement,
+  TaggedTemplateExpression,
+  TemplateElement,
+  TemplateLiteral,
+  ThisExpression,
+  UnaryExpression,
+  UpdateExpression,
+  VariableDeclaration,
+} from 'acorn';
 import parse from './parse.js';
 import createScopedFunction from './scoped-function.js';
+import type {
+  CompilerContainer,
+  CompilerContainerHolder,
+  CompilerLogger,
+  EvaluatedValue,
+  EvaluationContext,
+  EvaluatorNode,
+  FailResult,
+} from './types.js';
 
+/**
+ * Walks a parsed program and executes it, awaiting every step, so a pipeline
+ * written in JavaScript can call the asynchronous services of a container.
+ *
+ * It mirrors `Evaluator` node for node; what differs is that every walker is
+ * asynchronous, that a bare call is given the pipeline input as its argument,
+ * and that an identifier may resolve to a service of the container.
+ */
 class JavascriptCompiler {
-  declare container: any;
-  declare context: any;
-  declare failResult: any;
-  declare name: any;
+  declare container: CompilerContainer;
+  /** Context the last `evaluate` ran against, when one was not passed in. */
+  declare context: EvaluationContext | undefined;
+  declare failResult: FailResult;
+  declare name: string;
 
-  constructor(container) {
-    this.container = container.container || container;
+  constructor(container: CompilerContainerHolder) {
+    this.container =
+      (container as { container?: CompilerContainer }).container ||
+      (container as CompilerContainer);
     this.name = 'javascript';
     this.failResult = {};
   }
 
-  compile(pipeline) {
+  compile(pipeline: string[]): string {
     const header = '(async () => {\n';
     const footer = '\n})();';
     const code = pipeline.join('\n');
     return header + code + footer;
   }
 
-  log(msg) {
-    const logger = this.container.get('logger') || console;
+  log(msg: unknown): void {
+    const logger: CompilerLogger =
+      this.container.get<CompilerLogger>('logger') || console;
     logger.info(msg);
   }
 
-  walkLiteral(node, _context?) {
+  walkLiteral(node: Literal, _context?: EvaluationContext): EvaluatedValue {
     return node.value;
   }
 
-  async walkUnary(node, context?) {
+  async walkUnary(
+    node: UnaryExpression,
+    context?: EvaluationContext
+  ): Promise<EvaluatedValue> {
     switch (node.operator) {
       case '+':
-        return +(await this.walk(node.argument, context));
+        return +(await this.walk(node.argument as EvaluatorNode, context));
       case '-':
-        return -(await this.walk(node.argument, context));
+        return -(await this.walk(node.argument as EvaluatorNode, context));
       case '~':
         /* oxlint-disable no-bitwise */
-        return ~(await this.walk(node.argument, context));
+        return ~(await this.walk(node.argument as EvaluatorNode, context));
       case '!':
-        return !(await this.walk(node.argument, context));
+        return !(await this.walk(node.argument as EvaluatorNode, context));
       default:
         return this.failResult;
     }
   }
 
-  async walkArray(node, context) {
-    const result: any[] = [];
+  async walkArray(
+    node: ArrayExpression,
+    context: EvaluationContext
+  ): Promise<EvaluatedValue> {
+    const result: EvaluatedValue[] = [];
     for (let i = 0, l = node.elements.length; i < l; i += 1) {
-      const x = await this.walk(node.elements[i], context);
+      const x = await this.walk(node.elements[i] as EvaluatorNode, context);
       if (x === this.failResult) {
         return this.failResult;
       }
@@ -57,10 +110,16 @@ class JavascriptCompiler {
     return result;
   }
 
-  async walkObject(node, context) {
-    const result: any = {};
+  async walkObject(
+    node: ObjectExpression,
+    context: EvaluationContext
+  ): Promise<EvaluatedValue> {
+    const result: Record<string, EvaluatedValue> = {};
     for (let i = 0, l = node.properties.length; i < l; i += 1) {
-      const prop = node.properties[i];
+      const prop = node.properties[i] as {
+        key: { value?: string; name?: string };
+        value: EvaluatorNode;
+      };
       const value = await this.walk(prop.value, context);
       if (value === this.failResult) {
         return this.failResult;
@@ -70,8 +129,11 @@ class JavascriptCompiler {
     return result;
   }
 
-  async walkBinary(node, context) {
-    const left = await this.walk(node.left, context);
+  async walkBinary(
+    node: BinaryExpression | LogicalExpression,
+    context: EvaluationContext
+  ): Promise<EvaluatedValue> {
+    const left = await this.walk(node.left as EvaluatorNode, context);
     if (left === this.failResult) {
       return this.failResult;
     }
@@ -84,7 +146,7 @@ class JavascriptCompiler {
     if (node.operator === '??' && left !== null && left !== undefined) {
       return left;
     }
-    const right = await this.walk(node.right, context);
+    const right = await this.walk(node.right as EvaluatorNode, context);
     if (right === this.failResult) {
       return this.failResult;
     }
@@ -137,7 +199,10 @@ class JavascriptCompiler {
     }
   }
 
-  async walkIdentifier(node, context) {
+  async walkIdentifier(
+    node: Identifier,
+    context: EvaluationContext
+  ): Promise<EvaluatedValue> {
     if ({}.hasOwnProperty.call(context, node.name)) {
       return context[node.name];
     }
@@ -158,7 +223,10 @@ class JavascriptCompiler {
     return undefined;
   }
 
-  async walkThis(node, context) {
+  async walkThis(
+    node: ThisExpression,
+    context: EvaluationContext
+  ): Promise<EvaluatedValue> {
     if ({}.hasOwnProperty.call(context, 'this')) {
       // oxlint-disable-next-line
       return context['this'];
@@ -166,7 +234,10 @@ class JavascriptCompiler {
     return undefined;
   }
 
-  async walkCall(node, context) {
+  async walkCall(
+    node: CallExpression,
+    context: EvaluationContext
+  ): Promise<EvaluatedValue> {
     let callee;
     if (
       node.callee &&
@@ -189,15 +260,17 @@ class JavascriptCompiler {
         return this.failResult;
       }
     }
-    let ctx = node.callee.object
-      ? await this.walk(node.callee.object, context)
+    // A method call is invoked on the object it was read from.
+    const member = node.callee as Partial<MemberExpression>;
+    let ctx = member.object
+      ? await this.walk(member.object as EvaluatorNode, context)
       : {};
     if (ctx === this.failResult) {
       ctx = null;
     }
-    const args: any[] = [];
+    const args: EvaluatedValue[] = [];
     for (let i = 0, l = node.arguments.length; i < l; i += 1) {
-      const x = await this.walk(node.arguments[i], context);
+      const x = await this.walk(node.arguments[i] as EvaluatorNode, context);
       if (x === this.failResult) {
         return this.failResult;
       }
@@ -221,8 +294,11 @@ class JavascriptCompiler {
     return callee.apply(ctx, args);
   }
 
-  async walkMember(node, context) {
-    const obj = await this.walk(node.object, context);
+  async walkMember(
+    node: MemberExpression,
+    context: EvaluationContext
+  ): Promise<EvaluatedValue> {
+    const obj = await this.walk(node.object as EvaluatorNode, context);
     if (obj === this.failResult || typeof obj === 'function') {
       return this.failResult;
     }
@@ -233,9 +309,9 @@ class JavascriptCompiler {
       node.property.type === 'Identifier' &&
       node.object.type !== 'ObjectExpression'
     ) {
-      return obj[node.property.name];
+      return obj[(node.property as Identifier).name];
     }
-    const prop = await this.walk(node.property, context);
+    const prop = await this.walk(node.property as EvaluatorNode, context);
     if (prop === this.failResult) {
       return this.failResult;
     }
@@ -249,79 +325,106 @@ class JavascriptCompiler {
    * of `a?.b.c`, still reads a member of `undefined` and throws, which is what
    * the walker does for any other member of a missing object.
    */
-  async walkChain(node, context) {
-    return this.walk(node.expression, context);
+  async walkChain(
+    node: ChainExpression,
+    context: EvaluationContext
+  ): Promise<EvaluatedValue> {
+    return this.walk(node.expression as EvaluatorNode, context);
   }
 
-  async walkConditional(node, context) {
-    const value = await this.walk(node.test, context);
+  async walkConditional(
+    node: ConditionalExpression | IfStatement,
+    context: EvaluationContext
+  ): Promise<EvaluatedValue> {
+    const value = await this.walk(node.test as EvaluatorNode, context);
     if (value === this.failResult) {
       return this.failResult;
     }
     if (value) {
-      return this.walk(node.consequent, context);
+      return this.walk(node.consequent as EvaluatorNode, context);
     }
     if (!node.alternate) {
       return undefined;
     }
-    return this.walk(node.alternate, context);
+    return this.walk(node.alternate as EvaluatorNode, context);
   }
 
-  async walkExpression(node, context) {
-    const value = await this.walk(node.expression, context);
+  async walkExpression(
+    node: ExpressionStatement,
+    context: EvaluationContext
+  ): Promise<EvaluatedValue> {
+    const value = await this.walk(node.expression as EvaluatorNode, context);
     if (value === this.failResult) {
       return this.failResult;
     }
     return value;
   }
 
-  async walkReturn(node, context) {
+  async walkReturn(
+    node: ReturnStatement,
+    context: EvaluationContext
+  ): Promise<EvaluatedValue> {
     return this.walk(node.argument, context);
   }
 
-  async walkFunction(node, context) {
-    const newContext: any = {};
+  async walkFunction(
+    node: FunctionExpression,
+    context: EvaluationContext
+  ): Promise<EvaluatedValue> {
+    const newContext: EvaluationContext = {};
     const keys = Object.keys(context).filter((x) => x !== 'this');
     keys.forEach((element) => {
       newContext[element] = context[element];
     });
-    node.params.forEach((key) => {
+    node.params.forEach((key: Pattern) => {
       if (key.type === 'Identifier') {
         newContext[key.name] = null;
       }
     });
     const bodies = node.body.body;
     for (let i = 0, l = bodies.length; i < l; i += 1) {
-      if ((await this.walk(bodies[i], newContext)) === this.failResult) {
+      if (
+        (await this.walk(bodies[i] as EvaluatorNode, newContext)) ===
+        this.failResult
+      ) {
         return this.failResult;
       }
     }
     return createScopedFunction(node, context, ['this']);
   }
 
-  async walkTemplateLiteral(node, context) {
+  async walkTemplateLiteral(
+    node: TemplateLiteral,
+    context: EvaluationContext
+  ): Promise<EvaluatedValue> {
     let str = '';
     for (let i = 0; i < node.expressions.length; i += 1) {
-      str += await this.walk(node.quasis[i], context);
-      str += await this.walk(node.expressions[i], context);
+      str += await this.walk(node.quasis[i] as EvaluatorNode, context);
+      str += await this.walk(node.expressions[i] as EvaluatorNode, context);
     }
     return str;
   }
 
-  walkTemplateElement(node, _context?) {
+  walkTemplateElement(
+    node: TemplateElement,
+    _context?: EvaluationContext
+  ): EvaluatedValue {
     return node.value.cooked;
   }
 
-  async walkTaggedTemplate(node, context) {
-    const tag = await this.walk(node.tag, context);
+  async walkTaggedTemplate(
+    node: TaggedTemplateExpression,
+    context: EvaluationContext
+  ): Promise<EvaluatedValue> {
+    const tag = await this.walk(node.tag as EvaluatorNode, context);
     const { quasi } = node;
-    const strings: any[] = [];
+    const strings: EvaluatedValue[] = [];
     for (let i = 0; i < quasi.quasis.length; i += 1) {
       const q = quasi.quasis[i];
       const value = await this.walk(q, context);
       strings.push(value);
     }
-    const values: any[] = [];
+    const values: EvaluatedValue[] = [];
     for (let i = 0; i < quasi.expressions.length; i += 1) {
       const q = quasi.expressions[i];
       const value = await this.walk(q, context);
@@ -331,103 +434,118 @@ class JavascriptCompiler {
     return tag.apply(null, [strings].concat(values));
   }
 
-  async walkUpdateExpression(node, context) {
-    let value = await this.walk(node.argument, context);
+  async walkUpdateExpression(
+    node: UpdateExpression,
+    context: EvaluationContext
+  ): Promise<EvaluatedValue> {
+    let value = await this.walk(node.argument as EvaluatorNode, context);
     if (value === this.failResult) {
       return this.failResult;
     }
     switch (node.operator) {
       case '++':
         value += 1;
-        return this.walkSet(node.argument, context, value);
+        return this.walkSet(node.argument as EvaluatorNode, context, value);
       case '--':
         value -= 1;
-        return this.walkSet(node.argument, context, value);
+        return this.walkSet(node.argument as EvaluatorNode, context, value);
       default:
         return this.failResult;
     }
   }
 
-  async walkVariableDeclaration(node, context) {
+  async walkVariableDeclaration(
+    node: VariableDeclaration,
+    context: EvaluationContext
+  ): Promise<EvaluatedValue> {
     let value;
     for (let i = 0; i < node.declarations.length; i += 1) {
       const declaration = node.declarations[i];
       value = declaration.init
-        ? await this.walk(declaration.init, context)
+        ? await this.walk(declaration.init as EvaluatorNode, context)
         : undefined;
       if (value === this.failResult) {
         return this.failResult;
       }
-      await this.walkSet(declaration.id, context, value);
+      await this.walkSet(declaration.id as EvaluatorNode, context, value);
     }
     return value;
   }
 
-  async walkAssignmentExpression(node, context) {
-    const value = await this.walk(node.right, context);
+  async walkAssignmentExpression(
+    node: AssignmentExpression,
+    context: EvaluationContext
+  ): Promise<EvaluatedValue> {
+    const value = await this.walk(node.right as EvaluatorNode, context);
     if (value === this.failResult) {
       return this.failResult;
     }
-    let leftValue = await this.walk(node.left, context);
+    let leftValue = await this.walk(node.left as EvaluatorNode, context);
     if (leftValue === this.failResult) {
       leftValue = 0;
     }
     switch (node.operator) {
       case '=':
-        await this.walkSet(node.left, context, value);
+        await this.walkSet(node.left as EvaluatorNode, context, value);
         return value;
       case '+=':
         leftValue += value;
-        await this.walkSet(node.left, context, leftValue);
+        await this.walkSet(node.left as EvaluatorNode, context, leftValue);
         return leftValue;
       case '-=':
         leftValue -= value;
-        await this.walkSet(node.left, context, leftValue);
+        await this.walkSet(node.left as EvaluatorNode, context, leftValue);
         return leftValue;
       case '*=':
         leftValue *= value;
-        await this.walkSet(node.left, context, leftValue);
+        await this.walkSet(node.left as EvaluatorNode, context, leftValue);
         return leftValue;
       case '/=':
         leftValue /= value;
-        await this.walkSet(node.left, context, leftValue);
+        await this.walkSet(node.left as EvaluatorNode, context, leftValue);
         return leftValue;
       case '%=':
         leftValue %= value;
-        await this.walkSet(node.left, context, leftValue);
+        await this.walkSet(node.left as EvaluatorNode, context, leftValue);
         return leftValue;
       case '|=':
         // oxlint-disable-next-line
         leftValue |= value;
-        await this.walkSet(node.left, context, leftValue);
+        await this.walkSet(node.left as EvaluatorNode, context, leftValue);
         return leftValue;
       case '&=':
         // oxlint-disable-next-line
         leftValue &= value;
-        await this.walkSet(node.left, context, leftValue);
+        await this.walkSet(node.left as EvaluatorNode, context, leftValue);
         return leftValue;
       case '^=':
         // oxlint-disable-next-line
         leftValue ^= value;
-        await this.walkSet(node.left, context, leftValue);
+        await this.walkSet(node.left as EvaluatorNode, context, leftValue);
         return leftValue;
       default:
         return this.failResult;
     }
   }
 
-  async walkBlock(node, context) {
+  async walkBlock(
+    node: BlockStatement,
+    context: EvaluationContext
+  ): Promise<EvaluatedValue> {
     if (Array.isArray(node.body)) {
       let result;
       for (let i = 0; i < node.body.length; i += 1) {
-        result = await this.walk(node.body[i], context);
+        result = await this.walk(node.body[i] as EvaluatorNode, context);
       }
       return result;
     }
-    return this.walk(node.body, context);
+    return this.walk(node.body as EvaluatorNode, context);
   }
 
-  async walk(node, context) {
+  async walk(
+    node: EvaluatorNode,
+    context: EvaluationContext
+  ): Promise<EvaluatedValue> {
     switch (node.type) {
       case 'Literal':
         return this.walkLiteral(node, context);
@@ -479,7 +597,11 @@ class JavascriptCompiler {
     }
   }
 
-  walkSetIdentifier(node, context, value) {
+  walkSetIdentifier(
+    node: Identifier,
+    context: EvaluationContext,
+    value: EvaluatedValue
+  ): EvaluatedValue {
     const newContext = context;
     if ({}.hasOwnProperty.call(context, node.name)) {
       context[node.name] = value;
@@ -494,8 +616,12 @@ class JavascriptCompiler {
     return value;
   }
 
-  async walkSetMember(node, context, value) {
-    const obj = await this.walk(node.object, context);
+  async walkSetMember(
+    node: MemberExpression,
+    context: EvaluationContext,
+    value: EvaluatedValue
+  ): Promise<EvaluatedValue> {
+    const obj = await this.walk(node.object as EvaluatorNode, context);
     if (obj === this.failResult || typeof obj === 'function') {
       return this.failResult;
     }
@@ -503,7 +629,7 @@ class JavascriptCompiler {
       obj[node.property.name] = value;
       return value;
     }
-    const prop = await this.walk(node.property, context);
+    const prop = await this.walk(node.property as EvaluatorNode, context);
     if (prop === this.failResult) {
       return this.failResult;
     }
@@ -514,7 +640,11 @@ class JavascriptCompiler {
     return value;
   }
 
-  async walkSet(node, context, value) {
+  async walkSet(
+    node: EvaluatorNode,
+    context: EvaluationContext,
+    value: EvaluatedValue
+  ): Promise<EvaluatedValue> {
     switch (node.type) {
       case 'Identifier':
         return this.walkSetIdentifier(node, context, value);
@@ -525,19 +655,24 @@ class JavascriptCompiler {
     }
   }
 
-  async evaluateAll(str, context) {
-    const result: any[] = [];
+  async evaluateAll(
+    str: string,
+    context?: EvaluationContext
+  ): Promise<EvaluatedValue[]> {
+    const result: EvaluatedValue[] = [];
     const newContext = context || this.context;
     const compiled = parse(str);
     for (let i = 0; i < compiled.body.length; i += 1) {
-      let expression = compiled.body[i].expression
-        ? compiled.body[i].expression
-        : compiled.body[i];
-      if (
-        expression.callee &&
-        expression.callee.type === 'ArrowFunctionExpression'
-      ) {
-        expression = expression.callee.body;
+      const statement = compiled.body[i] as { expression?: EvaluatorNode };
+      let expression = (statement.expression ||
+        compiled.body[i]) as EvaluatorNode;
+      // `compile` wraps a pipeline in an async arrow so that it can await;
+      // the body of that wrapper is what is actually executed.
+      const call = expression as {
+        callee?: { type: string; body: EvaluatorNode };
+      };
+      if (call.callee && call.callee.type === 'ArrowFunctionExpression') {
+        expression = call.callee.body;
       }
       const value = await this.walk(expression, newContext);
       result.push(value === this.failResult ? undefined : value);
@@ -545,7 +680,10 @@ class JavascriptCompiler {
     return result;
   }
 
-  async evaluate(str, context) {
+  async evaluate(
+    str: string,
+    context?: EvaluationContext
+  ): Promise<EvaluatedValue> {
     const result = await this.evaluateAll(str, context);
     if (!result || result.length === 0) {
       return undefined;
@@ -553,8 +691,12 @@ class JavascriptCompiler {
     return result[result.length - 1];
   }
 
-  async execute(compiled, srcInput, srcObject?) {
-    const context = {
+  async execute(
+    compiled: string,
+    srcInput: unknown,
+    srcObject?: unknown
+  ): Promise<void> {
+    const context: EvaluationContext = {
       this: srcObject,
       input: srcInput,
     };

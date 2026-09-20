@@ -1,21 +1,63 @@
+import type {
+  ArrayExpression,
+  AssignmentExpression,
+  BinaryExpression,
+  BlockStatement,
+  CallExpression,
+  ChainExpression,
+  ConditionalExpression,
+  ExpressionStatement,
+  FunctionExpression,
+  Identifier,
+  IfStatement,
+  Literal,
+  LogicalExpression,
+  MemberExpression,
+  ObjectExpression,
+  Pattern,
+  ReturnStatement,
+  TaggedTemplateExpression,
+  TemplateElement,
+  TemplateLiteral,
+  ThisExpression,
+  UnaryExpression,
+  UpdateExpression,
+} from 'acorn';
 import parse from './parse.js';
 import createScopedFunction from './scoped-function.js';
+import type {
+  EvaluatedValue,
+  EvaluationContext,
+  EvaluatorNode,
+  FailResult,
+} from './types.js';
 
+/**
+ * Walks a parsed expression and evaluates it against a context.
+ *
+ * A node the evaluator will not evaluate answers `failResult`, an object
+ * identified by reference, so no value a program produces is mistaken for a
+ * refusal.
+ */
 class Evaluator {
-  declare context: any;
-  declare defaultContext: any;
-  declare failResult: any;
+  /** Context the last `evaluate` ran against, when one was not passed in. */
+  declare context: EvaluationContext | undefined;
+  declare defaultContext: EvaluationContext;
+  declare failResult: FailResult;
 
-  constructor(context?) {
+  constructor(context?: EvaluationContext) {
     this.defaultContext = context || {};
     this.failResult = {};
   }
 
-  walkLiteral(node, _context?) {
+  walkLiteral(node: Literal, _context?: EvaluationContext): EvaluatedValue {
     return node.value;
   }
 
-  walkUnary(node, context?) {
+  walkUnary(
+    node: UnaryExpression,
+    context?: EvaluationContext
+  ): EvaluatedValue {
     switch (node.operator) {
       case '+':
         return +this.walk(node.argument, context);
@@ -31,8 +73,8 @@ class Evaluator {
     }
   }
 
-  walkArray(node, context) {
-    const result: any[] = [];
+  walkArray(node: ArrayExpression, context: EvaluationContext): EvaluatedValue {
+    const result: EvaluatedValue[] = [];
     for (let i = 0, l = node.elements.length; i < l; i += 1) {
       const x = this.walk(node.elements[i], context);
       if (x === this.failResult) {
@@ -43,10 +85,16 @@ class Evaluator {
     return result;
   }
 
-  walkObject(node, context) {
-    const result: any = {};
+  walkObject(
+    node: ObjectExpression,
+    context: EvaluationContext
+  ): EvaluatedValue {
+    const result: Record<string, EvaluatedValue> = {};
     for (let i = 0, l = node.properties.length; i < l; i += 1) {
-      const prop = node.properties[i];
+      const prop = node.properties[i] as {
+        key: { value?: string; name?: string };
+        value: EvaluatorNode;
+      };
       const value = this.walk(prop.value, context);
       if (value === this.failResult) {
         return this.failResult;
@@ -56,7 +104,10 @@ class Evaluator {
     return result;
   }
 
-  walkBinary(node, context) {
+  walkBinary(
+    node: BinaryExpression | LogicalExpression,
+    context: EvaluationContext
+  ): EvaluatedValue {
     const left = this.walk(node.left, context);
     if (left === this.failResult) {
       return this.failResult;
@@ -123,14 +174,14 @@ class Evaluator {
     }
   }
 
-  walkIdentifier(node, context) {
+  walkIdentifier(node: Identifier, context: EvaluationContext): EvaluatedValue {
     if ({}.hasOwnProperty.call(context, node.name)) {
       return context[node.name];
     }
     return undefined;
   }
 
-  walkThis(node, context) {
+  walkThis(node: ThisExpression, context: EvaluationContext): EvaluatedValue {
     if ({}.hasOwnProperty.call(context, 'this')) {
       // oxlint-disable-next-line
       return context['this'];
@@ -138,23 +189,25 @@ class Evaluator {
     return undefined;
   }
 
-  walkCall(node, context) {
-    const callee = this.walk(node.callee, context);
+  walkCall(node: CallExpression, context: EvaluationContext): EvaluatedValue {
+    const callee = this.walk(node.callee as EvaluatorNode, context);
     if (node.optional && (callee === null || callee === undefined)) {
       return undefined;
     }
     if (callee === this.failResult || typeof callee !== 'function') {
       return this.failResult;
     }
-    let ctx = node.callee.object
-      ? this.walk(node.callee.object, context)
+    // A method call is invoked on the object it was read from.
+    const member = node.callee as Partial<MemberExpression>;
+    let ctx = member.object
+      ? this.walk(member.object as EvaluatorNode, context)
       : this.failResult;
     if (ctx === this.failResult) {
       ctx = null;
     }
-    const args: any[] = [];
+    const args: EvaluatedValue[] = [];
     for (let i = 0, l = node.arguments.length; i < l; i += 1) {
-      const x = this.walk(node.arguments[i], context);
+      const x = this.walk(node.arguments[i] as EvaluatorNode, context);
       if (x === this.failResult) {
         return this.failResult;
       }
@@ -163,8 +216,11 @@ class Evaluator {
     return callee.apply(ctx, args);
   }
 
-  walkMember(node, context) {
-    const obj = this.walk(node.object, context);
+  walkMember(
+    node: MemberExpression,
+    context: EvaluationContext
+  ): EvaluatedValue {
+    const obj = this.walk(node.object as EvaluatorNode, context);
     if (obj === this.failResult || typeof obj === 'function') {
       return this.failResult;
     }
@@ -175,9 +231,9 @@ class Evaluator {
       node.property.type === 'Identifier' &&
       node.object.type !== 'ObjectExpression'
     ) {
-      return obj[node.property.name];
+      return obj[(node.property as Identifier).name];
     }
-    const prop = this.walk(node.property, context);
+    const prop = this.walk(node.property as EvaluatorNode, context);
     if (prop === this.failResult) {
       return this.failResult;
     }
@@ -191,43 +247,55 @@ class Evaluator {
    * of `a?.b.c`, still reads a member of `undefined` and throws, which is what
    * the walker does for any other member of a missing object.
    */
-  walkChain(node, context) {
-    return this.walk(node.expression, context);
+  walkChain(node: ChainExpression, context: EvaluationContext): EvaluatedValue {
+    return this.walk(node.expression as EvaluatorNode, context);
   }
 
-  walkConditional(node, context) {
+  walkConditional(
+    node: ConditionalExpression | IfStatement,
+    context: EvaluationContext
+  ): EvaluatedValue {
     const value = this.walk(node.test, context);
     if (value === this.failResult) {
       return this.failResult;
     }
     if (value) {
-      return this.walk(node.consequent, context);
+      return this.walk(node.consequent as EvaluatorNode, context);
     }
     if (!node.alternate) {
       return undefined;
     }
-    return this.walk(node.alternate, context);
+    return this.walk(node.alternate as EvaluatorNode, context);
   }
 
-  walkExpression(node, context) {
-    const value = this.walk(node.expression, context);
+  walkExpression(
+    node: ExpressionStatement,
+    context: EvaluationContext
+  ): EvaluatedValue {
+    const value = this.walk(node.expression as EvaluatorNode, context);
     if (value === this.failResult) {
       return this.failResult;
     }
     return value;
   }
 
-  walkReturn(node, context) {
-    return this.walk(node.argument, context);
+  walkReturn(
+    node: ReturnStatement,
+    context: EvaluationContext
+  ): EvaluatedValue {
+    return this.walk(node.argument as EvaluatorNode, context);
   }
 
-  walkFunction(node, context) {
-    const newContext: any = {};
+  walkFunction(
+    node: FunctionExpression,
+    context: EvaluationContext
+  ): EvaluatedValue {
+    const newContext: EvaluationContext = {};
     const keys = Object.keys(context);
     keys.forEach((element) => {
       newContext[element] = context[element];
     });
-    node.params.forEach((key) => {
+    node.params.forEach((key: Pattern) => {
       if (key.type === 'Identifier') {
         newContext[key.name] = null;
       }
@@ -241,7 +309,10 @@ class Evaluator {
     return createScopedFunction(node, context);
   }
 
-  walkTemplateLiteral(node, context) {
+  walkTemplateLiteral(
+    node: TemplateLiteral,
+    context: EvaluationContext
+  ): string {
     let str = '';
     for (let i = 0; i < node.expressions.length; i += 1) {
       str += this.walk(node.quasis[i], context);
@@ -250,11 +321,17 @@ class Evaluator {
     return str;
   }
 
-  walkTemplateElement(node, _context?) {
+  walkTemplateElement(
+    node: TemplateElement,
+    _context?: EvaluationContext
+  ): EvaluatedValue {
     return node.value.cooked;
   }
 
-  walkTaggedTemplate(node, context) {
+  walkTaggedTemplate(
+    node: TaggedTemplateExpression,
+    context: EvaluationContext
+  ): EvaluatedValue {
     const tag = this.walk(node.tag, context);
     const { quasi } = node;
     const strings = quasi.quasis.map((q) => this.walk(q, context));
@@ -263,88 +340,95 @@ class Evaluator {
     return tag.apply(null, [strings].concat(values));
   }
 
-  walkUpdateExpression(node, context) {
-    let value = this.walk(node.argument, context);
+  walkUpdateExpression(
+    node: UpdateExpression,
+    context: EvaluationContext
+  ): EvaluatedValue {
+    let value = this.walk(node.argument as EvaluatorNode, context);
     if (value === this.failResult) {
       return this.failResult;
     }
     switch (node.operator) {
       case '++':
         value += 1;
-        return this.walkSet(node.argument, context, value);
+        return this.walkSet(node.argument as EvaluatorNode, context, value);
       case '--':
         value -= 1;
-        return this.walkSet(node.argument, context, value);
+        return this.walkSet(node.argument as EvaluatorNode, context, value);
       default:
         return this.failResult;
     }
   }
 
-  walkAssignmentExpression(node, context) {
-    const value = this.walk(node.right, context);
+  walkAssignmentExpression(
+    node: AssignmentExpression,
+    context: EvaluationContext
+  ): EvaluatedValue {
+    const value = this.walk(node.right as EvaluatorNode, context);
     if (value === this.failResult) {
       return this.failResult;
     }
-    let leftValue = this.walk(node.left, context);
+    const left = node.left as EvaluatorNode;
+    let leftValue = this.walk(left, context);
     if (leftValue === this.failResult) {
       leftValue = 0;
     }
     switch (node.operator) {
       case '=':
-        this.walkSet(node.left, context, value);
+        this.walkSet(left, context, value);
         return value;
       case '+=':
         leftValue += value;
-        this.walkSet(node.left, context, leftValue);
+        this.walkSet(left, context, leftValue);
         return leftValue;
       case '-=':
         leftValue -= value;
-        this.walkSet(node.left, context, leftValue);
+        this.walkSet(left, context, leftValue);
         return leftValue;
       case '*=':
         leftValue *= value;
-        this.walkSet(node.left, context, leftValue);
+        this.walkSet(left, context, leftValue);
         return leftValue;
       case '/=':
         leftValue /= value;
-        this.walkSet(node.left, context, leftValue);
+        this.walkSet(left, context, leftValue);
         return leftValue;
       case '%=':
         leftValue %= value;
-        this.walkSet(node.left, context, leftValue);
+        this.walkSet(left, context, leftValue);
         return leftValue;
       case '|=':
         // oxlint-disable-next-line
         leftValue |= value;
-        this.walkSet(node.left, context, leftValue);
+        this.walkSet(left, context, leftValue);
         return leftValue;
       case '&=':
         // oxlint-disable-next-line
         leftValue &= value;
-        this.walkSet(node.left, context, leftValue);
+        this.walkSet(left, context, leftValue);
         return leftValue;
       case '^=':
         // oxlint-disable-next-line
         leftValue ^= value;
-        this.walkSet(node.left, context, leftValue);
+        this.walkSet(left, context, leftValue);
         return leftValue;
       default:
         return this.failResult;
     }
   }
 
-  walkBlock(node, context) {
+  walkBlock(node: BlockStatement, context: EvaluationContext): EvaluatedValue {
     if (Array.isArray(node.body)) {
-      let result;
+      let result: EvaluatedValue;
       for (let i = 0; i < node.body.length; i += 1) {
-        result = this.walk(node.body[i], context);
+        result = this.walk(node.body[i] as EvaluatorNode, context);
       }
       return result;
     }
-    return this.walk(node.body, context);
+    return this.walk(node.body as EvaluatorNode, context);
   }
 
-  walk(node, context) {
+  walk(node: EvaluatorNode, context: EvaluationContext): EvaluatedValue {
     switch (node.type) {
       case 'Literal':
         return this.walkLiteral(node, context);
@@ -394,14 +478,22 @@ class Evaluator {
     }
   }
 
-  walkSetIdentifier(node, context, value) {
+  walkSetIdentifier(
+    node: Identifier,
+    context: EvaluationContext,
+    value: EvaluatedValue
+  ): EvaluatedValue {
     const newContext = context;
     newContext[node.name] = value;
     return value;
   }
 
-  walkSetMember(node, context, value) {
-    const obj = this.walk(node.object, context);
+  walkSetMember(
+    node: MemberExpression,
+    context: EvaluationContext,
+    value: EvaluatedValue
+  ): EvaluatedValue {
+    const obj = this.walk(node.object as EvaluatorNode, context);
     if (obj === this.failResult || typeof obj === 'function') {
       return this.failResult;
     }
@@ -409,7 +501,7 @@ class Evaluator {
       obj[node.property.name] = value;
       return value;
     }
-    const prop = this.walk(node.property, context);
+    const prop = this.walk(node.property as EvaluatorNode, context);
     if (prop === this.failResult) {
       return this.failResult;
     }
@@ -420,7 +512,11 @@ class Evaluator {
     return value;
   }
 
-  walkSet(node, context, value) {
+  walkSet(
+    node: EvaluatorNode,
+    context: EvaluationContext,
+    value: EvaluatedValue
+  ): EvaluatedValue {
     switch (node.type) {
       case 'Identifier':
         return this.walkSetIdentifier(node, context, value);
@@ -431,21 +527,21 @@ class Evaluator {
     }
   }
 
-  evaluateAll(str, context) {
-    const result: any[] = [];
+  evaluateAll(str: string, context?: EvaluationContext): EvaluatedValue[] {
+    const result: EvaluatedValue[] = [];
     const newContext = context || this.context;
     const compiled = parse(str);
     for (let i = 0; i < compiled.body.length; i += 1) {
-      const expression = compiled.body[i].expression
-        ? compiled.body[i].expression
-        : compiled.body[i];
+      const statement = compiled.body[i] as Partial<ExpressionStatement>;
+      const expression = (statement.expression ||
+        compiled.body[i]) as EvaluatorNode;
       const value = this.walk(expression, newContext);
       result.push(value === this.failResult ? undefined : value);
     }
     return result;
   }
 
-  evaluate(str, context) {
+  evaluate(str: string, context?: EvaluationContext): EvaluatedValue {
     const result = this.evaluateAll(str, context);
     if (!result || result.length === 0) {
       return undefined;

@@ -4,3 +4,14 @@ import Template from './template.js';
 import JavascriptCompiler from './javascript-compiler.js';
 
 export { Evaluator, compile, Template, JavascriptCompiler };
+
+export type {
+  CompilerContainer,
+  CompilerContainerHolder,
+  CompilerLogger,
+  EvaluatedValue,
+  EvaluationContext,
+  EvaluatorNode,
+  FailResult,
+  ParsedProgram,
+} from './types.js';

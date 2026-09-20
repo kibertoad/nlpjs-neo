@@ -1,10 +1,25 @@
 import { Clonable, defaultContainer } from '@nlpjs-neo/core';
+import type { Container, Locale } from '@nlpjs-neo/core';
 import Recognizers from './recognizers.js';
+import type {
+  BuiltinDefaultSettings,
+  BuiltinEdge,
+  BuiltinInput,
+  Recognizer,
+} from './types.js';
+
+/** An extractor registered for a locale, which this one defers to. */
+interface LocaleExtractor {
+  extract(input: BuiltinInput): BuiltinInput | Promise<BuiltinInput>;
+}
 
 class BuiltinDefault extends Clonable {
-  declare settings: any;
+  declare settings: BuiltinDefaultSettings;
 
-  constructor(settings: any = {}, container = defaultContainer) {
+  constructor(
+    settings: BuiltinDefaultSettings = {},
+    container: Container = defaultContainer
+  ) {
     super(
       {
         settings: {},
@@ -23,7 +38,7 @@ class BuiltinDefault extends Clonable {
     );
   }
 
-  registerDefault() {
+  registerDefault(): void {
     this.container.registerConfiguration('builtin-default', {
       builtins: [
         'Email',
@@ -37,7 +52,8 @@ class BuiltinDefault extends Clonable {
     });
   }
 
-  prereduceEdges(edges) {
+  /** Drops an edge another one of the same span and entity already covers. */
+  prereduceEdges(edges: BuiltinEdge[]): BuiltinEdge[] {
     for (let i = 0; i < edges.length; i += 1) {
       const edge = edges[i];
       if (!edge.discarded) {
@@ -59,14 +75,20 @@ class BuiltinDefault extends Clonable {
     return edges.filter((x) => !x.discarded);
   }
 
-  findBuiltinEntities(utterance, locale, srcBuiltins?) {
-    const result: any[] = [];
+  findBuiltinEntities(
+    utterance: string,
+    locale?: Locale,
+    srcBuiltins?: string[]
+  ): { edges: BuiltinEdge[] } {
+    const result: BuiltinEdge[] = [];
     const builtins = srcBuiltins || this.settings.builtins;
     builtins.forEach((name) => {
-      const entities = Recognizers[`recognize${name}`](
-        utterance,
-        locale || 'en'
-      );
+      // Recognizers are looked up by the name of the builtin, so the table
+      // is read as the map of recognizers it is for that purpose.
+      const recognize = (Recognizers as unknown as Record<string, Recognizer>)[
+        `recognize${name}`
+      ];
+      const entities = recognize(utterance, locale || 'en');
       for (let i = 0; i < entities.length; i += 1) {
         const entity = entities[i];
         result.push(entity);
@@ -78,7 +100,7 @@ class BuiltinDefault extends Clonable {
     };
   }
 
-  extract(srcInput) {
+  extract(srcInput: BuiltinInput): BuiltinInput {
     const input = srcInput;
     const entities = this.findBuiltinEntities(
       input.text || input.utterance,
@@ -94,10 +116,11 @@ class BuiltinDefault extends Clonable {
     return input;
   }
 
-  run(srcInput) {
+  run(srcInput: BuiltinInput): BuiltinInput | Promise<BuiltinInput> {
     const input = srcInput;
     const locale = input.locale || 'en';
-    const extractor = this.container.get(`extract-builtin-${locale}`) || this;
+    const extractor =
+      this.container.get<LocaleExtractor>(`extract-builtin-${locale}`) || this;
     return extractor.extract(input);
   }
 }

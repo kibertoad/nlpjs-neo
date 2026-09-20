@@ -1,3 +1,4 @@
+import type { Node } from 'acorn';
 import { generate as unparse } from 'astring';
 
 const HOST_GLOBAL_NAMES = [
@@ -24,7 +25,11 @@ const HOST_GLOBAL_NAMES = [
   'queueMicrotask',
 ];
 
-function createScopedFunction(node, context, excludedKeys: string[] = []) {
+function createScopedFunction(
+  node: Node,
+  context: Record<string, unknown>,
+  excludedKeys: string[] = []
+): unknown {
   const keys = Object.keys(context).filter(
     (key) => !excludedKeys.includes(key)
   );
