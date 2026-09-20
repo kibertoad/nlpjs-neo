@@ -1,5 +1,5 @@
 import { Container } from '@nlpjs-neo/core';
-import { LangTh } from '../src/index.js';
+import { LangTh, TokenizerTh } from '../src/index.js';
 
 describe('Language Thai', () => {
   describe('Use plugin', () => {
@@ -14,6 +14,20 @@ describe('Language Thai', () => {
       expect(stopwords.constructor.name).toEqual('StopwordsTh');
       const normalizer = instance.get('normalizer-th');
       expect(normalizer.constructor.name).toEqual('NormalizerTh');
+    });
+  });
+
+  describe('Tokenizer', () => {
+    test('Does not emit empty tokens for whitespace gaps', () => {
+      const tokenizer = new TokenizerTh(new Container());
+
+      expect(tokenizer.tokenize('สวัสดี ครับ ผมชื่อจอห์น')).toEqual([
+        'สวัสดี',
+        'ครับ',
+        'ผม',
+        'ชื่อ',
+        'จอห์น',
+      ]);
     });
   });
 });

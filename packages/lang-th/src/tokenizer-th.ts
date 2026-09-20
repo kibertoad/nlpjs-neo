@@ -158,7 +158,7 @@ class TokenizerTh extends Tokenizer {
     if (index < str.length) {
       result.push(...str.slice(index).split(/[\s,.!?;:([\]'"¡¿)/]+/));
     }
-    return result;
+    return result.filter((token) => token);
   }
 }
 
