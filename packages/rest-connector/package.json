@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/rest-connector",
-  "version": "4.26.1",
+  "version": "5.0.0",
   "description": "REST connector for NLP.js",
   "author": {
     "email": "opensource@axa.com",

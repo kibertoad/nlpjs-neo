@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/sentiment",
-  "version": "4.26.1",
+  "version": "5.0.0",
   "description": "Sentiment Analysis",
   "author": {
     "email": "opensource@axa.com",

@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/basic",
-  "version": "4.27.0",
+  "version": "5.0.0",
   "description": "Basic dependencies for node",
   "author": {
     "email": "opensource@axa.com",

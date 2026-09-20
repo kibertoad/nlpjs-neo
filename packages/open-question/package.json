@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/open-question",
-  "version": "4.27.0",
+  "version": "5.0.0",
   "description": "BERT open question",
   "author": {
     "email": "opensource@axa.com",

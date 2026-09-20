@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/lexer",
-  "version": "4.26.1",
+  "version": "5.0.0",
   "description": "Lexer",
   "author": {
     "email": "opensource@axa.com",

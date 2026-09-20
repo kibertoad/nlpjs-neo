@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/bot",
-  "version": "4.27.0",
+  "version": "5.0.0",
   "description": "Bot plugin for NLP.js",
   "author": {
     "email": "opensource@axa.com",

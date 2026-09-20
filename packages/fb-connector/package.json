@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/fb-connector",
-  "version": "4.27.0",
+  "version": "5.0.0",
   "description": "Facebook Messenger Connector",
   "author": {
     "email": "eric.lara@axa.com",
