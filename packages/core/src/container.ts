@@ -25,6 +25,8 @@ import { compareWildcars } from './helper.js';
 import DefaultCompiler from './default-compiler.js';
 import logger from './logger.js';
 
+const NUMBER_LITERAL_REGEX = /^\d+(?:\.\d+)?$/;
+
 /**
  * Container class
  */
@@ -156,7 +158,7 @@ class Container {
 
   resolvePathWithType(step, context, input, srcObject): any {
     const literal = step.trim();
-    if (/^\d+(?:\.\d+)?$/.test(literal)) {
+    if (NUMBER_LITERAL_REGEX.test(literal)) {
       return this.buildLiteral('number', step, parseFloat(literal), context);
     }
     if (
