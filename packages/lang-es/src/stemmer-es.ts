@@ -2,30 +2,41 @@ import { Among, BaseStemmer } from '@nlpjs-neo/core';
 import dictionary from './dictionary-es.json' with { type: 'json' };
 
 /* oxlint-disable */
+/**
+ * The amongs of one table as a trie, keyed by character and read backwards,
+ * so the longest match of a suffix is found in one walk rather than by the
+ * binary search of `find_among_b`.
+ */
+interface AmongTree {
+  /** Value the stemmer returns when a word ends here. */
+  result?: number;
+  [char: string]: AmongTree | number | undefined;
+}
+
 class StemmerEs extends BaseStemmer {
-  declare I_p1: any;
-  declare I_p2: any;
-  declare I_pV: any;
-  declare static a_0: any;
-  declare static a_0_tree: any;
-  declare static a_1: any;
-  declare static a_1_tree: any;
-  declare static a_2: any;
-  declare static a_2_tree: any;
-  declare static a_3: any;
-  declare static a_4: any;
-  declare static a_4_tree: any;
-  declare static a_5: any;
-  declare static a_5_tree: any;
-  declare static a_6: any;
-  declare static a_6_tree: any;
-  declare static a_7: any;
-  declare static a_7_tree: any;
-  declare static a_8: any;
-  declare static a_8_tree: any;
-  declare static a_9: any;
-  declare static a_9_tree: any;
-  declare static g_v: any;
+  declare I_p1: number;
+  declare I_p2: number;
+  declare I_pV: number;
+  declare static a_0: Among<StemmerEs>[];
+  declare static a_0_tree: AmongTree;
+  declare static a_1: Among<StemmerEs>[];
+  declare static a_1_tree: AmongTree;
+  declare static a_2: Among<StemmerEs>[];
+  declare static a_2_tree: AmongTree;
+  declare static a_3: Among<StemmerEs>[];
+  declare static a_4: Among<StemmerEs>[];
+  declare static a_4_tree: AmongTree;
+  declare static a_5: Among<StemmerEs>[];
+  declare static a_5_tree: AmongTree;
+  declare static a_6: Among<StemmerEs>[];
+  declare static a_6_tree: AmongTree;
+  declare static a_7: Among<StemmerEs>[];
+  declare static a_7_tree: AmongTree;
+  declare static a_8: Among<StemmerEs>[];
+  declare static a_8_tree: AmongTree;
+  declare static a_9: Among<StemmerEs>[];
+  declare static a_9_tree: AmongTree;
+  declare static g_v: number[];
 
   constructor(container?) {
     super(container, dictionary);
@@ -44,7 +55,7 @@ class StemmerEs extends BaseStemmer {
     StemmerEs.a_9_tree = this.buildAmongTree(StemmerEs.a_9);
   }
 
-  findAmongBTree(tree) {
+  findAmongBTree(tree: AmongTree): number {
     const reversed = this.current.split('').reverse();
     let node = tree;
     let l = 0;
@@ -62,7 +73,7 @@ class StemmerEs extends BaseStemmer {
         this.cursor -= longest;
         return result;
       }
-      node = node[current];
+      node = node[current] as AmongTree;
       if (node.result) {
         longest = l;
         result = node.result;
@@ -72,12 +83,12 @@ class StemmerEs extends BaseStemmer {
     return node.result;
   }
 
-  buildAmongTree(amongs) {
-    const result: any = {};
+  buildAmongTree(amongs: Among<StemmerEs>[]): AmongTree {
+    const result: AmongTree = {};
     for (let i = 0; i < amongs.length; i += 1) {
       const among =
         typeof amongs[i] === 'string'
-          ? { s: amongs[i], result: -1 }
+          ? { s: amongs[i] as unknown as string, result: -1 }
           : amongs[i];
       const reversed = among.s.split('').reverse();
       let node = result;
@@ -86,7 +97,7 @@ class StemmerEs extends BaseStemmer {
         if (!node[current]) {
           node[current] = {};
         }
-        node = node[current];
+        node = node[current] as AmongTree;
       }
       node.result = among.result;
     }

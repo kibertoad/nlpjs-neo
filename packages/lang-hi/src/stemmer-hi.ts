@@ -1,7 +1,8 @@
 import { BaseStemmer } from '@nlpjs-neo/core';
 
 class StemmerHi extends BaseStemmer {
-  declare static suffixes: any;
+  /** Suffixes to strip, grouped by length, longest group last. */
+  declare static suffixes: string[][];
 
   constructor(container) {
     super(container);

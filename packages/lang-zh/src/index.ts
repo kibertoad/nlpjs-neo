@@ -15,3 +15,14 @@ export {
   SentimentZh,
   TranslateZh,
 };
+
+export type {
+  CedictEntry,
+  ChineseDialect,
+  ChineseVariant,
+  ConversionDict,
+  ConversionTarget,
+  DialectIdentification,
+  DialectToken,
+  DictionaryMatch,
+} from './types.js';

@@ -1,5 +1,31 @@
-function replacer(translationTable) {
-  const pattern: any[] = [];
+/** A table that maps one character or sequence to another. */
+type TranslationTable = Record<string, string>;
+
+/** The tables of one conversion direction, by what they convert. */
+interface ConversionTableGroup {
+  alphabet?: TranslationTable;
+  numbers?: TranslationTable;
+  symbol?: TranslationTable;
+  purePunctuation?: TranslationTable;
+  /** The symbols and the pure punctuation together. */
+  punctuation?: TranslationTable;
+  katakana?: TranslationTable;
+}
+
+/** Every conversion table, by direction. */
+interface ConversionTables {
+  fullwidthToHalfwidth: ConversionTableGroup;
+  halfwidthToFullwidth: ConversionTableGroup;
+  /** Everything the normalizer applies, in one table. */
+  normalize?: TranslationTable;
+}
+
+/** Applies one table to a text. */
+type Converter = (str: string) => string;
+
+/** Builds a converter that applies a table in one pass. */
+function replacer(translationTable: TranslationTable): Converter {
+  const pattern: string[] = [];
   const keys = Object.keys(translationTable);
   keys.forEach((key) => {
     pattern.push(
@@ -10,11 +36,11 @@ function replacer(translationTable) {
     );
   });
   const regExp = new RegExp(pattern.join('|'), 'g');
-  return (str) => str.replace(regExp, (s) => translationTable[s]);
+  return (str: string) => str.replace(regExp, (s) => translationTable[s]);
 }
 
-function merge(...args) {
-  const newObj: any = {};
+function merge(...args: TranslationTable[]): TranslationTable {
+  const newObj: TranslationTable = {};
   let id = 0;
   while (args[id]) {
     const keys = Object.keys(args[id]);
@@ -27,8 +53,9 @@ function merge(...args) {
   return newObj;
 }
 
-function flip(obj) {
-  const newObj: any = {};
+/** Reads a table backwards. */
+function flip(obj: TranslationTable): TranslationTable {
+  const newObj: TranslationTable = {};
   const keys = Object.keys(obj);
   for (let i = 0; i < keys.length; i += 1) {
     const key = keys[i];
@@ -104,7 +131,7 @@ const fixFullwidthKana = {
   ッノ: 'ンノ',
 };
 
-const conversionTables: any = {
+const conversionTables: ConversionTables = {
   fullwidthToHalfwidth: {
     alphabet: {
       ａ: 'a',

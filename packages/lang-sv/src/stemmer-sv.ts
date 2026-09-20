@@ -3,14 +3,14 @@ import { Among, BaseStemmer } from '@nlpjs-neo/core';
 /* oxlint-disable */
 
 class StemmerSv extends BaseStemmer {
-  declare I_p1: any;
-  declare I_x: any;
-  declare static a_0: any;
-  declare static a_1: any;
-  declare static a_2: any;
-  declare static g_s_ending: any;
-  declare static g_v: any;
-  declare static methodObject: any;
+  declare I_p1: number;
+  declare I_x: number;
+  declare static a_0: Among<StemmerSv>[];
+  declare static a_1: Among<StemmerSv>[];
+  declare static a_2: Among<StemmerSv>[];
+  declare static g_s_ending: number[];
+  declare static g_v: number[];
+  declare static methodObject: StemmerSv;
 
   constructor(container?) {
     super(container);

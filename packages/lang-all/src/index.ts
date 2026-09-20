@@ -590,3 +590,11 @@ export {
   dict,
   bow,
 };
+
+export type {
+  LanguagePack,
+  LanguageService,
+  LanguageServiceConstructor,
+  SentimentService,
+  Vocabulary,
+} from './types.js';

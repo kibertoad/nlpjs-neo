@@ -1,20 +1,24 @@
 import { BaseStemmer } from '@nlpjs-neo/core';
+import type { ContainerHolder, Token } from '@nlpjs-neo/core';
 
 class StemmerEl extends BaseStemmer {
-  declare static protectedWords: any;
-  declare static step1Words: any;
-  declare static step1WordsReg: any;
+  /** Words that are never stemmed, as a lookup set. */
+  declare static protectedWords: Record<string, 1>;
+  /** Words whose stem the rules would not find, and what it is. */
+  declare static step1Words: Record<string, string>;
+  /** The keys of `step1Words`, as one expression anchored at the end. */
+  declare static step1WordsReg: RegExp;
 
-  constructor(container) {
+  constructor(container?: ContainerHolder) {
     super(container);
     this.name = 'stemmer-el';
   }
 
-  isGreek(word) {
+  isGreek(word: Token): boolean {
     return /^[αβγδεζηθικλμνξοπρσστυφχψω]+$/.test(word);
   }
 
-  endsInVowel(word) {
+  endsInVowel(word: Token): boolean {
     return /[αεηιουω]$/.test(word);
   }
 

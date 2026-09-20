@@ -2,25 +2,25 @@ import { Among, BaseStemmer } from '@nlpjs-neo/core';
 
 /* oxlint-disable */
 class StemmerFi extends BaseStemmer {
-  declare B_ending_removed: any;
-  declare I_p1: any;
-  declare I_p2: any;
-  declare S_x: any;
-  declare static a_0: any;
-  declare static a_1: any;
-  declare static a_2: any;
-  declare static a_3: any;
-  declare static a_4: any;
-  declare static a_5: any;
-  declare static a_6: any;
-  declare static a_7: any;
-  declare static a_8: any;
-  declare static a_9: any;
-  declare static g_AEI: any;
-  declare static g_V1: any;
-  declare static g_V2: any;
-  declare static g_particle_end: any;
-  declare static methodObject: any;
+  declare B_ending_removed: boolean;
+  declare I_p1: number;
+  declare I_p2: number;
+  declare S_x: string;
+  declare static a_0: Among<StemmerFi>[];
+  declare static a_1: Among<StemmerFi>[];
+  declare static a_2: Among<StemmerFi>[];
+  declare static a_3: Among<StemmerFi>[];
+  declare static a_4: Among<StemmerFi>[];
+  declare static a_5: Among<StemmerFi>[];
+  declare static a_6: Among<StemmerFi>[];
+  declare static a_7: Among<StemmerFi>[];
+  declare static a_8: Among<StemmerFi>[];
+  declare static a_9: Among<StemmerFi>[];
+  declare static g_AEI: number[];
+  declare static g_V1: number[];
+  declare static g_V2: number[];
+  declare static g_particle_end: number[];
+  declare static methodObject: StemmerFi;
 
   constructor(container?) {
     super(container);

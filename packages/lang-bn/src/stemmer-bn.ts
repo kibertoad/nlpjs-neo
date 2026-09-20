@@ -1,15 +1,18 @@
 import { BaseStemmer } from '@nlpjs-neo/core';
+import type { ContainerHolder, Token } from '@nlpjs-neo/core';
 
 class StemmerBn extends BaseStemmer {
-  declare static dict: any;
-  declare static suffixes: any;
+  /** Words whose stem the rules would not find, and what it is. */
+  declare static dict: Record<string, string>;
+  /** Suffixes to strip, grouped by length, longest group last. */
+  declare static suffixes: string[][];
 
-  constructor(container) {
+  constructor(container?: ContainerHolder) {
     super(container);
     this.name = 'stemmer-bn';
   }
 
-  processSuffixes(word) {
+  processSuffixes(word: Token): Token {
     const maxSuffixes = word.length > 7 ? 6 : word.length - 2;
     for (let i = maxSuffixes; i >= 0; i -= 1) {
       const suffixes = StemmerBn.suffixes[i];

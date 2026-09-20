@@ -1,19 +1,26 @@
 import { BaseStemmer } from '@nlpjs-neo/core';
+import type { ContainerHolder, Token } from '@nlpjs-neo/core';
+
+/**
+ * One suffix rule: the suffix, the shortest stem it may leave behind, and
+ * what to put in its place.
+ */
+type SuffixRule = [suffix: string, minLength: number, replacement: string];
 
 class StemmerGl extends BaseStemmer {
-  declare static adverbSuffixes: any;
-  declare static appreciativeSuffixes: any;
-  declare static notionSuffixes: any;
-  declare static pluralSuffixes: any;
-  declare static unifySuffixes: any;
-  declare static verbSuffixes: any;
+  declare static adverbSuffixes: SuffixRule[];
+  declare static appreciativeSuffixes: SuffixRule[];
+  declare static notionSuffixes: SuffixRule[];
+  declare static pluralSuffixes: SuffixRule[];
+  declare static unifySuffixes: SuffixRule[];
+  declare static verbSuffixes: SuffixRule[];
 
-  constructor(container) {
+  constructor(container?: ContainerHolder) {
     super(container);
     this.name = 'stemmer-gl';
   }
 
-  processSuffixes(word, suffixes) {
+  processSuffixes(word: Token, suffixes: SuffixRule[]): Token {
     const { length } = word;
     for (let i = 0; i < suffixes.length; i += 1) {
       const suffix = suffixes[i][0];

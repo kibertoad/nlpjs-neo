@@ -2,32 +2,32 @@ import { Among, BaseStemmer } from '@nlpjs-neo/core';
 
 /* oxlint-disable */
 class StemmerAr extends BaseStemmer {
-  declare B_is_defined: any;
-  declare B_is_noun: any;
-  declare B_is_verb: any;
-  declare I_word_len: any;
-  declare static a_0: any;
-  declare static a_10: any;
-  declare static a_11: any;
-  declare static a_12: any;
-  declare static a_13: any;
-  declare static a_14: any;
-  declare static a_15: any;
-  declare static a_16: any;
-  declare static a_17: any;
-  declare static a_18: any;
-  declare static a_19: any;
-  declare static a_1: any;
-  declare static a_20: any;
-  declare static a_21: any;
-  declare static a_2: any;
-  declare static a_3: any;
-  declare static a_4: any;
-  declare static a_5: any;
-  declare static a_6: any;
-  declare static a_7: any;
-  declare static a_8: any;
-  declare static a_9: any;
+  declare B_is_defined: boolean;
+  declare B_is_noun: boolean;
+  declare B_is_verb: boolean;
+  declare I_word_len: number;
+  declare static a_0: Among<StemmerAr>[];
+  declare static a_10: Among<StemmerAr>[];
+  declare static a_11: Among<StemmerAr>[];
+  declare static a_12: Among<StemmerAr>[];
+  declare static a_13: Among<StemmerAr>[];
+  declare static a_14: Among<StemmerAr>[];
+  declare static a_15: Among<StemmerAr>[];
+  declare static a_16: Among<StemmerAr>[];
+  declare static a_17: Among<StemmerAr>[];
+  declare static a_18: Among<StemmerAr>[];
+  declare static a_19: Among<StemmerAr>[];
+  declare static a_1: Among<StemmerAr>[];
+  declare static a_20: Among<StemmerAr>[];
+  declare static a_21: Among<StemmerAr>[];
+  declare static a_2: Among<StemmerAr>[];
+  declare static a_3: Among<StemmerAr>[];
+  declare static a_4: Among<StemmerAr>[];
+  declare static a_5: Among<StemmerAr>[];
+  declare static a_6: Among<StemmerAr>[];
+  declare static a_7: Among<StemmerAr>[];
+  declare static a_8: Among<StemmerAr>[];
+  declare static a_9: Among<StemmerAr>[];
 
   constructor(container) {
     super(container);

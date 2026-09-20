@@ -7,24 +7,24 @@ import TokenizerEn from './tokenizer-en.js';
  */
 /* oxlint-disable */
 class StemmerEn extends BaseStemmer {
-  declare B_Y_found: any;
-  declare I_p1: any;
-  declare I_p2: any;
-  declare static a_0: any;
-  declare static a_10: any;
-  declare static a_1: any;
-  declare static a_2: any;
-  declare static a_3: any;
-  declare static a_4: any;
-  declare static a_5: any;
-  declare static a_6: any;
-  declare static a_7: any;
-  declare static a_8: any;
-  declare static a_9: any;
-  declare static g_v: any;
-  declare static g_v_WXY: any;
-  declare static g_valid_LI: any;
-  declare static methodObject: any;
+  declare B_Y_found: boolean;
+  declare I_p1: number;
+  declare I_p2: number;
+  declare static a_0: Among<StemmerEn>[];
+  declare static a_10: Among<StemmerEn>[];
+  declare static a_1: Among<StemmerEn>[];
+  declare static a_2: Among<StemmerEn>[];
+  declare static a_3: Among<StemmerEn>[];
+  declare static a_4: Among<StemmerEn>[];
+  declare static a_5: Among<StemmerEn>[];
+  declare static a_6: Among<StemmerEn>[];
+  declare static a_7: Among<StemmerEn>[];
+  declare static a_8: Among<StemmerEn>[];
+  declare static a_9: Among<StemmerEn>[];
+  declare static g_v: number[];
+  declare static g_v_WXY: number[];
+  declare static g_valid_LI: number[];
+  declare static methodObject: StemmerEn;
 
   constructor(container?) {
     super(container);

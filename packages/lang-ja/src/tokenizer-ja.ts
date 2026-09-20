@@ -1,11 +1,21 @@
 import { Tokenizer } from '@nlpjs-neo/core';
+import type { ContainerHolder, Token } from '@nlpjs-neo/core';
 import JapaneseRules from './japanese-rules.json' with { type: 'json' };
 
-class TokenizerJa extends Tokenizer {
-  declare bias: any;
-  declare chartype: any;
+/** A character class and the pattern that recognizes it. */
+type CharTypeRule = [pattern: RegExp, type: string];
 
-  constructor(container?, shouldTokenize?) {
+/**
+ * Splits Japanese, which is written without spaces, with the TinySegmenter
+ * model: a score is computed at every boundary from the characters and their
+ * classes around it, and the text is cut wherever that score is positive.
+ */
+class TokenizerJa extends Tokenizer {
+  /** Score every boundary starts from, before the rules adjust it. */
+  declare bias: number;
+  declare chartype: CharTypeRule[];
+
+  constructor(container?: ContainerHolder, shouldTokenize?: boolean) {
     super(container, shouldTokenize);
     this.name = 'tokenizer-ja';
     this.chartype = [
@@ -19,7 +29,7 @@ class TokenizerJa extends Tokenizer {
     this.bias = -332;
   }
 
-  ctype(str) {
+  ctype(str: string): string {
     for (let i = 0, l = this.chartype.length; i < l; i += 1) {
       if (str.match(this.chartype[i][0])) {
         return this.chartype[i][1];
@@ -28,11 +38,12 @@ class TokenizerJa extends Tokenizer {
     return 'O';
   }
 
-  ts(v) {
+  /** A missing score counts as zero. */
+  ts(v?: number): number {
     return v || 0;
   }
 
-  removePuncTokens(tokens) {
+  removePuncTokens(tokens: Token[]): Token[] {
     return tokens
       .map((token) =>
         token.replace(
@@ -43,12 +54,12 @@ class TokenizerJa extends Tokenizer {
       .filter((token) => token !== '');
   }
 
-  innerTokenize(srcText, _normalize?) {
+  innerTokenize(srcText: string, _normalize?: boolean): Token[] {
     if (!srcText || srcText === '') {
       return [];
     }
     const text = srcText;
-    const result: any[] = [];
+    const result: Token[] = [];
     const seg = ['B3', 'B2', 'B1'];
     const ctype = ['O', 'O', 'O'];
     const o = text.split('');

@@ -8,14 +8,14 @@ import { Among, BaseStemmer } from '@nlpjs-neo/core';
  */
 
 class StemmerNo extends BaseStemmer {
-  declare I_p1: any;
-  declare I_x: any;
-  declare static a_0: any;
-  declare static a_1: any;
-  declare static a_2: any;
-  declare static g_s_ending: any;
-  declare static g_v: any;
-  declare static methodObject: any;
+  declare I_p1: number;
+  declare I_x: number;
+  declare static a_0: Among<StemmerNo>[];
+  declare static a_1: Among<StemmerNo>[];
+  declare static a_2: Among<StemmerNo>[];
+  declare static g_s_ending: number[];
+  declare static g_v: number[];
+  declare static methodObject: StemmerNo;
 
   constructor(container?) {
     super(container);

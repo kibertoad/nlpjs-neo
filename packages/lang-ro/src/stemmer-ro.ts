@@ -2,18 +2,18 @@ import { Among, BaseStemmer } from '@nlpjs-neo/core';
 
 /* oxlint-disable */
 class StemmerRo extends BaseStemmer {
-  declare B_standard_suffix_removed: any;
-  declare I_p1: any;
-  declare I_p2: any;
-  declare I_pV: any;
-  declare static a_0: any;
-  declare static a_1: any;
-  declare static a_2: any;
-  declare static a_3: any;
-  declare static a_4: any;
-  declare static a_5: any;
-  declare static g_v: any;
-  declare static methodObject: any;
+  declare B_standard_suffix_removed: boolean;
+  declare I_p1: number;
+  declare I_p2: number;
+  declare I_pV: number;
+  declare static a_0: Among<StemmerRo>[];
+  declare static a_1: Among<StemmerRo>[];
+  declare static a_2: Among<StemmerRo>[];
+  declare static a_3: Among<StemmerRo>[];
+  declare static a_4: Among<StemmerRo>[];
+  declare static a_5: Among<StemmerRo>[];
+  declare static g_v: number[];
+  declare static methodObject: StemmerRo;
 
   constructor(container?) {
     super(container);

@@ -1,24 +1,32 @@
+import type { Container, PipelineInput, Token } from '@nlpjs-neo/core';
 import TranslateZh from './translate-zh.js';
 import dictionary from './dictionary.js';
+import type { CedictEntry } from './types.js';
 
+/**
+ * Stems Chinese by segmenting it with the dictionary and answering the pinyin
+ * of each word, so that a classifier trained on one script recognizes the
+ * other.
+ */
 class StemmerZh {
-  declare container: any;
-  declare dictionary: any;
-  declare name: any;
-  declare translate: any;
+  declare container: Container;
+  declare dictionary: typeof dictionary;
+  declare name: string;
+  declare translate: TranslateZh;
 
-  constructor(container) {
+  constructor(container: Container) {
     this.container = container;
     this.name = 'stemmer-zh';
     this.translate = new TranslateZh();
     this.dictionary = dictionary;
   }
 
-  definitionContains(arr, text) {
+  definitionContains(arr: CedictEntry[], text: string): boolean {
     return arr.filter((x) => x.definition.includes(text)).length > 0;
   }
 
-  parseDefinition(definitions) {
+  /** Pinyin of a word, or nothing when it is a particle that carries none. */
+  parseDefinition(definitions: CedictEntry[]): string | undefined {
     if (this.definitionContains(definitions, '(possessive particle)')) {
       return undefined;
     }
@@ -32,14 +40,11 @@ class StemmerZh {
     if (firstDefinition.includes('you (')) {
       return 'ni3';
     }
-    let pinyin = dictionary.getPinyin(definitions[0].simplified);
-    if (Array.isArray(pinyin)) {
-      pinyin = pinyin.join(' ');
-    }
-    return pinyin;
+    const pinyin = dictionary.getPinyin(definitions[0].simplified);
+    return Array.isArray(pinyin) ? pinyin.join(' ') : pinyin;
   }
 
-  translateToEnglish(token) {
+  translateToEnglish(token: string): string | undefined {
     const definitions = dictionary.search(token);
     if (!definitions || definitions.length === 0) {
       return token;
@@ -47,7 +52,7 @@ class StemmerZh {
     return this.parseDefinition(definitions);
   }
 
-  clearText(text) {
+  clearText(text: string): string {
     text = text.replace('？', ' ');
     text = text.replace('！', ' ');
     return text.replace(
@@ -56,9 +61,10 @@ class StemmerZh {
     );
   }
 
-  getSegments(text) {
+  /** Splits a text into its Chinese words and the runs between them. */
+  getSegments(text: string): string[] {
     const presegments = dictionary.segment(text);
-    const result: any[] = [];
+    const result: string[] = [];
     let chars = '';
     for (let i = 0; i < presegments.length; i += 1) {
       const segment = presegments[i];
@@ -78,9 +84,9 @@ class StemmerZh {
     return result;
   }
 
-  processText(text) {
+  processText(text: string): Token[] {
     text = this.clearText(text);
-    const result: any[] = [];
+    const result: string[] = [];
     const segments = this.getSegments(text);
     for (let i = 0; i < segments.length; i += 1) {
       const translated = this.translateToEnglish(segments[i]);
@@ -94,18 +100,21 @@ class StemmerZh {
       .filter((x) => x);
   }
 
-  async stem(text, input) {
+  async stem(
+    text: Token | Token[] | undefined,
+    input?: PipelineInput
+  ): Promise<Token[]> {
     const inputText =
       typeof text === 'string' ? text : input.utterance || input.text;
     return this.processText(inputText);
   }
 
-  async run(srcInput) {
+  async run(srcInput: PipelineInput): Promise<PipelineInput> {
     const input = srcInput;
     const locale = input.locale || 'en';
-    const stemmer = this.container.get(`stemmer-${locale}`) || this;
+    const stemmer = this.container.get<StemmerZh>(`stemmer-${locale}`) || this;
     input.tokens = await stemmer.stem(
-      input.text || input.tokens.join(' '),
+      input.text || (input.tokens as Token[]).join(' '),
       input
     );
     return input;

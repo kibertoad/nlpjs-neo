@@ -1,15 +1,19 @@
 import { createRequire } from 'module';
+import type { CedictEntry } from './types.js';
 
 // The dictionary is ~9MB, so it is only pulled in when `start()` is called.
 const require = createRequire(import.meta.url);
 
+/** CC-CEDICT, indexed by both spellings of every word. */
 class Dictionary {
-  declare cache: any;
-  declare cedict: any;
-  declare simplified: any;
-  declare traditional: any;
+  /** Parsed lines, kept only while the dictionary is being compiled. */
+  declare cache: Record<string, CedictEntry> | undefined;
+  /** The raw dictionary, and the marker that it has been loaded. */
+  declare cedict: string | undefined;
+  declare simplified: Record<string, CedictEntry[]>;
+  declare traditional: Record<string, CedictEntry[]>;
 
-  getElement(line) {
+  getElement(line?: string): CedictEntry {
     if (!line) {
       return {
         traditional: '',
@@ -30,9 +34,12 @@ class Dictionary {
     return element;
   }
 
-  start() {
+  /** Compiles the dictionary on first use; a second call does nothing. */
+  start(): void {
     if (!this.cedict) {
-      this.cedict = require('./cedict_ts.u8.js').default;
+      this.cedict = (
+        require('./cedict_ts.u8.js') as { default: string }
+      ).default;
       console.log('Compiling dictionary');
       this.cache = {};
       this.simplified = {};
@@ -70,17 +77,19 @@ class Dictionary {
     }
   }
 
-  search(word) {
+  search(word: string): CedictEntry[] | undefined {
     this.start();
     return this.simplified[word] || this.traditional[word];
   }
 
-  getPinyin(char) {
+  /** Pinyin of every sense of a character; the character when unknown. */
+  getPinyin(char: string): string[] | string {
     const definitions = this.search(char);
     return definitions ? definitions.map((x) => x.pinyin) : char;
   }
 
-  getLongestMatch(text) {
+  /** The longest prefix of a text the dictionary knows, up to 8 characters. */
+  getLongestMatch(text: string): string | undefined {
     const max = Math.min(8, text.length);
     for (let i = max; i >= 0; i -= 1) {
       const slice = text.substr(0, i);
@@ -91,12 +100,14 @@ class Dictionary {
     return undefined;
   }
 
-  segment(text) {
-    const result: any[] = [];
-    while (text) {
-      const seg = this.getLongestMatch(text) || text.substr(0, 1);
+  /** Splits a text into the longest words the dictionary knows. */
+  segment(text: string): string[] {
+    const result: string[] = [];
+    let pending = text;
+    while (pending) {
+      const seg = this.getLongestMatch(pending) || pending.substr(0, 1);
       result.push(seg);
-      text = text.slice(seg.length);
+      pending = pending.slice(seg.length);
     }
     return result;
   }

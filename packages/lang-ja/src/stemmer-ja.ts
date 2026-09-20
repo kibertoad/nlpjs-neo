@@ -24,9 +24,34 @@ function resolveDictionaryPath() {
 /**
  * Class for a Japanese Stemmer
  */
+/** What a chain of tokens is replaced by, and how polite it was. */
+interface KeigoResult {
+  value: string[];
+  /** Level of politeness, or `dictionary` for a plain synonym. */
+  keigo: string;
+}
+
+/** A node of the keigo trie: the tokens that may follow, and a result. */
+interface KeigoNode {
+  result?: KeigoResult;
+  [token: string]: KeigoNode | KeigoResult | undefined;
+}
+
+/** A keigo chain found in an utterance, and how long it was. */
+interface KeigoMatch extends KeigoResult {
+  length: number;
+}
+
 class StemmerJa extends BaseStemmer {
-  declare shiftToHiragana: any;
-  declare static tokenizer: any;
+  /** Distance from a katakana code point to its hiragana counterpart. */
+  declare shiftToHiragana: number;
+  /**
+   * The shared kuromoji tokenizer. Its class is not exported by the package,
+   * so it is named through the builder that produces it.
+   */
+  declare static tokenizer:
+    | Awaited<ReturnType<TokenizerBuilder['build']>>
+    | undefined;
   declare static tokenizerPromise: Promise<void> | undefined;
 
   /**
@@ -216,7 +241,7 @@ class StemmerJa extends BaseStemmer {
     const reghatu = new RegExp(
       /(ん|ン)(?=あ|い|う|え|お|ア|イ|ウ|エ|オ|ぁ|ぃ|ぅ|ぇ|ぉ|ァ|ィ|ゥ|ェ|ォ|や|ゆ|よ|ヤ|ユ|ヨ|ゃ|ゅ|ょ|ャ|ュ|ョ)/g
     );
-    const indices: any[] = [];
+    const indices: number[] = [];
     let str = srcStr;
     let match = reghatu.exec(str);
     while (match !== null) {
@@ -407,13 +432,13 @@ class StemmerJa extends BaseStemmer {
    * @param {String[]} tokens Input tokens
    * @param {Number} pnt Current pointer in the chain
    */
-  findKeigo(tokens, pnt) {
-    let node: any = keigo;
-    let result;
+  findKeigo(tokens: string[], pnt: number): KeigoMatch | undefined {
+    let node = keigo as KeigoNode;
+    let result: KeigoMatch | undefined;
     let currentPnt = pnt;
     let currentToken = tokens[currentPnt];
     while (currentToken && node[currentToken]) {
-      node = node[currentToken];
+      node = node[currentToken] as KeigoNode;
       if (node.result) {
         result = {
           value: node.result.value,
@@ -436,7 +461,7 @@ class StemmerJa extends BaseStemmer {
     const tokens = this.parse(text)
       .map((x) => x.reading)
       .filter((x) => x && x !== ' ');
-    const informalTokens: any[] = [];
+    const informalTokens: string[] = [];
     const counts = {
       keigo: 0,
       teineigo: 0,
@@ -456,7 +481,7 @@ class StemmerJa extends BaseStemmer {
          * turning a count into NaN and dropping it out of `keigo` below.
          */
         if (Object.hasOwn(counts, currentKeigo.keigo)) {
-          counts[currentKeigo.keigo] += 1;
+          counts[currentKeigo.keigo as keyof typeof counts] += 1;
         }
         for (let i = 0; i < currentKeigo.value.length; i += 1) {
           informalTokens.push(currentKeigo.value[i]);

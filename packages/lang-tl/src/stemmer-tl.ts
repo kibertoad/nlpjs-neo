@@ -1,16 +1,20 @@
 import { BaseStemmer } from '@nlpjs-neo/core';
+import type { ContainerHolder, Token } from '@nlpjs-neo/core';
 
 class StemmerTl extends BaseStemmer {
-  declare static infixes: any;
-  declare static prefixes: any;
-  declare static suffixes: any;
+  /** Syllables that may be inserted after the first consonant of a root. */
+  declare static infixes: string[];
+  declare static prefixes: RegExp[];
+  declare static suffixes: string[];
 
-  constructor(container) {
+  constructor(container?: ContainerHolder) {
     super(container);
     this.name = 'stemmer-tl';
   }
 
-  countSyllables(word) {
+  /** A prefix is counted as the pattern it is written as, which is how the
+   * stemmer weighs it against the word it would be stripped from. */
+  countSyllables(word?: Token | RegExp): number {
     if (!word) {
       return 0;
     }

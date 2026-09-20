@@ -1,35 +1,69 @@
 import { Tokenizer } from '@nlpjs-neo/core';
+import type { ContainerHolder, Token } from '@nlpjs-neo/core';
 import aspects from './thai-aspects.json' with { type: 'json' };
 
-class TokenizerTh extends Tokenizer {
-  declare dict: any;
+/**
+ * One node of the prefix tree of known words: the characters that may follow,
+ * and whether a word ends here.
+ */
+interface TrieNode {
+  isLeaf?: boolean;
+  [char: string]: TrieNode | boolean | undefined;
+}
 
-  constructor(container, shouldTokenize) {
+/** A known word found in the text, and where. */
+interface ThaiToken {
+  start: number;
+  end: number;
+  length: number;
+  value: string;
+  /** Set once nothing overlaps this token any more. */
+  isSure?: boolean;
+  /** Set on a token another one wins over. */
+  isDiscarded?: boolean;
+}
+
+/** A partial match being followed through the prefix tree. */
+interface TrieChain {
+  node: TrieNode;
+  value: string;
+}
+
+/**
+ * Tokenizes Thai, which is written without spaces, by finding the known words
+ * in a text and taking whatever lies between them as it is written.
+ */
+class TokenizerTh extends Tokenizer {
+  /** Prefix tree of the known words; built on first use. */
+  declare dict: TrieNode | undefined;
+
+  constructor(container?: ContainerHolder, shouldTokenize?: boolean) {
     super(container, shouldTokenize);
     this.name = 'tokenizer-th';
   }
 
-  addToTree(aspect) {
+  addToTree(aspect: string): void {
     let node = this.dict;
     for (let i = 0; i < aspect.length; i += 1) {
       const current = aspect[i];
       if (!node[current]) {
         node[current] = {};
       }
-      node = node[current];
+      node = node[current] as TrieNode;
     }
     node.isLeaf = true;
   }
 
-  buildDictionary() {
+  buildDictionary(): void {
     this.dict = {};
     for (let i = 0; i < aspects.length; i += 1) {
       this.addToTree(aspects[i]);
     }
   }
 
-  findCollisions(token, tokens) {
-    const result: any[] = [];
+  /** The tokens that overlap a token, and so compete with it. */
+  findCollisions(token: ThaiToken, tokens: ThaiToken[]): ThaiToken[] {
+    const result: ThaiToken[] = [];
     for (let i = 0; i < tokens.length; i += 1) {
       const current = tokens[i];
       if (
@@ -44,7 +78,8 @@ class TokenizerTh extends Tokenizer {
     return result;
   }
 
-  perfectCompose(token, collisions) {
+  /** `true` when two overlapping tokens cover exactly this one's span. */
+  perfectCompose(token: ThaiToken, collisions: ThaiToken[]): boolean {
     for (let i = 0; i < collisions.length; i += 1) {
       const a = collisions[i];
       if (a.start <= token.start) {
@@ -59,7 +94,8 @@ class TokenizerTh extends Tokenizer {
     return false;
   }
 
-  isLate(token, collisions, open = false) {
+  /** `true` when another token contains this one, so this one is dropped. */
+  isLate(token: ThaiToken, collisions: ThaiToken[], open = false): boolean {
     for (let i = 0; i < collisions.length; i += 1) {
       if (
         !open &&
@@ -79,7 +115,7 @@ class TokenizerTh extends Tokenizer {
     return false;
   }
 
-  fullSure(tokens) {
+  fullSure(tokens: ThaiToken[]): boolean {
     for (let i = 0; i < tokens.length; i += 1) {
       if (!tokens[i].isSure) {
         return false;
@@ -88,7 +124,8 @@ class TokenizerTh extends Tokenizer {
     return true;
   }
 
-  reduceEdges(srcTokens) {
+  /** Drops the overlapping candidates until only one reading is left. */
+  reduceEdges(srcTokens: ThaiToken[]): ThaiToken[] {
     let tokens = srcTokens;
     let lastLength = 0;
     while (lastLength !== tokens.length && !this.fullSure(tokens)) {
@@ -112,12 +149,12 @@ class TokenizerTh extends Tokenizer {
     return tokens;
   }
 
-  innerTokenize(str, _normalize?) {
+  innerTokenize(str: string, _normalize?: boolean): Token[] {
     if (!this.dict) {
       this.buildDictionary();
     }
-    const potentialTokens: any[] = [];
-    let currentChains: any[] = [];
+    const potentialTokens: ThaiToken[] = [];
+    let currentChains: (TrieChain | undefined)[] = [];
     for (let i = 0; i < str.length; i += 1) {
       const chr = str[i];
       if (this.dict[chr]) {
@@ -125,7 +162,7 @@ class TokenizerTh extends Tokenizer {
       }
       for (let j = 0; j < currentChains.length; j += 1) {
         const chain = currentChains[j];
-        const nextNode = chain.node[chr];
+        const nextNode = chain.node[chr] as TrieNode | undefined;
         if (nextNode) {
           currentChains[j] = { node: nextNode, value: chain.value + chr };
         } else {
@@ -144,7 +181,7 @@ class TokenizerTh extends Tokenizer {
     }
     const edges = this.reduceEdges(potentialTokens);
     let index = 0;
-    const result: any[] = [];
+    const result: Token[] = [];
     for (let i = 0; i < edges.length; i += 1) {
       const current = edges[i];
       if (current.start > index) {

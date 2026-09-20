@@ -1,21 +1,41 @@
 import dictionary from './dictionary.json' with { type: 'json' };
+import type {
+  ChineseDialect,
+  ChineseVariant,
+  ConversionDict,
+  ConversionTarget,
+  DialectIdentification,
+  DialectToken,
+  DictionaryMatch,
+} from './types.js';
 
+/**
+ * Tells simplified Chinese from traditional -- and Hong Kong from Taiwan --
+ * and converts between them.
+ *
+ * `st`/`ts` convert one character; the `*Phrases` tables convert whole
+ * phrases and are applied first, since a phrase may convert differently from
+ * its characters. The `*Inverse` tables are the variant tables read backwards.
+ */
 class TranslateZh {
-  declare both: any;
-  declare hkPhrases: any;
-  declare hkPhrasesInverse: any;
-  declare hkRevPhrases: any;
-  declare hkVariants: any;
-  declare hkVariantsInverse: any;
-  declare st: any;
-  declare stPhrases: any;
-  declare ts: any;
-  declare tsPhrases: any;
-  declare twPhrases: any;
-  declare twPhrasesInverse: any;
-  declare twRevPhrases: any;
-  declare twVariants: any;
-  declare twVariantsInverse: any;
+  /** Characters that are the same in both scripts, as a lookup set. */
+  declare both: Record<string, boolean>;
+  declare hkPhrases: ConversionDict;
+  declare hkPhrasesInverse: ConversionDict;
+  declare hkRevPhrases: ConversionDict;
+  declare hkVariants: ConversionDict;
+  declare hkVariantsInverse: ConversionDict;
+  /** Simplified to traditional, one character at a time. */
+  declare st: ConversionDict;
+  declare stPhrases: ConversionDict;
+  /** Traditional to simplified, one character at a time. */
+  declare ts: ConversionDict;
+  declare tsPhrases: ConversionDict;
+  declare twPhrases: ConversionDict;
+  declare twPhrasesInverse: ConversionDict;
+  declare twRevPhrases: ConversionDict;
+  declare twVariants: ConversionDict;
+  declare twVariantsInverse: ConversionDict;
 
   constructor() {
     this.both = {};
@@ -47,16 +67,21 @@ class TranslateZh {
     this.twRevPhrases = dictionary.twrevphrases;
   }
 
-  inversify(dict) {
+  /** Reads a conversion table backwards. */
+  inversify(dict: ConversionDict): ConversionDict {
     const keys = Object.keys(dict);
-    const result: any = {};
+    const result: ConversionDict = {};
     for (let i = 0; i < keys.length; i += 1) {
       result[dict[keys[i]]] = keys[i];
     }
     return result;
   }
 
-  canGetSlice(processedPositions, start, currentLength) {
+  canGetSlice(
+    processedPositions: boolean[],
+    start: number,
+    currentLength: number
+  ): boolean {
     for (let i = 0; i < currentLength; i += 1) {
       if (processedPositions[start + i]) {
         return false;
@@ -66,13 +91,13 @@ class TranslateZh {
   }
 
   createToken(
-    text,
-    processedPositions,
-    start?,
-    currentLength?,
-    dialect?,
-    variant?
-  ) {
+    text: string,
+    processedPositions: boolean[],
+    start?: number,
+    currentLength?: number,
+    dialect?: ChineseDialect,
+    variant?: ChineseVariant
+  ): DialectToken {
     for (let i = 0; i < currentLength; i += 1) {
       processedPositions[start + i] = true;
     }
@@ -86,8 +111,13 @@ class TranslateZh {
     };
   }
 
-  identifyByLength(sentence, processedPositions, currentLength) {
-    const result: any[] = [];
+  /** Finds the phrases of one length that give a sentence's dialect away. */
+  identifyByLength(
+    sentence: string,
+    processedPositions: boolean[],
+    currentLength: number
+  ): DialectToken[] {
+    const result: DialectToken[] = [];
     for (let i = 0; i < sentence.length - currentLength; i += 1) {
       if (this.canGetSlice(processedPositions, i, currentLength)) {
         const slice = sentence.slice(i, i + currentLength);
@@ -141,14 +171,18 @@ class TranslateZh {
     return result;
   }
 
-  isChineseChar(ch) {
+  isChineseChar(ch: string): boolean {
     const regex =
       /[\u2E80-\u2E99\u2E9B-\u2EF3\u2F00-\u2FD5\u3005\u3007\u3021-\u3029\u3038-\u303B\u3400-\u4DB5\u4E00-\u9FCC\uF900-\uFA6D\uFA70-\uFAD9]|[\uD840-\uD868\uD86A-\uD86C][\uDC00-\uDFFF]|\uD869[\uDC00-\uDED6\uDF00-\uDFFF]|\uD86D[\uDC00-\uDF34\uDF40-\uDFFF]|\uD86E[\uDC00-\uDC1D]|\uD87E[\uDC00-\uDE1D]/g;
     return regex.test(ch);
   }
 
-  identifyByChar(sentence, processedPositions) {
-    const tokens: any[] = [];
+  /** Classifies the characters no phrase claimed, then joins the runs. */
+  identifyByChar(
+    sentence: string,
+    processedPositions: boolean[]
+  ): DialectToken[] {
+    const tokens: DialectToken[] = [];
     for (let i = 0; i < sentence.length; i += 1) {
       if (!processedPositions[i]) {
         const char = sentence[i];
@@ -214,7 +248,7 @@ class TranslateZh {
         }
       }
     }
-    const result: any[] = [];
+    const result: DialectToken[] = [];
     if (tokens.length > 0) {
       let currentToken = tokens[0];
       for (let i = 1; i < tokens.length; i += 1) {
@@ -236,12 +270,13 @@ class TranslateZh {
     return result;
   }
 
-  identify(sentence) {
-    const processedPositions: any[] = [];
+  /** Which script a sentence is written in, and which variant of it. */
+  identify(sentence: string): DialectIdentification {
+    const processedPositions: boolean[] = [];
     for (let i = 0; i < sentence.length; i += 1) {
       processedPositions.push(false);
     }
-    const tokens: any[] = [];
+    const tokens: DialectToken[] = [];
     for (let i = 10; i >= 2; i -= 1) {
       const current = this.identifyByLength(sentence, processedPositions, i);
       for (let j = 0; j < current.length; j += 1) {
@@ -252,7 +287,7 @@ class TranslateZh {
     for (let j = 0; j < byChar.length; j += 1) {
       tokens.push(byChar[j]);
     }
-    const result: any = {
+    const result: DialectIdentification = {
       tokens,
       simplifiedCount: 0,
       traditionalCount: 0,
@@ -302,14 +337,17 @@ class TranslateZh {
     return result;
   }
 
-  findIndDict(text, start, dictionaries) {
-    if (!Array.isArray(dictionaries)) {
-      dictionaries = [dictionaries];
-    }
+  /** The longest phrase at a position that any of the tables converts. */
+  findIndDict(
+    text: string,
+    start: number,
+    dictionaries: ConversionDict | ConversionDict[]
+  ): DictionaryMatch | undefined {
+    const tables = Array.isArray(dictionaries) ? dictionaries : [dictionaries];
     for (let i = 10; i > 0; i -= 1) {
       const slice = text.substr(start, i);
-      for (let j = 0; j < dictionaries.length; j += 1) {
-        const dict = dictionaries[j];
+      for (let j = 0; j < tables.length; j += 1) {
+        const dict = tables[j];
         if (dict[slice]) {
           return {
             source: slice,
@@ -321,8 +359,11 @@ class TranslateZh {
     return undefined;
   }
 
-  translateByDict(text, dict) {
-    const translated: any[] = [];
+  translateByDict(
+    text: string,
+    dict: ConversionDict | ConversionDict[]
+  ): string {
+    const translated: string[] = [];
     for (let i = 0; i < text.length; i += 1) {
       const token = this.findIndDict(text, i, dict);
       if (token) {
@@ -335,7 +376,11 @@ class TranslateZh {
     return translated.join('');
   }
 
-  translateChain(text, dictionaries) {
+  /** Applies each set of tables in turn to what the previous one produced. */
+  translateChain(
+    text: string,
+    dictionaries: (ConversionDict | ConversionDict[])[]
+  ): string {
     let result = text;
     for (let i = 0; i < dictionaries.length; i += 1) {
       result = this.translateByDict(result, dictionaries[i]);
@@ -343,52 +388,52 @@ class TranslateZh {
     return result;
   }
 
-  simplifiedToTraditional(text) {
+  simplifiedToTraditional(text: string): string {
     return this.translateChain(text, [[this.stPhrases, this.st]]);
   }
 
-  simplifiedToHongKong(text) {
+  simplifiedToHongKong(text: string): string {
     return this.translateChain(text, [
       [this.stPhrases, this.st],
       [this.hkPhrases, this.hkVariants],
     ]);
   }
 
-  simplifiedToTaiwan(text) {
+  simplifiedToTaiwan(text: string): string {
     return this.translateChain(text, [
       [this.stPhrases, this.st],
       [this.twPhrases, this.twVariants],
     ]);
   }
 
-  hongKongToSimplified(text) {
+  hongKongToSimplified(text: string): string {
     return this.translateChain(text, [
       [this.hkRevPhrases, this.hkVariantsInverse],
       [this.tsPhrases, this.ts],
     ]);
   }
 
-  traditionalToHongKong(text) {
+  traditionalToHongKong(text: string): string {
     return this.translateChain(text, [this.hkVariants]);
   }
 
-  hongKongToTraditional(text) {
+  hongKongToTraditional(text: string): string {
     return this.translateChain(text, [this.hkVariantsInverse]);
   }
 
-  traditionalToSimplified(text) {
+  traditionalToSimplified(text: string): string {
     return this.translateChain(text, [[this.tsPhrases, this.ts]]);
   }
 
-  traditionalToTaiwan(text) {
+  traditionalToTaiwan(text: string): string {
     return this.translateChain(text, [this.twVariants]);
   }
 
-  taiwanToTraditional(text) {
+  taiwanToTraditional(text: string): string {
     return this.translateChain(text, [this.twVariantsInverse]);
   }
 
-  taiwanToSimplified(text) {
+  taiwanToSimplified(text: string): string {
     return this.translateChain(text, [
       [this.twRevPhrases, this.twVariantsInverse],
       [this.twPhrasesInverse],
@@ -396,7 +441,7 @@ class TranslateZh {
     ]);
   }
 
-  simplifiedTo(text, target) {
+  simplifiedTo(text: string, target: ConversionTarget): string {
     switch (target) {
       case 'simplified':
         return text;
@@ -413,7 +458,7 @@ class TranslateZh {
     }
   }
 
-  traditionalTo(text, target) {
+  traditionalTo(text: string, target: ConversionTarget): string {
     switch (target) {
       case 'simplified':
         return this.traditionalToSimplified(text);
@@ -430,7 +475,7 @@ class TranslateZh {
     }
   }
 
-  hkTo(text, target) {
+  hkTo(text: string, target: ConversionTarget): string {
     switch (target) {
       case 'simplified':
         return this.hongKongToSimplified(text);
@@ -447,7 +492,7 @@ class TranslateZh {
     }
   }
 
-  twTo(text, target) {
+  twTo(text: string, target: ConversionTarget): string {
     switch (target) {
       case 'simplified':
         return this.taiwanToSimplified(text);
@@ -464,10 +509,18 @@ class TranslateZh {
     }
   }
 
-  translate(text, source, target) {
+  /**
+   * Converts a text between scripts. Called with one script, that script is
+   * the target and the source is identified from the text itself.
+   */
+  translate(
+    text: string,
+    source: ConversionTarget,
+    target?: ConversionTarget
+  ): string {
     if (!target) {
       target = source;
-      const identification: any = this.identify(text);
+      const identification = this.identify(text);
       if (identification.dialect === 'none') {
         return text;
       }

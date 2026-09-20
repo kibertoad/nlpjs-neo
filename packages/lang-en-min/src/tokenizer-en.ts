@@ -18,16 +18,17 @@ class TokenizerEn extends Tokenizer {
     return result;
   }
 
-  replaceContractions(arr, _text?) {
+  /** Splits the contractions a tokenizer would otherwise keep as one word. */
+  replaceContractions(arr: string[], _text?: string): string[] {
     const contractionsBase = {
       cannot: ['can', 'not'],
       gonna: ['going', 'to'],
       wanna: ['want', 'to'],
     };
 
-    const result: any[] = [];
+    const result: string[] = [];
     arr.forEach((item) => {
-      const lowitem = item.toLowerCase();
+      const lowitem = item.toLowerCase() as keyof typeof contractionsBase;
       if (Object.prototype.hasOwnProperty.call(contractionsBase, lowitem)) {
         result.push(...contractionsBase[lowitem]);
       } else {
