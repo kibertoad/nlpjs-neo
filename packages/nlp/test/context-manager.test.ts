@@ -14,6 +14,14 @@ describe('ContextManager', () => {
       expect(contextManager.settings).toBeDefined();
       expect(contextManager.settings.tableName).toEqual('context');
     });
+    test('Registers a default configuration when none exists', () => {
+      const container = containerBootstrap();
+      expect(container.getConfiguration('context-manager')).toBeUndefined();
+      new ContextManager({ container });
+      expect(container.getConfiguration('context-manager')).toEqual({
+        tableName: 'context',
+      });
+    });
     test('Preserves an existing context manager configuration', () => {
       const container = containerBootstrap();
       container.registerConfiguration('context-manager', {
