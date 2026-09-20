@@ -17,7 +17,9 @@ describe('Language Arabic', () => {
     });
     test('Registers trigrams with the Arabic ISO-639-3 code', () => {
       const instance = new Container();
-      const language = { addModel: vi.fn() };
+      const language = {
+        addModel: vi.fn<(script: string, name: string, value: string) => void>(),
+      };
       instance.register('Language', language);
 
       instance.use(LangAr);
