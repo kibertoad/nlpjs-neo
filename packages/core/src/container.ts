@@ -300,7 +300,12 @@ class Container {
     const value = this.resolvePath(valuePath, context, input, srcObject);
     const tokens = path.split('.');
     const newPath = tokens.slice(0, -1).join('.');
-    const currentObject = this.resolvePath(newPath, context, input, srcObject);
+    const currentObject = this.resolvePath(
+      newPath || (path.startsWith('.') ? 'this' : ''),
+      context,
+      input,
+      srcObject
+    );
     currentObject[tokens[tokens.length - 1]] = value;
   }
 
@@ -313,11 +318,13 @@ class Container {
   ): void {
     const value = this.resolvePath(valuePath, context, input, srcObject);
     const tokens = path.split('.');
-    if (path.startsWith('.')) {
-      tokens.push('this');
-    }
     const newPath = tokens.slice(0, -1).join('.');
-    const currentObject = this.resolvePath(newPath, context, input, srcObject);
+    const currentObject = this.resolvePath(
+      newPath || (path.startsWith('.') ? 'this' : ''),
+      context,
+      input,
+      srcObject
+    );
     currentObject[tokens[tokens.length - 1]] += value;
   }
 
@@ -331,7 +338,12 @@ class Container {
     const value = this.resolvePath(valuePath, context, input, srcObject);
     const tokens = path.split('.');
     const newPath = tokens.slice(0, -1).join('.');
-    const currentObject = this.resolvePath(newPath, context, input, srcObject);
+    const currentObject = this.resolvePath(
+      newPath || (path.startsWith('.') ? 'this' : ''),
+      context,
+      input,
+      srcObject
+    );
     currentObject[tokens[tokens.length - 1]] -= value;
   }
 
@@ -421,7 +433,12 @@ class Container {
   ): void {
     const tokens = path.split('.');
     const newPath = tokens.slice(0, -1).join('.');
-    const currentObject = this.resolvePath(newPath, context, input, srcObject);
+    const currentObject = this.resolvePath(
+      newPath || (path.startsWith('.') ? 'this' : ''),
+      context,
+      input,
+      srcObject
+    );
     delete currentObject[tokens[tokens.length - 1]];
   }
 
@@ -434,7 +451,12 @@ class Container {
     const path = srcPath || 'floating';
     const tokens = path.split('.');
     const newPath = tokens.slice(0, -1).join('.');
-    const currentObject = this.resolvePath(newPath, context, input, srcObject);
+    const currentObject = this.resolvePath(
+      newPath || (path.startsWith('.') ? 'this' : ''),
+      context,
+      input,
+      srcObject
+    );
     return currentObject[tokens[tokens.length - 1]];
   }
 
@@ -627,7 +649,7 @@ class Container {
     let currentTitle = '';
     for (let i = 0; i < lines.length; i += 1) {
       const line = lines[i];
-      if (line !== '') {
+      if (line.trim() !== '') {
         if (line.startsWith('# ')) {
           if (currentName) {
             if (

@@ -290,11 +290,11 @@ class NlpManager {
   }
 
   addCorpora(corpora?) {
-    this.nlp.addCorpora(corpora);
+    return this.nlp.addCorpora(corpora);
   }
 
   addCorpus(corpus) {
-    this.nlp.addCorpus(corpus);
+    return this.nlp.addCorpus(corpus);
   }
 
   async trainAndEvaluate(fileName) {
@@ -307,7 +307,7 @@ class NlpManager {
       }
       corpus = typeof fileData === 'string' ? JSON.parse(fileData) : fileData;
     }
-    this.nlp.addCorpus(corpus);
+    await this.nlp.addCorpus(corpus);
     await this.train();
     return this.testCorpus(corpus);
   }

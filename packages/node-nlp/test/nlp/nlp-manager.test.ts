@@ -1487,6 +1487,71 @@ describe('NLP Manager', () => {
     });
   });
 
+  describe('Corpus loading', () => {
+    test('addCorpus waits for the corpus to load', async () => {
+      const nlp = new NlpManager();
+      let releaseCorpus;
+      const loading = new Promise<void>((resolve) => {
+        releaseCorpus = resolve;
+      });
+      vi.spyOn(nlp.nlp, 'addCorpus').mockReturnValue(loading);
+      let completed = false;
+      const adding = Promise.resolve(nlp.addCorpus(corpus)).then(() => {
+        completed = true;
+      });
+
+      await Promise.resolve();
+      expect(completed).toBe(false);
+
+      releaseCorpus();
+      await adding;
+      expect(completed).toBe(true);
+    });
+
+    test('addCorpora waits for the corpora to load', async () => {
+      const nlp = new NlpManager();
+      let releaseCorpora;
+      const loading = new Promise<void>((resolve) => {
+        releaseCorpora = resolve;
+      });
+      vi.spyOn(nlp.nlp, 'addCorpora').mockReturnValue(loading);
+      let completed = false;
+      const adding = Promise.resolve(nlp.addCorpora([corpus])).then(() => {
+        completed = true;
+      });
+
+      await Promise.resolve();
+      expect(completed).toBe(false);
+
+      releaseCorpora();
+      await adding;
+      expect(completed).toBe(true);
+    });
+
+    test('trainAndEvaluate waits for the corpus before training', async () => {
+      const nlp = new NlpManager();
+      let releaseCorpus;
+      const loading = new Promise<void>((resolve) => {
+        releaseCorpus = resolve;
+      });
+      vi.spyOn(nlp.nlp, 'addCorpus').mockReturnValue(loading);
+      const train = vi.spyOn(nlp, 'train').mockResolvedValue(undefined);
+      vi.spyOn(nlp, 'testCorpus').mockResolvedValue({
+        total: 0,
+        good: 0,
+        bad: 0,
+      });
+
+      const training = nlp.trainAndEvaluate(corpus);
+      await Promise.resolve();
+      expect(train).not.toHaveBeenCalled();
+
+      releaseCorpus();
+      await training;
+      expect(train).toHaveBeenCalledOnce();
+    });
+  });
+
   describe('Process corpus', () => {
     test('A corpus can be loaded and processed', async () => {
       const nlp = new NlpManager();

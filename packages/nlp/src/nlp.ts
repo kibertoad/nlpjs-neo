@@ -408,9 +408,7 @@ class Nlp extends Clonable {
       throw new Error(`Corpus importer not found: ${input.importer}`);
     }
     const corpora = importer.transform(content, input);
-    for (let i = 0; i < corpora.length; i += 1) {
-      this.addCorpus(corpora[i]);
-    }
+    await Promise.all(corpora.map((corpus) => this.addCorpus(corpus)));
   }
 
   addEntities(entities, locale?) {

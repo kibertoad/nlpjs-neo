@@ -54,6 +54,9 @@ class DefaultCompiler {
     const result: any[] = [];
     for (let i = 0; i < pipeline.length; i += 1) {
       const line = pipeline[i].trim();
+      if (!line) {
+        continue;
+      }
       const words = line.split(' ');
       const tokens: any[] = [];
       let currentString = '';

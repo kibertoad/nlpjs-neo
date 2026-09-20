@@ -308,6 +308,34 @@ describe('Container', () => {
         excludeChars: 'e',
       });
     });
+    test('Pipelines ignore whitespace-only array steps', async () => {
+      const instance = new Container();
+      const pipeline = instance.buildPipeline([
+        'set input.value 1',
+        '   ',
+        'get input.value',
+      ]);
+
+      const actual = await instance.runPipeline(pipeline, {}, new Other());
+
+      expect(actual).toEqual(1);
+    });
+    test('String pipelines ignore whitespace-only lines', async () => {
+      const instance = new Container();
+      instance.loadPipelinesFromString(
+        [
+          '# Pipelines',
+          '## main',
+          'set input.value 1',
+          '  ',
+          'get input.value',
+        ].join('\n')
+      );
+
+      const actual = await instance.runPipeline('main', {}, new Other());
+
+      expect(actual).toEqual(1);
+    });
     test('Pipelines can have comments', async () => {
       const instance = new Container();
       instance.register('lower', Lower);
@@ -369,6 +397,39 @@ describe('Container', () => {
         excludeChars: 'e',
       });
     });
+    test.each([
+      ['set', ['set .value 7', 'get .value'], {}, 7, { value: 7 }],
+      [
+        'increment',
+        ['inc .counter 2', 'get .counter'],
+        { counter: 5 },
+        7,
+        {
+          counter: 7,
+        },
+      ],
+      [
+        'decrement',
+        ['dec .counter 2', 'get .counter'],
+        { counter: 5 },
+        3,
+        {
+          counter: 3,
+        },
+      ],
+      ['delete', ['delete .value', 'get .value'], { value: 7 }, undefined, {}],
+    ])(
+      'Pipelines can %s a relative source path',
+      async (_operation, steps, source, expected, expectedSource) => {
+        const instance = new Container();
+        const pipeline = instance.buildPipeline(steps);
+
+        const actual = await instance.runPipeline(pipeline, {}, source);
+
+        expect(actual).toEqual(expected);
+        expect(source).toEqual(expectedSource);
+      }
+    );
     test('Pipelines can inc variables by 1', async () => {
       const instance = new Container();
       instance.register('lower', Lower);
