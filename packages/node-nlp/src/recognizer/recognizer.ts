@@ -42,7 +42,7 @@ class Recognizer {
    * Constructor of the class.
    * @param {Object} settings Settings for the instance.
    */
-  constructor(settings) {
+  constructor(settings?) {
     this.settings = settings || {};
     this.nlpManager =
       this.settings.nlpManager ||

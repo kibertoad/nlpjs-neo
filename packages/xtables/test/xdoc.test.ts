@@ -137,6 +137,62 @@ describe('XDoc', () => {
         name: 'Table 1',
       });
     });
+
+    test('It should read every table of every sheet', () => {
+      const xdoc = new XDoc();
+      xdoc.read('./packages/xtables/test/book1.xlsx');
+      // Three named tables on Sheet1, plus a nameless one for each empty sheet.
+      expect(xdoc.tables.map((table) => table.name)).toEqual([
+        'Table 1',
+        'Table 2',
+        'Table 3',
+        '',
+        '',
+      ]);
+      expect(xdoc.tables[1]).toEqual({
+        name: 'Table 2',
+        keys: ['id', 'name', '_column_2'],
+        data: [
+          { id: '1', name: 'name 1', _column_2: 'yes' },
+          { id: '2', name: 'name 2', _column_2: 'no' },
+          { id: '3', name: 'name 3', _column_2: undefined },
+          { id: '4', name: 'name 4', _column_2: 'yes' },
+          { id: '5', name: 'name 5', _column_2: 'no' },
+        ],
+      });
+    });
+
+    /*
+     * Excel writes a cell for anything the user has ever formatted, value or
+     * not. A blank-but-styled column still separates two tables, so the reader
+     * has to tell "formatted" from "populated".
+     */
+    test('It should not treat a blank but styled column as data', () => {
+      const xdoc = new XDoc();
+      xdoc.read('./packages/xtables/test/styled-blanks.xlsx');
+      expect(xdoc.tables.map((table) => table.name)).toEqual(['Left', 'Right']);
+      expect(xdoc.getTable('Left')).toEqual({
+        name: 'Left',
+        keys: ['id', 'name'],
+        data: [
+          { id: '1', name: 'one' },
+          { id: '2', name: 'two' },
+        ],
+      });
+    });
+
+    /*
+     * Pins how a General-format number reaches the tables: as the display text
+     * the spreadsheet library produces, never as a number.
+     */
+    test('It should read a number as its display text', () => {
+      const xdoc = new XDoc();
+      xdoc.read('./packages/xtables/test/styled-blanks.xlsx');
+      expect(xdoc.getTable('Right').data).toEqual([
+        { id: '1', ratio: '0.990566038' },
+        { id: '2', ratio: '0.5' },
+      ]);
+    });
   });
 
   describe('Get Table', () => {
