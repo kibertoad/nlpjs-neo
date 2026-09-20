@@ -1371,13 +1371,15 @@ describe('NLP', () => {
     test('It waits for imported corpora to load', async () => {
       const nlp = new Nlp();
       nlp.container.register('test-importer', {
-        transform: () => [defaultCorpus],
+        transform: () => [defaultCorpus, defaultCorpus],
       });
-      let releaseCorpus;
-      const loading = new Promise<void>((resolve) => {
-        releaseCorpus = resolve;
-      });
-      vi.spyOn(nlp, 'addCorpus').mockReturnValue(loading);
+      const releases: Array<() => void> = [];
+      const addCorpus = vi.spyOn(nlp, 'addCorpus').mockImplementation(
+        () =>
+          new Promise<void>((resolve) => {
+            releases.push(resolve);
+          })
+      );
       let completed = false;
       const importing = nlp
         .addImported({ content: 'corpus', importer: 'test' })
@@ -1386,9 +1388,10 @@ describe('NLP', () => {
         });
 
       await Promise.resolve();
+      expect(addCorpus).toHaveBeenCalledTimes(2);
       expect(completed).toBe(false);
 
-      releaseCorpus();
+      releases.forEach((release) => release());
       await importing;
       expect(completed).toBe(true);
     });

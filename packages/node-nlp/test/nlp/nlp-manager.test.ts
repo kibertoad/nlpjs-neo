@@ -1536,7 +1536,11 @@ describe('NLP Manager', () => {
       });
       vi.spyOn(nlp.nlp, 'addCorpus').mockReturnValue(loading);
       const train = vi.spyOn(nlp, 'train').mockResolvedValue(undefined);
-      vi.spyOn(nlp, 'testCorpus').mockReturnValue({});
+      vi.spyOn(nlp, 'testCorpus').mockResolvedValue({
+        total: 0,
+        good: 0,
+        bad: 0,
+      });
 
       const training = nlp.trainAndEvaluate(corpus);
       await Promise.resolve();
