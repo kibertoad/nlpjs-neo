@@ -254,7 +254,7 @@ class Recognizer {
       const params = JSON.parse(`[${parameters}]`);
       if (this.actions[name]) {
         const action = this.actions[name](this, context, ...(params || []));
-        if (action.then) {
+        if (action && action.then) {
           action.then(() => resolve());
         } else {
           return resolve();
