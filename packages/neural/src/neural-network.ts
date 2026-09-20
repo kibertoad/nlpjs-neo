@@ -118,8 +118,9 @@ class NeuralNetwork {
     return this.lookup.build(corpus);
   }
 
+  /** Builds the perceptrons of a prepared corpus, if it has none yet. */
   verifyIsInitialized(): void {
-    if (!this.perceptrons) {
+    if (!this.perceptrons && this.lookup) {
       this.initialize(this.lookup.numInputs, this.lookup.outputLookup.items);
     }
   }
@@ -205,17 +206,24 @@ class NeuralNetwork {
     return this.status;
   }
 
-  /** Weight every feature of an utterance carries for one intent. */
+  /**
+   * Weight every feature of an utterance carries for one intent. Empty when
+   * the network is untrained, or when it does not know the intent.
+   */
   explain(input: FeatureMap, intent: Intent): Explanation {
-    const transformedInput = this.lookup.transformInput(input);
+    const { lookup } = this;
+    if (!lookup) {
+      return {};
+    }
+    const transformedInput = lookup.transformInput(input);
     const result: Record<string, number> = {};
-    const intentIndex = this.lookup.outputLookup.dict[intent];
+    const intentIndex = lookup.outputLookup.dict[intent];
     if (intentIndex === undefined) {
       return {};
     }
     for (let i = 0; i < transformedInput.keys.length; i += 1) {
       const key = transformedInput.keys[i];
-      result[this.lookup.inputLookup.items[key]] =
+      result[lookup.inputLookup.items[key]] =
         this.perceptrons[intentIndex].weights[key];
     }
     return {

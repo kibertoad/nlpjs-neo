@@ -8,6 +8,13 @@ describe('Neural Network', () => {
       expect(net).toBeDefined();
     });
 
+    test('An untrained network explains nothing and initializes nothing', () => {
+      const net = new NeuralNetwork();
+      expect(net.explain({ feature: 1 }, 'intent')).toEqual({});
+      expect(() => net.verifyIsInitialized()).not.toThrow();
+      expect(net.perceptrons).toBeUndefined();
+    });
+
     test('If log setting is true should create a log function', () => {
       const net = new NeuralNetwork({ log: true });
       expect(typeof net.logFn).toEqual('function');

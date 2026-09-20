@@ -238,7 +238,7 @@ class SlotManager {
    */
   process(
     srcResult: SlotFillingResult,
-    srcContext?: SlotFillingContext,
+    srcContext: SlotFillingContext,
     _utterance?: unknown,
     _arg3?: unknown
   ): boolean {
@@ -255,8 +255,11 @@ class SlotManager {
       // No intent found, we repeat the answer from last time
       return false;
     }
+    // Recognition may have found no entity at all.
+    let entities = result.entities || [];
     if (context.slotFill && context.slotFill.intent === result.intent) {
-      result.entities = [...context.slotFill.entities, ...result.entities];
+      entities = [...context.slotFill.entities, ...entities];
+      result.entities = entities;
     }
     const mandatorySlots = this.getMandatorySlots(result.intent);
     let keys = Object.keys(mandatorySlots);
@@ -264,9 +267,12 @@ class SlotManager {
       // No mandatory entities defined, we repeat the answer from last time
       return false;
     }
-    const aliases = this.generateEntityAliases(result.entities);
-    for (let i = 0, l = result.entities.length; i < l; i += 1) {
-      const entity = result.entities[i];
+    // The intent has slots to fill, so from here on the result carries the
+    // entity list this manager completes.
+    result.entities = entities;
+    const aliases = this.generateEntityAliases(entities);
+    for (let i = 0, l = entities.length; i < l; i += 1) {
+      const entity = entities[i];
       // Remove existing mandatory entities to see what's left
       delete mandatorySlots[entity.entity];
       delete mandatorySlots[aliases[i]];
@@ -276,7 +282,7 @@ class SlotManager {
       // so add whole utterance as answer for the requested slow
       // Do this because automatically parsed entities by builtins like "duration" are
       // added automatically, and we don't want to have duplicated entries in the list
-      result.entities.push({
+      entities.push({
         entity: context.slotFill.currentSlot,
         utteranceText: result.utterance,
         sourceText: result.utterance,
@@ -303,7 +309,7 @@ class SlotManager {
     result.slotFill = {
       localeIso2: result.localeIso2,
       intent: result.intent,
-      entities: result.entities,
+      entities,
       answer: result.answer,
       srcAnswer: result.srcAnswer,
     };

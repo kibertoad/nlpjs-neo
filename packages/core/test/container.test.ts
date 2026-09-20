@@ -185,6 +185,13 @@ describe('Container', () => {
       expect(actual2).toBeInstanceOf(Other);
       expect(actual2).not.toBe(actual);
     });
+    test('A name that matches nothing stays undefined once the miss is cached', () => {
+      const instance = new Container();
+      instance.register('other', new Other());
+      expect(instance.getBestKey('another')).toBeUndefined();
+      expect(instance.getBestKey('another')).toBeUndefined();
+      expect(instance.get('another')).toBeUndefined();
+    });
   });
 
   describe('Resolve Path', () => {

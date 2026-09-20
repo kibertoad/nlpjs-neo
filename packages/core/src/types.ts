@@ -66,8 +66,11 @@ export interface PipelineInput {
 
 /**
  * Second argument of the tokenizing and normalizing stages. Historically it
- * is a boolean flag, but the pipeline stages forward the whole input object,
- * which the implementations only test for truthiness.
+ * is a boolean flag that forces normalization on or off, and `undefined`
+ * leaves the decision to the stage's own setting. The pipeline stages
+ * forward the whole input object instead, which counts as `false`: the
+ * normalizing stage runs before the tokenizing one, so the text reaching
+ * the tokenizer is already normalized.
  */
 export type NormalizeFlag = boolean | PipelineInput;
 

@@ -51,8 +51,18 @@ class Tokenizer implements TokenizerService {
     return this.normalizer;
   }
 
+  /**
+   * Whether a call normalizes the text before tokenizing. `true` forces it,
+   * `false` and the input object a pipeline forwards skip it, because the
+   * normalizing stage has already run. Only `undefined` leaves the decision
+   * to the tokenizer's own setting.
+   */
+  normalizes(force?: NormalizeFlag): boolean {
+    return force === true || (force === undefined && this.shouldNormalize);
+  }
+
   normalize(text: string, force?: NormalizeFlag): string {
-    if ((force === undefined && this.shouldNormalize) || force === true) {
+    if (this.normalizes(force)) {
       const normalizer = this.getNormalizer();
       return normalizer.normalize(text);
     }
@@ -64,6 +74,10 @@ class Tokenizer implements TokenizerService {
   }
 
   tokenize(text: string, normalize?: NormalizeFlag): Token[] {
+    // The two cache buckets hold the tokens of the same text with and
+    // without normalization, so the bucket has to follow the decision
+    // `normalize` actually makes, not the truthiness of the flag.
+    const isNormalizing = this.normalizes(normalize);
     let result: Token[] | undefined;
     if (this.cache) {
       const now = new Date();
@@ -79,21 +93,18 @@ class Tokenizer implements TokenizerService {
         nonNormalized: {},
       };
     } else {
-      if (normalize) {
-        if (Object.prototype.hasOwnProperty.call(this.cache.normalized, text)) {
-          result = this.cache.normalized[text];
-        }
-      } else if (
-        Object.prototype.hasOwnProperty.call(this.cache.nonNormalized, text)
-      ) {
-        result = this.cache.nonNormalized[text];
+      const bucket = isNormalizing
+        ? this.cache.normalized
+        : this.cache.nonNormalized;
+      if (Object.prototype.hasOwnProperty.call(bucket, text)) {
+        result = bucket[text];
       }
       if (result) {
         return result;
       }
     }
     result = this.innerTokenize(this.normalize(text, normalize), normalize);
-    if (normalize) {
+    if (isNormalizing) {
       this.cache.normalized[text] = result;
     } else {
       this.cache.nonNormalized[text] = result;

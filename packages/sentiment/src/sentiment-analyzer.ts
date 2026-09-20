@@ -115,37 +115,49 @@ class SentimentAnalyzer extends Clonable {
     return input;
   }
 
+  /**
+   * Tokenizes the utterance for the dictionary picked by `getDictionary`.
+   * A pipeline that skipped that stage has no dictionary to key tokens by,
+   * so there is nothing to prepare.
+   */
   async getTokens(srcInput: SentimentInput): Promise<SentimentInput> {
     const input = srcInput;
-    if (!input.tokens && input.sentimentDictionary.type) {
+    const selected = input.sentimentDictionary;
+    if (!input.tokens && selected?.type) {
       input.tokens = await this.prepare(
         input.locale,
         input.utterance || input.text,
         input.settings,
-        input.sentimentDictionary.stemmed
+        selected.stemmed
       );
     }
     return input;
   }
 
+  /**
+   * Scores the tokens against the dictionary picked by `getDictionary`.
+   * Without a dictionary, be it an unsupported locale or a pipeline that
+   * skipped that stage, the utterance scores as neutral.
+   */
   calculate(srcInput: SentimentInput): SentimentInput {
     const input = srcInput;
-    if (input.sentimentDictionary.type) {
+    const selected = input.sentimentDictionary;
+    if (selected?.type) {
       const tokens = Array.isArray(input.tokens)
         ? input.tokens
         : Object.keys(input.tokens);
-      if (!input.sentimentDictionary.dictionary) {
+      if (!selected.dictionary) {
         input.sentiment = {
           score: 0,
           numWords: tokens.length,
           numHits: 0,
           average: 0,
-          type: input.sentimentDictionary.type,
+          type: selected.type,
           locale: input.locale,
         };
       } else {
-        const { dictionary } = input.sentimentDictionary;
-        const { negations } = input.sentimentDictionary;
+        const { dictionary } = selected;
+        const { negations } = selected;
         let score = 0;
         let negator = 1;
         let numHits = 0;
@@ -164,7 +176,7 @@ class SentimentAnalyzer extends Clonable {
           numWords: tokens.length,
           numHits,
           average: score / tokens.length,
-          type: input.sentimentDictionary.type,
+          type: selected.type,
           locale: input.locale,
         };
       }
@@ -174,7 +186,7 @@ class SentimentAnalyzer extends Clonable {
         numWords: 0,
         numHits: 0,
         average: 0,
-        type: input.sentimentDictionary.type,
+        type: selected?.type,
         locale: input.locale,
       };
     }

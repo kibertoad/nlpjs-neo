@@ -356,6 +356,17 @@ describe('Slot Manager', () => {
       expect(actual).toBeFalsy();
       expect(result).toEqual({ intent: 'blau' });
     });
+    test('If result carries no entities, should fill the list it completes', () => {
+      const manager = new SlotManager();
+      manager.addSlot('intent', 'entity', true, { en: 'Which entity?' });
+      const result: any = { intent: 'intent', localeIso2: 'en' };
+      const context: any = {};
+      const actual = manager.process(result, context);
+      expect(actual).toBeTruthy();
+      expect(result.entities).toEqual([]);
+      expect(result.srcAnswer).toEqual('Which entity?');
+      expect(result.slotFill.currentSlot).toEqual('entity');
+    });
     test('If result has no intent, and context has not slot fill, should exit process', () => {
       const manager = new SlotManager();
       const result = {

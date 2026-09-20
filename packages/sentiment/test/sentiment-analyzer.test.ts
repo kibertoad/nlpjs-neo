@@ -9,6 +9,33 @@ describe('Sentiment Analyzer', () => {
     });
   });
 
+  describe('Calculate', () => {
+    test('Without a dictionary the utterance is neutral', () => {
+      const analyzer = new SentimentAnalyzer({ container });
+      const result = analyzer.calculate({
+        locale: 'en',
+        utterance: 'I love my cat',
+      });
+      expect(result.sentiment).toEqual({
+        score: 0,
+        numWords: 0,
+        numHits: 0,
+        average: 0,
+        type: undefined,
+        locale: 'en',
+        vote: 'neutral',
+      });
+    });
+    test('Without a dictionary there is nothing to tokenize', async () => {
+      const analyzer = new SentimentAnalyzer({ container });
+      const result = await analyzer.getTokens({
+        locale: 'en',
+        utterance: 'I love my cat',
+      });
+      expect(result.tokens).toBeUndefined();
+    });
+  });
+
   describe('Get Sentiment', () => {
     test('Get positive sentiment', async () => {
       const analyzer = new SentimentAnalyzer({ container });

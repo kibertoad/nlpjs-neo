@@ -147,8 +147,10 @@ class Container {
   }
 
   getBestKey(name: string): string | undefined {
-    if (this.cache.bestKeys[name] !== undefined) {
-      return this.cache.bestKeys[name];
+    const cached = this.cache.bestKeys[name];
+    if (cached !== undefined) {
+      // `null` is the cached answer for "no registered name matches".
+      return cached ?? undefined;
     }
     const keys = Object.keys(this.factory);
     for (let i = 0; i < keys.length; i += 1) {
@@ -166,8 +168,11 @@ class Container {
    * container and then to a wildcard match. What a name resolves to is
    * decided at runtime, so callers state the contract they expect:
    * `container.get<Storage>('storage')`.
+   *
+   * @returns The service, or `undefined` when no name and no wildcard of
+   * this container or of its parents matches.
    */
-  get<T = any>(name: string, settings?: unknown): T {
+  get<T = any>(name: string, settings?: unknown): T | undefined {
     let item = this.factory[name];
     if (!item) {
       if (this.parent) {
