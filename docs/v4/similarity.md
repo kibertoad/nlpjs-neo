@@ -8,7 +8,6 @@
 - [leven](#leven)
 - [similarity](#similarity)
 - [SpellCheck](#spellcheck)
-- [SpellCheck trained with words trained from a text](#spellcheck-trained-with-words-trained-from-a-text)
 
 <!--te-->
 
@@ -70,22 +69,5 @@ const spellCheck = new SpellCheck({
   },
 });
 const actual = spellCheck.check(['worling'], 1);
-console.log(actual);
-```
-
-## SpellCheck trained with words trained from a text
-
-```javascript
-import fs from 'fs';
-import { SpellCheck } from '@nlpjs-neo/similarity';
-import { NGrams } from '@nlpjs-neo/utils';
-
-// File book.txt should contain the text that contains the words to be learnt. 
-// In the example we used Pride and Prejudice from Project Gutenberg 
-const lines = fs.readFileSync('./data/book.txt', 'utf-8').split(/\r?\n/);
-const ngrams = new NGrams({ byWord: true });
-const freqs = ngrams.getNGramsFreqs(lines, 1);
-const spellCheck = new SpellCheck({ features: freqs });
-const actual = spellCheck.check(['knowldge', 'thas', 'prejudize']);
 console.log(actual);
 ```

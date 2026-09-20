@@ -191,5 +191,6 @@ None of these block the steps above.
 
 ## Out of scope
 
-`packages/utils/src/nlp-analyzer.js` writes reports with `exceljs`. That is a separate
-dependency with its own migration.
+`@nlpjs-neo/utils` used to write reports with `exceljs`, which would have been a separate
+migration. The package was removed, so `@office-kit/xlsx` is now the only spreadsheet
+library in the workspace.

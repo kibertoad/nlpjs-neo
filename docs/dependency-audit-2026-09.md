@@ -7,10 +7,18 @@ what is done; **Progress log** at the end of the document records each landed st
 including the places where the original finding turned out to be wrong.
 
 Items 1 to 4, 7, 8, 12 to 16, 19 to 24 are done. `pnpm audit` is down from 51 advisories
-(3 critical, 23 high, 24 moderate, 1 low) to 6 (4 high, 2 moderate), all of which belong
-to items 5, 6, 9 and 10. Step 4 moved no advisory, because none of the four dependencies it
-replaced carried one; what it removed was unmaintained code and four defects that the
-packages' own tests were hiding.
+(3 critical, 23 high, 24 moderate, 1 low) to 2 (2 high), both of which belong to item 5.
+Step 4 moved no advisory, because none of the four dependencies it replaced carried one;
+what it removed was unmaintained code and four defects that the packages' own tests were
+hiding.
+
+**Items 6, 9, 10, 11, 18, 21, 22, 23 and 25 are moot.** The September 2026 package cull
+removed 25 packages that were under 200 weekly downloads on the pre-fork `@nlpjs`
+namespace and had no remaining internal dependents, and those nine items all belonged to
+packages it removed. That took `pnpm audit` from 6 advisories to 2 without any upgrade
+work: the `adm-zip` advisories left with `@tensorflow/tfjs-node`, and the `uuid` one left
+with `actions-on-google` and `botbuilder`. Their analysis is kept below for the record,
+each marked **Moot**.
 
 Scope: every third-party dependency declared in the root `package.json` and in
 `packages/*/package.json`. The `examples/` folders are not part of the pnpm workspace and
@@ -38,37 +46,39 @@ Ordered by how much risk each item removes per unit of work.
 
 | # | Dependency | Package(s) | Finding | Recommendation | Status |
 | --- | --- | --- | --- | --- | --- |
-| 1 | `tar` 6.2.1 | utils (and 4.4.19 via tfjs-node) | 13 advisories, 1 critical, fixed only in 7.5.x | Upgrade to `^7.5.22`, add a pnpm override for the tfjs-node path | Done |
-| 2 | `axios` 0.26.1 | request-rn | 23 advisories | Replace with global `fetch` | Done |
-| 3 | `decompress` 4.2.1 | fullbot | Critical zip-slip, no fixed version, last release 2020 | Replace with `node-stream-zip` | Done |
+| 1 | `tar` 6.2.1 | utils (and 4.4.19 via tfjs-node) | 13 advisories, 1 critical, fixed only in 7.5.x | Upgrade to `^7.5.22`, add a pnpm override for the tfjs-node path | Done (package since removed) |
+| 2 | `axios` 0.26.1 | request-rn | 23 advisories | Replace with global `fetch` | Done (package since removed) |
+| 3 | `decompress` 4.2.1 | fullbot | Critical zip-slip, no fixed version, last release 2020 | Replace with `node-stream-zip` | Done (package since removed) |
 | 4 | `coveralls` 3.1.1 | root dev | Unmaintained, pulls `request` 2.88 with 7 advisories, not used by CI | Remove | Done |
 | 5 | `xlsx` 0.18.5 | xtables | Two unfixed CVEs on npm, no npm releases since 2022 | Follow `docs/migrate-sheetjs-to-office-kit.md` | Open |
-| 6 | `@tensorflow/tfjs-node` 3.21.1 | open-question | Two majors behind, project in maintenance mode, drags in vulnerable `tar` 4, `adm-zip` 0.5, `rimraf` 2, `https-proxy-agent` 2 | Migrate to `@huggingface/transformers`; bump to `^4.22` as a stopgap | Open |
-| 7 | `node-fetch` 2.6.7 | directline-connector | Node has had `fetch` since 18 | Remove, use global `fetch` | Done |
-| 8 | `rimraf` 3.0.2 | fullbot | Node has `fs.rmSync` since 14.14 | Remove, use `fs.rmSync` | Done |
-| 9 | `actions-on-google` 3.0.0 | dialogflow-connector | Platform shut down June 2023, library archived | Retire the package or rewrite as a plain Dialogflow ES webhook | Open |
-| 10 | `botbuilder-adapter-facebook` 1.0.12 | fb-connector | Botkit adapter, last release 2022, pulls all of Botkit and Bot Framework | Replace with a small Graph API client on `fetch` | Open |
-| 11 | `serverless-express` 2.0.12 | express-api-serverless | Abandoned fork, last release 2021 | Replace with `@codegenie/serverless-express` | Open |
+| 6 | `@tensorflow/tfjs-node` 3.21.1 | open-question | Two majors behind, project in maintenance mode, drags in vulnerable `tar` 4, `adm-zip` 0.5, `rimraf` 2, `https-proxy-agent` 2 | Migrate to `@huggingface/transformers`; bump to `^4.22` as a stopgap | Moot — package removed |
+| 7 | `node-fetch` 2.6.7 | directline-connector | Node has had `fetch` since 18 | Remove, use global `fetch` | Done (package since removed) |
+| 8 | `rimraf` 3.0.2 | fullbot | Node has `fs.rmSync` since 14.14 | Remove, use `fs.rmSync` | Done (package since removed) |
+| 9 | `actions-on-google` 3.0.0 | dialogflow-connector | Platform shut down June 2023, library archived | Retire the package or rewrite as a plain Dialogflow ES webhook | Moot — package removed |
+| 10 | `botbuilder-adapter-facebook` 1.0.12 | fb-connector | Botkit adapter, last release 2022, pulls all of Botkit and Bot Framework | Replace with a small Graph API client on `fetch` | Moot — package removed |
+| 11 | `serverless-express` 2.0.12 | express-api-serverless | Abandoned fork, last release 2021 | Replace with `@codegenie/serverless-express` | Moot — package removed |
 | 12 | `esprima` 4.0.1 + `escodegen` 2.1.0 | evaluator | Parser frozen since 2018, no ES2020+ syntax | Replace with `acorn` + `astring` | Done |
-| 13 | `mongodb` 3.7.4 | mongodb-adapter | Four majors behind, uses removed APIs | Upgrade to `^7.6.0` and update the adapter | Done |
-| 14 | `compromise` 13 + `compromise-numbers` + `compromise-dates` 1 | builtin-compromise | One major behind, numbers plugin folded into core | Upgrade to `compromise` 14 + `compromise-dates` 3, drop `compromise-numbers` | Done |
+| 13 | `mongodb` 3.7.4 | mongodb-adapter | Four majors behind, uses removed APIs | Upgrade to `^7.6.0` and update the adapter | Done (package since removed) |
+| 14 | `compromise` 13 + `compromise-numbers` + `compromise-dates` 1 | builtin-compromise | One major behind, numbers plugin folded into core | Upgrade to `compromise` 14 + `compromise-dates` 3, drop `compromise-numbers` | Done (package since removed) |
 | 15 | `pino` 7 + `pino-pretty` 7 | logger | Three and six majors behind, `prettyPrint` option no longer exists | Upgrade; `pino-pretty` as a stream, not a `transport` | Done |
-| 16 | `https-proxy-agent` 5 + `http-proxy-agent` 5 | request, utils, root dev | Four majors behind; Node 24 has built-in env proxy support | Upgrade to `^9.1.0` now, drop once the floor is Node 24 | Done (upgraded; removal waits for Node 24) |
+| 16 | `https-proxy-agent` 5 + `http-proxy-agent` 5 | request, root dev (also utils, since removed) | Four majors behind; Node 24 has built-in env proxy support | Upgrade to `^9.1.0` now, drop once the floor is Node 24 | Done (upgraded; removal waits for Node 24) |
 | 17 | `kuromoji` 0.1.2 | lang-ja | Last release 2018, callback API, dictionary path hand-resolved | Switch to `@patdx/kuromoji` | Open |
-| 18 | `express` 4 | express-api-server | One major behind, still patched | Upgrade to 5 when convenient, one line to verify | Open |
-| 19 | `formidable` 2 | directline-connector | One major behind | Upgrade to `^3.5.4` | Done |
-| 20 | `archiver` 5 | fullbot | Three majors behind | Upgrade to `^8.0.0` | Done |
-| 21 | `bcryptjs` 2 | api-auth-jwt | One major behind; Node `crypto.scrypt` is native | Upgrade to 3, or move to `scrypt` | Done (upgraded to 3; scrypt not adopted) |
-| 22 | `supertest` 6 | root dev, express-api-server dev | One major behind, declared twice | Upgrade to 7, keep only the package-level declaration | Done |
-| 23 | `passport` 0.6 | api-auth-jwt | Minor behind; whole stack is optional for two strategies | Upgrade to 0.7, consider dropping passport | Done (upgraded to 0.7; passport kept) |
+| 18 | `express` 4 | express-api-server | One major behind, still patched | Upgrade to 5 when convenient, one line to verify | Moot — package removed |
+| 19 | `formidable` 2 | directline-connector | One major behind | Upgrade to `^3.5.4` | Done (package since removed) |
+| 20 | `archiver` 5 | fullbot | Three majors behind | Upgrade to `^8.0.0` | Done (package since removed) |
+| 21 | `bcryptjs` 2 | api-auth-jwt | One major behind; Node `crypto.scrypt` is native | Upgrade to 3, or move to `scrypt` | Moot — package removed |
+| 22 | `supertest` 6 | root dev, express-api-server dev | One major behind, declared twice | Upgrade to 7, keep only the package-level declaration | Moot — package removed |
+| 23 | `passport` 0.6 | api-auth-jwt | Minor behind; whole stack is optional for two strategies | Upgrade to 0.7, consider dropping passport | Moot — package removed |
 | 24 | `@microsoft/recognizers-text-suite` 1.3.0 | builtin-microsoft | Pinned exactly, patch behind | Change to `^1.3.1` | Done |
-| 25 | `exceljs` 4.4.0 | utils | Last release 2023, deprecated transitive chain | Consolidate onto `@office-kit/xlsx` after item 5 | Open |
+| 25 | `exceljs` 4.4.0 | utils | Last release 2023, deprecated transitive chain | Consolidate onto `@office-kit/xlsx` after item 5 | Moot — package removed |
 
 ## Findings in detail
 
 ### 1. Security: fix now
 
 #### `tar` ^6.0.2 (resolved 6.2.1) in `@nlpjs-neo/utils`
+
+**Moot.** `@nlpjs-neo/utils` was removed from the workspace in the September 2026 package cull, so this item no longer has a package to apply to. The analysis is kept for the record.
 
 The lockfile resolves to 6.2.1 here and to 4.4.19 under `@tensorflow/tfjs-node`. The audit
 reports 13 advisories against the two, including path traversal via hardlinks and symlink
@@ -101,6 +111,8 @@ still supported in 7.x, and the package is dual CommonJS/ESM, so the override is
 
 #### `axios` ^0.26.0 (resolved 0.26.1) in `@nlpjs-neo/request-rn`
 
+**Moot.** `@nlpjs-neo/request-rn` was removed from the workspace in the September 2026 package cull, so this item no longer has a package to apply to. The analysis is kept for the record.
+
 23 advisories, from SSRF and credential leakage to prototype pollution and ReDoS. The
 package exists so that React Native builds have an HTTP client. React Native ships `fetch`,
 and Node has had a global `fetch` since 18, so the whole file reduces to:
@@ -120,6 +132,8 @@ This removes the dependency, the CommonJS interop shim at the top of the file an
 API compatibility, map those two fields before calling `fetch`.
 
 #### `decompress` ^4.2.1 in `@nlpjs-neo/fullbot`
+
+**Moot.** `@nlpjs-neo/fullbot` was removed from the workspace in the September 2026 package cull, so this item no longer has a package to apply to. The analysis is kept for the record.
 
 Three advisories, one critical (arbitrary file write outside the target directory). There is
 no patched version; the last release was April 2020. `fullbot` uses it once, to unzip a
@@ -175,6 +189,8 @@ before starting. Nothing in this audit changes the plan's conclusions.
 
 #### `@tensorflow/tfjs-node` ^3.0.0 (resolved 3.21.1) in `@nlpjs-neo/open-question`
 
+**Moot.** `@nlpjs-neo/open-question` was removed from the workspace in the September 2026 package cull, so this item no longer has a package to apply to. The analysis is kept for the record.
+
 The range is two majors behind the latest 4.22.0, itself from October 2024. TensorFlow.js
 is in maintenance mode and the Node binding downloads a prebuilt N-API 3 through 8 binary
 at install time, or compiles from source when none matches. It is the reason
@@ -196,6 +212,8 @@ a stopgap to at least drop `tar` 4.
 
 #### `actions-on-google` ^3.0.0 in `@nlpjs-neo/dialogflow-connector`
 
+**Moot.** `@nlpjs-neo/dialogflow-connector` was removed from the workspace in the September 2026 package cull, so this item no longer has a package to apply to. The analysis is kept for the record.
+
 Google shut down Conversational Actions on 13 June 2023 and archived this SDK; 3.0.0
 (August 2021) is its final release. The connector is 91 lines that build a `dialogflow()`
 app and register intent handlers.
@@ -210,6 +228,8 @@ Two options:
 
 #### `botbuilder-adapter-facebook` ^1.0.11 in `@nlpjs-neo/fb-connector`
 
+**Moot.** `@nlpjs-neo/fb-connector` was removed from the workspace in the September 2026 package cull, so this item no longer has a package to apply to. The analysis is kept for the record.
+
 A Botkit adapter, last released March 2022. It depends on `botkit` 4.15, which in turn
 depends on the full Bot Framework stack, so this one line brings `botbuilder`,
 `botbuilder-dialogs`, `botframework-connector`, the Azure SDK and `@typespec/ts-http-runtime`
@@ -222,6 +242,8 @@ about 100 lines removes both `botbuilder-adapter-facebook` and `botbuilder` from
 `fb-connector`. `botbuilder` 4.23.3 itself is current and stays in `msbf-connector`.
 
 #### `serverless-express` ^2.0.11 in `@nlpjs-neo/express-api-serverless`
+
+**Moot.** `@nlpjs-neo/express-api-serverless` was removed from the workspace in the September 2026 package cull, so this item no longer has a package to apply to. The analysis is kept for the record.
 
 This is an individual's fork, last published September 2021. The maintained project is
 `@codegenie/serverless-express` (formerly `@vendia/serverless-express`). Its 5.0.0 (April
@@ -342,6 +364,8 @@ Also, `request.ts` sets the content type to `application/x-wwww-form-urlencoded`
 
 #### `mongodb` ^3.5.9 (resolved 3.7.4) in `@nlpjs-neo/mongodb-adapter`
 
+**Moot.** `@nlpjs-neo/mongodb-adapter` was removed from the workspace in the September 2026 package cull, so this item no longer has a package to apply to. The analysis is kept for the record.
+
 Latest is 7.6.0 (August 2026, Node 20.19 floor). Every major since 4 was breaking and the
 adapter uses three things that no longer exist:
 
@@ -365,6 +389,8 @@ replaced, and they were wrong about what the driver returns. See the progress lo
 four defects they were hiding.
 
 #### `compromise` ^13.7.0, `compromise-numbers` ^1.0.0, `compromise-dates` ^1.2.0
+
+**Moot.** `@nlpjs-neo/builtin-compromise` was removed from the workspace in the September 2026 package cull, so this item no longer has a package to apply to. The analysis is kept for the record.
 
 `compromise` 14.17.0 (September 2026) is ESM-native. In 14 the numbers plugin was merged
 into core, so `compromise-numbers` (last release June 2021) is deleted rather than upgraded.
@@ -421,6 +447,8 @@ assert what is written rather than that a method was called.
 
 #### `express` ^4.17.1 (resolved 4.22.3) and `cors` in `@nlpjs-neo/express-api-server`
 
+**Moot.** `@nlpjs-neo/express-api-server` was removed from the workspace in the September 2026 package cull, so this item no longer has a package to apply to. The analysis is kept for the record.
+
 Express 5.2.1 (December 2025) is current; Express 4 still receives security patches, so this
 is medium priority. One line needs checking: `express-api-app.ts:75` reads
 `router.stack.map((layer) => layer.route.path)` for a debug log, which relies on router
@@ -429,6 +457,8 @@ confirm it in the test. No routes in the repo use `*`, `?` or regex segments, so
 path-to-regexp 8 syntax change does not affect them. `cors` 2.8.6 is the latest release.
 
 #### `formidable` ^2.0.1 in `@nlpjs-neo/directline-connector`
+
+**Moot.** `@nlpjs-neo/directline-connector` was removed from the workspace in the September 2026 package cull, so this item no longer has a package to apply to. The analysis is kept for the record.
 
 Done. 3.5.4 (April 2025) is ESM-first and the `formidable({ ... })` factory is unchanged.
 `form.parse` gains a promise form, which let the upload handler drop its callback, and
@@ -440,12 +470,16 @@ every upload threw. The route had no test; it has one now.
 
 #### `archiver` ^5.2.0 in `@nlpjs-neo/fullbot`
 
+**Moot.** `@nlpjs-neo/fullbot` was removed from the workspace in the September 2026 package cull, so this item no longer has a package to apply to. The analysis is kept for the record.
+
 8.0.0 (May 2026, Node 18 floor). Done, and this paragraph was wrong when written:
 `.directory()`, `.pipe()` and `.finalize()` are unchanged, but 8 removed the
 `archiver(format)` factory, so `compressFolder` builds `new ZipArchive()`. The package
 ships no types either, so `@types/archiver` is a dev dependency of `fullbot`.
 
 #### `bcryptjs` ^2.4.3 in `@nlpjs-neo/api-auth-jwt`
+
+**Moot.** `@nlpjs-neo/api-auth-jwt` was removed from the workspace in the September 2026 package cull, so this item no longer has a package to apply to. The analysis is kept for the record.
 
 3.0.3 (November 2025) ships its own types and ESM entry; the `hashSync` and `compare` calls
 are unchanged. The native alternative is `crypto.scrypt` from `node:crypto`, which needs no
@@ -455,6 +489,8 @@ re-hashed on next login. Upgrade to 3 now; adopt scrypt if the package ever chan
 storage format anyway.
 
 #### `passport` ^0.6.0, `passport-jwt` ^4.0.0, `passport-local` ^1.0.0, `jsonwebtoken` ^9.0.0
+
+**Moot.** `@nlpjs-neo/api-auth-jwt` was removed from the workspace in the September 2026 package cull, so this item no longer has a package to apply to. The analysis is kept for the record.
 
 `passport` 0.7.0 (November 2023) is a small bump. `passport-local` 1.0.0 dates from 2014
 and `passport-jwt` 4.0.1 from 2022; both are stable and have nothing to upgrade to.
@@ -473,12 +509,16 @@ maintained, and there is no equivalent multi-locale recognizer set. Change the r
 
 #### `exceljs` ^4.1.1 in `@nlpjs-neo/utils`
 
+**Moot.** `@nlpjs-neo/utils` was removed from the workspace in the September 2026 package cull, so this item no longer has a package to apply to. The analysis is kept for the record.
+
 4.4.0 (October 2023) is the latest. It is used only by `NlpAnalyzer` to write a workbook. Its
 transitive chain (`unzipper` 0.10, `fstream`, `rimraf` 2) is deprecated. Once `xtables` moves
 to `@office-kit/xlsx`, which writes as well as reads, `NlpAnalyzer` should move too so that the
 workspace has one spreadsheet library.
 
 #### `supertest` ^6 (root dev and `express-api-server` dev)
+
+**Moot.** `@nlpjs-neo/express-api-server` was removed from the workspace in the September 2026 package cull, so this item no longer has a package to apply to. The analysis is kept for the record.
 
 7.2.2 (January 2026). It is declared at both the root and package level; only the package
 uses it, so keep the package-level entry at `^7.2.2` and remove the root one.
@@ -487,12 +527,12 @@ uses it, so keep the package-level entry at `^7.2.2` and remove the root one.
 
 | Dependency | Package | Latest | Note |
 | --- | --- | --- | --- |
-| `botbuilder` 4.23.3 | msbf-connector | 4.23.3 | Current; remains after `fb-connector` drops it |
-| `cors` 2.8.6 | express-api-server | 2.8.6 | Current |
-| `jsonwebtoken` 9.0.3 | api-auth-jwt | 9.0.3 | Current |
 | `@types/node` 22.x | root dev | 26.6.2 | Intentionally tracks the engine floor |
-| `passport-jwt` 4.0.1, `passport-local` 1.0.0 | api-auth-jwt | same | No newer release; see the `jose` note |
 | toolchain (`typescript`, `vitest`, `oxlint`, `oxfmt`, `@changesets/cli`, `publint`, `@arethetypeswrong/cli`) | root dev | latest | Current |
+
+`botbuilder`, `cors`, `jsonwebtoken`, `passport-jwt` and `passport-local` were also on this
+list. All five belonged to packages the September 2026 cull removed, and none of them is
+declared anywhere in the workspace now.
 
 ### 6. `examples/` (outside the workspace)
 
@@ -504,7 +544,6 @@ These do not affect the published packages but are what new users copy.
   `node-nlp-neo`.
 - `hello_world` inside `examples/`: `axios` 0.21 (same advisories as above) and `mocha`/`chai`
   where the rest of the repository uses `vitest`.
-- `16-fb-connector`: `dotenv` can be replaced by `node --env-file=.env index.js`.
 
 ## Suggested order of work
 
@@ -518,13 +557,14 @@ These do not affect the published packages but are what new users copy.
 3. **[x] `decompress` to `node-stream-zip`** in `fullbot`. Clears the last unfixed critical.
 4. **[x] `pino` 10, `compromise` 14, `mongodb` 7, `esprima`/`escodegen` to `acorn`/`astring`.**
    Each is a contained change to one package with its own tests.
-5. **[ ] `xlsx` to `@office-kit/xlsx`** per the existing plan, then `exceljs` onto the same library.
-6. **[ ] Connector clean-up:** rewrite `fb-connector` on `fetch`, replace `serverless-express`
-   with `@codegenie/serverless-express` 4.17, decide the future of `dialogflow-connector`.
-7. **[ ] `open-question` to `@huggingface/transformers`.** Largest item; bump `tfjs-node` to
-   `^4.22` first if it has to wait.
+5. **[ ] `xlsx` to `@office-kit/xlsx`** per the existing plan. The `exceljs` half of this
+   item went away with `utils`.
+6. **[x] Connector clean-up.** Settled by removal rather than by rewriting: `fb-connector`,
+   `dialogflow-connector` and `express-api-serverless` are gone.
+7. **[x] `open-question` to `@huggingface/transformers`.** Settled by removal; the package
+   and its `tfjs-node` dependency are gone.
 8. **[ ] When the floor moves to Node 24:** drop the proxy agents in favour of
-   `NODE_USE_ENV_PROXY`, and move `@codegenie/serverless-express` to 5.
+   `NODE_USE_ENV_PROXY`.
 
 ## Progress log
 
@@ -646,10 +686,38 @@ alone, so the whole adapter had to be rewritten rather than patched in three pla
 
 ### Remaining advisories
 
-The 6 that are left all belong to items still open:
+The 2 that are left both belong to item 5, which is still open:
 
 | Package | Path | Item |
 | --- | --- | --- |
 | `xlsx` (2 high) | `xtables > xlsx` | 5 |
-| `adm-zip` (2 high, 1 moderate) | `open-question > @tensorflow/tfjs-node > adm-zip` | 6 |
-| `uuid` (1 moderate) | `dialogflow-connector > actions-on-google > ...`, `fb-connector > botbuilder > ...` | 9, 10 |
+
+The other four went away with the package cull rather than with an upgrade: `adm-zip`
+(2 high, 1 moderate) came in through `open-question > @tensorflow/tfjs-node`, and `uuid`
+(1 moderate) through `dialogflow-connector > actions-on-google` and
+`fb-connector > botbuilder`.
+
+### 2026-09-20 — package cull, 25 packages removed
+
+Every package in `packages/` was checked against its weekly download count on the pre-fork
+`@nlpjs` namespace (the `@nlpjs-neo` namespace is not published yet, so it carries no
+signal). The 25 under 200 weekly downloads turned out to have no dependents among the
+packages that stayed, so they came out as one closed cluster with no code changes needed
+anywhere else:
+
+`api-auth-jwt`, `bert-open-question`, `bert-tokenizer`, `bot`, `builtin-compromise`,
+`database`, `dialogflow-connector`, `directline-connector`, `express-api-server`,
+`express-api-serverless`, `fb-connector`, `fullbot`, `lang-bert`, `lexer`,
+`mongodb-adapter`, `msbf-connector`, `neural-worker`, `nlu-luis`, `open-question`,
+`python-compiler`, `qna-importer`, `request-rn`, `rest-connector`, `similarity-wa`,
+`utils`.
+
+What this removed beyond the nine audit items above: `express` and `cors` are no longer in
+the workspace at all, which retires the question of migrating the API server to Fastify or
+Hono; the `tar` pnpm override and all four `allowBuilds` entries are gone, since nothing
+left runs an install script; and the mongod download and cache steps came out of CI.
+`api-auth-jwt` is worth calling out separately, because it was removed on its merits rather
+than on its download count: its duplicate-user check queried a `mail` field against records
+written with `email`, its refresh-token rotation deleted the key `"[object Object]"` instead
+of the old token, and it fell back to a signing secret published in the package when
+`JWT_SECRET` was unset.

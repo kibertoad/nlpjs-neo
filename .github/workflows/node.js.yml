@@ -29,19 +29,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
-      # The `mongodb-adapter` tests run against a real `mongod`, which
-      # `mongodb-memory-server` downloads from its install script. Where it puts
-      # the binary otherwise depends on how it was installed, so the directory
-      # is pinned before the install runs and the cache is keyed on it.
-      - name: Pin the mongod download directory
-        run: echo "MONGOMS_DOWNLOAD_DIR=$HOME/.cache/mongodb-binaries" >> "$GITHUB_ENV"
-      - name: Cache the mongod binary
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/mongodb-binaries
-          key: mongodb-binaries-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            mongodb-binaries-${{ runner.os }}-
       - run: pnpm install --frozen-lockfile
       - run: pnpm run build
       - run: pnpm test
@@ -58,15 +45,6 @@ jobs:
         with:
           node-version: 22.x
           cache: 'pnpm'
-      - name: Pin the mongod download directory
-        run: echo "MONGOMS_DOWNLOAD_DIR=$HOME/.cache/mongodb-binaries" >> "$GITHUB_ENV"
-      - name: Cache the mongod binary
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/mongodb-binaries
-          key: mongodb-binaries-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            mongodb-binaries-${{ runner.os }}-
       - run: pnpm install --frozen-lockfile
       - name: Lint
         run: pnpm run lint

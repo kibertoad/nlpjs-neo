@@ -8,9 +8,6 @@
     "**/*.json",
     "coverage/**",
     "docs/v3/static/**",
-    "examples/07-nlpjs-on-aws-lambda/**",
-    "examples/16-fb-connector/**",
-    "packages/express-api-server/public/**",
-    "packages/python-compiler/src/python-executer.ts"
+    "examples/07-nlpjs-on-aws-lambda/**"
   ]
 }

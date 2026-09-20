@@ -1,23 +1,6 @@
 packages:
   - 'packages/*'
 
-# `@tensorflow/tfjs-node` still resolves `tar` 4 and declares `^6.2.1`, both of
-# which carry unfixed advisories. All the fixes are in the 7.5 line, whose `x`
-# alias and `C` option the install script of `tfjs-node` still works with.
-# Remove this once `open-question` no longer depends on `tfjs-node`.
-overrides:
-  tar: ^7.5.22
-
 linkWorkspacePackages: true
 saveWorkspaceProtocol: rolling
 strictPeerDependencies: false
-
-# Dependencies whose install scripts are allowed to run. pnpm blocks install
-# scripts by default; npm used to run all of them.
-allowBuilds:
-  '@tensorflow/tfjs-node': true
-  # Downloads the `mongod` binary the `mongodb-adapter` integration tests run
-  # against.
-  mongodb-memory-server: true
-  botbuilder-dialogs: true
-  core-js: true

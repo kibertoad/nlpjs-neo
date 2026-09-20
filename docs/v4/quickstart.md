@@ -130,7 +130,6 @@ Now create a _pipelines.md_ file with this content:
 nlp.train
 ```
 
-
 And remove the nlp.train() from the code:
 ```javascript
 import { dockStart } from '@nlpjs-neo/basic';
@@ -260,268 +259,20 @@ And add an Spanish corpus. In the example, the Spanish corpus does not have answ
 
 Now when you talk with the chatbot you can ask questions from the English corpus or from the Spanish corpus. The NLP process will automatically identify the language and send the utterance to the correct trained model.
 
-## Adding API and WebChat
-The code for this example is here: https://github.com/jesus-seijas-sp/nlpjs-examples/tree/master/01.quickstart/08.webchat
-First you will need an Api Server to serve the web. For this you can install the plugin _ExpressApiServer_ and that will create an api server using Express.
-```bash
-pnpm add @nlpjs-neo/express-api-server
-```
-
-The internal name of the plugin is "api-server". 
-Also you will have to configure the plugin to provide the port, and to set that it will serve a bot using webchat (Microsoft Webchat CDN).
-Here is the _conf.json_ content:
-```json
-{
-  "settings": {
-    "nlp": {
-      "corpora": [
-        "../corpora/corpus50en.json",
-        "../corpora/corpus50es.json"
-      ]
-    },
-    "api-server": { "port": 3000, "serveBot": true }
-  },
-  "use": ["Basic", "LangEs", "ConsoleConnector", "ExpressApiServer", "DirectlineConnector"]
-}
-```
-
-Now if you start the application, and in your browser navigate to http://localhost:3000, you will see an empty chat saying "impossible to connect".
-
-So lets add the Directline Connector, that will create an API like the Microsoft Directline, but exposed at your localhost with your API server. To do this install the DirectlineConnector plugin:
-```bash
-pnpm add @nlpjs-neo/directline-connector
-```
-
-Restart your application and navigate once more to http://localhost:3000 and you'll be able to chat with your bot.
-<div align="center">
-<img src="https://github.com/axa-group/nlp.js/raw/master/screenshots/webchat.png" width="auto" height="auto"/>
-</div>
-
-## Using Microsoft Bot Framework
-The code for this example is here: https://github.com/jesus-seijas-sp/nlpjs-examples/tree/master/01.quickstart/09.microsoftbot
-There is a Microsoft Bot Framework Connector. First install the library:
-```bash
-pnpm add @nlpjs-neo/msbf-connector
-```
-Then use the plugin by adding it to your _conf.json_:
-
-```json
-{
-  "settings": {
-    "nlp": {
-      "corpora": [
-        "./corpus-en.json",
-        "./corpus-es.json"
-      ]
-    },
-    "console": {
-      "debug": true
-    },
-    "api-server": {
-      "port": 3000,
-      "serveBot": true
-    }
-  },
-  "use": ["Basic", "LangEs", "ConsoleConnector", "ExpressApiServer", "DirectlineConnector", "MsbfConnector"]
-}
-```
-
-Now start your app and use Microsoft Bot Framework Emulator https://aka.ms/botemulator
-The endpoint will be http://localhost:3000/default/api/messages
-<div align="center">
-<img src="https://github.com/axa-group/nlp.js/raw/master/screenshots/microsoftemulator.png" width="auto" height="auto"/>
-</div>
-
-Why is /default added to the api path? 
-Because it's the name of the container: NLP.js is built so you can have different containers with different names running at the same time in the application, allowing you to build a chatbot exposed to the same channel in different ways, i.e., you can have a chatbot sharing corpus, models, etc. but with different behaviour by channel or by country or any other setting.
-
-If you want the api to be exposed in /api/messages you can set the settings of msfb in the _conf.json:
-```json
-{
-  "settings": {
-    "nlp": {
-      "corpora": [
-        "./corpus-en.json",
-        "./corpus-es.json"
-      ]
-    },
-    "console": {
-      "debug": true
-    },
-    "api-server": {
-      "port": 3000,
-      "serveBot": true
-    },
-    "msbf": {
-      "apiPath": "",
-      "messagesPath": "/api/messages"
-    }
-  },
-  "use": ["Basic", "LangEs", "ConsoleConnector", "ExpressApiServer", "DirectlineConnector", "MsbfConnector"]
-}
-```
-
-How to add the Microsoft Application ID and the Microsoft Bot Password? 
-You have 3 different ways:
-1. Providing it in the settings:
-```json
-    "msbf": {
-      "apiPath": "",
-      "messagesPath": "/api/messages",
-      "appId": "<YOUR MICROSOFT BOT APP ID>",
-      "appPassword": "<YOUR MICROSOFT BOT PASSWORD>"
-    }
-```
-
-2. Define the environment variables MSBF_BOT_APP_ID and MSBF_BOT_APP_PASSWORD and these will be loaded if there are no _appId_ or _appPassword_ in the plugin settings.
-3. You can define those environment variables in a _.env_ file, the _.env_ file is automatically loaded at the dockStart process if it exists without installing dotenv.
-
 ## Recognizing the bot name and the channel
 
-With the last code, try this sentence in console, web and Microsoft emulator: "where am I".
+With the last code, try this sentence in the console: "where am I".
 You'll notice that the answer is something like: "you're talking from console, app is default channel is console"
 This happens because the answers to this intents are written like this:
 ```json
       "answers": [
         { "answer": "you're talking from console, app is {{ app }} channel is {{ channel }}", "opts": "channel==='console'" },
-        { "answer": "you're talking from directline, app is {{ app }} channel is {{ channel }}", "opts": "channel==='directline'" },
-        { "answer": "you're talking from microsoft emulator, app is {{ app }} channel is {{ channel }}", "opts": "channel==='msbf-emulator'" }
+        { "answer": "you're talking from somewhere else, app is {{ app }} channel is {{ channel }}", "opts": "channel!=='console'" }
       ]
 ```
 Here we are mixing two things:
 1. The context variables: _{{ app }}_ and _{{ channel }}_ will be replaced by the context variables app (bot name) and channel (channel name).
 2. Opts: the opts for an answer are the conditions to return this answer, and can be any condition in javascript format.
-
-## One bot per connector
-
-The code for this example is here: https://github.com/jesus-seijas-sp/nlpjs-examples/tree/master/01.quickstart/10.threebots
-
-In the _conf.json_ what you have defined so far is the configuration of the default container. But containers can have child containers, with their own configuration and plugins, and they can access the plugins and resources of their parent containers.
-Put this in your _conf.json_
-
-```
-{
-  "settings": {
-    "nlp": {
-      "corpora": [
-        "./corpus-en.json",
-        "./corpus-es.json"
-      ]
-    },
-    "api-server": {
-      "port": 3000,
-      "serveBot": true
-    }
-  },
-  "childs": {
-    "bot1": {
-      "settings": {
-        "console": {
-          "debug": true
-        },
-        "use": ["ConsoleConnector"]
-      }
-    },
-    "bot2": {
-      "use": ["DirectlineConnector"]
-    },
-    "bot3": {
-      "settings": {
-        "msbf": {
-          "apiPath": "",
-          "messagesPath": "/api/messages"
-        }
-      },
-      "use": ["MsbfConnector"]
-    }
-  },
-  "use": ["Basic", "LangEs", "ExpressApiServer"]
-}
-```
-
-This will create 3 childrens (childs) containers where each container represents a bot: bot1 in Console, bot2 in Webchat and Directline and bot3 with the Microsoft Bot Framework Connector.
-As the ExpressApiServer plugin and configuration are in the default container,  bot2 and bot3 will use this express configuration.
-
-The problem now is that when you execute the app it will crash because the pipelines we're trying to use in the console plugin come from the default container, but this plugin is in bot1.
-So replace the _pipelines.md_ with this content:
-
-```markdown
-# default
-
-## main
-nlp.train
-
-# bot1
-
-# main
-console.say "Say something!"
-
-## console.hear
-// compiler=javascript
-if (message === 'quit') {
-  return console.exit();
-}
-nlp.process();
-this.say();
-```
-
-As you can see the "# main" title of the pipelines is the name of the container, that way if you use the same plugin in two different containers, they can behave diferently.
-
-Now you can repeat the "where am I" utterance, and you will notice something different: app is no longer default and is replaced with bot1, bot2 or bot3.
-
-## Different port for Microsoft Bot Framework and Webchat
-
-The code for this example is here: https://github.com/jesus-seijas-sp/nlpjs-examples/tree/master/01.quickstart/11.differentports
-
-In the last example the ExpressApiServer plugin was in the default container, but we can move it into bot2 and bot3 with a different configuration:
-```
-{
-  "settings": {
-    "nlp": {
-      "corpora": [
-        "./corpus-en.json",
-        "./corpus-es.json"
-      ]
-    }
-  },
-  "childs": {
-    "bot1": {
-      "settings": {
-        "console": {
-          "debug": true
-        },
-        "use": ["ConsoleConnector"]
-      }
-    },
-    "bot2": {
-      "settings": {
-        "api-server": {
-          "port": 3000,
-          "serveBot": true
-        }
-      },
-      "use": ["ExpressApiServer", "DirectlineConnector"]
-    },
-    "bot3": {
-      "settings": {
-        "msbf": {
-          "apiPath": "",
-          "messagesPath": "/api/messages"
-        },
-        "api-server": {
-          "port": 4000,
-          "serveBot": false
-        }
-      },
-      "use": ["ExpressApiServer", "MsbfConnector"]
-    }
-  },
-  "use": ["Basic", "LangEs"]
-}
-```
-
-__Important!__ The plugins are loaded in order. Because both DirectlineConnector and MsbfConnector need an api-server, the ExpressApiServer should be added before each of these.
-
 
 ## Adding logic to an intent
 The code for this example is here: https://github.com/jesus-seijas-sp/nlpjs-examples/tree/master/01.quickstart/12.onintent

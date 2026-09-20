@@ -2,22 +2,7 @@
   "files": [],
   "references": [
     {
-      "path": "./packages/api-auth-jwt"
-    },
-    {
       "path": "./packages/basic"
-    },
-    {
-      "path": "./packages/bert-open-question"
-    },
-    {
-      "path": "./packages/bert-tokenizer"
-    },
-    {
-      "path": "./packages/bot"
-    },
-    {
-      "path": "./packages/builtin-compromise"
     },
     {
       "path": "./packages/builtin-default"
@@ -41,40 +26,16 @@
       "path": "./packages/core-loader"
     },
     {
-      "path": "./packages/database"
-    },
-    {
-      "path": "./packages/dialogflow-connector"
-    },
-    {
-      "path": "./packages/directline-connector"
-    },
-    {
       "path": "./packages/emoji"
     },
     {
       "path": "./packages/evaluator"
     },
     {
-      "path": "./packages/express-api-server"
-    },
-    {
-      "path": "./packages/express-api-serverless"
-    },
-    {
-      "path": "./packages/fb-connector"
-    },
-    {
-      "path": "./packages/fullbot"
-    },
-    {
       "path": "./packages/lang-all"
     },
     {
       "path": "./packages/lang-ar"
-    },
-    {
-      "path": "./packages/lang-bert"
     },
     {
       "path": "./packages/lang-bn"
@@ -203,25 +164,13 @@
       "path": "./packages/language-min"
     },
     {
-      "path": "./packages/lexer"
-    },
-    {
       "path": "./packages/logger"
-    },
-    {
-      "path": "./packages/mongodb-adapter"
-    },
-    {
-      "path": "./packages/msbf-connector"
     },
     {
       "path": "./packages/ner"
     },
     {
       "path": "./packages/neural"
-    },
-    {
-      "path": "./packages/neural-worker"
     },
     {
       "path": "./packages/nlg"
@@ -233,28 +182,10 @@
       "path": "./packages/nlu"
     },
     {
-      "path": "./packages/nlu-luis"
-    },
-    {
       "path": "./packages/node-nlp"
     },
     {
-      "path": "./packages/open-question"
-    },
-    {
-      "path": "./packages/python-compiler"
-    },
-    {
-      "path": "./packages/qna-importer"
-    },
-    {
       "path": "./packages/request"
-    },
-    {
-      "path": "./packages/request-rn"
-    },
-    {
-      "path": "./packages/rest-connector"
     },
     {
       "path": "./packages/sentiment"
@@ -263,13 +194,7 @@
       "path": "./packages/similarity"
     },
     {
-      "path": "./packages/similarity-wa"
-    },
-    {
       "path": "./packages/slot"
-    },
-    {
-      "path": "./packages/utils"
     },
     {
       "path": "./packages/xtables"

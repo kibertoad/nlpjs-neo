@@ -30,10 +30,7 @@ export default defineConfig({
       reportsDirectory: 'coverage',
       reporter: ['text', 'lcov'],
       include: ['packages/*/src/**/*.ts'],
-      exclude: [
-        'packages/lang-*/**',
-        'packages/python-compiler/src/python-executer.ts',
-      ],
+      exclude: ['packages/lang-*/**'],
     },
   },
 });

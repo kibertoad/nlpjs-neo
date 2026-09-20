@@ -2,9 +2,9 @@
 
 ## Install the needed packages
 
-In your node project folder, install the @nlpjs-neo/basic, @nlpjs-neo/express-api-server and @nlpjs-neo/directline-connector packages.
+In your node project folder, install the @nlpjs-neo/basic package.
 ```bash
-pnpm add @nlpjs-neo/basic @nlpjs-neo/express-api-server @nlpjs-neo/directline-connector
+pnpm add @nlpjs-neo/basic
 ```
 
 ## Create the conf.json
@@ -16,23 +16,17 @@ Create the file _conf.json_ with this content:
   "settings": {
     "nlp": {
       "corpora": ["./corpus.json"]
-    },
-    "api-server": {
-      "port": 3000,
-      "serveBot": true      
     }
   },
-  "use": ["Basic", "LangEn", "ExpressApiServer", "DirectlineConnector"]
+  "use": ["Basic", "LangEn", "ConsoleConnector"]
 }
 ```
 
-You are telling the applicaition to use 4 plugins:
+You are telling the application to use 3 plugins:
 - Basic: the basic plugins for an NLP backend, that includes evaluator, javascript compiler, logger, and NLP classes
 - LangEn: the plugin to use English language
-- ExpressApiServer: the plugin to have an Express API server
-- DirectlineConnector: the plugin that uses the ExpressApiServer to serve an API for the chatbot
+- ConsoleConnector: the plugin that lets you talk with the chatbot from the terminal
 
-Also this configures the ExpressApiServer to be exposed at port 3000 and to serve the chatbot frontend (serveBot: true).
 Finally, it tells the NLP to import the corpus defined in the file _corpus.json_.
 
 ## Create the corpus.json
@@ -107,6 +101,31 @@ Create the file _heros.json_ with this content:
 }
 ```
 
+## Create the pipelines.md
+
+Create the file _pipelines.md_ with this content:
+
+```markdown
+# default
+
+## main
+nlp.train
+console.say "Say something!"
+
+## console.hear
+// compiler=javascript
+if (message === 'quit') {
+  return console.exit();
+}
+nlp.process();
+this.say();
+```
+
+The _main_ pipeline trains the NLP and greets you when the application starts.
+The _console.hear_ pipeline is the one executed every time the console connector
+hears something: it exits when you type "quit", and otherwise sends what you
+wrote through the NLP and says the answer back.
+
 ## Create the index.js
 
 Create the file _index.js_ with this content:
@@ -115,14 +134,11 @@ Create the file _index.js_ with this content:
 import { dockStart } from '@nlpjs-neo/basic';
 
 (async () => {
-  const dock = await dockStart();
-  const nlp = dock.get('nlp');
-  await nlp.train();
+  await dockStart();
 })();
 ```
 
 This initializes the project and loads all the jsons. It also builds the structure when you call _dockStart()_ and then it returns a dock for the containers.
-Then you can retrieve instances from the container, in this case we retrieve the _nlp_ instance to train it.
 
 ## Start the application
 
@@ -132,13 +148,9 @@ You can start your application running:
 node index.js
 ```
 
-Then you can navigate to http://localhost:3000 to use it.
+Then you can talk with the bot in your terminal, and type "quit" to leave.
 
 ## Stored context
 
 You'll see that you can ask for information about a hero, but also that if you're talking with the bot about a hero then you can omit the reference to the hero you're talking about.
 This context is stored per conversation, so different conversations have their own context variables.
-
-<div align="center">
-<img src="https://github.com/axa-group/nlp.js/raw/master/screenshots/ner-demo.png" width="auto" height="auto"/>
-</div>

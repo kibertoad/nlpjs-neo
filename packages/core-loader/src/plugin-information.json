@@ -1,5 +1,4 @@
 {
-  "ApiAuthJwt": { "className": "ApiAuthJwt", "path": "@nlpjs-neo/api-auth-jwt" },
   "Basic": [
     { "className": "logger", "path": "@nlpjs-neo/logger" },
     { "className": "Evaluator", "path": "@nlpjs-neo/evaluator" },
@@ -7,17 +6,10 @@
     { "className": "Nlp", "path": "@nlpjs-neo/nlp" },
     { "className": "Template", "path": "@nlpjs-neo/evaluator"}
   ],
-  "Bot": { "className": "Bot", "path": "@nlpjs-neo/bot" },
-  "BuiltinCompromise": { "className": "BuiltinCompromise", "path": "@nlpjs-neo/builtin-compromise" },
   "BuiltinDuckling": { "className": "BuiltinDuckling", "path": "@nlpjs-neo/builtin-duckling" },
   "BuiltinMicrosoft": { "className": "BuiltinMicrosoft", "path": "@nlpjs-neo/builtin-microsoft" },
   "ConsoleConnector": { "className": "ConsoleConnector", "path": "@nlpjs-neo/console-connector" },
-  "Database": { "className": "Database", "path": "@nlpjs-neo/database" },
-  "DirectlineConnector": { "className": "DirectlineConnector", "path": "@nlpjs-neo/directline-connector" },
-  "ExpressApiServer": { "className": "ExpressApiServer", "path": "@nlpjs-neo/express-api-server" },
-  "ExpressApiServerless": { "className": "ExpressApiServerless", "path": "@nlpjs-neo/express-api-serverless" },
   "Evaluator": { "className": "Evaluator", "path": "@nlpjs-neo/evaluator" },
-  "FbConnector": { "className": "FbConnector", "path": "@nlpjs-neo/fb-connector" },
   "JavascriptCompiler": { "className": "JavascriptCompiler", "path": "@nlpjs-neo/evaluator"},
   "LangAll": { "className": "LangAll", "path": "@nlpjs-neo/lang-all" },
   "LangAr": { "className": "LangAll", "path": "@nlpjs-neo/lang-ar" },
@@ -55,11 +47,6 @@
   "LangUk": { "className": "LangUk", "path": "@nlpjs-neo/lang-uk" },
   "LangZh": { "className": "LangZh", "path": "@nlpjs-neo/lang-zh" },
   "logger": { "className": "logger", "path": "@nlpjs-neo/logger" },
-  "Mongodb": { "className": "MongodbAdapter", "path": "@nlpjs-neo/mongodb-adapter" },
-  "MongodbAdapter": { "className": "MongodbAdapter", "path": "@nlpjs-neo/mongodb-adapter" },
-  "MsbfConnector": { "className": "MsbfConnector", "path": "@nlpjs-neo/msbf-connector" },
   "Nlp": { "className": "Nlp", "path": "@nlpjs-neo/nlp" },
-  "NluLuis": { "className": "NluLuis", "path": "@nlpjs-neo/nlu-luis" },
-  "Qna": { "className": "QnaImporter", "path": "@nlpjs-neo/qna-importer" },
   "Template": { "className": "Template", "path": "@nlpjs-neo/evaluator"}
 }

@@ -1,3 +1,0 @@
-dialog ask_name
-  say What's your name?
-  ask user_name

@@ -36,7 +36,6 @@ And to use the plugin in your container, register it:
 import { Container } from '@nlpjs-neo/core';
 import { fs as requestfs } from '@nlpjs-neo/request';
 
-
 async function main() {
   const container = new Container();
   container.register('fs', requestfs);
@@ -56,39 +55,12 @@ Also you can load files from the file system:
 import { Container } from '@nlpjs-neo/core';
 import { fs as requestfs } from '@nlpjs-neo/request';
 
-
 async function main() {
   const container = new Container();
   container.register('fs', requestfs);
   const fs = container.get('fs');
   const readme = await fs.readFile('./index.js');
   console.log(readme); // will return the content of the index.js file
-}
-
-main();
-```
-
-## Request RN File System
-
-This is the file system for Web and React Native, where no OS file system can be accessed, but we can still load from URLs.
-If you want to use this plugin on your own, then install it with:
-
-```bash
-pnpm add @nlpjs-neo/request-rn
-```
-
-And to use the plugin in your container, register it:
-```javascript
-import { Container } from '@nlpjs-neo/core';
-import { fs as requestfs } from '@nlpjs-neo/request-rn';
-
-
-async function main() {
-  const container = new Container();
-  container.register('fs', requestfs);
-  const fs = container.get('fs');
-  const readme = await fs.readFile('https://raw.githubusercontent.com/axa-group/nlp.js/master/README.md');
-  console.log(readme); // will return the content of the README.md
 }
 
 main();
