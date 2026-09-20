@@ -218,6 +218,11 @@ describe('Container', () => {
       const actual = instance.resolvePath('17', input, srcObject);
       expect(actual).toBe(17);
     });
+    test('If path is a decimal number, return the whole number literal', () => {
+      const instance = new Container();
+
+      expect(instance.resolvePath('0.5', {}, {}, new Other())).toBe(0.5);
+    });
     test('If path is a boolean true, return the boolean true', () => {
       const instance = new Container();
       const input: any = {};
@@ -238,6 +243,11 @@ describe('Container', () => {
       const srcObject = new Other();
       const actual = instance.resolvePath('"hello"', input, srcObject);
       expect(actual).toBe('hello');
+    });
+    test('If path is a quoted string containing a dot, return the whole string', () => {
+      const instance = new Container();
+
+      expect(instance.resolvePath('"a.b"', {}, {}, new Other())).toBe('a.b');
     });
     test('If path is an string single quoted, returns the string without quotes', () => {
       const instance = new Container();
