@@ -13,7 +13,9 @@ class ConsoleConnector extends Connector {
       output: process.stdout,
       terminal: false,
     });
-    this.rl.on('line', async (line) => this.hear(line));
+    this.rl.on('line', (line) => {
+      void this.handleLine(line);
+    });
   }
 
   say(message, reference?) {
@@ -39,12 +41,12 @@ class ConsoleConnector extends Connector {
 
   async hear(line) {
     if (this.onHear) {
-      this.onHear(this, line);
+      await this.onHear(this, line);
     } else {
       const name = `${this.settings.tag}.hear`;
       const pipeline = this.container.getPipeline(name);
       if (pipeline) {
-        this.container.runPipeline(
+        await this.container.runPipeline(
           pipeline,
           { message: line, channel: 'console', app: this.container.name },
           this
@@ -76,6 +78,31 @@ class ConsoleConnector extends Connector {
           }
         }
       }
+    }
+  }
+
+  async handleLine(line) {
+    try {
+      await this.hear(line);
+    } catch (error) {
+      this.logError(error);
+    }
+  }
+
+  logError(error) {
+    // The line listener discards this promise, so reporting the error must
+    // never throw: an unregistered or incomplete logger would otherwise turn
+    // into the unhandled rejection that handleLine exists to prevent.
+    try {
+      const logger = this.logger;
+      if (logger && typeof logger.error === 'function') {
+        logger.error(error);
+      } else if (typeof console.error === 'function') {
+        // oxlint-disable-next-line no-console
+        console.error(error);
+      }
+    } catch {
+      // Ignore: there is no usable channel left to report through.
     }
   }
 
