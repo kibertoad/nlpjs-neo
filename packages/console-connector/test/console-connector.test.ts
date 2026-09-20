@@ -77,7 +77,11 @@ describe('Console Connector', () => {
       // A prefixed container never registers the default logger, so the
       // reporting path has to cope with `get('logger')` being undefined.
       const testContainer = new Container(true);
-      const pipeline = {};
+      const pipeline = {
+        pipeline: [],
+        compiler: testContainer.compilers.Default,
+        compiled: [],
+      };
       const error = new Error('pipeline failed');
       vi.spyOn(testContainer, 'getPipeline').mockReturnValue(pipeline);
       vi.spyOn(testContainer, 'runPipeline').mockRejectedValue(error);

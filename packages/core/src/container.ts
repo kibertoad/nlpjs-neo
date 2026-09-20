@@ -26,13 +26,23 @@ interface Serializable {
   toJSON?(): SerializedInstance;
 }
 
-/** An instance registered in a container, or a class the container builds. */
+/**
+ * An instance the container can `use`: it may name itself, carry settings and
+ * register its own services when it is added.
+ */
 interface Plugin {
   name?: string;
   settings?: Settings;
   /** Hook called when the plugin is added, to register its own services. */
   register?(container: Container): void;
 }
+
+/**
+ * A service registered by hand. `register` stores it under a name and hands
+ * it back on resolution without reading anything off it, so a service is any
+ * object at all, exposing whatever API its callers expect.
+ */
+type ServiceInstance = object;
 
 /**
  * Value resolved from a path expression of a pipeline. Paths are interpreted
@@ -132,16 +142,18 @@ class Container {
 
   register(
     name: string,
-    Clazz: ServiceConstructor | Plugin,
+    service: ServiceConstructor | ServiceInstance,
     isSingleton = true
   ): void {
     this.cache.bestKeys = {};
-    const isClass = typeof Clazz === 'function';
     const item: FactoryItem = { name, isSingleton, instance: undefined };
-    if (isSingleton) {
-      item.instance = isClass ? new Clazz() : Clazz;
+    if (typeof service === 'function') {
+      // Only a constructor is ever registered as a function: a singleton is
+      // built once here, a transient one on every resolution.
+      const Clazz = service as ServiceConstructor;
+      item.instance = isSingleton ? new Clazz() : Clazz;
     } else {
-      item.instance = isClass ? Clazz : Clazz.constructor;
+      item.instance = isSingleton ? service : service.constructor;
     }
     this.factory[name] = item;
   }
