@@ -59,6 +59,26 @@ describe('Reduce Edges', () => {
       const actual = reduceEdges([edgeB, edgeA]);
       expect(actual).toEqual([edgeB]);
     });
+    test('It prefers the first edge when equal accuracy has a longer length', () => {
+      const edgeA = {
+        accuracy: 0.9,
+        start: 0,
+        end: 10,
+        len: 11,
+        entity: 'long',
+      };
+      const edgeB = {
+        accuracy: 0.9,
+        start: 0,
+        end: 4,
+        len: 5,
+        entity: 'short',
+      };
+
+      const actual = reduceEdges([edgeA, edgeB]);
+
+      expect(actual).toEqual([edgeA]);
+    });
     test('It should keep both if no overlap', () => {
       const edgeA = {
         accuracy: 0.8,

@@ -10,7 +10,7 @@ function runDiscard(
   let other;
   if (
     srcEdge.accuracy > srcOther.accuracy ||
-    (srcEdge.accuracy === srcOther.accuracy && srcEdge.length > srcOther.length)
+    (srcEdge.accuracy === srcOther.accuracy && srcEdge.len > srcOther.len)
   ) {
     edge = srcEdge;
     other = srcOther;
