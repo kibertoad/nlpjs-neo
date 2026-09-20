@@ -258,6 +258,18 @@ describe('Extractor Trim', () => {
         },
       ]);
     });
+    test('It honors case-sensitive after conditions', async () => {
+      const ner = new Ner();
+      ner.addAfterCondition('en', 'entity', 'From', { caseSensitive: true });
+      const actual = await ner.process({ text: 'from Madrid', locale: 'en' });
+      expect(actual.entities).toEqual([]);
+    });
+    test('It honors no-space after conditions', async () => {
+      const ner = new Ner();
+      ner.addAfterCondition('en', 'entity', 'from', { noSpaces: true });
+      const actual = await ner.process({ text: 'fromMadrid', locale: 'en' });
+      expect(actual.entities[0].sourceText).toEqual('Madrid');
+    });
     test('It should extract a get after first rule', async () => {
       const ner = new Ner();
       ner.addAfterFirstCondition('en', 'entity', 'from');
