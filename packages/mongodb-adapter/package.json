@@ -53,5 +53,8 @@
   "dependencies": {
     "@nlpjs-neo/core": "workspace:^",
     "mongodb": "^3.5.9"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^11.2.0"
   }
 }

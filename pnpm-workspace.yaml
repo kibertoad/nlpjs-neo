@@ -16,5 +16,8 @@ strictPeerDependencies: false
 # scripts by default; npm used to run all of them.
 allowBuilds:
   '@tensorflow/tfjs-node': true
+  # Downloads the `mongod` binary the `mongodb-adapter` integration tests run
+  # against.
+  mongodb-memory-server: true
   botbuilder-dialogs: true
   core-js: true
