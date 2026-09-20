@@ -1,6 +1,6 @@
 {
   "name": "node-nlp-neo",
-  "version": "5.1.2",
+  "version": "6.0.0",
   "description": "Library for NLU (Natural Language Understanding) done in Node.js",
   "author": {
     "name": "Igor Savin",

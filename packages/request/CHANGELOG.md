@@ -1,5 +1,13 @@
 # @nlpjs-neo/request
 
+## 5.2.2
+
+### Patch Changes
+
+- 3fbcdd6: Note in the source that both proxy-agent dependencies come out once the engine floor moves
+  to Node 24, which reads the proxy environment variables natively under
+  `NODE_USE_ENV_PROXY`. No behaviour change.
+
 ## 5.2.1
 
 ### Patch Changes
