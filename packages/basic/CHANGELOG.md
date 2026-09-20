@@ -1,5 +1,12 @@
 # @nlpjs-neo/basic
 
+## 5.1.1
+
+### Patch Changes
+
+- Updated dependencies [48a7f45]
+  - @nlpjs-neo/core-loader@6.0.0
+
 ## 5.1.0
 
 ### Minor Changes
