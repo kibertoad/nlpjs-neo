@@ -67,6 +67,46 @@ describe('MongodbAdapter against a real mongod', () => {
       expect(databases.map((one) => one.collectionName)).toContain(name);
     });
 
+    test('It should reject when no url was provided at all', async () => {
+      const previous = process.env.MONGO_URL;
+      delete process.env.MONGO_URL;
+      try {
+        const urlless = new MongodbAdapter();
+        await expect(urlless.connect()).rejects.toThrow(
+          'No mongodb url was provided'
+        );
+      } finally {
+        if (previous === undefined) {
+          delete process.env.MONGO_URL;
+        } else {
+          process.env.MONGO_URL = previous;
+        }
+      }
+    });
+
+    test('It should read the database name past a query string', () => {
+      const withQuery = new MongodbAdapter({
+        url: 'mongodb://127.0.0.1:27017/nlpjs?retryWrites=true&w=majority',
+      });
+      expect(withQuery.settings.dbName).toEqual('nlpjs');
+    });
+
+    test('It should leave the database name unset when the url names none', () => {
+      const noDatabase = new MongodbAdapter({
+        url: 'mongodb://127.0.0.1:27017/',
+      });
+      expect(noDatabase.settings.dbName).toBeUndefined();
+    });
+
+    test('It should reject after disconnect', async () => {
+      const own = new MongodbAdapter({ url: `${server.getUri()}nlpjs` });
+      await own.connect();
+      await own.disconnect();
+      await expect(own.find('anything')).rejects.toThrow(
+        'It seems that mongodb is not initialized, try invoking connect()'
+      );
+    });
+
     test('It should reject when the server cannot be reached', async () => {
       // The adapter forwards no client options, so the server selection
       // timeout is shortened through the connection string instead of waiting
@@ -98,11 +138,7 @@ describe('MongodbAdapter against a real mongod', () => {
   });
 
   describe('insertMany', () => {
-    // Fails today: the adapter answers with the raw driver result rather than
-    // the items. The callback mocks this suite replaces answered with the
-    // items, so the bug never showed. Fixed with the driver upgrade, which has
-    // to touch this call anyway because `result.ops` no longer exists.
-    test.fails('It should return every item with an id', async () => {
+    test('It should return every item with an id', async () => {
       const name = collection();
       const actual = await adapter.insertMany(name, [
         { name: 'user 1' },
@@ -113,6 +149,17 @@ describe('MongodbAdapter against a real mongod', () => {
       for (const one of actual) {
         expect(typeof one.id).toEqual('string');
       }
+    });
+
+    test('It should keep the ids the items already carry', async () => {
+      const name = collection();
+      const actual = await adapter.insertMany(name, [
+        { id: 'first', name: 'user 1' },
+        { id: 'second', name: 'user 2' },
+      ]);
+      expect(actual.map((one) => one.id)).toEqual(['first', 'second']);
+      const stored = await adapter.find(name);
+      expect(stored.map((one) => one.id).sort()).toEqual(['first', 'second']);
     });
 
     test('It should store every item', async () => {
@@ -210,6 +257,24 @@ describe('MongodbAdapter against a real mongod', () => {
       const name = collection();
       expect(await adapter.findById(name, 'not an object id')).toBeNull();
     });
+
+    test('It should return null for an id nothing is stored under', async () => {
+      const name = collection();
+      await adapter.insertOne(name, { name: 'user 1' });
+      // A well formed id that belongs to no document. A missing document has to
+      // read as missing: `save` decides between insert and update on it.
+      expect(
+        await adapter.findById(name, '0123456789abcdef01234567')
+      ).toBeNull();
+    });
+  });
+
+  describe('findOne when nothing matches', () => {
+    test('It should return null rather than an empty object', async () => {
+      const name = collection();
+      await adapter.insertOne(name, { num: 1 });
+      expect(await adapter.findOne(name, { num: 99 })).toBeNull();
+    });
   });
 
   describe('save', () => {
@@ -230,9 +295,17 @@ describe('MongodbAdapter against a real mongod', () => {
       expect(await adapter.find(name)).toHaveLength(1);
     });
 
-    // Fails today for the same reason as `insertMany` above: `update` answers
-    // with the raw `updateOne` result, which carries no document.
-    test.fails('It should update an item that is already stored', async () => {
+    test('It should insert an item whose id nothing is stored under', async () => {
+      const name = collection();
+      const actual = await adapter.save(name, {
+        id: '0123456789abcdef01234567',
+        name: 'user 1',
+      });
+      expect(actual.id).toEqual('0123456789abcdef01234567');
+      expect(await adapter.find(name)).toHaveLength(1);
+    });
+
+    test('It should update an item that is already stored', async () => {
       const name = collection();
       const stored = await adapter.save(name, { name: 'user 1' });
       const actual = await adapter.save(name, { ...stored, age: 30 });

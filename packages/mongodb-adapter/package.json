@@ -52,7 +52,7 @@
   "gitHead": "cc4249fa994c58d220e6f10a6c94fdad05df32fd",
   "dependencies": {
     "@nlpjs-neo/core": "workspace:^",
-    "mongodb": "^3.5.9"
+    "mongodb": "^7.6.0"
   },
   "devDependencies": {
     "mongodb-memory-server": "^11.2.0"

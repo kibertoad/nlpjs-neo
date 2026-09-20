@@ -21,11 +21,20 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import mongodb from 'mongodb';
+import * as mongodb from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import { Clonable } from '@nlpjs-neo/core';
 
-const { MongoClient, ObjectId } = mongodb;
 const idField = '_id';
+
+/**
+ * The database a url names, or `undefined` when it names none. `mongodb` reads
+ * the database from the connection string itself in that case.
+ */
+function databaseFromUrl(url: string): string | undefined {
+  const path = url.slice(url.lastIndexOf('/') + 1).split('?')[0];
+  return path.length > 0 ? path : undefined;
+}
 
 class MongodbAdapter extends Clonable {
   declare client: any;
@@ -51,14 +60,16 @@ class MongodbAdapter extends Clonable {
       this.settings.url = process.env.MONGO_URL;
     }
     if (!this.settings.dbName && this.settings.url) {
-      this.settings.dbName = this.settings.url.slice(
-        this.settings.url.lastIndexOf('/') + 1
-      );
+      this.settings.dbName = databaseFromUrl(this.settings.url);
     }
-    this.mongoClient = new MongoClient(this.settings.url, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    // `useNewUrlParser` and `useUnifiedTopology` were removed in driver 4;
+    // both are the only behaviour now. Driver 7 also rejects an undefined url
+    // where driver 3 accepted it, and the container builds this adapter from
+    // configuration before a url is necessarily known, so the client waits for
+    // one rather than throwing here.
+    if (this.settings.url) {
+      this.mongoClient = new MongoClient(this.settings.url);
+    }
     this.registerDefault();
     this.driver = mongodb;
   }
@@ -73,22 +84,21 @@ class MongodbAdapter extends Clonable {
     }
   }
 
-  connect() {
-    return new Promise<void>((resolve, reject) => {
-      this.mongoClient.connect((err, client) => {
-        if (err) {
-          return reject(err);
-        }
-        this.client = client;
-        this.db = this.client.db(this.dbName);
-        return resolve();
-      });
-    });
+  async connect() {
+    if (!this.mongoClient) {
+      throw new Error(
+        'No mongodb url was provided, set settings.url or the MONGO_URL environment variable'
+      );
+    }
+    this.client = await this.mongoClient.connect();
+    this.db = this.client.db(this.settings.dbName);
   }
 
-  disconnect() {
+  async disconnect() {
     if (this.client) {
-      this.client.close();
+      await this.client.close();
+      this.client = undefined;
+      this.db = undefined;
     }
   }
 
@@ -99,6 +109,11 @@ class MongodbAdapter extends Clonable {
         result.push(this.convertOut(srcInput[i]));
       }
       return result;
+    }
+    // A document that is not there stays not there. Spreading `null` would
+    // answer with an empty object, which reads as a hit to every caller.
+    if (srcInput === null || srcInput === undefined) {
+      return srcInput;
     }
     const input = { ...srcInput };
     if (input[idField]) {
@@ -112,7 +127,7 @@ class MongodbAdapter extends Clonable {
     if (Array.isArray(srcInput)) {
       const result: any[] = [];
       for (let i = 0; i < srcInput.length; i += 1) {
-        result.push(this.convertOut(srcInput[i]));
+        result.push(this.convertIn(srcInput[i]));
       }
       return result;
     }
@@ -124,23 +139,17 @@ class MongodbAdapter extends Clonable {
     return input;
   }
 
-  executeInCollection(name, fn) {
-    return new Promise((resolve, reject) => {
-      if (!this.db) {
-        return reject(
-          new Error(
-            'It seems that mongodb is not initialized, try invoking connect()'
-          )
-        );
-      }
-      const collection = this.db.collection(name);
-      return fn(collection, (err, result) => {
-        if (err) {
-          return reject(err);
-        }
-        return resolve(result);
-      });
-    });
+  /**
+   * Runs `fn` against a collection. Driver 5 removed callbacks, so every
+   * operation is awaited and its rejection propagates to the caller.
+   */
+  async executeInCollection(name, fn) {
+    if (!this.db) {
+      throw new Error(
+        'It seems that mongodb is not initialized, try invoking connect()'
+      );
+    }
+    return fn(this.db.collection(name));
   }
 
   createId(key) {
@@ -148,7 +157,7 @@ class MongodbAdapter extends Clonable {
   }
 
   async find(name, condition?, limit?, offset?, sort?) {
-    return this.executeInCollection(name, (collection, cb) => {
+    return this.executeInCollection(name, async (collection) => {
       const options: any = {};
       if (limit) {
         options.limit = limit;
@@ -159,23 +168,15 @@ class MongodbAdapter extends Clonable {
       if (sort) {
         options.sort = sort;
       }
-      collection.find(condition || {}, options).toArray((err, result) => {
-        if (err) {
-          return cb(err);
-        }
-        return cb(undefined, this.convertOut(result));
-      });
+      const result = await collection.find(condition || {}, options).toArray();
+      return this.convertOut(result);
     });
   }
 
   async findOne(name, condition: any = {}): Promise<any> {
-    return this.executeInCollection(name, (collection, cb) => {
-      collection.findOne(condition, (err, result) => {
-        if (err) {
-          return cb(err);
-        }
-        return cb(undefined, this.convertOut(result));
-      });
+    return this.executeInCollection(name, async (collection) => {
+      const result = await collection.findOne(condition);
+      return this.convertOut(result);
     });
   }
 
@@ -186,31 +187,31 @@ class MongodbAdapter extends Clonable {
     } catch {
       return null;
     }
-    const result = await this.findOne(name, { [idField]: oId });
-    return this.convertOut(result);
+    return this.findOne(name, { [idField]: oId });
   }
 
   async insertOne(name, srcItem): Promise<any> {
-    return this.executeInCollection(name, (collection, cb) => {
+    return this.executeInCollection(name, async (collection) => {
       const item = this.convertIn(srcItem);
-      collection.insertOne(item, (err, result) => {
-        if (err) {
-          return cb(err);
-        }
-        return cb(undefined, this.convertOut(result.ops[0]));
-      });
+      // Driver 4 removed `result.ops`, which used to carry the stored
+      // document. The generated id comes back on its own instead.
+      const result = await collection.insertOne(item);
+      return this.convertOut({ ...item, [idField]: result.insertedId });
     });
   }
 
   async insertMany(name, srcItems): Promise<any> {
-    return this.executeInCollection(name, (collection, cb) => {
+    return this.executeInCollection(name, async (collection) => {
       const items = this.convertIn(srcItems);
-      collection.insertMany(items, (err, result) => {
-        if (err) {
-          return cb(err);
-        }
-        return cb(undefined, this.convertOut(result));
-      });
+      const result = await collection.insertMany(items);
+      // As with `insertOne`, answer with the stored documents rather than with
+      // the driver's own result, which carries only counts and ids.
+      return this.convertOut(
+        items.map((item, index) => ({
+          ...item,
+          [idField]: result.insertedIds[index],
+        }))
+      );
     });
   }
 
@@ -232,35 +233,18 @@ class MongodbAdapter extends Clonable {
     const cloned = { ...item };
     delete cloned[idField];
     delete cloned.id;
-    const newValues = { $set: cloned };
-    return this.executeInCollection(name, (collection, cb) => {
-      collection.updateOne(query, newValues, (err, result) => {
-        if (err) {
-          return cb(err);
-        }
-        return cb(undefined, this.convertOut(result));
-      });
+    return this.executeInCollection(name, async (collection) => {
+      await collection.updateOne(query, { $set: cloned });
+      return this.convertOut(item);
     });
   }
 
   async remove(name, condition: any = {}, justOne = false) {
-    return this.executeInCollection(name, (collection, cb) => {
-      if (justOne) {
-        collection.deleteOne(condition, (err, result) => {
-          if (err) {
-            return cb(err);
-          }
-          return cb(undefined, result);
-        });
-      } else {
-        collection.deleteMany(condition, (err, result) => {
-          if (err) {
-            return cb(err);
-          }
-          return cb(undefined, result);
-        });
-      }
-    });
+    return this.executeInCollection(name, async (collection) =>
+      justOne
+        ? collection.deleteOne(condition)
+        : collection.deleteMany(condition)
+    );
   }
 
   async removeById(name, id) {
