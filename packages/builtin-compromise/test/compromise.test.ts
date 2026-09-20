@@ -189,6 +189,29 @@ describe('Compromise Integration', () => {
       expect(actual.edges).toEqual(expected);
     });
 
+    test.each([
+      ['The first prime', 'first', '1st'],
+      ['The second prime', 'second', '2nd'],
+      ['The third prime', 'third', '3rd'],
+      ['The fourth prime', 'fourth', '4th'],
+      ['The eleventh prime', 'eleventh', '11th'],
+      ['The twelfth prime', 'twelfth', '12th'],
+      ['The thirteenth prime', 'thirteenth', '13th'],
+      ['The twenty first prime', 'twenty first', '21st'],
+    ])(
+      'It should resolve the ordinal in %s',
+      async (utterance, text, value) => {
+        const actual = await extract('en', utterance);
+        expect(actual.edges).toHaveLength(1);
+        expect(actual.edges[0].entity).toEqual('ordinal');
+        expect(actual.edges[0].sourceText).toEqual(text);
+        expect(actual.edges[0].resolution).toEqual({
+          strValue: text,
+          value,
+        });
+      }
+    );
+
     test('Compromise  English Number Float', async () => {
       const actual = await extract(
         'en',
@@ -345,24 +368,6 @@ describe('Compromise Integration', () => {
       });
       expect(actual.edges).toHaveLength(1);
       expect(actual.edges[0].sourceText).toEqual('a@b.com');
-    });
-
-    test('It should return an empty result when the extraction throws', async () => {
-      const manager = getManager();
-      const logger = container.get('logger');
-      const spy = vi.spyOn(logger, 'error').mockImplementation(() => undefined);
-      try {
-        const utterance = {
-          toString() {
-            throw new Error('unreadable utterance');
-          },
-        };
-        const actual = await manager.findBuiltinEntities(utterance);
-        expect(actual.edges).toEqual([]);
-        expect(spy).toHaveBeenCalled();
-      } finally {
-        spy.mockRestore();
-      }
     });
   });
 

@@ -23,25 +23,44 @@
 
 import { Clonable, defaultContainer } from '@nlpjs-neo/core';
 
-// allow for using compromise with react
-import compromise from 'compromise';
-import compromiseNumbers from 'compromise-numbers';
-import compromiseDates from 'compromise-dates';
+import nlp from 'compromise';
+import dates from 'compromise-dates';
 
-const nlp =
-  compromise && typeof compromise.default === 'function'
-    ? compromise.default
-    : compromise;
-const nlpDates =
-  compromiseDates && typeof compromiseDates.default === 'function'
-    ? compromiseDates.default
-    : compromiseDates;
-const nlpNumbers =
-  compromiseNumbers && typeof compromiseNumbers.default === 'function'
-    ? compromiseNumbers.default
-    : compromiseNumbers;
-nlp.extend(nlpDates);
-nlp.extend(nlpNumbers);
+// `compromise` 14 folded the numbers plugin into core, so `dates` is the only
+// plugin left to register.
+nlp.extend(dates);
+
+/**
+ * Whether a number match is written as an ordinal. `compromise` tags the terms
+ * of `second` or `2nd` as `Ordinal`, which is cheaper to read than parsing the
+ * text a second time, as the `compromise-numbers` plugin required.
+ */
+function isOrdinal(data): boolean {
+  return (data.terms || []).some((term) =>
+    (term.tags || []).includes('Ordinal')
+  );
+}
+
+/**
+ * Formats a number the way an ordinal resolution reported it before
+ * `compromise` 14: 2 becomes `2nd`, 11 becomes `11th`.
+ */
+function toOrdinalString(value: number): string {
+  const teens = Math.abs(value) % 100;
+  if (teens >= 11 && teens <= 13) {
+    return `${value}th`;
+  }
+  switch (Math.abs(value) % 10) {
+    case 1:
+      return `${value}st`;
+    case 2:
+      return `${value}nd`;
+    case 3:
+      return `${value}rd`;
+    default:
+      return `${value}th`;
+  }
+}
 
 const cultures = {
   bn: 'bn_BD',
@@ -102,7 +121,9 @@ class BuiltinCompromise extends Clonable {
 
     try {
       const edges: any[] = [];
-      const extractor = nlp(utterance);
+      // `compromise-dates` adds `dates()` at runtime through `nlp.extend`,
+      // which its types do not declare on the document.
+      const extractor: any = nlp(utterance);
       const extractions = {
         hashtag: [extractor.hashTags()],
         person: [extractor.people()],
@@ -126,8 +147,9 @@ class BuiltinCompromise extends Clonable {
         date: [
           extractor.dates(),
           function (result, data) {
-            result.resolution.value =
-              data && data.date && data.date.start ? data.date.start : '';
+            // `compromise-dates` 3 reports the range under `dates`, where
+            // version 1 used `date`.
+            result.resolution.value = data?.dates?.start ?? '';
             return result;
           },
         ],
@@ -141,18 +163,22 @@ class BuiltinCompromise extends Clonable {
         number: [
           extractor.numbers(),
           function (result, data) {
-            // check for ordinal
-            if (nlp(data.text).numbers().text() === data.textOrdinal) {
+            // In `compromise` 14 the value lives under `number.num`, and the
+            // cardinal and ordinal spellings the `compromise-numbers` plugin
+            // used to supply are gone. Whether a match is an ordinal is now
+            // read from the tags its terms carry.
+            const value = data.number?.num;
+            if (isOrdinal(data)) {
               result.resolution = {
-                strValue: data.textOrdinal,
-                value: data.ordinal,
+                strValue: data.text,
+                value: toOrdinalString(value),
               };
               result.entity = 'ordinal';
             } else {
               result.resolution = {
-                strValue: data.cardinal,
-                value: data.number,
-                subtype: data.number % 1 === 0 ? 'integer' : 'float',
+                strValue: `${value}`,
+                value,
+                subtype: value % 1 === 0 ? 'integer' : 'float',
               };
               result.entity = 'number';
             }

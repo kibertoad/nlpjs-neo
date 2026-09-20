@@ -52,8 +52,7 @@
   "gitHead": "cc4249fa994c58d220e6f10a6c94fdad05df32fd",
   "dependencies": {
     "@nlpjs-neo/core": "workspace:^",
-    "compromise": "^13.7.0",
-    "compromise-dates": "^1.2.0",
-    "compromise-numbers": "^1.0.0"
+    "compromise": "^14.17.0",
+    "compromise-dates": "^3.9.0"
   }
 }

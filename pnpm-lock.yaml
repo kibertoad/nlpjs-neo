@@ -121,14 +121,11 @@ importers:
         specifier: workspace:^
         version: link:../core
       compromise:
-        specifier: ^13.7.0
-        version: 13.11.4
+        specifier: ^14.17.0
+        version: 14.17.0
       compromise-dates:
-        specifier: ^1.2.0
-        version: 1.5.6(compromise-numbers@1.4.0(compromise@13.11.4))(compromise@13.11.4)
-      compromise-numbers:
-        specifier: ^1.0.0
-        version: 1.4.0(compromise@13.11.4)
+        specifier: ^3.9.0
+        version: 3.9.0(compromise@14.17.0)
 
   packages/builtin-default:
     dependencies:
@@ -2288,20 +2285,14 @@ packages:
     resolution: {integrity: sha512-g0S8KAD8qf4+V//pr3BfB1aBnARLXNz2Gx+jmHU0LEriUuoQUOPOulVquHKTJ8+EAIIO7fhseNDr9wK5Q9FKBQ==}
     engines: {node: '>=18'}
 
-  compromise-dates@1.5.6:
-    resolution: {integrity: sha512-i51/snFZtaW+cLx16HrBMHdgqc9eB3lsT5igtm9pOw6sNsNMX64lKiJdp3/kxGtOnl0fjGbZ69DoHb6o4pGUJw==}
+  compromise-dates@3.9.0:
+    resolution: {integrity: sha512-6loUqHLEOuOc3H78qVUm0/kRfZyEcSFBsXIxhqq1jnm+ckadlumn8uiCc+66rlUZd9FumNJQybyDvxwjnp6bQw==}
     peerDependencies:
-      compromise: '>=12.0.0'
-      compromise-numbers: '>=1.0.0'
+      compromise: '>=14.2.0'
 
-  compromise-numbers@1.4.0:
-    resolution: {integrity: sha512-3ceRpwZIWduVSMYn54ET1ELdI7bvXQk42uDwxffxiJBxgKCwcCfVbiLuTG62cI+qTHchwLDh4vp9i3WARXROFQ==}
-    peerDependencies:
-      compromise: '>=12.0.0'
-
-  compromise@13.11.4:
-    resolution: {integrity: sha512-nBITcNdqIHSVDDluaG6guyFFCSNXN+Hu87fU8VlhkE5Z0PwTZN1nro2O7a8JcUH88nB5EOzrxd9zKfXLSNFqcg==}
-    engines: {node: '>=8.0.0'}
+  compromise@14.17.0:
+    resolution: {integrity: sha512-zw9iEcts/8tMDASNopMQEs3Pclkx2Xk7XCltAb/oV1LEZcCQpDaalAtFmvuxYo+wnVDsW3H3oT16mw9qVHpkqA==}
+    engines: {node: '>=12.0.0'}
 
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
@@ -2459,8 +2450,9 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  efrt-unpack@2.2.0:
-    resolution: {integrity: sha512-9xUSSj7qcUxz+0r4X3+bwUNttEfGfK5AH+LVa1aTpqdAfrN5VhROYCfcF+up4hp5OL7IUKcZJJrzAGipQRDoiQ==}
+  efrt@2.7.0:
+    resolution: {integrity: sha512-/RInbCy1d4P6Zdfa+TMVsf/ufZVotat5hCw3QXmWtjU+3pFEOvOQ7ibo3aIxyCJw2leIeAMjmPj+1SLJiCpdrQ==}
+    engines: {node: '>=12.0.0'}
 
   emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
@@ -2714,6 +2706,10 @@ packages:
 
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
+
+  grad-school@0.0.5:
+    resolution: {integrity: sha512-rXunEHF9M9EkMydTBux7+IryYXEZinRk6g8OBOGDBzo/qWJjhTxy86i5q7lQYpCLHN8Sqv1XX3OIOc7ka2gtvQ==}
+    engines: {node: '>=8.0.0'}
 
   grapheme-splitter@1.0.4:
     resolution: {integrity: sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==}
@@ -3568,13 +3564,13 @@ packages:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
 
-  spacetime-holiday@0.1.0:
-    resolution: {integrity: sha512-rYIpSDbHnznZRstUrmYYFAaruW8e96t+1JfS0b6qMiAAQ2DrkLKc8oMotAAkB9qMTUwXXf5bIkdTHfP434uitQ==}
+  spacetime-holiday@0.3.0:
+    resolution: {integrity: sha512-rp4HRFJXxFL7CeKBFBMO2Xar2IyJyUpxY1ssAWCyf0iOvckwknvDgK04KwToASHX9vgd+4yQnTpytzJAs81R8g==}
     peerDependencies:
-      spacetime: ^6.3.0
+      spacetime: '>=6.3.0'
 
-  spacetime@6.14.0:
-    resolution: {integrity: sha512-pz/nMIRGNSJeFfDFvhPjMHXhFU1NcrYnpydMuSS2Zsk0NEoHJc2rRKXugkmlqUv/l/fPxWVJVnj8isVS0//vbQ==}
+  spacetime@7.14.0:
+    resolution: {integrity: sha512-a5Yi7UZpU9PDdFQA17VCzvVU89MIhcAMHVli0BbG+JgMcvl25Sf4ifmtosK9mVbtM9NTjVbDq4dstlrMUMYJ0g==}
 
   sparse-bitfield@3.0.3:
     resolution: {integrity: sha512-kvzhi7vqKTfkh0PZU+2D2PIllw2ymqJKujUcyPMd9Y75Nv4nPbGJZXNhxsgdQab2BmlDct1YnfQCguEvHr7VsQ==}
@@ -3620,6 +3616,9 @@ packages:
   strip-json-comments@5.0.3:
     resolution: {integrity: sha512-1tB5mhVo7U+ETBKNf92xT4hrQa3pm0MZ0PQvuDnWgAAGHDsfp4lPSpiS6psrSiet87wyGPh9ft6wmhOMQ0hDiw==}
     engines: {node: '>=14.16'}
+
+  suffix-thumb@5.0.3:
+    resolution: {integrity: sha512-d77avV91FwJkDA0juRQ19XjE1lE1cNCVIWS0ZRicXqdMN28yjO5LltzEkZBNAWS7qHpn37c1fU4PkIJ/rjJQEA==}
 
   superagent@10.3.0:
     resolution: {integrity: sha512-B+4Ik7ROgVKrQsXTV0Jwp2u+PXYLSlqtDAhYnkkD+zn3yg8s/zjA2MeGayPoY/KICrbitwneDHrjSotxKL+0XQ==}
@@ -5369,20 +5368,17 @@ snapshots:
       normalize-path: 3.0.0
       readable-stream: 4.7.0
 
-  compromise-dates@1.5.6(compromise-numbers@1.4.0(compromise@13.11.4))(compromise@13.11.4):
+  compromise-dates@3.9.0(compromise@14.17.0):
     dependencies:
-      compromise: 13.11.4
-      compromise-numbers: 1.4.0(compromise@13.11.4)
-      spacetime: 6.14.0
-      spacetime-holiday: 0.1.0(spacetime@6.14.0)
+      compromise: 14.17.0
+      spacetime: 7.14.0
+      spacetime-holiday: 0.3.0(spacetime@7.14.0)
 
-  compromise-numbers@1.4.0(compromise@13.11.4):
+  compromise@14.17.0:
     dependencies:
-      compromise: 13.11.4
-
-  compromise@13.11.4:
-    dependencies:
-      efrt-unpack: 2.2.0
+      efrt: 2.7.0
+      grad-school: 0.0.5
+      suffix-thumb: 5.0.3
 
   concat-map@0.0.1: {}
 
@@ -5515,7 +5511,7 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  efrt-unpack@2.2.0: {}
+  efrt@2.7.0: {}
 
   emoji-regex@8.0.0: {}
 
@@ -5835,6 +5831,8 @@ snapshots:
     optional: true
 
   graceful-fs@4.2.11: {}
+
+  grad-school@0.0.5: {}
 
   grapheme-splitter@1.0.4: {}
 
@@ -6683,11 +6681,11 @@ snapshots:
 
   source-map-js@1.2.1: {}
 
-  spacetime-holiday@0.1.0(spacetime@6.14.0):
+  spacetime-holiday@0.3.0(spacetime@7.14.0):
     dependencies:
-      spacetime: 6.14.0
+      spacetime: 7.14.0
 
-  spacetime@6.14.0: {}
+  spacetime@7.14.0: {}
 
   sparse-bitfield@3.0.3:
     dependencies:
@@ -6736,6 +6734,8 @@ snapshots:
       ansi-regex: 5.0.1
 
   strip-json-comments@5.0.3: {}
+
+  suffix-thumb@5.0.3: {}
 
   superagent@10.3.0(supports-color@8.1.1):
     dependencies:
