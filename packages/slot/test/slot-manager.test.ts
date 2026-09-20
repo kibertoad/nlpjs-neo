@@ -296,6 +296,13 @@ describe('Slot Manager', () => {
       expect(actual).toBeUndefined();
     });
   });
+  describe('Has intent entities', () => {
+    test('It should return false for an intent without configured slots', () => {
+      const manager = new SlotManager();
+
+      expect(manager.hasIntentEntities('intent')).toBeFalsy();
+    });
+  });
   describe('Clear', () => {
     test('It should empty the intents property', () => {
       const manager = new SlotManager();

@@ -154,7 +154,8 @@ class SlotManager {
    * @returns {boolean} true if intent has defined entities, else false
    */
   hasIntentEntities(intent) {
-    return this.getIntentEntityNames(intent).length > 0;
+    const keys = this.getIntentEntityNames(intent);
+    return keys ? keys.length > 0 : false;
   }
 
   /**
