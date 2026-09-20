@@ -1367,6 +1367,33 @@ describe('NLP', () => {
     });
   });
 
+  describe('addImported', () => {
+    test('It waits for imported corpora to load', async () => {
+      const nlp = new Nlp();
+      nlp.container.register('test-importer', {
+        transform: () => [defaultCorpus],
+      });
+      let releaseCorpus;
+      const loading = new Promise<void>((resolve) => {
+        releaseCorpus = resolve;
+      });
+      vi.spyOn(nlp, 'addCorpus').mockReturnValue(loading);
+      let completed = false;
+      const importing = nlp
+        .addImported({ content: 'corpus', importer: 'test' })
+        .then(() => {
+          completed = true;
+        });
+
+      await Promise.resolve();
+      expect(completed).toBe(false);
+
+      releaseCorpus();
+      await importing;
+      expect(completed).toBe(true);
+    });
+  });
+
   describe('Process an utterance with entities', () => {
     test('The entity is registered in slotManager with addDocument', async () => {
       const nlp = new Nlp({

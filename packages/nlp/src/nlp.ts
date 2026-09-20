@@ -409,7 +409,7 @@ class Nlp extends Clonable {
     }
     const corpora = importer.transform(content, input);
     for (let i = 0; i < corpora.length; i += 1) {
-      this.addCorpus(corpora[i]);
+      await this.addCorpus(corpora[i]);
     }
   }
 
