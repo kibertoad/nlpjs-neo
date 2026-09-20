@@ -1,3 +1,4 @@
+import { containerBootstrap } from '@nlpjs-neo/core';
 import { ContextManager } from '../src/index.js';
 
 const dataName = '_data';
@@ -12,6 +13,22 @@ describe('ContextManager', () => {
       const contextManager = new ContextManager();
       expect(contextManager.settings).toBeDefined();
       expect(contextManager.settings.tableName).toEqual('context');
+    });
+    test('Registers a default configuration when none exists', () => {
+      const container = containerBootstrap();
+      expect(container.getConfiguration('context-manager')).toBeUndefined();
+      new ContextManager({ container });
+      expect(container.getConfiguration('context-manager')).toEqual({
+        tableName: 'context',
+      });
+    });
+    test('Preserves an existing context manager configuration', () => {
+      const container = containerBootstrap();
+      container.registerConfiguration('context-manager', {
+        tableName: 'custom-context',
+      });
+      const contextManager = new ContextManager({ container });
+      expect(contextManager.settings.tableName).toEqual('custom-context');
     });
   });
 

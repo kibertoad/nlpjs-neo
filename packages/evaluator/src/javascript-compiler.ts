@@ -1,5 +1,5 @@
-import { generate as unparse } from 'astring';
 import parse from './parse.js';
+import createScopedFunction from './scoped-function.js';
 
 class JavascriptCompiler {
   declare container: any;
@@ -296,13 +296,7 @@ class JavascriptCompiler {
         return this.failResult;
       }
     }
-    const vals = keys.map((key) => context[key]);
-    // oxlint-disable-next-line
-    const result = Function(keys.join(', '), 'return ' + unparse(node)).apply(
-      null,
-      vals
-    );
-    return result;
+    return createScopedFunction(node, context, ['this']);
   }
 
   async walkTemplateLiteral(node, context) {

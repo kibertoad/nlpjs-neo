@@ -199,6 +199,16 @@ describe('Evaluator', () => {
       const answer = evaluator.evaluate(question, context);
       expect(answer).toEqual([2, 4, 6]);
     });
+    test('Should not expose host globals through function expressions', () => {
+      const evaluator = new Evaluator();
+
+      expect(evaluator.evaluate('(function() { return process; })()', {})).toBe(
+        undefined
+      );
+      expect(
+        evaluator.evaluate('(function() { return globalThis; })()', {})
+      ).toBe(undefined);
+    });
     test('Should be able to modify values from the context', () => {
       const context = { a: 1, b: 2 };
       const evaluator = new Evaluator();

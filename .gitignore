@@ -11,3 +11,6 @@ model.nlp
 # TypeScript build output
 dist
 *.tsbuildinfo
+
+# Benchmark baselines written by `bench(name, { writeResult })`
+/bench/results

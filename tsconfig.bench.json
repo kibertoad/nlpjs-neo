@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    // Benchmarks are never emitted; like the tests they are type-checked
+    // against the sources, so a check does not depend on `dist/` being built.
+    "noEmit": true,
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false,
+    "paths": {
+      "@nlpjs-neo/*": ["./packages/*/src/index.ts"],
+      "#bench/*": ["./bench/*"]
+    }
+  },
+  "include": ["bench/**/*.ts", "packages/*/bench/**/*.ts"]
+}

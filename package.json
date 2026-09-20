@@ -4,6 +4,9 @@
   "description": "Library for NLU (Natural Language Understanding) done in Node.js",
   "type": "module",
   "scripts": {
+    "bench": "vitest bench --run --reporter=verbose",
+    "bench:compare": "node scripts/compare-bench.mjs",
+    "bench:watch": "vitest bench --reporter=verbose",
     "build": "tsc --build",
     "build:clean": "tsc --build --clean",
     "changeset": "changeset",
@@ -14,7 +17,7 @@
     "lint": "oxlint",
     "lintfix": "oxlint --fix",
     "test": "oxfmt && oxlint --fix && vitest run --silent --coverage",
-    "typecheck": "tsc --build && tsc --project tsconfig.test.json"
+    "typecheck": "tsc --build && tsc --project tsconfig.test.json && tsc --project tsconfig.bench.json"
   },
   "author": {
     "name": "Igor Savin",

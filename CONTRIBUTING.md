@@ -46,10 +46,30 @@ is needed first.
 pnpm test
 ```
 
+## Running benchmarks
+
+The benchmarks cover the hot paths of the main packages: the per-utterance pipeline
+(normalizing, tokenizing, stemming, entity extraction, classification) and the training behind
+it. They live in `packages/<package>/bench/` and run with
+
+```shell
+pnpm bench                     # every benchmark, once
+pnpm bench packages/similarity # one package
+```
+
+`bench/README.md` covers the conventions, the shared fixtures and how to compare two runs with
+`pnpm bench:compare`.
+
+CI benchmarks a pull request only when it carries the `perf` label; adding the label starts
+the run. The job runs the suite on the branch and on the base commit, back to back on the same
+runner, prints the comparison to the job summary and fails if a benchmark got more than 30%
+slower. A shared
+runner is still a noisy place to measure, so anything subtler belongs on your own machine.
+
 ## Checking types and packaging
 
 ```shell
-pnpm typecheck      # type-checks the package sources and the tests
+pnpm typecheck      # type-checks the package sources, the tests and the benchmarks
 pnpm build          # compiles every package to dist/
 pnpm check:exports  # are-the-types-wrong + publint for every package
 ```

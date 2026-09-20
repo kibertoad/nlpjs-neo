@@ -1,0 +1,69 @@
+# Benchmarks a pull request against the commit it branches from and reports
+# how far the numbers moved. Benchmarking both sides doubles the run and the
+# result only means something when somebody is reading it, so this workflow
+# waits for the `perf` label: add it to a pull request and the run starts, and
+# every later push to a labelled pull request refreshes the comparison.
+
+name: Benchmarks
+
+on:
+  pull_request:
+    branches: ['main']
+    # `labeled` is what makes adding the label start a run; the rest are the
+    # defaults, kept so a labelled pull request keeps measuring as it changes.
+    types: [opened, synchronize, reopened, labeled]
+
+permissions: {}
+
+jobs:
+  bench:
+    name: Benchmarks
+    if: contains(github.event.pull_request.labels.*.name, 'perf')
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    env:
+      # How much slower a benchmark has to get, in percent of its median time,
+      # before this job fails. A shared runner is noisy enough that a tighter
+      # threshold would report nothing but noise; see scripts/compare-bench.mjs
+      # for how noisy benchmarks are held back from failing on their own.
+      BENCH_REGRESSION_THRESHOLD: 30
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          # The base commit is benchmarked from this same clone.
+          fetch-depth: 0
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - name: Use Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22.x
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      # Both sides run back to back on the same runner, which is what makes the
+      # comparison worth reading: the machine is the same for both halves.
+      - name: Benchmark this pull request
+        run: |
+          echo "PR_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          pnpm run bench --reporter=json --outputFile.json="$RUNNER_TEMP/head.json"
+      - name: Check out the base branch
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: git checkout --force --detach "$BASE_SHA"
+      - run: pnpm install --frozen-lockfile
+      - name: Benchmark the base branch
+        # A base branch from before a benchmark existed has nothing to report;
+        # the comparison then lists that benchmark as new instead of failing.
+        run: |
+          pnpm run bench --reporter=json --outputFile.json="$RUNNER_TEMP/base.json" ||
+            echo "::warning::The base branch produced no benchmark report."
+      - name: Restore this pull request
+        run: git checkout --force --detach "$PR_COMMIT"
+      - name: Compare the two runs
+        run: |
+          pnpm run bench:compare "$RUNNER_TEMP/base.json" "$RUNNER_TEMP/head.json"

@@ -194,6 +194,16 @@ describe('JavascriptCompiler', () => {
       const answer = await evaluator.evaluate(question, context);
       expect(answer).toEqual([2, 4, 6]);
     });
+    test('Should not expose host globals through function expressions', async () => {
+      const evaluator = new JavascriptCompiler(container);
+
+      await expect(
+        evaluator.evaluate('(function() { return process; })()', {})
+      ).resolves.toBeUndefined();
+      await expect(
+        evaluator.evaluate('(function() { return globalThis; })()', {})
+      ).resolves.toBeUndefined();
+    });
     test('Should be able to modify values from the context', async () => {
       const context = { a: 1, b: 2 };
       const evaluator = new JavascriptCompiler(container);
