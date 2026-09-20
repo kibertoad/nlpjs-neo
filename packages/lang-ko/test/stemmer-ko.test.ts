@@ -1,4 +1,6 @@
 import { StemmerKo } from '../src/index.js';
+import { conjugate } from '../src/korean-conjugation.js';
+import { dictionary, initDicts } from '../src/korean-dictionary.js';
 
 const tests = [
   '귀하의 회사는 무엇을 개발합니까?',
@@ -32,6 +34,17 @@ const tests = [
 ];
 
 describe('Stemmer Korean', () => {
+  describe('dictionary', () => {
+    it('Maps conjugated verbs to their full multi-character root', () => {
+      const root = '가다';
+      initDicts();
+      const forms = Object.keys(conjugate([root], false));
+      const form = forms.find((item) => dictionary[item]?.root === root);
+
+      expect(form).toBeDefined();
+    });
+  });
+
   describe('tokenize and stem', () => {
     it('Should tokenize and stem correctly', () => {
       const stemmer = new StemmerKo();

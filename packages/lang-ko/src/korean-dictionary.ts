@@ -14,7 +14,7 @@ function build() {
     for (let j = 0; j < words.length; j += 1) {
       dictionary[words[j]] = { type: key };
       if (key === 'Verb') {
-        const conjugations = Object.keys(conjugate(words[j], false));
+        const conjugations = Object.keys(conjugate([words[j]], false));
         for (let k = 0; k < conjugations.length; k += 1) {
           if (conjugations[k] !== words[j]) {
             dictionary[conjugations[k]] = { type: key, root: words[j] };
