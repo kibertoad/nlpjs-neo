@@ -57,9 +57,13 @@ pnpm bench                     # every benchmark, once
 pnpm bench packages/similarity # one package
 ```
 
-`bench/README.md` covers the conventions, the shared fixtures and how to compare a change
-against a stored baseline. CI runs the suite to prove the benchmarks still work, but its
-timings are noise; measure on your own machine.
+`bench/README.md` covers the conventions, the shared fixtures and how to compare two runs with
+`pnpm bench:compare`.
+
+CI benchmarks a pull request only when it carries the `perf` label. The job then runs the
+suite on the branch and on the base commit, back to back on the same runner, prints the
+comparison to the job summary and fails if a benchmark got more than 30% slower. A shared
+runner is still a noisy place to measure, so anything subtler belongs on your own machine.
 
 ## Checking types and packaging
 

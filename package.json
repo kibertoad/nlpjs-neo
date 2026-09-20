@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "bench": "vitest bench --run --reporter=verbose",
+    "bench:compare": "node scripts/compare-bench.mjs",
     "bench:watch": "vitest bench --reporter=verbose",
     "build": "tsc --build",
     "build:clean": "tsc --build --clean",

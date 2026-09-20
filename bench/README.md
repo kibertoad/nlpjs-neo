@@ -32,9 +32,31 @@ local `const` at the top of the file to keep that out of the measurement. A warn
 `src/` module instead means the measured code crosses module boundaries internally, which is
 inherent to running the sources and applies equally to every run.
 
-## Comparing against a baseline
+## Comparing two runs
 
-Store a result, then compare a later run against it:
+`pnpm bench:compare` diffs two JSON reports, matching benchmarks by file, test and task name:
+
+```shell
+git switch main
+pnpm bench --reporter=json --outputFile.json=bench/results/base.json
+
+git switch -                 # back to your branch
+pnpm bench --reporter=json --outputFile.json=bench/results/head.json
+
+pnpm bench:compare bench/results/base.json bench/results/head.json
+```
+
+It prints a table of every benchmark with its change, counts anything more than 30% slower as
+a regression and exits non-zero when it finds one. `BENCH_REGRESSION_THRESHOLD` changes that
+percentage. The comparison is made on median time per operation, which survives noise better
+than the mean, and a benchmark whose two runs have margins of error wider than the change
+itself is never counted as a regression. Benchmarks that exist on only one side are listed as
+new or gone and never fail the comparison.
+
+`bench/results/` is git-ignored, so reports stay local.
+
+To iterate on a single benchmark instead, store its result from the source and compare in
+place, which prints both rows in the same table:
 
 ```ts
 // On the branch you want as the baseline:
@@ -52,7 +74,17 @@ await bench.compare(
 );
 ```
 
-`bench/results/` is git-ignored, so baselines stay local.
+## In CI
+
+The `Benchmarks` job runs only on pull requests labelled `perf`, because it benchmarks both
+sides and the numbers only mean something when somebody is reading them. Label the pull
+request and push (or re-run the job): the job benchmarks the branch, checks out the base
+commit, benchmarks that, and prints the comparison to the job summary, failing if a benchmark
+got more than 30% slower.
+
+Both halves run back to back on the same runner, which is what makes the comparison readable
+at all — but it is still a shared runner. Use the job to catch the large regressions it is
+tuned for, and measure anything finer on your own machine.
 
 ## Writing one
 
