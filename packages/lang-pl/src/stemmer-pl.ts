@@ -107,7 +107,10 @@ class StemmerPl extends BaseStemmer {
       }
     }
     if (word.length > 3) {
-      if (['esz', 'asz', 'esc', 'asc', 'ec', 'ac'].includes(slice)) {
+      if (
+        ['esz', 'asz', 'esc', 'asc'].includes(slice) ||
+        ['ec', 'ac'].includes(word.slice(-2))
+      ) {
         return word.slice(0, -2);
       }
       slice = word.slice(-2);
