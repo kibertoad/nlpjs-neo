@@ -213,6 +213,7 @@ class Nlu extends Clonable {
   async prepareCorpus(srcInput) {
     this.features = {};
     this.intents = {};
+    this.intentsArr = undefined;
     this.intentFeatures = {};
     const input = srcInput;
     const { corpus } = input;

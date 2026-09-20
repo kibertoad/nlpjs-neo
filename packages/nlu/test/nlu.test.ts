@@ -255,6 +255,21 @@ describe('NLU', () => {
         output: { 'support.about': 1 },
       });
     });
+    test('It refreshes cached intents after preparing a retrained corpus', async () => {
+      const nlu = new Nlu({ locale: 'en', keepStopwords: false }, container);
+      nlu.intentsArr = ['greet', 'None'];
+
+      await nlu.prepareCorpus({
+        corpus: [{ utterance: 'pizza', intent: 'food' }],
+        settings: nlu.settings,
+      });
+
+      const classifications = nlu.convertToArray({
+        classifications: { food: 0.75 },
+        settings: nlu.settings,
+      });
+      expect(classifications).toEqual([{ intent: 'food', score: 0.75 }]);
+    });
   });
 
   describe('Add None Feature', () => {
