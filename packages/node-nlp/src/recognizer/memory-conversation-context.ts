@@ -1,16 +1,18 @@
+import type { Settings } from '@nlpjs-neo/core-loader';
 import ConversationContext from './conversation-context.js';
+import type { BotSession, RecognizerContext } from '../types.js';
 
 /**
  * In memory conversation context manager.
  */
 class MemoryConversationContext extends ConversationContext {
-  declare conversationContexts: any;
+  declare conversationContexts: Record<string, RecognizerContext>;
 
   /**
    * Constructor of the class.
    * @param {Object} settings Settings for the instance.
    */
-  constructor(settings?) {
+  constructor(settings?: Settings) {
     super(settings);
     this.conversationContexts = {};
   }
@@ -20,8 +22,11 @@ class MemoryConversationContext extends ConversationContext {
    * @param {Object} session Chatbot session of the conversation.
    * @returns {Promise<Object>} Promise to resolve the conversation context.
    */
-  getConversationContext(session, _conversationContext?) {
-    return new Promise((resolve, reject) => {
+  getConversationContext(
+    session: BotSession,
+    _conversationContext?: RecognizerContext
+  ): Promise<RecognizerContext> {
+    return new Promise<RecognizerContext>((resolve, reject) => {
       const conversationId = this.getConversationId(session);
       if (!conversationId) {
         return reject(new Error('No conversation id found'));
@@ -33,7 +38,10 @@ class MemoryConversationContext extends ConversationContext {
     });
   }
 
-  setConversationContext(session, context) {
+  setConversationContext(
+    session: BotSession,
+    context: RecognizerContext
+  ): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       const conversationId = this.getConversationId(session);
       if (!conversationId) {

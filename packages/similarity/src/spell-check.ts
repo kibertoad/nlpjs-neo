@@ -7,9 +7,9 @@ type Token = string;
  * Known tokens mapped to their weight. A higher weight wins when two
  * candidates are equally close to the token being checked.
  */
-type Features = Record<Token, number>;
+export type Features = Record<Token, number>;
 
-interface SpellCheckSettings {
+export interface SpellCheckSettings {
   features?: Features;
   /** Tokens shorter than this are never corrected. Defaults to 4. */
   minLength?: number;

@@ -1,12 +1,31 @@
 import readline from 'readline';
 import { Connector } from '@nlpjs-neo/connector';
+import type {
+  Bot,
+  ConversationContext,
+  HearHandler,
+  Message,
+  Session,
+} from '@nlpjs-neo/connector';
+import type { Logger } from '@nlpjs-neo/core';
+
+/** The classifier this falls back to when no bot and no pipeline is set up. */
+interface NlpService {
+  process(
+    input: Record<string, unknown>,
+    settings?: unknown,
+    context?: ConversationContext
+  ): Promise<Message>;
+}
 
 class ConsoleConnector extends Connector {
-  declare context: any;
-  declare onHear: any;
-  declare rl: any;
+  /** Conversation state, kept for the life of the process. */
+  declare context: ConversationContext;
+  /** Called instead of the default handling, when one is assigned. */
+  declare onHear: HearHandler | undefined;
+  declare rl: readline.Interface;
 
-  initialize() {
+  initialize(): void {
     this.context = {};
     this.rl = readline.createInterface({
       input: process.stdin,
@@ -18,14 +37,27 @@ class ConsoleConnector extends Connector {
     });
   }
 
-  say(message, reference?) {
-    let text;
-    if (typeof reference === 'object' && reference.value) {
-      text = reference.value;
+  /**
+   * Prints an answer. `reference` is the session the answer belongs to, but
+   * the pipelines call this with the resolved value in its place, which is
+   * then what gets printed.
+   */
+  say(
+    message: Message | string,
+    reference?: Session | { value?: string }
+  ): void {
+    let text: string | undefined;
+    const value = (reference as { value?: string } | undefined)?.value;
+    if (typeof reference === 'object' && value) {
+      text = value;
     } else if (typeof message === 'string') {
       text = message;
     } else {
-      text = message.answer || message.message || message.text || reference;
+      text =
+        message.answer ||
+        message.message ||
+        message.text ||
+        (reference as unknown as string);
     }
     const botName = this.settings.botName || 'bot';
     if (this.settings.debug && typeof message === 'object' && !reference) {
@@ -39,7 +71,7 @@ class ConsoleConnector extends Connector {
     }
   }
 
-  async hear(line) {
+  async hear(line: string): Promise<void> {
     if (this.onHear) {
       await this.onHear(this, line);
     } else {
@@ -52,7 +84,7 @@ class ConsoleConnector extends Connector {
           this
         );
       } else {
-        const bot = this.container.get('bot');
+        const bot = this.container.get<Bot>('bot');
         if (bot) {
           const session = this.createSession({
             channelId: 'console',
@@ -61,7 +93,7 @@ class ConsoleConnector extends Connector {
           });
           await bot.process(session);
         } else {
-          const nlp = this.container.get('nlp');
+          const nlp = this.container.get<NlpService>('nlp');
           if (nlp) {
             const result = await nlp.process(
               {
@@ -81,7 +113,7 @@ class ConsoleConnector extends Connector {
     }
   }
 
-  async handleLine(line) {
+  async handleLine(line: string): Promise<void> {
     try {
       await this.hear(line);
     } catch (error) {
@@ -89,12 +121,12 @@ class ConsoleConnector extends Connector {
     }
   }
 
-  logError(error) {
+  logError(error: unknown): void {
     // The line listener discards this promise, so reporting the error must
     // never throw: an unregistered or incomplete logger would otherwise turn
     // into the unhandled rejection that handleLine exists to prevent.
     try {
-      const logger = this.logger;
+      const logger: Logger | undefined = this.logger;
       if (logger && typeof logger.error === 'function') {
         logger.error(error);
       } else if (typeof console.error === 'function') {
@@ -106,11 +138,11 @@ class ConsoleConnector extends Connector {
     }
   }
 
-  close() {
+  close(): void {
     this.rl.close();
   }
 
-  exit() {
+  exit(): void {
     process.exit();
   }
 }

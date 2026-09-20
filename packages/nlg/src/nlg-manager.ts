@@ -1,17 +1,40 @@
 import { Clonable } from '@nlpjs-neo/core';
+import type {
+  Container,
+  ContainerHolder,
+  Locale,
+  RegisteredPipeline,
+  Settings,
+} from '@nlpjs-neo/core';
+import type {
+  Answer,
+  AnswerOptions,
+  ConditionEvaluator,
+  Intent,
+  LegacyAnswer,
+  NlgInput,
+  NlgManagerJson,
+  ResponsesByLocale,
+  TemplateCompiler,
+} from './types.js';
 
 class NlgManager extends Clonable {
-  declare pipelineFind: any;
-  declare responses: any;
-  declare settings: any;
+  declare pipelineFind: RegisteredPipeline | undefined;
+  /** Every answer this was taught, by locale and then by intent. */
+  declare responses: ResponsesByLocale;
+  declare settings: Settings;
 
-  constructor(settings: any = {}, container?) {
+  constructor(settings: Settings = {}, container?: ContainerHolder) {
     super(
       {
         settings: {},
-        container: settings.container || container,
+        container:
+          settings.container ||
+          (container &&
+            ((container as { container?: Container }).container ||
+              (container as Container))),
       },
-      container
+      container as Container
     );
     this.applySettings(this.settings, settings);
     if (!this.settings.tag) {
@@ -28,13 +51,16 @@ class NlgManager extends Clonable {
     });
   }
 
-  registerDefault() {
+  registerDefault(): void {
     this.container.registerConfiguration('nlg-manager', {}, false);
   }
 
   // `node-nlp` layers a positional (locale, intent, context) overload on top
   // of this, so the base signature has to tolerate the extra arguments.
-  findAllAnswers(srcInput, ..._args: any[]): any {
+  findAllAnswers(
+    srcInput: NlgInput,
+    ..._args: unknown[]
+  ): NlgInput | LegacyAnswer[] {
     const input = srcInput;
     if (this.responses[input.locale]) {
       input.answers = this.responses[input.locale][input.intent] || [];
@@ -44,21 +70,22 @@ class NlgManager extends Clonable {
     return input;
   }
 
-  filterAnswers(srcInput) {
+  /** Keeps the answers whose condition the context satisfies. */
+  filterAnswers(srcInput: NlgInput): NlgInput {
     const input = srcInput;
     const { answers } = input;
     if (answers && answers.length) {
-      const evaluator = this.container.get('Evaluator');
+      const evaluator = this.container.get<ConditionEvaluator>('Evaluator');
       if (evaluator) {
         const context = input.context || {};
-        const filtered: any[] = [];
+        const filtered: Answer[] = [];
         for (let i = 0; i < answers.length; i += 1) {
           const answer = answers[i];
           if (answer.opts) {
             const condition =
               typeof answer.opts === 'string'
                 ? answer.opts
-                : answer.opts.condition;
+                : (answer.opts as AnswerOptions).condition;
             if (condition) {
               if (evaluator.evaluate(condition, context) === true) {
                 filtered.push(answer);
@@ -76,7 +103,7 @@ class NlgManager extends Clonable {
     return input;
   }
 
-  chooseRandom(srcInput) {
+  chooseRandom(srcInput: NlgInput): NlgInput {
     const input = srcInput;
     const { answers } = input;
     if (answers && answers.length) {
@@ -85,11 +112,19 @@ class NlgManager extends Clonable {
     return input;
   }
 
-  renderText(srcText, context) {
+  /**
+   * Resolves the `(a|b)` alternatives of an answer and compiles whatever
+   * template it carries. Takes either an answer or its bare text, and gives
+   * back the same form.
+   */
+  renderText<T extends Answer | string>(
+    srcText: T,
+    context?: Record<string, unknown>
+  ): T {
     if (!srcText) {
       return srcText;
     }
-    let text = srcText.answer || srcText;
+    let text: string = (srcText as Answer).answer || (srcText as string);
     let matchFound;
     do {
       const match = /\((?:[^()]+)\|(?:[^()]+)\)/g.exec(text);
@@ -107,19 +142,19 @@ class NlgManager extends Clonable {
         matchFound = false;
       }
     } while (matchFound);
-    if (srcText.answer) {
-      srcText.answer = text;
+    if ((srcText as Answer).answer) {
+      (srcText as Answer).answer = text;
     } else {
-      srcText = text;
+      srcText = text as T;
     }
-    const template = this.container.get('Template');
+    const template = this.container.get<TemplateCompiler>('Template');
     if (template && context) {
       return template.compile(srcText, context);
     }
     return srcText;
   }
 
-  renderRandom(srcInput) {
+  renderRandom(srcInput: NlgInput): NlgInput {
     const input = srcInput;
     const { answers, context } = input;
     for (let i = 0; i < answers.length; i += 1) {
@@ -128,7 +163,12 @@ class NlgManager extends Clonable {
     return input;
   }
 
-  indexOfAnswer(locale, intent, answer, opts) {
+  indexOfAnswer(
+    locale: Locale,
+    intent: Intent,
+    answer?: string,
+    opts?: string | AnswerOptions
+  ): number {
     if (!this.responses[locale]) {
       return -1;
     }
@@ -148,7 +188,12 @@ class NlgManager extends Clonable {
     return -1;
   }
 
-  add(locale, intent, answer?, opts?) {
+  add(
+    locale: Locale,
+    intent: Intent,
+    answer?: string,
+    opts?: string | AnswerOptions
+  ): Answer {
     const index = this.indexOfAnswer(locale, intent, answer, opts);
     if (index !== -1) {
       return this.responses[locale][intent][index];
@@ -164,23 +209,33 @@ class NlgManager extends Clonable {
     return obj;
   }
 
-  remove(locale, intent, answer?, opts?) {
+  remove(
+    locale: Locale,
+    intent: Intent,
+    answer?: string,
+    opts?: string | AnswerOptions
+  ): void {
     const index = this.indexOfAnswer(locale, intent, answer, opts);
     if (index !== -1) {
       this.responses[locale][intent].splice(index, 1);
     }
   }
 
-  defaultPipelineFind(input) {
-    let output = this.findAllAnswers(input);
+  defaultPipelineFind(input: NlgInput): NlgInput {
+    let output = this.findAllAnswers(input) as NlgInput;
     output = this.filterAnswers(output);
     output = this.renderRandom(output);
     output = this.chooseRandom(output);
     return output;
   }
 
-  find(locale, intent?, context?, settings?) {
-    const input = {
+  find(
+    locale: Locale,
+    intent?: Intent,
+    context?: Record<string, unknown>,
+    settings?: Settings
+  ): NlgInput | Promise<NlgInput> {
+    const input: NlgInput = {
       locale,
       intent,
       context,
@@ -192,7 +247,7 @@ class NlgManager extends Clonable {
     return this.defaultPipelineFind(input);
   }
 
-  run(srcInput, settings?) {
+  run(srcInput: NlgInput, settings?: Settings): NlgInput | Promise<NlgInput> {
     return this.find(
       srcInput.locale,
       srcInput.intent,
@@ -201,8 +256,8 @@ class NlgManager extends Clonable {
     );
   }
 
-  toJSON() {
-    const result = {
+  toJSON(): NlgManagerJson {
+    const result: NlgManagerJson = {
       settings: { ...this.settings },
       responses: this.responses,
     };
@@ -210,7 +265,7 @@ class NlgManager extends Clonable {
     return result;
   }
 
-  fromJSON(json) {
+  fromJSON(json: NlgManagerJson): void {
     this.applySettings(this.settings, json.settings);
     this.responses = json.responses;
   }

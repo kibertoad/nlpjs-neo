@@ -1,24 +1,45 @@
 import { Clonable } from '@nlpjs-neo/core';
+import type {
+  Container,
+  ContainerHolder,
+  RegisteredPipeline,
+  Settings,
+} from '@nlpjs-neo/core';
+import type {
+  ActionFunction,
+  ActionManagerJson,
+  ActionsByIntent,
+  BoundAction,
+  Intent,
+  NlgInput,
+} from './types.js';
 
 /**
  * Action Manager.
  * It stores the actions that should be executed for a given intent.
  */
 class ActionManager extends Clonable {
-  declare actions: any;
-  declare actionsMap: any;
-  declare settings: any;
+  /** Actions per intent, as they are stored and exported. */
+  declare actions: ActionsByIntent;
+  /** Function registered for an action name, when one was. */
+  declare actionsMap: Record<string, ActionFunction>;
+  declare pipelineFind: RegisteredPipeline | undefined;
+  declare settings: Settings;
 
   /**
    * Constructor of the class
    */
-  constructor(settings: any = {}, container?) {
+  constructor(settings: Settings = {}, container?: ContainerHolder) {
     super(
       {
         settings: {},
-        container: settings.container || container,
+        container:
+          settings.container ||
+          (container &&
+            ((container as { container?: Container }).container ||
+              (container as Container))),
       },
-      container
+      container as Container
     );
     this.applySettings(this.settings, settings);
     if (!this.settings.tag) {
@@ -36,15 +57,15 @@ class ActionManager extends Clonable {
     });
   }
 
-  registerDefault() {}
+  registerDefault(): void {}
 
   /**
    * Find the index of an action
    * @param {String} intent Name of the intent.
    * @param {String} action Name of the action.
-   * @param {any[]} parameters list of parameters of the action.
+   * @param {unknown[]} parameters list of parameters of the action.
    */
-  posAction(intent, action, parameters) {
+  posAction(intent: Intent, action: string, parameters: unknown[]): number {
     if (!this.actions[intent]) {
       return -1;
     }
@@ -65,7 +86,7 @@ class ActionManager extends Clonable {
    * @param {String} intent Name of the intent.
    * @returns {Object[]} Actions for this intent.
    */
-  findActions(intent) {
+  findActions(intent: Intent): BoundAction[] {
     const dehydratedActions = this.actions[intent] || [];
 
     return dehydratedActions.map((actionBundle) => ({
@@ -79,7 +100,10 @@ class ActionManager extends Clonable {
    * @param {String} intent Name of the intent.
    * @param {String|Object} input original answer data structure
    */
-  async processActions(intent, input) {
+  async processActions(
+    intent: Intent,
+    input: NlgInput | string
+  ): Promise<NlgInput | string> {
     const actionList = this.findActions(intent);
     if (input && typeof input === 'object') {
       input.actions = actionList.map((x) => ({
@@ -87,7 +111,7 @@ class ActionManager extends Clonable {
         parameters: x.parameters,
       }));
     }
-    let processedAnswer = input;
+    let processedAnswer: NlgInput | string = input;
 
     for (const { fn, parameters } of actionList) {
       if (fn) {
@@ -98,12 +122,12 @@ class ActionManager extends Clonable {
         if (newProcessedAnswer) {
           if (typeof processedAnswer === 'object') {
             if (typeof newProcessedAnswer === 'object') {
-              processedAnswer = newProcessedAnswer;
+              processedAnswer = newProcessedAnswer as NlgInput;
             } else {
-              processedAnswer.answer = newProcessedAnswer;
+              processedAnswer.answer = newProcessedAnswer as string;
             }
           } else {
-            processedAnswer = newProcessedAnswer;
+            processedAnswer = newProcessedAnswer as string;
           }
         }
       }
@@ -116,10 +140,15 @@ class ActionManager extends Clonable {
    * Add an action to a given intent.
    * @param {String} intent Name of the intent.
    * @param {String} action Action to be executed
-   * @param {any[]} parameters Parameters of the action
+   * @param {unknown[]} parameters Parameters of the action
    * @param {function} [fn] Function of the action
    */
-  addAction(intent, action, parameters, fn?) {
+  addAction(
+    intent: Intent,
+    action: string,
+    parameters: unknown[],
+    fn?: ActionFunction
+  ): void {
     if (this.posAction(intent, action, parameters) === -1) {
       if (!this.actions[intent]) {
         this.actions[intent] = [];
@@ -137,7 +166,7 @@ class ActionManager extends Clonable {
    * @param {String} action Name of the action
    * @param {Object[]} parameters Parameters of the action.
    */
-  removeAction(intent, action, parameters) {
+  removeAction(intent: Intent, action: string, parameters: unknown[]): void {
     const index = this.posAction(intent, action, parameters);
     if (index > -1) {
       this.actions[intent].splice(index, 1);
@@ -148,7 +177,7 @@ class ActionManager extends Clonable {
    * Remove all the actions of a given intent.
    * @param {String} intent Name of the intent.
    */
-  removeActions(intent) {
+  removeActions(intent: Intent): void {
     delete this.actions[intent];
   }
 
@@ -157,7 +186,7 @@ class ActionManager extends Clonable {
    * @param {String} action Name of the action.
    * @param {function} [fn] Function of the action
    */
-  registerActionInMap(action, fn) {
+  registerActionInMap(action: string, fn: ActionFunction): void {
     this.actionsMap[action] = fn;
   }
 
@@ -165,18 +194,18 @@ class ActionManager extends Clonable {
    * Remove an action function from the actions map.
    * @param {String} action Name of the action.
    */
-  removeActionFromMap(action) {
+  removeActionFromMap(action: string): void {
     delete this.actionsMap[action];
   }
 
-  run(srcInput, settings?) {
+  run(srcInput: NlgInput, settings?: Settings): Promise<NlgInput | string> {
     const input = srcInput;
     input.settings = input.settings || settings || this.settings;
     return this.processActions(srcInput.intent, input);
   }
 
-  toJSON() {
-    const result = {
+  toJSON(): ActionManagerJson {
+    const result: ActionManagerJson = {
       settings: { ...this.settings },
       actions: this.actions,
     };
@@ -184,7 +213,7 @@ class ActionManager extends Clonable {
     return result;
   }
 
-  fromJSON(json) {
+  fromJSON(json: ActionManagerJson): void {
     this.applySettings(this.settings, json.settings);
     this.actions = json.actions;
   }

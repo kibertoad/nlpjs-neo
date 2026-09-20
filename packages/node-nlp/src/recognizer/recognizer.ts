@@ -1,41 +1,56 @@
+import type { NlpResult } from '@nlpjs-neo/nlp';
 import { NlpManager } from '../nlp/index.js';
 import MemoryConversationContext from './memory-conversation-context.js';
+import type ConversationContext from './conversation-context.js';
+import type {
+  BotFrameworkBot,
+  BotSession,
+  RecognizeCallback,
+  RecognizerAction,
+  RecognizerContext,
+  RecognizerSettings,
+  RoutingHandler,
+} from '../types.js';
 
 /**
  * Microsoft Bot Framework compatible recognizer for nlp.js.
  */
 class Recognizer {
-  declare actions: any;
-  declare conversationContext: any;
-  declare nlpManager: any;
-  declare onBeginRouting: any;
-  declare onNoTextRouting: any;
-  declare onRecognizedRouting: any;
-  declare onUnrecognizedRouting: any;
-  declare settings: any;
-  declare threshold: any;
+  /** Functions an intent may name, by action name. */
+  declare actions: Record<string, RecognizerAction>;
+  declare conversationContext: ConversationContext;
+  declare nlpManager: NlpManager;
+  /** Decides whether the recognizer takes over a message at all. */
+  declare onBeginRouting: RoutingHandler | undefined;
+  declare onNoTextRouting: RoutingHandler | undefined;
+  declare onRecognizedRouting: RoutingHandler | undefined;
+  declare onUnrecognizedRouting: RoutingHandler | undefined;
+  declare settings: RecognizerSettings;
+  /** Below this score, an answer counts as unrecognized. */
+  declare threshold: number;
 
   /**
    * Constructor of the class.
    * @param {Object} settings Settings for the instance.
    */
-  constructor(settings?) {
+  constructor(settings?: RecognizerSettings) {
     this.settings = settings || {};
     this.nlpManager =
-      this.settings.nlpManager ||
+      (this.settings.nlpManager as NlpManager) ||
       new NlpManager({
         container: this.settings.container,
         ner: { threshold: this.settings.nerThreshold || 1 },
       });
     this.threshold = this.settings.threshold || 0.7;
     this.conversationContext =
-      this.settings.conversationContext || new MemoryConversationContext();
+      (this.settings.conversationContext as ConversationContext) ||
+      new MemoryConversationContext();
   }
 
   /**
    * Train the NLP manager.
    */
-  async train(_arg0?) {
+  async train(_arg0?: unknown): Promise<void> {
     await this.nlpManager.train();
   }
 
@@ -43,7 +58,7 @@ class Recognizer {
    * Loads the model from a file.
    * @param {String} filename Name of the file.
    */
-  load(filename?) {
+  load(filename?: string): void {
     this.nlpManager.load(filename);
   }
 
@@ -51,7 +66,7 @@ class Recognizer {
    * Saves the model into a file.
    * @param {String} filename Name of the file.
    */
-  save(filename?) {
+  save(filename?: string): void {
     this.nlpManager.save(filename);
   }
 
@@ -59,7 +74,7 @@ class Recognizer {
    * Loads the NLP manager from an excel.
    * @param {String} filename Name of the file.
    */
-  async loadExcel(filename) {
+  async loadExcel(filename: string): Promise<void> {
     await this.nlpManager.loadExcel(filename);
     await this.train();
     this.save();
@@ -72,7 +87,12 @@ class Recognizer {
    * @param {String} locale Locale of the utterance.
    * @param {Promise.String} Promise utterance Utterance to be recognized.
    */
-  async process(srcContext, locale?, utterance?, _arg3?) {
+  async process(
+    srcContext: RecognizerContext | undefined,
+    locale?: string,
+    utterance?: string,
+    _arg3?: unknown
+  ): Promise<NlpResult> {
     const context = srcContext || {};
     const response = await (locale
       ? this.nlpManager.process(locale, utterance, context)
@@ -99,7 +119,11 @@ class Recognizer {
    * @param {String} model Model of the utterance.
    * @param {Function} cb Callback Function.
    */
-  async recognizeUtterance(utterance, model, cb) {
+  async recognizeUtterance(
+    utterance: string,
+    model: (RecognizerContext & { locale?: string }) | undefined,
+    cb: RecognizeCallback
+  ): Promise<unknown> {
     const response = await this.process(
       model,
       model ? model.locale : undefined,
@@ -114,7 +138,7 @@ class Recognizer {
    * @param {Object} session Microsoft bot framework session.
    * @returns {string} Last dialog id.
    */
-  getDialogId(session) {
+  getDialogId(session: BotSession): string {
     if (!session.dialogStack) {
       return '';
     }
@@ -128,8 +152,11 @@ class Recognizer {
     return '';
   }
 
-  innerRecognize(session, cb) {
-    const result = { score: 0.0, intent: undefined };
+  innerRecognize(session: BotSession, cb: RecognizeCallback): unknown {
+    const result: NlpResult = {
+      score: 0.0,
+      intent: undefined,
+    };
     if (session && session.message && session.message.text) {
       const utterance = session.message.text;
       const { locale } = session;
@@ -184,7 +211,7 @@ class Recognizer {
    * @param {Object} session Chatbot session of the message.
    * @param {Function} cb Callback function.
    */
-  recognize(session, cb) {
+  recognize(session: BotSession, cb?: RecognizeCallback): unknown {
     if (cb) {
       return this.innerRecognize(session, cb);
     }
@@ -204,7 +231,7 @@ class Recognizer {
    * @param {Object} session Chatbot session of the message.
    * @param {Function} cb Callback function.
    */
-  recognizeTwice(session, cb) {
+  recognizeTwice(session: BotSession, cb: RecognizeCallback): void {
     this.conversationContext
       .getConversationContext(session)
       .then(async (srcContext) => {
@@ -232,7 +259,11 @@ class Recognizer {
    * @param {Object} session Microsoft bot framework session.
    * @param {Object} results Results for the routing.
    */
-  defaultRouting(bot, session, results) {
+  defaultRouting(
+    bot: BotFrameworkBot,
+    session: BotSession,
+    results: unknown
+  ): unknown {
     const route = bot.libraries.BotBuilder.constructor.bestRouteResult(
       results,
       session.dialogStack(),
@@ -244,11 +275,18 @@ class Recognizer {
     return session.routeToActiveDialog();
   }
 
-  executeAction(name, parameters, context) {
+  executeAction(
+    name: string,
+    parameters: string,
+    context: RecognizerContext
+  ): Promise<void> {
     return new Promise<void>((resolve) => {
-      const params = JSON.parse(`[${parameters}]`);
+      const params = JSON.parse(`[${parameters}]`) as unknown[];
       if (this.actions[name]) {
-        const action = this.actions[name](this, context, ...(params || []));
+        // An action may answer a promise, in which case it is waited for.
+        const action = this.actions[name](this, context, ...(params || [])) as
+          | Promise<unknown>
+          | undefined;
         if (action.then) {
           action.then(() => resolve());
         } else {
@@ -259,15 +297,25 @@ class Recognizer {
     });
   }
 
-  processActions(session, response, cb) {
-    if (!response || !response.actions || response.actions.length === 0) {
+  processActions(
+    session: BotSession,
+    response: NlpResult | undefined,
+    cb: (err?: unknown) => unknown
+  ): unknown {
+    const responseActions = response
+      ? (response.actions as unknown[])
+      : undefined;
+    if (!response || !responseActions || responseActions.length === 0) {
       return cb();
     }
     this.conversationContext
       .getConversationContext(session)
       .then(async (srcContext) => {
         const context = srcContext;
-        const { actions } = response;
+        const actions = response.actions as {
+          action: string;
+          parameters: string;
+        }[];
         const promises = actions.map((action) =>
           this.executeAction(action.action, action.parameters, context)
         );
@@ -284,7 +332,7 @@ class Recognizer {
    * @param {Object} session Microsoft bot framework session.
    * @param {string} answer Answer given by the NLP.
    */
-  processAnswer(session, answer) {
+  processAnswer(session: BotSession, answer: string): unknown {
     if (answer[0] === '/') {
       return session.beginDialog(answer);
     }
@@ -299,7 +347,11 @@ class Recognizer {
    * @param {boolean} activateRouting True if default routing should be overrided.
    * @param {number} routingThreshold Threshold for the score of the intent.
    */
-  setBot(bot, activateRouting = false, routingThreshold = 0.7) {
+  setBot(
+    bot: BotFrameworkBot,
+    activateRouting = false,
+    routingThreshold = 0.7
+  ): void {
     bot.recognizer(this);
     if (!activateRouting) {
       return;

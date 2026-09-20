@@ -1,29 +1,33 @@
+import type { Locale, Settings } from '@nlpjs-neo/core-loader';
 import SentimentAnalyzer from './sentiment-analyzer.js';
+import type { AnalyzedSentiment, LegacySentiment } from '../types.js';
 
 /**
  * Class for the sentiment anlysis manager, able to manage
  * several different languages at the same time.
  */
 class SentimentManager {
-  declare analyzer: any;
-  declare languages: any;
-  declare settings: any;
+  declare analyzer: SentimentAnalyzer;
+  /** Kept for the legacy API: every language is handled by one analyzer. */
+  declare languages: Record<Locale, unknown>;
+  declare settings: Settings;
 
   /**
    * Constructor of the class.
    */
-  constructor(settings?) {
+  constructor(settings?: Settings) {
     this.settings = settings || {};
     this.languages = {};
     this.analyzer = new SentimentAnalyzer();
   }
 
-  addLanguage() {
+  addLanguage(): void {
     // do nothing
   }
 
-  translate(sentiment) {
-    let vote;
+  /** Reports a sentiment under the names the legacy API used. */
+  translate(sentiment: AnalyzedSentiment): LegacySentiment {
+    let vote: string;
     if (sentiment.score > 0) {
       vote = 'positive';
     } else if (sentiment.score < 0) {

@@ -4,9 +4,14 @@ import {
   defaultContainer,
   containerBootstrap,
 } from '@nlpjs-neo/core-loader';
+import type { ContainerHolder, Locale } from '@nlpjs-neo/core-loader';
 import * as langAll from '@nlpjs-neo/lang-all';
 
-const LangAll = { ...langAll };
+/**
+ * Every export of `lang-all`, looked up by the name a locale builds, so a
+ * stemmer or a tokenizer can be resolved from a locale alone.
+ */
+const LangAll = { ...langAll } as Record<string, unknown>;
 
 const cultures = {
   ar: 'ar-ae', // Arabic
@@ -39,48 +44,60 @@ const cultures = {
 };
 
 class NlpUtil {
-  declare static autoStemmers: any;
-  declare static tokenizers: any;
-  declare static useAlternative: any;
-  declare static useAutoStemmer: any;
-  declare static useNoneFeature: any;
+  /** Stemmers built per locale, so one locale is only built once. */
+  declare static autoStemmers: Record<Locale, BaseStemmer>;
+  /** Tokenizers built per locale, so one locale is only built once. */
+  declare static tokenizers: Record<Locale, Tokenizer>;
+  /** Locales that use the alternative classifier rather than the default. */
+  declare static useAlternative: Record<Locale, boolean>;
+  declare static useAutoStemmer: boolean;
+  /** Whether a locale trains the artificial `None` feature. */
+  declare static useNoneFeature: Record<Locale, boolean>;
 
   /**
    * Given a locale, get the 2 character one.
    * @param {String} locale Locale of the language.
    * @returns {String} Locale in 2 character length.
    */
-  static getTruncatedLocale(locale?) {
+  static getTruncatedLocale(locale?: Locale): Locale | undefined {
     return locale ? locale.substr(0, 2).toLowerCase() : undefined;
   }
 
-  static getStemmer(locale?) {
+  static getStemmer(locale?: Locale): BaseStemmer {
     if (!locale) {
       return new BaseStemmer();
     }
     const name = `Stemmer${locale.slice(0, 1).toUpperCase()}${locale.slice(1)}`;
-    const Stemmer = LangAll[name];
+    const Stemmer = LangAll[name] as
+      | (new (container?: ContainerHolder) => BaseStemmer)
+      | undefined;
     return Stemmer ? new Stemmer() : new BaseStemmer();
   }
 
-  static getTokenizer(locale?) {
+  static getTokenizer(locale?: Locale): Tokenizer {
     if (!locale) {
       return new Tokenizer();
     }
     const name = `Tokenizer${locale.slice(0, 1).toUpperCase()}${locale.slice(
       1
     )}`;
-    const TokenizerClass = LangAll[name];
+    const TokenizerClass = LangAll[name] as
+      | (new (
+          container?: ContainerHolder,
+          shouldTokenize?: boolean
+        ) => Tokenizer)
+      | undefined;
     return TokenizerClass
       ? new TokenizerClass(undefined, true)
       : new Tokenizer(undefined, true);
   }
 
-  static getCulture(locale?) {
+  /** Culture of a locale, such as `en-us`; `<locale>-<locale>` when unknown. */
+  static getCulture(locale?: Locale): string {
     if (!locale) {
       return 'en-us';
     }
-    return cultures[locale] || `${locale}-${locale}`;
+    return cultures[locale as keyof typeof cultures] || `${locale}-${locale}`;
   }
 }
 
@@ -129,6 +146,8 @@ NlpUtil.useNoneFeature = {
 NlpUtil.tokenizers = {};
 
 containerBootstrap({}, true, defaultContainer);
-defaultContainer.use(LangAll.LangAll);
+defaultContainer.use(
+  LangAll.LangAll as Parameters<typeof defaultContainer.use>[0]
+);
 
 export default NlpUtil;

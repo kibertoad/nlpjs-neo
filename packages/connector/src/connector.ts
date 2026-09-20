@@ -1,16 +1,28 @@
 import { Clonable, containerBootstrap } from '@nlpjs-neo/core';
+import type { Container, ContainerHolder } from '@nlpjs-neo/core';
 import Session from './session.js';
+import type {
+  Activity,
+  ConnectorSettings,
+  ConversationContext,
+  Message,
+} from './types.js';
 
 class Connector extends Clonable {
-  declare settings: any;
+  declare settings: ConnectorSettings;
 
-  constructor(settings: any = {}, container = undefined) {
+  constructor(settings: ConnectorSettings = {}, container?: ContainerHolder) {
     super(
       {
         settings: {},
-        container: settings.container || container || containerBootstrap(),
+        container:
+          settings.container ||
+          (container &&
+            ((container as { container?: Container }).container ||
+              (container as Container))) ||
+          containerBootstrap(),
       },
-      container
+      container as Container
     );
     this.applySettings(this.settings, settings);
     this.registerDefault();
@@ -24,11 +36,12 @@ class Connector extends Clonable {
     this.initialize();
   }
 
-  registerDefault() {
+  registerDefault(): void {
     // Empty
   }
 
-  getSnakeName() {
+  /** `ConsoleConnector` becomes `console`: the tag it is configured under. */
+  getSnakeName(): string {
     const name = this.constructor.name
       .replace(/\W+/g, ' ')
       .split(/ |\B(?=[A-Z])/)
@@ -37,19 +50,31 @@ class Connector extends Clonable {
     return name.endsWith('-connector') ? name.slice(0, -10) : name;
   }
 
-  initialize() {
+  initialize(): void {
     // Should be implemented by childs
   }
 
-  close() {
+  /**
+   * Sends a message on the channel. The base connector has no channel of its
+   * own to send on, so this is where a `Session` reaches the one that has.
+   */
+  say(
+    _message: Message | string,
+    _session?: Session,
+    _context?: ConversationContext
+  ): void | Promise<void> {
     // Should be implemented by childs
   }
 
-  destroy() {
+  close(): void {
+    // Should be implemented by childs
+  }
+
+  destroy(): void {
     this.close();
   }
 
-  createSession(activity: any = {}) {
+  createSession(activity: Activity = {}): Session {
     return new Session(this, activity);
   }
 }

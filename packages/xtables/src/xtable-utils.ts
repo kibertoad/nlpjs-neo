@@ -1,12 +1,15 @@
+import type { Coordinate, CoordinateRange } from './types.js';
+
 class XTableUtils {
-  declare static alphachars: any;
+  /** Characters excel names its columns with. */
+  declare static alphachars: string;
 
   /**
    * Indicates the index of a given alpha character.
    * @param {Character} c Character to be checked.
    * @returns Index of the character, -1 if is invalid.
    */
-  static alphaIndex(c) {
+  static alphaIndex(c: string): number {
     return XTableUtils.alphachars.indexOf(c);
   }
 
@@ -15,7 +18,7 @@ class XTableUtils {
    * @param {Character} c Character to be checked.
    * @returns {Boolean} True if the character is a valid alpha, false otherwise.
    */
-  static isAlphaChar(c) {
+  static isAlphaChar(c: string): boolean {
     return XTableUtils.alphaIndex(c) !== -1;
   }
 
@@ -25,7 +28,7 @@ class XTableUtils {
    *                       for naming columns in Excel.
    * @returns {Number} Alpha in number format.
    */
-  static alpha2number(alpha) {
+  static alpha2number(alpha: string): number {
     let result = 0;
     const alphalength = XTableUtils.alphachars.length;
     for (let i = 0, l = alpha.length; i < l; i += 1) {
@@ -46,7 +49,7 @@ class XTableUtils {
    * @param {Number} n Number in decimal format.
    * @return {String} Number in alpha format.
    */
-  static number2alpha(n) {
+  static number2alpha(n: number): string {
     if (!Number.isInteger(n)) {
       throw new Error('Invalid number');
     }
@@ -74,7 +77,7 @@ class XTableUtils {
    * @param {String} str Excel coordinate.
    * @returns {Object} Coordinate in format { column: ..., row: ...}
    */
-  static excel2coord(str) {
+  static excel2coord(str: string): Coordinate {
     const l = str.length;
     let index = 0;
     let alpha = '';
@@ -98,7 +101,7 @@ class XTableUtils {
    * @param {Object} coord Decimal coordinate in format { column: ..., row: ...}
    * @returns {String} Excel coordinate.
    */
-  static coord2excel(coord) {
+  static coord2excel(coord: Coordinate): string {
     return XTableUtils.number2alpha(coord.column) + (coord.row + 1);
   }
 
@@ -106,7 +109,7 @@ class XTableUtils {
    * Transform an excel range to a decimal range.
    * @param {*} str
    */
-  static excel2range(str) {
+  static excel2range(str: string): CoordinateRange {
     const index = str.indexOf(':');
     if (index === -1) {
       throw new Error('Invalid excel range');

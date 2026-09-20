@@ -1,5 +1,12 @@
 import { Clonable, containerBootstrap } from '@nlpjs-neo/core';
+import type {
+  Container,
+  ContainerHolder,
+  Locale,
+  Storage,
+} from '@nlpjs-neo/core';
 import { NluManager, NluNeural } from '@nlpjs-neo/nlu';
+import type { Domain, Intent, NluSettings } from '@nlpjs-neo/nlu';
 import {
   Ner,
   ExtractorEnum,
@@ -7,30 +14,76 @@ import {
   ExtractorTrim,
   ExtractorBuiltin,
 } from '@nlpjs-neo/ner';
+import type {
+  Edge,
+  EntityName,
+  NerInput,
+  Rule,
+  RuleCondition,
+  TrimOptions,
+  TrimTypeValue,
+} from '@nlpjs-neo/ner';
 import { ActionManager, NlgManager } from '@nlpjs-neo/nlg';
+import type {
+  ActionFunction,
+  Answer,
+  AnswerOptions,
+  NlgInput,
+} from '@nlpjs-neo/nlg';
 import { SentimentAnalyzer } from '@nlpjs-neo/sentiment';
 import { SlotManager } from '@nlpjs-neo/slot';
+import type { SlotFillingResult } from '@nlpjs-neo/slot';
 import ContextManager from './context-manager.js';
+import type {
+  ActionDefinition,
+  Context,
+  Corpus,
+  CorpusImporter,
+  CorpusIntent,
+  CorpusDomain,
+  EntityDefinition,
+  ImportedCorpus,
+  IntentHandler,
+  NlpJson,
+  NlpResult,
+  NlpSettings,
+  NluClassSettings,
+  OpenQuestionService,
+  SlotDefinition,
+  StructuredEntity,
+} from './types.js';
+
+/** The stemmer of a locale, when it fills in what it recognized itself. */
+interface FillingStemmer {
+  lastFill?(output: NlpResult): void;
+}
 
 class Nlp extends Clonable {
-  declare actionManager: any;
-  declare contextManager: any;
-  declare forceNER: any;
-  declare ner: any;
-  declare nlgManager: any;
-  declare nluManager: any;
-  declare onIntent: any;
-  declare sentiment: any;
-  declare settings: any;
-  declare slotManager: any;
+  declare actionManager: ActionManager;
+  declare contextManager: ContextManager;
+  /** Extracts entities even when no intent needs a slot filled. */
+  declare forceNER: boolean;
+  declare ner: Ner;
+  declare nlgManager: NlgManager;
+  declare nluManager: NluManager;
+  /** Called after every recognition, instead of the `onIntent(...)` pipeline. */
+  declare onIntent: IntentHandler | undefined;
+  declare sentiment: SentimentAnalyzer;
+  declare settings: NlpSettings;
+  declare slotManager: SlotManager;
 
-  constructor(settings: any = {}, container?) {
+  constructor(settings: NlpSettings = {}, container?: ContainerHolder) {
     super(
       {
         settings: {},
-        container: settings.container || container || containerBootstrap(),
+        container:
+          settings.container ||
+          (container &&
+            ((container as { container?: Container }).container ||
+              (container as Container))) ||
+          containerBootstrap(),
       },
-      container
+      container as Container
     );
     this.applySettings(this.settings, settings);
     if (!this.settings.tag) {
@@ -41,19 +94,28 @@ class Nlp extends Clonable {
       this.settings,
       this.container.getConfiguration(this.settings.tag)
     );
-    this.nluManager = this.container.get('nlu-manager', this.settings.nlu);
-    this.ner = this.container.get('ner', this.settings.ner);
-    this.nlgManager = this.container.get('nlg-manager', this.settings.nlg);
-    this.actionManager = this.container.get(
+    this.nluManager = this.container.get<NluManager>(
+      'nlu-manager',
+      this.settings.nlu
+    );
+    this.ner = this.container.get<Ner>('ner', this.settings.ner);
+    this.nlgManager = this.container.get<NlgManager>(
+      'nlg-manager',
+      this.settings.nlg
+    );
+    this.actionManager = this.container.get<ActionManager>(
       'action-manager',
       this.settings.action
     );
-    this.sentiment = this.container.get(
+    this.sentiment = this.container.get<SentimentAnalyzer>(
       'sentiment-analyzer',
       this.settings.sentiment
     );
-    this.slotManager = this.container.get('SlotManager', this.settings.slot);
-    this.contextManager = this.container.get(
+    this.slotManager = this.container.get<SlotManager>(
+      'SlotManager',
+      this.settings.slot
+    );
+    this.contextManager = this.container.get<ContextManager>(
       'context-manager',
       this.settings.context
     );
@@ -64,7 +126,7 @@ class Nlp extends Clonable {
     this.initialize();
   }
 
-  registerDefault() {
+  registerDefault(): void {
     this.container.registerConfiguration(
       'nlp',
       {
@@ -90,7 +152,7 @@ class Nlp extends Clonable {
     this.container.register('SlotManager', SlotManager, false);
   }
 
-  initialize() {
+  initialize(): void {
     if (this.settings.nlu) {
       const locales = Object.keys(this.settings.nlu);
       for (let i = 0; i < locales.length; i += 1) {
@@ -98,7 +160,9 @@ class Nlp extends Clonable {
         const domains = Object.keys(this.settings.nlu[locale]);
         for (let j = 0; j < domains.length; j += 1) {
           const domain = domains[j];
-          const settings = this.settings.nlu[locale][domain];
+          const settings = (
+            this.settings.nlu[locale] as Record<Domain, NluClassSettings>
+          )[domain];
           const { className } = settings;
           delete settings.className;
           this.useNlu(className, locale, domain, settings);
@@ -119,13 +183,13 @@ class Nlp extends Clonable {
     }
   }
 
-  async start() {
+  async start(): Promise<void> {
     if (this.settings.corpora) {
       await this.addCorpora(this.settings.corpora);
     }
   }
 
-  async loadOrTrain() {
+  async loadOrTrain(): Promise<void> {
     let loaded = false;
     if (this.settings.autoLoad) {
       loaded = await this.load(this.settings.modelFileName);
@@ -135,7 +199,13 @@ class Nlp extends Clonable {
     }
   }
 
-  useNlu(clazz, locale, domain, settings) {
+  /** Records which classifier a locale and domain are handled by. */
+  useNlu(
+    clazz: string | Parameters<Container['use']>[0],
+    locale: Locale | Locale[] | undefined,
+    domain: Domain | undefined,
+    settings: NluSettings
+  ): void {
     if (!locale) {
       locale = '??';
     }
@@ -166,32 +236,36 @@ class Nlp extends Clonable {
     }
   }
 
-  guessLanguage(input) {
-    return this.nluManager.guessLanguage(input);
+  guessLanguage(input: string): Locale | undefined {
+    return this.nluManager.guessLanguage(input) as Locale | undefined;
   }
 
-  addLanguage(locales) {
+  addLanguage(locales: Locale | Locale[]): void {
     return this.nluManager.addLanguage(locales);
   }
 
-  removeLanguage(locales) {
+  removeLanguage(locales: Locale | Locale[]): void {
     return this.nluManager.removeLanguage(locales);
   }
 
-  addAdditionalEnumEntityUtterances() {
+  /**
+   * Trains every enum entity of an utterance as the texts it stands for, so
+   * the classifier sees the sentences a user would actually say.
+   */
+  addAdditionalEnumEntityUtterances(): void {
     if (!this.settings.languages) {
       return;
     }
     this.settings.languages.forEach((locale) => {
-      const replaceTexts: any = {};
+      const replaceTexts: Record<string, string[]> = {};
       const rules = this.ner.getRules(locale);
-      rules.forEach((rule) => {
+      rules.forEach((rule: Rule) => {
         if (rule.type === 'enum') {
           const entityName = this.ner.nameToEntity(rule.name);
           replaceTexts[entityName] = replaceTexts[entityName] || [];
-          rule.rules.forEach((value) => {
+          rule.rules.forEach((value: RuleCondition) => {
             replaceTexts[entityName] = replaceTexts[entityName].concat(
-              value.texts
+              (value as { texts: string[] }).texts
             );
           });
         }
@@ -216,14 +290,14 @@ class Nlp extends Clonable {
   }
 
   replaceEnumEntitiesInSentence(
-    manager,
-    locale,
-    domain,
-    utterance,
-    intent,
-    entityList,
-    replaceTexts
-  ) {
+    manager: ReturnType<NluManager['consolidateManager']>,
+    locale: Locale,
+    domain: Domain,
+    utterance: string,
+    intent: Intent,
+    entityList: string[],
+    replaceTexts: Record<string, string[]>
+  ): void {
     if (!entityList.length) {
       this.nluManager.guesser.addExtraSentence(locale, utterance);
       manager.add(domain, utterance, intent);
@@ -256,126 +330,215 @@ class Nlp extends Clonable {
     }
   }
 
-  addDocument(locale, utterance, intent) {
+  addDocument(locale: Locale, utterance: string, intent: Intent): void {
     const entities = this.ner.getEntitiesFromUtterance(utterance);
     this.slotManager.addBatch(intent, entities);
     return this.nluManager.add(locale, utterance, intent);
   }
 
-  removeDocument(locale, utterance, intent) {
+  removeDocument(locale: Locale, utterance: string, intent: Intent): void {
     return this.nluManager.remove(locale, utterance, intent);
   }
 
-  getRulesByName(locale, name) {
+  getRulesByName(locale: Locale, name: EntityName): Rule | undefined {
     return this.ner.getRulesByName(locale, name);
   }
 
-  addNerRule(locale, name, type, rule) {
+  addNerRule(
+    locale: Locale,
+    name: EntityName,
+    type: Rule['type'],
+    rule: RuleCondition
+  ): void {
     return this.ner.addRule(locale, name, type, rule);
   }
 
-  removeNerRule(locale, name, rule?) {
+  removeNerRule(locale: Locale, name: EntityName, rule?: RuleCondition): void {
     return this.ner.removeRule(locale, name, rule);
   }
 
-  addNerRuleOptionTexts(locale, name, option, texts?) {
+  addNerRuleOptionTexts(
+    locale: Locale,
+    name: EntityName,
+    option: string,
+    texts?: string | string[]
+  ): void {
     return this.ner.addRuleOptionTexts(locale, name, option, texts);
   }
 
-  removeNerRuleOptionTexts(locale, name, option, texts?) {
+  removeNerRuleOptionTexts(
+    locale: Locale,
+    name: EntityName,
+    option: string,
+    texts?: string | string[]
+  ): void {
     return this.ner.removeRuleOptionTexts(locale, name, option, texts);
   }
 
-  addNerRegexRule(locale, name, regex) {
+  addNerRegexRule(
+    locale: Locale,
+    name: EntityName,
+    regex: string | RegExp
+  ): void {
     return this.ner.addRegexRule(locale, name, regex);
   }
 
-  addNerBetweenCondition(locale, name, left, right, opts?) {
+  addNerBetweenCondition(
+    locale: Locale,
+    name: EntityName,
+    left: string | string[],
+    right: string | string[],
+    opts?: TrimOptions
+  ): void {
     return this.ner.addBetweenCondition(locale, name, left, right, opts);
   }
 
-  addNerBetweenLastCondition(locale, name, left, right, opts?) {
+  addNerBetweenLastCondition(
+    locale: Locale,
+    name: EntityName,
+    left: string | string[],
+    right: string | string[],
+    opts?: TrimOptions
+  ): void {
     return this.ner.addBetweenLastCondition(locale, name, left, right, opts);
   }
 
-  addNerPositionCondition(locale, name, position, words, opts) {
+  addNerPositionCondition(
+    locale: Locale,
+    name: EntityName,
+    position: TrimTypeValue,
+    words: string | string[],
+    opts?: TrimOptions
+  ): void {
     return this.ner.addPositionCondition(locale, name, position, words, opts);
   }
 
-  addNerAfterCondition(locale, name, words, opts?) {
+  addNerAfterCondition(
+    locale: Locale,
+    name: EntityName,
+    words: string | string[],
+    opts?: TrimOptions
+  ): void {
     return this.ner.addAfterCondition(locale, name, words, opts);
   }
 
-  addNerAfterFirstCondition(locale, name, words, opts?) {
+  addNerAfterFirstCondition(
+    locale: Locale,
+    name: EntityName,
+    words: string | string[],
+    opts?: TrimOptions
+  ): void {
     return this.ner.addAfterFirstCondition(locale, name, words, opts);
   }
 
-  addNerAfterLastCondition(locale, name, words, opts?) {
+  addNerAfterLastCondition(
+    locale: Locale,
+    name: EntityName,
+    words: string | string[],
+    opts?: TrimOptions
+  ): void {
     return this.ner.addAfterLastCondition(locale, name, words, opts);
   }
 
-  addNerBeforeCondition(locale, name, words, opts?) {
+  addNerBeforeCondition(
+    locale: Locale,
+    name: EntityName,
+    words: string | string[],
+    opts?: TrimOptions
+  ): void {
     return this.ner.addBeforeCondition(locale, name, words, opts);
   }
 
-  addNerBeforeFirstCondition(locale, name, words, opts?) {
+  addNerBeforeFirstCondition(
+    locale: Locale,
+    name: EntityName,
+    words: string | string[],
+    opts?: TrimOptions
+  ): void {
     return this.ner.addBeforeFirstCondition(locale, name, words, opts);
   }
 
-  addNerBeforeLastCondition(locale, name, words, opts?) {
+  addNerBeforeLastCondition(
+    locale: Locale,
+    name: EntityName,
+    words: string | string[],
+    opts?: TrimOptions
+  ): void {
     return this.ner.addBeforeLastCondition(locale, name, words, opts);
   }
 
-  assignDomain(locale, intent, domain?) {
+  assignDomain(locale: Locale, intent: Intent, domain?: Domain): void {
     return this.nluManager.assignDomain(locale, intent, domain);
   }
 
-  getIntentDomain(locale, intent) {
+  getIntentDomain(locale: Locale, intent: Intent): Domain {
     return this.nluManager.getIntentDomain(locale, intent);
   }
 
-  getDomains() {
+  getDomains(): ReturnType<NluManager['getDomains']> {
     return this.nluManager.getDomains();
   }
 
-  addAction(intent, action, parameters, fn?) {
+  addAction(
+    intent: Intent,
+    action: string,
+    parameters: unknown[],
+    fn?: ActionFunction
+  ): void {
     return this.actionManager.addAction(intent, action, parameters, fn);
   }
 
-  registerActionFunction(action, fn) {
+  registerActionFunction(action: string, fn: ActionFunction): void {
     return this.actionManager.registerActionInMap(action, fn);
   }
 
-  getActions(intent) {
+  getActions(intent: Intent): ReturnType<ActionManager['findActions']> {
     return this.actionManager.findActions(intent);
   }
 
-  removeAction(intent, action, parameters) {
+  removeAction(intent: Intent, action: string, parameters: unknown[]): void {
     return this.actionManager.removeAction(intent, action, parameters);
   }
 
-  removeActions(intent) {
+  removeActions(intent: Intent): void {
     return this.actionManager.removeActions(intent);
   }
 
-  removeActionFunction(action) {
+  removeActionFunction(action: string): void {
     return this.actionManager.removeActionFromMap(action);
   }
 
-  addAnswer(locale, intent, answer, opts?) {
+  addAnswer(
+    locale: Locale,
+    intent: Intent,
+    answer: string,
+    opts?: string | AnswerOptions
+  ): ReturnType<NlgManager['add']> {
     return this.nlgManager.add(locale, intent, answer, opts);
   }
 
-  removeAnswer(locale, intent, answer, opts?) {
+  removeAnswer(
+    locale: Locale,
+    intent: Intent,
+    answer: string,
+    opts?: string | AnswerOptions
+  ): void {
     return this.nlgManager.remove(locale, intent, answer, opts);
   }
 
-  findAllAnswers(locale, intent, _arg2?) {
-    const response = this.nlgManager.findAllAnswers({ locale, intent });
+  findAllAnswers(locale: Locale, intent: Intent, _arg2?: unknown): Answer[] {
+    const response = this.nlgManager.findAllAnswers({
+      locale,
+      intent,
+    }) as NlgInput;
     return response.answers;
   }
 
-  async addCorpora(names?) {
+  async addCorpora(
+    names?:
+      | (string | Corpus | ImportedCorpus)
+      | (string | Corpus | ImportedCorpus)[]
+  ): Promise<void> {
     if (names) {
       if (Array.isArray(names)) {
         for (let i = 0; i < names.length; i += 1) {
@@ -387,12 +550,15 @@ class Nlp extends Clonable {
     }
   }
 
-  async addImported(input) {
-    let content;
+  /** Reads a corpus through the importer it names, then adds what it holds. */
+  async addImported(input: ImportedCorpus): Promise<void> {
+    let content: string;
     if (input.content) {
       content = input.content;
     } else if (input.filename) {
-      const fs = this.container.get('fs');
+      const fs = this.container.get<
+        Storage & { readFile(name: string): Promise<string> }
+      >('fs');
       content = await fs.readFile(input.filename);
       if (!content) {
         throw new Error(`Corpus not found "${input.filename}"`);
@@ -400,9 +566,11 @@ class Nlp extends Clonable {
     } else {
       throw new Error('Corpus information without content or file name');
     }
-    let importer = this.container.get(input.importer);
+    let importer = this.container.get<CorpusImporter>(input.importer);
     if (!importer) {
-      importer = this.container.get(`${input.importer}-importer`);
+      importer = this.container.get<CorpusImporter>(
+        `${input.importer}-importer`
+      );
     }
     if (!importer) {
       throw new Error(`Corpus importer not found: ${input.importer}`);
@@ -411,11 +579,14 @@ class Nlp extends Clonable {
     await Promise.all(corpora.map((corpus) => this.addCorpus(corpus)));
   }
 
-  addEntities(entities, locale?) {
+  addEntities(
+    entities: Record<EntityName, EntityDefinition | string>,
+    locale?: Locale
+  ): void {
     const keys = Object.keys(entities);
     for (let i = 0; i < keys.length; i += 1) {
       const entityName = keys[i];
-      let entity = entities[entityName];
+      let entity = entities[entityName] as EntityDefinition;
       if (typeof entity === 'string') {
         entity = { regex: [entity] };
       }
@@ -489,7 +660,7 @@ class Nlp extends Clonable {
     }
   }
 
-  addData(data, locale, domain?) {
+  addData(data: CorpusIntent[], locale: Locale, domain?: CorpusDomain): void {
     for (let i = 0; i < data.length; i += 1) {
       const current = data[i];
       const { intent, utterances, answers, slotFilling, actions } = current;
@@ -512,9 +683,9 @@ class Nlp extends Clonable {
       if (slotFilling) {
         const entities = Object.keys(slotFilling);
         for (let j = 0; j < entities.length; j += 1) {
-          const slot = slotFilling[entities[j]];
-          let mandatory;
-          const slotQuestions: any = {};
+          const slot = slotFilling[entities[j]] as SlotDefinition;
+          let mandatory: boolean;
+          const slotQuestions: Record<Locale, string> = {};
           if (typeof slot === 'string') {
             slotQuestions[locale] = slot;
             mandatory = true;
@@ -531,7 +702,7 @@ class Nlp extends Clonable {
         }
       }
       if (actions) {
-        actions.forEach((action) => {
+        actions.forEach((action: ActionDefinition) => {
           if (!action) return;
           if (typeof action === 'object') {
             if (!action.name) return;
@@ -544,12 +715,14 @@ class Nlp extends Clonable {
     }
   }
 
-  async addCorpus(fileName) {
-    if (fileName.importer) {
-      await this.addImported(fileName);
+  async addCorpus(fileName: string | Corpus | ImportedCorpus): Promise<void> {
+    if ((fileName as ImportedCorpus).importer) {
+      await this.addImported(fileName as ImportedCorpus);
     } else {
-      let corpus = fileName;
-      const fs = this.container.get('fs');
+      let corpus = fileName as Corpus;
+      const fs = this.container.get<{
+        readFile(name: string): Promise<string>;
+      }>('fs');
       if (typeof fileName === 'string') {
         const fileData = await fs.readFile(fileName);
         if (!fileData) {
@@ -562,7 +735,8 @@ class Nlp extends Clonable {
         if (typeof corpus.contextData === 'string') {
           contextData = JSON.parse(await fs.readFile(corpus.contextData));
         }
-        const contextManager = this.container.get('context-manager');
+        const contextManager =
+          this.container.get<ContextManager>('context-manager');
         const keys = Object.keys(contextData);
         for (let i = 0; i < keys.length; i += 1) {
           contextManager.defaultData[keys[i]] = contextData[keys[i]];
@@ -594,7 +768,10 @@ class Nlp extends Clonable {
     }
   }
 
-  getSentiment(locale, utterance?) {
+  getSentiment(
+    locale: Locale | Parameters<SentimentAnalyzer['process']>[0],
+    utterance?: string
+  ): ReturnType<SentimentAnalyzer['process']> {
     if (typeof locale === 'object') {
       return this.sentiment.process(locale);
     }
@@ -605,11 +782,11 @@ class Nlp extends Clonable {
     return this.sentiment.process({ utterance, locale });
   }
 
-  describeLanguage(locale, name) {
+  describeLanguage(locale: Locale, name: string): void {
     this.nluManager.describeLanguage(locale, name);
   }
 
-  async train(_arg0?) {
+  async train(_arg0?: unknown): Promise<unknown> {
     this.nluManager.addLanguage(this.settings.languages);
     const result = await this.nluManager.train();
     if (this.settings.autoSave) {
@@ -618,44 +795,68 @@ class Nlp extends Clonable {
     return result;
   }
 
-  async classify(locale, utterance?, settings?) {
+  /**
+   * Classifies an utterance without extracting entities or choosing an
+   * answer.
+   *
+   * The settings are passed where the manager takes the domain, which nothing
+   * reads, so what is passed here never reaches the classifier: an
+   * `allowList` given to this method has no effect, and the test suite pins
+   * that. Moving it to the settings argument would change what every existing
+   * caller gets back, so it stays where it has always been.
+   */
+  async classify(
+    locale: Locale,
+    utterance?: string,
+    settings?: NluSettings
+  ): Promise<unknown> {
     return this.nluManager.process(
       locale,
       utterance,
-      settings || this.settings.nlu
+      (settings || this.settings.nlu) as unknown as Domain
     );
   }
 
-  async extractEntities(locale, utterance?, context?, settings?) {
+  async extractEntities(
+    locale: Locale | Parameters<Ner['process']>[0],
+    utterance?: string,
+    context?: Context,
+    settings?: Parameters<Ner['process']>[0]['settings']
+  ): Promise<ReturnType<Ner['process']>> {
     if (typeof locale === 'object') {
       return this.ner.process(locale);
     }
-    if (!utterance) {
-      utterance = locale;
-      locale = undefined;
+    // Called with one argument, that argument is the utterance and the
+    // locale is guessed from it.
+    let text = utterance;
+    let finalLocale: Locale | undefined = locale;
+    if (!text) {
+      text = locale;
+      finalLocale = undefined;
     }
-    if (!locale) {
-      locale = this.guessLanguage(utterance);
+    if (!finalLocale) {
+      finalLocale = this.guessLanguage(text);
     }
     const output = await this.ner.process({
-      locale,
-      utterance,
+      locale: finalLocale,
+      utterance: text,
       context,
       settings: this.applySettings(settings, this.settings.ner),
     });
     return output;
   }
 
-  organizeEntities(entities) {
-    const dict: any = {};
+  /** Groups the entities found under one name into a list under that name. */
+  organizeEntities(entities: (Edge | StructuredEntity)[]): StructuredEntity[] {
+    const dict: Record<EntityName, StructuredEntity[]> = {};
     for (let i = 0; i < entities.length; i += 1) {
-      const entity = entities[i];
+      const entity = entities[i] as StructuredEntity;
       if (!dict[entity.entity]) {
         dict[entity.entity] = [];
       }
       dict[entity.entity].push(entity);
     }
-    const result: any[] = [];
+    const result: StructuredEntity[] = [];
     Object.keys(dict).forEach((key) => {
       const arr = dict[key];
       if (arr.length === 1) {
@@ -674,7 +875,8 @@ class Nlp extends Clonable {
     return result;
   }
 
-  structureEntities(output) {
+  /** Publishes every entity of a result on the context, by name and by alias. */
+  structureEntities(output: NlpResult): NlpResult {
     const organizedEntities = this.organizeEntities(output.entities);
     if (!output.context.entities) {
       output.context.entities = {};
@@ -700,28 +902,40 @@ class Nlp extends Clonable {
     return output;
   }
 
-  async process(locale, utterance?, srcContext?, settings?) {
-    let sourceInput;
+  async process(
+    locale: Locale | NlpResult,
+    utterance?: string | { value?: string },
+    srcContext?: Context,
+    settings?: NlpSettings
+  ): Promise<NlpResult> {
+    let sourceInput: NlpResult | undefined;
     let context = srcContext;
+    // The arguments are positional but overloaded: an object in the locale's
+    // place is the whole input, unless the second argument is a resolved
+    // pipeline value, in which case it is the utterance.
+    let finalLocale: Locale | undefined;
+    let text: string | undefined;
     if (typeof locale === 'object') {
       if (typeof utterance === 'object' && utterance.value) {
-        locale = undefined;
-        utterance = utterance.value;
+        text = utterance.value;
       } else {
         sourceInput = locale;
       }
+    } else {
+      finalLocale = locale;
+      text = utterance as string | undefined;
     }
     if (!sourceInput) {
-      if (!utterance) {
-        utterance = locale;
-        locale = undefined;
+      if (!text) {
+        text = finalLocale;
+        finalLocale = undefined;
       }
-      if (!locale) {
-        locale = this.guessLanguage(utterance);
+      if (!finalLocale) {
+        finalLocale = this.guessLanguage(text);
       }
       sourceInput = {
-        locale,
-        utterance,
+        locale: finalLocale,
+        utterance: text,
         settings,
       };
       if (settings) {
@@ -737,19 +951,20 @@ class Nlp extends Clonable {
         }
       }
     } else {
-      locale = sourceInput.locale;
-      utterance =
-        sourceInput.utterance || sourceInput.message || sourceInput.text;
+      finalLocale = sourceInput.locale;
+      text = (sourceInput.utterance ||
+        sourceInput.message ||
+        sourceInput.text) as string | undefined;
     }
     if (!context) {
       context = await this.contextManager.getContext(sourceInput);
     }
-    context.channel = sourceInput.channel;
-    context.app = sourceInput.app;
+    context.channel = sourceInput.channel as string;
+    context.app = sourceInput.app as string;
     context.from = sourceInput.from || null;
     const input = {
-      locale,
-      utterance,
+      locale: finalLocale,
+      utterance: text,
       context,
       settings: this.applySettings(settings, this.settings.nlu),
     };
@@ -757,26 +972,27 @@ class Nlp extends Clonable {
       input.settings && 'forceNER' in input.settings
         ? input.settings.forceNER
         : this.forceNER;
-    let output = await this.nluManager.process(input);
+    let output: NlpResult = await this.nluManager.process(input);
     if (forceNER || !this.slotManager.isEmpty) {
       const optionalUtterance = await this.ner.generateEntityUtterance(
-        output.locale || locale,
-        utterance
+        output.locale || finalLocale,
+        text
       );
-      if (optionalUtterance && optionalUtterance !== utterance) {
+      if (optionalUtterance && optionalUtterance !== text) {
         const optionalInput = {
-          locale: output.locale || locale,
+          locale: output.locale || finalLocale,
           utterance: optionalUtterance,
           context,
           settings: this.applySettings(settings, this.settings.nlu),
         };
-        const optionalOutput = await this.nluManager.process(optionalInput);
+        const optionalOutput: NlpResult =
+          await this.nluManager.process(optionalInput);
         if (
           optionalOutput &&
           (optionalOutput.score > output.score || output.intent === 'None')
         ) {
           output = optionalOutput;
-          output.utterance = utterance;
+          output.utterance = text;
           output.optionalUtterance = optionalUtterance;
         }
       }
@@ -790,31 +1006,40 @@ class Nlp extends Clonable {
       const intentEntities = this.slotManager.getIntentEntityNames(
         output.intent
       );
-      output = await this.ner.process({ ...output }, intentEntities);
+      output = (await this.ner.process(
+        { ...output } as NerInput,
+        intentEntities
+      )) as NlpResult;
     } else {
       output.entities = [];
       output.sourceEntities = [];
     }
-    const stemmer = this.container.get(`stemmer-${output.locale}`);
+    const stemmer = this.container.get<FillingStemmer>(
+      `stemmer-${output.locale}`
+    );
     if (stemmer && stemmer.lastFill) {
       stemmer.lastFill(output);
     }
     output = this.structureEntities(output);
     if (forceNER || !this.slotManager.isEmpty) {
-      if (this.slotManager.process(output, context)) {
+      if (this.slotManager.process(output as SlotFillingResult, context)) {
         // structure entities again because slots may have added
         output = this.structureEntities(output);
       }
       context.slotFill = output.slotFill;
     }
     if (this.settings.executeActionsBeforeAnswers) {
-      output = await this.actionManager.run({ ...output });
+      output = (await this.actionManager.run({
+        ...output,
+      } as NlgInput)) as NlpResult;
     }
     if (this.settings.executeActionsBeforeAnswers && output.answer) {
       // Render answer from actions and use as final answer
       output.answer = this.nlgManager.renderText(output.answer, context);
     } else {
-      const answers = await this.nlgManager.run({ ...output });
+      const answers = (await this.nlgManager.run({
+        ...output,
+      } as NlgInput)) as NlgInput;
       output.answers = answers.answers;
       output.answer = answers.answer;
     }
@@ -823,10 +1048,12 @@ class Nlp extends Clonable {
       output.answer = this.nlgManager.renderText(output.srcAnswer, context);
     }
     if (!this.settings.executeActionsBeforeAnswers) {
-      output = await this.actionManager.run({ ...output });
+      output = (await this.actionManager.run({
+        ...output,
+      } as NlgInput)) as NlpResult;
     }
     if (this.settings.calculateSentiment) {
-      const sentiment = await this.getSentiment(locale, utterance);
+      const sentiment = await this.getSentiment(finalLocale, text);
       output.sentiment = sentiment ? sentiment.sentiment : undefined;
     }
     await this.contextManager.setContext(sourceInput, context);
@@ -836,7 +1063,8 @@ class Nlp extends Clonable {
       ? this.applySettings(sourceInput, output)
       : output;
     if (result.intent === 'None' && !result.answer) {
-      const openQuestion = this.container.get('open-question');
+      const openQuestion =
+        this.container.get<OpenQuestionService>('open-question');
       if (openQuestion) {
         const qnaAnswer = await openQuestion.getAnswer(
           result.locale,
@@ -862,8 +1090,8 @@ class Nlp extends Clonable {
     return result;
   }
 
-  toJSON() {
-    const result = {
+  toJSON(): NlpJson {
+    const result: NlpJson = {
       settings: { ...this.settings },
       nluManager: this.nluManager.toJSON(),
       ner: this.ner.toJSON(),
@@ -876,7 +1104,7 @@ class Nlp extends Clonable {
     return result;
   }
 
-  fromJSON(json) {
+  fromJSON(json: NlpJson): void {
     this.applySettings(this.settings, json.settings);
     this.nluManager.fromJSON(json.nluManager);
     this.ner.fromJSON(json.ner);
@@ -885,24 +1113,28 @@ class Nlp extends Clonable {
     this.slotManager.load(json.slotManager);
   }
 
-  export(minified = false) {
+  export(minified = false): string {
     const clone = this.toJSON();
     return minified ? JSON.stringify(clone) : JSON.stringify(clone, null, 2);
   }
 
-  import(data) {
+  import(data: string | NlpJson): void {
     const clone = typeof data === 'string' ? JSON.parse(data) : data;
     this.fromJSON(clone);
   }
 
-  async save(srcFileName?, minified = false) {
-    const fs = this.container.get('fs');
+  async save(srcFileName?: string, minified = false): Promise<void> {
+    const fs = this.container.get<{
+      writeFile(name: string, data: string): Promise<void>;
+    }>('fs');
     const fileName = srcFileName || 'model.nlp';
     await fs.writeFile(fileName, this.export(minified));
   }
 
-  async load(srcFileName?) {
-    const fs = this.container.get('fs');
+  async load(srcFileName?: string): Promise<boolean> {
+    const fs = this.container.get<{
+      readFile(name: string): Promise<string>;
+    }>('fs');
     const fileName = srcFileName || 'model.nlp';
     const data = await fs.readFile(fileName);
     if (data) {

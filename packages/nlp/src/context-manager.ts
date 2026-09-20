@@ -1,18 +1,41 @@
 import { Clonable } from '@nlpjs-neo/core';
+import type { Container, ContainerHolder, Logger } from '@nlpjs-neo/core';
+import type {
+  Context,
+  ContextDatabase,
+  ContextIdResolver,
+  ContextInput,
+  ContextManagerSettings,
+  ContextUpdateHandler,
+} from './types.js';
 
 const dataName = '_data';
 
 class ContextManager extends Clonable {
-  declare contextDictionary: any;
-  declare defaultData: any;
-  declare onCtxUpdate: any;
-  declare onGetInputContextId: any;
-  declare settings: any;
+  /** Contexts kept in memory, by conversation id, when no database is set up. */
+  declare contextDictionary: Record<string, Context>;
+  /** Values every context starts with, as a corpus may declare them. */
+  declare defaultData: Record<string, unknown>;
+  /** Called with the stored context every time one is written. */
+  declare onCtxUpdate: ContextUpdateHandler | undefined;
+  /** Answers the conversation id of an input, ahead of the default rules. */
+  declare onGetInputContextId: ContextIdResolver | undefined;
+  declare settings: ContextManagerSettings;
 
-  constructor(settings: any = {}, container?) {
+  constructor(
+    settings: ContextManagerSettings = {},
+    container?: ContainerHolder
+  ) {
     super(
-      { settings: {}, container: settings.container || container },
-      container
+      {
+        settings: {},
+        container:
+          settings.container ||
+          (container &&
+            ((container as { container?: Container }).container ||
+              (container as Container))),
+      },
+      container as Container
     );
     this.applySettings(this.settings, settings);
     if (!this.settings.tag) {
@@ -27,7 +50,7 @@ class ContextManager extends Clonable {
     this.defaultData = {};
   }
 
-  registerDefault() {
+  registerDefault(): void {
     this.container.registerConfiguration(
       'context-manager',
       {
@@ -37,10 +60,10 @@ class ContextManager extends Clonable {
     );
   }
 
-  async getInputContextId(input) {
-    let result;
+  async getInputContextId(input: ContextInput): Promise<string | undefined> {
+    let result: string | undefined;
     if (this.onGetInputContextId) {
-      result = await this.onGetInputContextId(input);
+      result = (await this.onGetInputContextId(input)) as string | undefined;
     }
     if (!result && input && input.activity) {
       if (input.activity.address && input.activity.address.conversation) {
@@ -52,13 +75,13 @@ class ContextManager extends Clonable {
     return result;
   }
 
-  async getContext(input) {
+  async getContext(input: ContextInput): Promise<Context> {
     const id = await this.getInputContextId(input);
-    let result;
+    let result: Context | undefined;
     if (id) {
       if (this.settings.tableName) {
         const database = this.container
-          ? this.container.get('database')
+          ? this.container.get<ContextDatabase>('database')
           : undefined;
         if (database) {
           result = (await database.findOne(this.settings.tableName, {
@@ -76,8 +99,8 @@ class ContextManager extends Clonable {
     return result;
   }
 
-  async setContext(input, context) {
-    const logger = this.container.get('logger');
+  async setContext(input: ContextInput, context: Context): Promise<void> {
+    const logger = this.container.get<Logger>('logger');
     const id = await this.getInputContextId(input);
     if (id) {
       if (!context.id) {
@@ -87,7 +110,8 @@ class ContextManager extends Clonable {
         }
       }
       const keys = Object.keys(context);
-      const clone = { conversationId: id };
+      // Keys that start with `_` are per turn state, not worth storing.
+      const clone: Context = { conversationId: id };
       for (let i = 0; i < keys.length; i += 1) {
         const key = keys[i];
         if (!key.startsWith('_')) {
@@ -96,7 +120,7 @@ class ContextManager extends Clonable {
       }
       if (this.settings.tableName) {
         const database = this.container
-          ? this.container.get('database')
+          ? this.container.get<ContextDatabase>('database')
           : undefined;
         if (database) {
           await database.save(this.settings.tableName, clone);
@@ -113,14 +137,14 @@ class ContextManager extends Clonable {
     }
   }
 
-  async resetConversations() {
+  async resetConversations(): Promise<void> {
     for (const cid of Object.keys(this.contextDictionary)) {
       await this.resetConversation(cid);
     }
   }
 
-  async resetConversation(cid) {
-    const logger = this.container.get('logger');
+  async resetConversation(cid: string): Promise<void> {
+    const logger = this.container.get<Logger>('logger');
     logger.debug(`resetting context in conversation: ${cid}`);
     const conversationCtx = this.contextDictionary[cid];
     Object.keys(conversationCtx).forEach((convCtxKey) => {

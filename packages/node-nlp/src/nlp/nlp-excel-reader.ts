@@ -1,15 +1,17 @@
 import { XDoc } from '@nlpjs-neo/xtables';
+import type NlpManager from './nlp-manager.js';
 
+/** Reads the tables of a `.xlsx` model into an `NlpManager`. */
 class NlpExcelReader {
-  declare manager: any;
-  declare xdoc: any;
+  declare manager: NlpManager;
+  declare xdoc: XDoc;
 
-  constructor(manager) {
+  constructor(manager: NlpManager) {
     this.manager = manager;
     this.xdoc = new XDoc();
   }
 
-  async load(filename?) {
+  async load(filename?: string): Promise<void> {
     await this.xdoc.read(filename);
     this.loadSettings();
     this.loadLanguages();
@@ -19,15 +21,15 @@ class NlpExcelReader {
     this.loadResponses();
   }
 
-  loadSettings() {}
+  loadSettings(): void {}
 
-  loadLanguages() {
+  loadLanguages(): void {
     this.xdoc.getTable('Languages').data.forEach((row) => {
       this.manager.addLanguage(row.iso2);
     });
   }
 
-  loadNamedEntities() {
+  loadNamedEntities(): void {
     this.xdoc.getTable('Named Entities').data.forEach((row) => {
       const languages = row.language.split(',').map((x) => x.trim());
       this.manager.addNamedEntityText(
@@ -39,7 +41,7 @@ class NlpExcelReader {
     });
   }
 
-  loadRegexEntities() {
+  loadRegexEntities(): void {
     const table = this.xdoc.getTable('Regex Entities');
     if (table) {
       table.data.forEach((row) => {
@@ -49,20 +51,21 @@ class NlpExcelReader {
     }
   }
 
-  loadIntents() {
+  loadIntents(): void {
     this.xdoc.getTable('Intents').data.forEach((row) => {
       this.manager.addDocument(row.language, row.utterance, row.intent);
     });
   }
 
-  loadResponses() {
+  loadResponses(): void {
     this.xdoc.getTable('Responses').data.forEach((row) => {
+      // The `Responses` table may also carry a `url` column, which no answer
+      // has ever stored: `addAnswer` takes the condition as its last argument.
       this.manager.addAnswer(
         row.language,
         row.intent,
         row.response,
-        row.condition,
-        row.url
+        row.condition
       );
     });
   }

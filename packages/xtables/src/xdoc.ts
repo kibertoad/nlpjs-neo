@@ -1,22 +1,27 @@
-import { readSheets } from './workbook-reader.js';
+import { readSheets, type SheetCells } from './workbook-reader.js';
 import XTable from './xtable.js';
 import XTableUtils from './xtable-utils.js';
+import type { CellBlock, SheetRect, TableQuery, TableRow } from './types.js';
 
+/**
+ * Every table of a workbook. A sheet is cut into tables along its blank rows
+ * and columns, and each table is named after its own first row.
+ */
 class XDoc {
-  declare tables: any;
-  declare tablesByName: any;
+  declare tables: XTable[];
+  declare tablesByName: Record<string, XTable>;
 
   constructor() {
     this.tables = [];
     this.tablesByName = {};
   }
 
-  getRect(sheet) {
+  getRect(sheet: SheetCells): SheetRect {
     const keys = Object.keys(sheet);
-    let minRow;
-    let maxRow;
-    let minColumn;
-    let maxColumn;
+    let minRow: number | undefined;
+    let maxRow: number | undefined;
+    let minColumn: number | undefined;
+    let maxColumn: number | undefined;
     for (let i = 0, l = keys.length; i < l; i += 1) {
       const key = keys[i];
       if (key[0] !== '!') {
@@ -43,7 +48,7 @@ class XDoc {
     };
   }
 
-  isEmptyRow(block, index) {
+  isEmptyRow(block: CellBlock, index: number): boolean {
     const row = block[index];
     if (!row) {
       return true;
@@ -56,7 +61,7 @@ class XDoc {
     return true;
   }
 
-  findEmptyRow(block) {
+  findEmptyRow(block: CellBlock): number {
     for (let i = 0; i < block.length; i += 1) {
       if (this.isEmptyRow(block, i)) {
         return i;
@@ -65,7 +70,7 @@ class XDoc {
     return -1;
   }
 
-  isEmptyColum(block, index) {
+  isEmptyColum(block: CellBlock, index: number): boolean {
     for (let i = 0; i < block.length; i += 1) {
       if (block[i][index]) {
         return false;
@@ -74,7 +79,7 @@ class XDoc {
     return true;
   }
 
-  findEmptyColumn(block) {
+  findEmptyColumn(block: CellBlock): number {
     if (!block || block.length === 0) {
       return -1;
     }
@@ -87,9 +92,13 @@ class XDoc {
     return -1;
   }
 
-  splitByRow(block, emptyRowIndex, nextEmptyRowIndex) {
-    const block1: any[] = [];
-    const block2: any[] = [];
+  splitByRow(
+    block: CellBlock,
+    emptyRowIndex: number,
+    nextEmptyRowIndex: number
+  ): CellBlock[] {
+    const block1: CellBlock = [];
+    const block2: CellBlock = [];
     for (let i = 0; i < block.length; i += 1) {
       if (i < emptyRowIndex) {
         block1.push(block[i]);
@@ -100,13 +109,17 @@ class XDoc {
     return [block1, block2];
   }
 
-  splitByColumn(block, emptyColumnIndex, nextEmptyColumnIndex) {
-    const block1: any[] = [];
-    const block2: any[] = [];
+  splitByColumn(
+    block: CellBlock,
+    emptyColumnIndex: number,
+    nextEmptyColumnIndex: number
+  ): CellBlock[] {
+    const block1: CellBlock = [];
+    const block2: CellBlock = [];
     for (let i = 0; i < block.length; i += 1) {
       const row = block[i];
-      const row1: any[] = [];
-      const row2: any[] = [];
+      const row1: CellBlock[number] = [];
+      const row2: CellBlock[number] = [];
       block1.push(row1);
       block2.push(row2);
       for (let j = 0; j < row.length; j += 1) {
@@ -126,7 +139,7 @@ class XDoc {
     return [block1, block2];
   }
 
-  splitBlock(block) {
+  splitBlock(block: CellBlock): CellBlock[] {
     const emptyRowIndex = this.findEmptyRow(block);
     if (emptyRowIndex > -1) {
       let nextEmptyRowIndex = emptyRowIndex;
@@ -152,12 +165,12 @@ class XDoc {
     return [block];
   }
 
-  processSheet(sheet) {
+  processSheet(sheet: SheetCells): void {
     const rect = this.getRect(sheet);
-    let pendingBlocks: any[] = [];
-    let currentBlock: any[] = [];
+    let pendingBlocks: CellBlock[] = [];
+    let currentBlock: CellBlock = [];
     for (let j = rect.top; j <= rect.bottom; j += 1) {
-      const currentRow: any[] = [];
+      const currentRow: CellBlock[number] = [];
       currentBlock.push(currentRow);
       for (let i = rect.left; i <= rect.right; i += 1) {
         const cellRef = XTableUtils.coord2excel({ row: j, column: i });
@@ -192,18 +205,18 @@ class XDoc {
    * Read every sheet of an excel file into tables.
    * @param {String} filename Path to a `.xlsx` or `.xlsm` file.
    */
-  async read(filename) {
+  async read(filename: string): Promise<void> {
     const sheets = await readSheets(filename);
     for (let i = 0, l = sheets.length; i < l; i += 1) {
       this.processSheet(sheets[i]);
     }
   }
 
-  getTable(name) {
+  getTable(name: string): XTable | undefined {
     return this.tablesByName[name];
   }
 
-  find(name, query?) {
+  find(name: string, query?: TableQuery): TableRow[] {
     const table = this.tablesByName[name];
     if (!table) {
       return [];
@@ -211,7 +224,7 @@ class XDoc {
     return table.find(query);
   }
 
-  findOne(name, query) {
+  findOne(name: string, query: TableQuery): TableRow | undefined {
     const table = this.tablesByName[name];
     if (!table) {
       return undefined;

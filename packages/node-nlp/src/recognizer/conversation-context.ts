@@ -1,3 +1,6 @@
+import type { Settings } from '@nlpjs-neo/core-loader';
+import type { BotSession, RecognizerContext } from '../types.js';
+
 /**
  * Abstract class for a conversation context of a chatbot.
  * The conversation context is the responsible of storing and retrieving
@@ -6,13 +9,13 @@
  * a promise with the context in the resolve.
  */
 class ConversationContext {
-  declare settings: any;
+  declare settings: Settings;
 
   /**
    * Constructor of the class.
    * @param {Object} settings Settings for the instance.
    */
-  constructor(settings?) {
+  constructor(settings?: Settings) {
     this.settings = settings || {};
   }
 
@@ -21,7 +24,7 @@ class ConversationContext {
    * @param {Object} session Session instance of a message of chatbot.
    * @returns {String} Identifier of the conversation.
    */
-  getConversationId(session) {
+  getConversationId(session?: BotSession): string | undefined {
     if (
       session &&
       session.message &&
@@ -41,14 +44,20 @@ class ConversationContext {
   /**
    * Given a session, return a promise to resolve the conversation context.
    */
-  getConversationContext(_session?, _conversationContext?): any {
+  getConversationContext(
+    _session?: BotSession,
+    _conversationContext?: RecognizerContext
+  ): Promise<RecognizerContext> {
     throw new Error('This method must be implemented by child');
   }
 
   /**
    * Given a session, return a promise to set the conversation context.
    */
-  setConversationContext(_session?, _context?): any {
+  setConversationContext(
+    _session?: BotSession,
+    _context?: RecognizerContext
+  ): Promise<void> {
     throw new Error('This method must be implemented by child');
   }
 }
