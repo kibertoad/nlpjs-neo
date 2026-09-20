@@ -56,12 +56,29 @@ pnpm check:exports  # are-the-types-wrong + publint for every package
 
 `check:exports` inspects the packed tarballs, so run `pnpm build` before it.
 
-### Migrating from JavaScript
+### Typing the converted sources
 
-The port from JavaScript was mechanical, so the compiler runs without `strict` and with
-`noImplicitAny` disabled, and classes declare their instance properties as `any`. Tightening
-this package by package is welcome: prefer replacing an `any` with a real type over adding new
-ones.
+The conversion from JavaScript was mechanical: it kept the original runtime behaviour and left
+the types behind, so the compiler still runs without `strict` and with `noImplicitAny`
+disabled.
+
+Tightening this package by package is the plan, and part of it is done. `core`, `similarity`,
+`neural`, `slot` and `sentiment` describe their inputs and results with real types. The shared
+vocabulary of the pipeline packages — tokens and token maps, settings, pipeline input, the
+storage and logger contracts, the container registry types — lives in `@nlpjs-neo/core`, and a
+package that owns a domain keeps its own types in `src/types.ts` and exports them from its
+index. The remaining packages still declare their instance properties as `any`.
+
+When you touch one of them, prefer replacing an `any` with a real type over adding new ones:
+
+- Put the types of a package in `src/types.ts` and export them from `src/index.ts`, so that
+  consumers can name them.
+- Where a value is only known at runtime, take the contract as a type argument instead of
+  handing back an `any`: `container.get<Storage>('storage')` keeps the service locator
+  dynamic and still types the call site.
+- A few places stay `any` on purpose: path resolution, pipeline execution and JSON
+  rehydration are interpreters whose result only the caller knows. Comment such a boundary,
+  so it does not read as a leftover.
 
 ## Dependencies
 

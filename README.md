@@ -8,11 +8,11 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 **nlpjs-neo is a refreshed and maintained fork of [axa-group/nlp.js](https://github.com/axa-group/nlp.js).**
-The original project is no longer actively maintained; this fork continues it with a
-TypeScript rewrite, ESM-only packages, modern dependencies and a smaller published
-surface. Packages are published under the `@nlpjs-neo/` scope, and the batteries-included
-package is [`node-nlp-neo`](https://www.npmjs.com/package/node-nlp-neo). Issues and pull
-requests belong in [kibertoad/nlpjs-neo](https://github.com/kibertoad/nlpjs-neo).
+The original project is no longer actively maintained; this fork continues it: the sources were
+converted to TypeScript, the packages are ESM-only, the dependencies are modern and the
+published surface is smaller. Packages are published under the `@nlpjs-neo/` scope, and the
+batteries-included package is [`node-nlp-neo`](https://www.npmjs.com/package/node-nlp-neo).
+Issues and pull requests belong in [kibertoad/nlpjs-neo](https://github.com/kibertoad/nlpjs-neo).
 
 "NLP.js" is a general natural language utility for Node.js. Currently supporting:
 
@@ -35,8 +35,10 @@ Version 5 is the first release of the fork, and it starts where nlp.js v4 left o
 architecture is unchanged — small packages, a plugin container, pipelines — but everything
 around it has moved:
 
-- **TypeScript sources.** Every package is written in TypeScript and ships bundled type
-  declarations, so no `@types/*` packages are needed.
+- **TypeScript sources.** Every package was converted from JavaScript to TypeScript and
+  ships bundled type declarations, so no `@types/*` packages are needed. The conversion kept
+  the original runtime behaviour; describing it with accurate types is ongoing, package by
+  package.
 - **ESM only.** There is no CommonJS build; `require('node-nlp-neo')` does not work.
 - **Node.js 22.12 or later.** Older runtimes are not supported.
 - **Modernized dependencies.** The dependency tree was audited and rebuilt: unmaintained
@@ -180,7 +182,10 @@ If you're looking to use NLP.js in your Node application, you can install it fro
 ### ESM only, typed
 
 All packages are written in TypeScript, published as ES modules with bundled type
-declarations, and require **Node.js 22.12 or later**. There is no CommonJS build, so
+declarations, and require **Node.js 22.12 or later**. `core`, `similarity`, `neural`, `slot`
+and `sentiment` describe their inputs and results with real types; the remaining packages are
+converted but still hand back `any` in places, which is being tightened package by package.
+There is no CommonJS build, so
 `require('node-nlp-neo')` does not work; use `import` instead:
 
 ```javascript
