@@ -1,5 +1,58 @@
 # @nlpjs-neo/lang-all
 
+## 5.1.1
+
+### Patch Changes
+
+- de4fb22: Point the package metadata at the fork: `repository`, `bugs` and `homepage` now name
+  `kibertoad/nlpjs-neo` instead of `axa-group/nlp.js`, `author` and `maintainers` name the
+  fork's current maintainer with the original author kept as a contributor, and every
+  `lang-*` package describes the language it supports rather than calling itself "Core".
+- Updated dependencies [de4fb22]
+- Updated dependencies [de4fb22]
+  - @nlpjs-neo/core@6.0.0
+  - @nlpjs-neo/lang-ar@5.1.1
+  - @nlpjs-neo/lang-bn@5.1.1
+  - @nlpjs-neo/lang-ca@5.1.1
+  - @nlpjs-neo/lang-cs@5.1.1
+  - @nlpjs-neo/lang-da@5.1.1
+  - @nlpjs-neo/lang-de@5.1.1
+  - @nlpjs-neo/lang-el@5.1.1
+  - @nlpjs-neo/lang-en@5.1.1
+  - @nlpjs-neo/lang-es@5.1.1
+  - @nlpjs-neo/lang-eu@5.1.1
+  - @nlpjs-neo/lang-fa@5.1.1
+  - @nlpjs-neo/lang-fi@5.1.1
+  - @nlpjs-neo/lang-fr@5.1.1
+  - @nlpjs-neo/lang-ga@5.1.1
+  - @nlpjs-neo/lang-gl@5.1.1
+  - @nlpjs-neo/lang-hi@5.1.1
+  - @nlpjs-neo/lang-hu@5.1.1
+  - @nlpjs-neo/lang-hy@5.1.1
+  - @nlpjs-neo/lang-id@5.1.1
+  - @nlpjs-neo/lang-it@5.1.1
+  - @nlpjs-neo/lang-ja@5.1.1
+  - @nlpjs-neo/lang-ko@5.1.1
+  - @nlpjs-neo/lang-lt@5.1.1
+  - @nlpjs-neo/lang-ms@5.1.1
+  - @nlpjs-neo/lang-ne@5.1.1
+  - @nlpjs-neo/lang-nl@5.1.1
+  - @nlpjs-neo/lang-no@5.1.1
+  - @nlpjs-neo/lang-pl@5.1.1
+  - @nlpjs-neo/lang-pt@5.1.1
+  - @nlpjs-neo/lang-ro@5.1.1
+  - @nlpjs-neo/lang-ru@5.1.1
+  - @nlpjs-neo/lang-sl@5.1.1
+  - @nlpjs-neo/lang-sr@5.1.1
+  - @nlpjs-neo/lang-sv@5.1.1
+  - @nlpjs-neo/lang-ta@5.1.1
+  - @nlpjs-neo/lang-th@5.1.1
+  - @nlpjs-neo/lang-tl@5.1.1
+  - @nlpjs-neo/lang-tr@5.1.1
+  - @nlpjs-neo/lang-uk@5.1.1
+  - @nlpjs-neo/lang-zh@5.1.1
+  - @nlpjs-neo/language@5.1.1
+
 ## 5.1.0
 
 ### Minor Changes

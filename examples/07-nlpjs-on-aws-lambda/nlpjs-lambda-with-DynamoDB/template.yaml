@@ -8,6 +8,7 @@ Description: >
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
+    # The first call to the NLP function trains the model, so give it room.
     Timeout: 60
 
 Resources:
@@ -16,7 +17,8 @@ Resources:
     Properties:
       CodeUri: nlpjs/
       Handler: app.lambdaHandler
-      Runtime: nodejs12.x
+      Runtime: nodejs22.x
+      MemorySize: 512
       Policies:
         - DynamoDBCrudPolicy:
             TableName:

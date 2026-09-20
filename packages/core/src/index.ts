@@ -46,7 +46,6 @@ import MemoryStorage from './memory-storage.js';
 import uuid from './uuid.js';
 import dock from './dock.js';
 import Context from './context.js';
-import resolveWorkerEntry from './worker-entry.js';
 
 async function dockStart(settings, mustLoadEnv?) {
   await dock.start(settings, mustLoadEnv);
@@ -79,5 +78,4 @@ export {
   dock,
   Context,
   dockStart,
-  resolveWorkerEntry,
 };

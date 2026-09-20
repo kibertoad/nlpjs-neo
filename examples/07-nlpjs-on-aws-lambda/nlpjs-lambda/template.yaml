@@ -8,7 +8,8 @@ Description: >
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 10
+    # The first call to the NLP function trains the model, so give it room.
+    Timeout: 60
 
 Resources:
   HelloWorldFunction:
@@ -16,7 +17,7 @@ Resources:
     Properties:
       CodeUri: hello-world/
       Handler: app.lambdaHandler
-      Runtime: nodejs12.x
+      Runtime: nodejs22.x
       Events:
         HelloWorld:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -28,9 +29,8 @@ Resources:
     Properties:
       CodeUri: nlpjs/
       Handler: app.lambdaHandler
-      Runtime: nodejs12.x
-      # MemorySize: 128
-      # Timeout: 3
+      Runtime: nodejs22.x
+      MemorySize: 512
       Events:
         NLPjs:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api

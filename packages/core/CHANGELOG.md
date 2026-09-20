@@ -1,5 +1,20 @@
 # @nlpjs-neo/core
 
+## 6.0.0
+
+### Major Changes
+
+- de4fb22: Remove `resolveWorkerEntry`. It was left over from the neural worker that this fork
+  dropped, nothing calls it, and it was the only reason `@nlpjs-neo/core` pulled `node:fs`
+  and `node:path` into a browser bundle.
+
+### Patch Changes
+
+- de4fb22: Point the package metadata at the fork: `repository`, `bugs` and `homepage` now name
+  `kibertoad/nlpjs-neo` instead of `axa-group/nlp.js`, `author` and `maintainers` name the
+  fork's current maintainer with the original author kept as a contributor, and every
+  `lang-*` package describes the language it supports rather than calling itself "Core".
+
 ## 5.1.0
 
 ### Minor Changes

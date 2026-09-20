@@ -7,7 +7,7 @@ system, so they can be bundled and run in a browser.
 
 | Package | Browser |
 | ------- | ------- |
-| `@nlpjs-neo/core` | Yes, see the note on `resolveWorkerEntry` below |
+| `@nlpjs-neo/core` | Yes |
 | `@nlpjs-neo/nlp`, `@nlpjs-neo/nlu`, `@nlpjs-neo/ner`, `@nlpjs-neo/nlg` | Yes |
 | `@nlpjs-neo/neural`, `@nlpjs-neo/similarity`, `@nlpjs-neo/language-min` | Yes |
 | `@nlpjs-neo/lang-en-min` and the other `lang-*-min` packages | Yes |
@@ -16,10 +16,6 @@ system, so they can be bundled and run in a browser.
 
 So in the browser you build the container yourself with `containerBootstrap` from
 `@nlpjs-neo/core` instead of using `dockStart` from `@nlpjs-neo/basic`.
-
-`@nlpjs-neo/core` exports `resolveWorkerEntry`, a helper that imports `node:fs` and
-`node:path`. Nothing in the suite calls it any more, but a bundler still follows the import,
-so alias `fs` and `path` to empty modules (or mark them external) if your bundler complains.
 
 ## Preparing to generate a bundle
 

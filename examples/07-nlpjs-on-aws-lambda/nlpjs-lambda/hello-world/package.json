@@ -1,38 +1,16 @@
 {
   "name": "hello_world",
   "version": "1.0.0",
-  "type": "commonjs",
   "description": "hello world sample for NodeJS",
+  "type": "module",
   "main": "app.js",
   "repository": "https://github.com/awslabs/aws-sam-cli/tree/develop/samcli/local/init/templates/cookiecutter-aws-sam-hello-nodejs",
   "author": "SAM CLI",
   "license": "MIT",
-  "dependencies": {
-    "axios": "^0.21.2"
+  "engines": {
+    "node": ">=22.12.0"
   },
   "scripts": {
-    "test": "mocha tests/unit/"
-  },
-  "devDependencies": {
-    "chai": "^4.2.0",
-    "mocha": "^10.1.0"
-  },
-  "eslintConfig": {
-    "root": true,
-    "parserOptions": {
-      "ecmaVersion": 2017
-    },
-    "plugins": [
-      "import"
-    ],
-    "rules": {
-      "import/no-extraneous-dependencies": [
-        "error",
-        {
-          "devDependencies": true,
-          "packageDir": "./"
-        }
-      ]
-    }
+    "test": "node --test"
   }
 }

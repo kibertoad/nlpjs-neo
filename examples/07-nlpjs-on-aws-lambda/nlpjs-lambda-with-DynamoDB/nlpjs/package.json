@@ -1,12 +1,17 @@
 {
   "name": "nlpjs_lambda_function",
   "version": "1.0.0",
-  "type": "commonjs",
+  "description": "NLP.js Neo bot behind an API Gateway endpoint, with the model stored in DynamoDB",
+  "type": "module",
   "main": "app.js",
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "dependencies": {
-    "node-nlp": "^4.3.0"
+    "node-nlp-neo": "^5.1.1"
   },
   "devDependencies": {
-    "aws-sdk": "^2.814.0"
+    "@aws-sdk/client-dynamodb": "^3.945.0",
+    "@aws-sdk/lib-dynamodb": "^3.945.0"
   }
 }

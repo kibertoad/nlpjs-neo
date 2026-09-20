@@ -1,9 +1,13 @@
 {
   "name": "nlpjs_lambda_function",
   "version": "1.0.0",
-  "type": "commonjs",
+  "description": "NLP.js Neo bot behind an API Gateway endpoint",
+  "type": "module",
   "main": "app.js",
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "dependencies": {
-    "node-nlp": "^4.3.0"
+    "node-nlp-neo": "^5.1.1"
   }
 }

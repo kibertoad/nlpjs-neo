@@ -1,10 +1,9 @@
 # README
 
-> **Not updated for version 5.** This example still targets nlp.js v4: the code is
-> CommonJS, the `package.json` files depend on `node-nlp@^4.3.0`, and the SAM templates
-> ask for the `nodejs12.x` Lambda runtime, which AWS has retired. The v5 packages are ESM
-> only and need Node.js 22.12 or later, so the example needs a port before it runs again.
-> It is kept here for the deployment walkthrough, which is still broadly accurate.
+> Both functions are ES modules on the `nodejs22.x` Lambda runtime and depend on the
+> published `node-nlp-neo` package, so `sam build` installs them from npm. Unlike the other
+> examples in this repository they do not import the workspace sources: the build only
+> packages what lives under the function's `CodeUri`.
 
 On this examples we can test to deploy an AWS Lambda function which will have a NLPjs engine and we will interact with it through HTTP requests to an endpoint.
 
@@ -88,16 +87,15 @@ Executing the wizard:
 
 - $ \> `sam init`
   - [SELECT OPTION] \> `AWS Quick Start Templates`
-  - [SELECT OPTION] \> `nodejs12.x`
+  - [SELECT OPTION] \> `nodejs22.x`
   - [WRITE A VALUE] \> `the_project_name`
 
 Or as a direct command:
 
-- $ \> `sam init -r nodejs12.x -d npm -n the_project_name --app-template hello-world`
+- $ \> `sam init -r nodejs22.x -d npm -n the_project_name --app-template hello-world`
 
 and then:
 
-- $ \> `docker pull lambci/lambda:nodejs12.x`
 - $ \> `cd the_project_name`
 
 So now we have "a base".
@@ -141,7 +139,7 @@ Inside must be the next (most important) files:
 - `app.js`
 - `engine.js`
 
-As summary, in the file `package.json` we define as dependency the NPM package **`node-nlp`**, in the file **`app.js`** we define the handler to manage the requests and responses and in the file **`engine.js`** we train/load the model of the NLPjs engine and exposes the method to process phrases and receive responses, which is used on **`app.js`**.
+As summary, in the file `package.json` we define as dependency the NPM package **`node-nlp-neo`**, in the file **`app.js`** we define the handler to manage the requests and responses and in the file **`engine.js`** we train/load the model of the NLPjs engine and exposes the method to process phrases and receive responses, which is used on **`app.js`**.
 There is many ways to store the NLPjs model. On this example we use the most simply one: on a file inside the directory **`/tmp`**. Without going into details, which can be found in the AWS serverless lambda documentation, we have up to 500MB of volatile space in that directory.
 
 Now, previously to deploy opprocess, we are going to build and test locally. Inside the directory of the source code, execute:
@@ -157,7 +155,7 @@ As we can see on source code of `app.js`, It analyses the request loking for a p
 
 The main differences between both versions of the file **`engine.js`** are the imports to have access to funcitons and objects to manage DynamoDB tables and the access to the table itself.
 
->It is not necessary to define the dependencies of AWS framework on file **`package.json`** to deploy but there are included under **`devDependencies`** to make development easier.
+>The `nodejs22.x` runtime already ships the AWS SDK v3, so the `@aws-sdk/*` packages do not have to be declared on file **`package.json`** to deploy; they are included under **`devDependencies`** to make development easier.
 
 To test the scenario execute:
 
@@ -175,7 +173,7 @@ You will need to create the table inside your local DyanamoDB before you call th
 
 In fact, the region does not matters because the important point is the endpoint URL where you are specifying that you want "to manage" your local DynamoDB. It is only required because the command will fail if not specified.
 
-Taking a look inside the file **`engine.js`**, on lines 8 and 10, you will see a reference to a environment variable defined by the tool **`sam`** and which allows to detect if we are working locally, on this case, the instance of the DynamoDb client will have the endpoint URL redefined.
+Taking a look inside the file **`engine.js`**, you will see a reference to a environment variable defined by the tool **`sam`** and which allows to detect if we are working locally, on this case, the instance of the DynamoDb client will have the endpoint URL redefined.
 
 ## DEPLOYING
 
