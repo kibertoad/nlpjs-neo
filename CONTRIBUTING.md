@@ -46,10 +46,25 @@ is needed first.
 pnpm test
 ```
 
+## Running benchmarks
+
+The benchmarks cover the hot paths of the main packages: the per-utterance pipeline
+(normalizing, tokenizing, stemming, entity extraction, classification) and the training behind
+it. They live in `packages/<package>/bench/` and run with
+
+```shell
+pnpm bench                     # every benchmark, once
+pnpm bench packages/similarity # one package
+```
+
+`bench/README.md` covers the conventions, the shared fixtures and how to compare a change
+against a stored baseline. CI runs the suite to prove the benchmarks still work, but its
+timings are noise; measure on your own machine.
+
 ## Checking types and packaging
 
 ```shell
-pnpm typecheck      # type-checks the package sources and the tests
+pnpm typecheck      # type-checks the package sources, the tests and the benchmarks
 pnpm build          # compiles every package to dist/
 pnpm check:exports  # are-the-types-wrong + publint for every package
 ```
