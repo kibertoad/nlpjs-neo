@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/builtin-duckling",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "description": "Builtin Named Entity Recognition with Duckling",
   "author": {
     "name": "Igor Savin",

@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/builtin-microsoft",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Builtin Named Entity Recognition with Microsoft Recognizers",
   "author": {
     "name": "Igor Savin",

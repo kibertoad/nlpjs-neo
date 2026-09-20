@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/lang-sv",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "description": "Swedish language support for NLP.js Neo",
   "author": {
     "name": "Igor Savin",

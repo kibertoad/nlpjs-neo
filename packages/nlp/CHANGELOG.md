@@ -1,5 +1,22 @@
 # @nlpjs-neo/nlp
 
+## 5.1.1
+
+### Patch Changes
+
+- de4fb22: Point the package metadata at the fork: `repository`, `bugs` and `homepage` now name
+  `kibertoad/nlpjs-neo` instead of `axa-group/nlp.js`, `author` and `maintainers` name the
+  fork's current maintainer with the original author kept as a contributor, and every
+  `lang-*` package describes the language it supports rather than calling itself "Core".
+- Updated dependencies [de4fb22]
+- Updated dependencies [de4fb22]
+  - @nlpjs-neo/core@6.0.0
+  - @nlpjs-neo/ner@5.1.1
+  - @nlpjs-neo/nlg@5.1.1
+  - @nlpjs-neo/nlu@5.1.1
+  - @nlpjs-neo/sentiment@5.1.1
+  - @nlpjs-neo/slot@5.1.1
+
 ## 5.1.0
 
 ### Minor Changes

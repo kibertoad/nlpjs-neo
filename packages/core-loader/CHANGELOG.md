@@ -1,5 +1,21 @@
 # @nlpjs-neo/core-loader
 
+## 6.0.1
+
+### Patch Changes
+
+- de4fb22: Fix the plugin name table so every language can be named from a `conf.json`: `LangAr`
+  pointed at a `LangAll` class that `@nlpjs-neo/lang-ar` does not export, and `LangKo`,
+  `LangLt`, `LangMs`, `LangNe`, `LangPl` and `LangSr` had no entry at all.
+- de4fb22: Point the package metadata at the fork: `repository`, `bugs` and `homepage` now name
+  `kibertoad/nlpjs-neo` instead of `axa-group/nlp.js`, `author` and `maintainers` name the
+  fork's current maintainer with the original author kept as a contributor, and every
+  `lang-*` package describes the language it supports rather than calling itself "Core".
+- Updated dependencies [de4fb22]
+- Updated dependencies [de4fb22]
+  - @nlpjs-neo/core@6.0.0
+  - @nlpjs-neo/request@5.2.1
+
 ## 6.0.0
 
 ### Major Changes

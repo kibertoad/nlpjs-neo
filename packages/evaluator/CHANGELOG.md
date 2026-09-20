@@ -1,5 +1,14 @@
 # @nlpjs-neo/evaluator
 
+## 5.2.1
+
+### Patch Changes
+
+- de4fb22: Point the package metadata at the fork: `repository`, `bugs` and `homepage` now name
+  `kibertoad/nlpjs-neo` instead of `axa-group/nlp.js`, `author` and `maintainers` name the
+  fork's current maintainer with the original author kept as a contributor, and every
+  `lang-*` package describes the language it supports rather than calling itself "Core".
+
 ## 5.2.0
 
 ### Minor Changes

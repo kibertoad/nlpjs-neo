@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/lang-all",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "description": "Every language supported by NLP.js Neo, in a single plugin",
   "author": {
     "name": "Igor Savin",

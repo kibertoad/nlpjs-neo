@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/connector",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "description": "Base connector",
   "author": {
     "name": "Igor Savin",
