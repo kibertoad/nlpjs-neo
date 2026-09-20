@@ -9,8 +9,8 @@ class NlpExcelReader {
     this.xdoc = new XDoc();
   }
 
-  load(filename?) {
-    this.xdoc.read(filename);
+  async load(filename?) {
+    await this.xdoc.read(filename);
     this.loadSettings();
     this.loadLanguages();
     this.loadNamedEntities();

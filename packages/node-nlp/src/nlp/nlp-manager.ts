@@ -275,11 +275,11 @@ class NlpManager {
 
   /**
    * Load the NLP manager information from an excel file.
-   * @param {Sting} srcFileName File name of the excel.
+   * @param {String} fileName File name of the excel, `.xlsx` or `.xlsm`.
    */
-  loadExcel(fileName = 'model.xls') {
+  async loadExcel(fileName = 'model.xlsx') {
     const reader = new NlpExcelReader(this);
-    reader.load(fileName);
+    await reader.load(fileName);
   }
 
   async testCorpus(corpus) {

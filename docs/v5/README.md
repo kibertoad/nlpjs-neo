@@ -47,6 +47,4 @@ listed as removed in the [README](../../README.md#what-is-new-in-version-5) are 
 ## Elsewhere in the repository
 
 - [Runnable examples](../../examples)
-- [Dependency audit, September 2026](../dependency-audit-2026-09.md)
-- [Migrating Excel loading off SheetJS](../migrate-sheetjs-to-office-kit.md)
 - [Contributing](../../CONTRIBUTING.md)

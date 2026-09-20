@@ -106,9 +106,9 @@ describe('XDoc', () => {
   });
 
   describe('Read', () => {
-    test('It should read from an excel file', () => {
+    test('It should read from an excel file', async () => {
       const xdoc = new XDoc();
-      xdoc.read('./packages/xtables/test/book1.xlsx');
+      await xdoc.read('./packages/xtables/test/book1.xlsx');
       expect(xdoc.tables).toHaveLength(5);
       expect(xdoc.tables[0]).toEqual({
         keys: ['id', 'name'],
@@ -138,9 +138,9 @@ describe('XDoc', () => {
       });
     });
 
-    test('It should read every table of every sheet', () => {
+    test('It should read every table of every sheet', async () => {
       const xdoc = new XDoc();
-      xdoc.read('./packages/xtables/test/book1.xlsx');
+      await xdoc.read('./packages/xtables/test/book1.xlsx');
       // Three named tables on Sheet1, plus a nameless one for each empty sheet.
       expect(xdoc.tables.map((table) => table.name)).toEqual([
         'Table 1',
@@ -167,9 +167,9 @@ describe('XDoc', () => {
      * not. A blank-but-styled column still separates two tables, so the reader
      * has to tell "formatted" from "populated".
      */
-    test('It should not treat a blank but styled column as data', () => {
+    test('It should not treat a blank but styled column as data', async () => {
       const xdoc = new XDoc();
-      xdoc.read('./packages/xtables/test/styled-blanks.xlsx');
+      await xdoc.read('./packages/xtables/test/styled-blanks.xlsx');
       expect(xdoc.tables.map((table) => table.name)).toEqual(['Left', 'Right']);
       expect(xdoc.getTable('Left')).toEqual({
         name: 'Left',
@@ -183,22 +183,32 @@ describe('XDoc', () => {
 
     /*
      * Pins how a General-format number reaches the tables: as the display text
-     * the spreadsheet library produces, never as a number.
+     * the spreadsheet library produces, never as a number. SheetJS capped a
+     * General number at 11 characters, `@office-kit/xlsx` keeps 15 significant
+     * digits, so a model with a computed decimal column reads differently
+     * after the migration. Integers and strings are unaffected.
      */
-    test('It should read a number as its display text', () => {
+    test('It should read a number as its display text', async () => {
       const xdoc = new XDoc();
-      xdoc.read('./packages/xtables/test/styled-blanks.xlsx');
+      await xdoc.read('./packages/xtables/test/styled-blanks.xlsx');
       expect(xdoc.getTable('Right').data).toEqual([
-        { id: '1', ratio: '0.990566038' },
+        { id: '1', ratio: '0.990566037735849' },
         { id: '2', ratio: '0.5' },
       ]);
+    });
+
+    test('It should reject a file whose extension it cannot read', async () => {
+      const xdoc = new XDoc();
+      await expect(xdoc.read('./model.xls')).rejects.toThrow(
+        'only .xlsx and .xlsm files are supported'
+      );
     });
   });
 
   describe('Get Table', () => {
-    test('It should get a table by name', () => {
+    test('It should get a table by name', async () => {
       const xdoc = new XDoc();
-      xdoc.read('./packages/xtables/test/book1.xlsx');
+      await xdoc.read('./packages/xtables/test/book1.xlsx');
       const table = xdoc.getTable('Table 1');
       expect(table).toEqual({
         keys: ['id', 'name'],
@@ -230,9 +240,9 @@ describe('XDoc', () => {
   });
 
   describe('Find', () => {
-    test('It should find records in a table by a query', () => {
+    test('It should find records in a table by a query', async () => {
       const xdoc = new XDoc();
-      xdoc.read('./packages/xtables/test/book1.xlsx');
+      await xdoc.read('./packages/xtables/test/book1.xlsx');
       const rows = xdoc.find('Table 3', { flag: 'yes' });
       expect(rows).toHaveLength(2);
       expect(rows[0]).toEqual({
@@ -242,18 +252,18 @@ describe('XDoc', () => {
         other: '11',
       });
     });
-    test('If the table does not exists, return empty array', () => {
+    test('If the table does not exists, return empty array', async () => {
       const xdoc = new XDoc();
-      xdoc.read('./packages/xtables/test/book1.xlsx');
+      await xdoc.read('./packages/xtables/test/book1.xlsx');
       const rows = xdoc.find('Table 4', { flag: 'yes' });
       expect(rows).toEqual([]);
     });
   });
 
   describe('Find one', () => {
-    test('It should find a row in a table by a query', () => {
+    test('It should find a row in a table by a query', async () => {
       const xdoc = new XDoc();
-      xdoc.read('./packages/xtables/test/book1.xlsx');
+      await xdoc.read('./packages/xtables/test/book1.xlsx');
       const row = xdoc.findOne('Table 3', { flag: 'yes' });
       expect(row).toEqual({
         id: '1',
@@ -262,9 +272,9 @@ describe('XDoc', () => {
         other: '11',
       });
     });
-    test('If the table does not exists, return undefined', () => {
+    test('If the table does not exists, return undefined', async () => {
       const xdoc = new XDoc();
-      xdoc.read('./packages/xtables/test/book1.xlsx');
+      await xdoc.read('./packages/xtables/test/book1.xlsx');
       const row = xdoc.findOne('Table 4', { flag: 'yes' });
       expect(row).toBeUndefined();
     });

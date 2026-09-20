@@ -2,5 +2,7 @@ packages:
   - 'packages/*'
 
 linkWorkspacePackages: true
+minimumReleaseAgeExclude:
+  - '@office-kit/xlsx@0.21.0'
 saveWorkspaceProtocol: rolling
 strictPeerDependencies: false

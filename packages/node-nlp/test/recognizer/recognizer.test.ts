@@ -23,7 +23,7 @@
 
 import { Recognizer } from '../../src/index.js';
 
-const rulesFile = './packages/node-nlp/test/nlp/rules.xls';
+const rulesFile = './packages/node-nlp/test/nlp/rules.xlsx';
 
 /**
  * Builds a recognizer whose model is never written to disk. `loadExcel` saves

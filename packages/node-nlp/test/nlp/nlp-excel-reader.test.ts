@@ -33,22 +33,22 @@ describe('NLP Excel Reader', () => {
   });
 
   describe('Load excel', () => {
-    test('It should read languages', () => {
+    test('It should read languages', async () => {
       const manager = new NlpManager();
       const reader = new NlpExcelReader(manager);
-      reader.load('./packages/node-nlp/test/nlp/rules.xls');
+      await reader.load('./packages/node-nlp/test/nlp/rules.xlsx');
       expect(manager.nlp.nluManager.locales).toEqual(['en', 'es']);
     });
-    test('It should read excel without regex entities', () => {
+    test('It should read excel without regex entities', async () => {
       const manager = new NlpManager();
       const reader = new NlpExcelReader(manager);
-      reader.load('./packages/node-nlp/test/nlp/rulesnoregex.xls');
+      await reader.load('./packages/node-nlp/test/nlp/rulesnoregex.xlsx');
       expect(manager.nlp.nluManager.locales).toEqual(['en', 'es']);
     });
-    test('It should read named entities', () => {
+    test('It should read named entities', async () => {
       const manager = new NlpManager();
       const reader = new NlpExcelReader(manager);
-      reader.load('./packages/node-nlp/test/nlp/rules.xls');
+      await reader.load('./packages/node-nlp/test/nlp/rules.xlsx');
       expect(manager.nlp.ner.rules.en).toBeDefined();
       expect(manager.nlp.ner.rules.es).toBeDefined();
       expect(manager.nlp.ner.rules.en.hero).toBeDefined();
@@ -56,17 +56,17 @@ describe('NLP Excel Reader', () => {
       expect(manager.nlp.ner.rules.es.hero).toBeDefined();
       expect(manager.nlp.ner.rules.es.food).toBeDefined();
     });
-    test('It should create the classifiers for the languages', () => {
+    test('It should create the classifiers for the languages', async () => {
       const manager = new NlpManager();
       const reader = new NlpExcelReader(manager);
-      reader.load('./packages/node-nlp/test/nlp/rules.xls');
+      await reader.load('./packages/node-nlp/test/nlp/rules.xlsx');
       expect(manager.nlp.nluManager.domainManagers.en).toBeDefined();
       expect(manager.nlp.nluManager.domainManagers.es).toBeDefined();
     });
-    test('The classifiers should contain the intent definition', () => {
+    test('The classifiers should contain the intent definition', async () => {
       const manager = new NlpManager();
       const reader = new NlpExcelReader(manager);
-      reader.load('./packages/node-nlp/test/nlp/rules.xls');
+      await reader.load('./packages/node-nlp/test/nlp/rules.xlsx');
       expect(manager.nlp.nluManager.domainManagers.en.sentences).toHaveLength(
         5
       );
@@ -101,10 +101,10 @@ describe('NLP Excel Reader', () => {
         manager.nlp.nluManager.domainManagers.es.sentences[3].intent
       ).toEqual('realname');
     });
-    test('The NLG should be filled', () => {
+    test('The NLG should be filled', async () => {
       const manager = new NlpManager();
       const reader = new NlpExcelReader(manager);
-      reader.load('./packages/node-nlp/test/nlp/rules.xls');
+      await reader.load('./packages/node-nlp/test/nlp/rules.xlsx');
       expect(manager.nlp.nlgManager.responses.en).toBeDefined();
       expect(manager.nlp.nlgManager.responses.en.whois).toBeDefined();
       expect(manager.nlp.nlgManager.responses.en.whereis).toBeDefined();

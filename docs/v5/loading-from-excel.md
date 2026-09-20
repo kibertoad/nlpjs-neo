@@ -7,7 +7,7 @@ instead of from code or a corpus JSON.
 import { NlpManager } from 'node-nlp-neo';
 
 const manager = new NlpManager({ languages: ['en', 'es'], forceNER: true });
-manager.loadExcel('./rules.xls');
+await manager.loadExcel('./rules.xlsx');
 await manager.train();
 
 const result = await manager.process('en', 'who is spiderman?');
@@ -15,12 +15,12 @@ console.log(result.intent); // whois
 console.log(result.entities.map((entity) => entity.entity)); // [ 'hero' ]
 ```
 
-`loadExcel` defaults to `model.xls` when called without a file name. Reading is done by
-[`@nlpjs-neo/xtables`](../../packages/xtables), which supports the formats of the `xlsx`
-package, `.xls` and `.xlsx` among them. That dependency is SheetJS `xlsx@0.18.5`, which
-still carries known advisories; the plan to replace it is in
-[Migrating Excel loading](../migrate-sheetjs-to-office-kit.md), so treat workbooks from
-untrusted sources with care until it lands.
+`loadExcel` returns a promise and must be awaited. It defaults to `model.xlsx` when called
+without a file name. Reading is done by [`@nlpjs-neo/xtables`](../../packages/xtables) on
+top of [`@office-kit/xlsx`](https://www.npmjs.com/package/@office-kit/xlsx), which reads
+`.xlsx` and `.xlsm` only. A legacy `.xls` workbook is rejected with a message telling you to
+convert it; Excel's Save As does it, as does
+`soffice --headless --convert-to xlsx model.xls`.
 
 ## File format
 
@@ -50,4 +50,4 @@ Notes:
 ![Tables2](../../screenshots/screenshot02.png)
 
 A working workbook is in the test fixtures, at
-[`packages/node-nlp/test/nlp/rules.xls`](../../packages/node-nlp/test/nlp/rules.xls).
+[`packages/node-nlp/test/nlp/rules.xlsx`](../../packages/node-nlp/test/nlp/rules.xlsx).

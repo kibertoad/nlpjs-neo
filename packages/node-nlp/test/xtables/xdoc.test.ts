@@ -106,9 +106,9 @@ describe('XDoc', () => {
   });
 
   describe('Read', () => {
-    test('It should read from an excel file', () => {
+    test('It should read from an excel file', async () => {
       const xdoc = new XDoc();
-      xdoc.read('./packages/node-nlp/test/xtables/book1.xlsx');
+      await xdoc.read('./packages/node-nlp/test/xtables/book1.xlsx');
       expect(xdoc.tables).toHaveLength(5);
       expect(xdoc.tables[0]).toEqual({
         keys: ['id', 'name'],
@@ -139,10 +139,19 @@ describe('XDoc', () => {
     });
   });
 
-  describe('Get Table', () => {
-    test('It should get a table by name', () => {
+  describe('Read errors', () => {
+    test('It should reject a file whose extension it cannot read', async () => {
       const xdoc = new XDoc();
-      xdoc.read('./packages/node-nlp/test/xtables/book1.xlsx');
+      await expect(xdoc.read('./model.xls')).rejects.toThrow(
+        'only .xlsx and .xlsm files are supported'
+      );
+    });
+  });
+
+  describe('Get Table', () => {
+    test('It should get a table by name', async () => {
+      const xdoc = new XDoc();
+      await xdoc.read('./packages/node-nlp/test/xtables/book1.xlsx');
       const table = xdoc.getTable('Table 1');
       expect(table).toEqual({
         keys: ['id', 'name'],
@@ -174,9 +183,9 @@ describe('XDoc', () => {
   });
 
   describe('Find', () => {
-    test('It should find records in a table by a query', () => {
+    test('It should find records in a table by a query', async () => {
       const xdoc = new XDoc();
-      xdoc.read('./packages/node-nlp/test/xtables/book1.xlsx');
+      await xdoc.read('./packages/node-nlp/test/xtables/book1.xlsx');
       const rows = xdoc.find('Table 3', { flag: 'yes' });
       expect(rows).toHaveLength(2);
       expect(rows[0]).toEqual({
@@ -186,18 +195,18 @@ describe('XDoc', () => {
         other: '11',
       });
     });
-    test('If the table does not exists, return empty array', () => {
+    test('If the table does not exists, return empty array', async () => {
       const xdoc = new XDoc();
-      xdoc.read('./packages/node-nlp/test/xtables/book1.xlsx');
+      await xdoc.read('./packages/node-nlp/test/xtables/book1.xlsx');
       const rows = xdoc.find('Table 4', { flag: 'yes' });
       expect(rows).toEqual([]);
     });
   });
 
   describe('Find one', () => {
-    test('It should find a row in a table by a query', () => {
+    test('It should find a row in a table by a query', async () => {
       const xdoc = new XDoc();
-      xdoc.read('./packages/node-nlp/test/xtables/book1.xlsx');
+      await xdoc.read('./packages/node-nlp/test/xtables/book1.xlsx');
       const row = xdoc.findOne('Table 3', { flag: 'yes' });
       expect(row).toEqual({
         id: '1',
@@ -206,9 +215,9 @@ describe('XDoc', () => {
         other: '11',
       });
     });
-    test('If the table does not exists, return undefined', () => {
+    test('If the table does not exists, return undefined', async () => {
       const xdoc = new XDoc();
-      xdoc.read('./packages/node-nlp/test/xtables/book1.xlsx');
+      await xdoc.read('./packages/node-nlp/test/xtables/book1.xlsx');
       const row = xdoc.findOne('Table 4', { flag: 'yes' });
       expect(row).toBeUndefined();
     });

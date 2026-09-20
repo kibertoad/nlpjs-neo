@@ -29,7 +29,7 @@ pnpm add @nlpjs-neo/xtables
 import { XDoc } from '@nlpjs-neo/xtables';
 
 const xdoc = new XDoc();
-xdoc.read('./rules.xls');
+await xdoc.read('./rules.xlsx');
 
 const languages = xdoc.getTable('Languages');
 console.log(languages.data); // [ { iso2: 'en' }, { iso2: 'es' } ]
@@ -38,9 +38,9 @@ console.log(languages.data); // [ { iso2: 'en' }, { iso2: 'es' } ]
 `XDoc` holds the tables of a workbook, `XTable` is one table, and `XTableUtils` has the
 helpers that split a sheet into blocks.
 
-Reading is done with SheetJS `xlsx`, which still carries known advisories; the plan to
-replace it is at
-[Migrating Excel loading](https://github.com/kibertoad/nlpjs-neo/blob/main/docs/migrate-sheetjs-to-office-kit.md).
+Reading is done with [`@office-kit/xlsx`](https://www.npmjs.com/package/@office-kit/xlsx),
+which reads `.xlsx` and `.xlsm`. `XDoc.read` returns a promise. A legacy `.xls` workbook is
+rejected with a message telling you to convert it first.
 
 The format expected by the NLP manager is documented at
 [Loading from Excel](https://github.com/kibertoad/nlpjs-neo/blob/main/docs/v5/loading-from-excel.md).

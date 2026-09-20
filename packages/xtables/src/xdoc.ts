@@ -21,14 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/*
- * The linter's resolver picks up the `module` entry of xlsx, an ESM shim that
- * re-exports a subset of the API and no default. Node resolves the CommonJS
- * `main` instead, whose default export carries the full API, `readFile`
- * included, which is what this module uses.
- */
-/* oxlint-disable import/default, import/no-named-as-default-member */
-import XLSX from 'xlsx';
+import { readSheets } from './workbook-reader.js';
 import XTable from './xtable.js';
 import XTableUtils from './xtable-utils.js';
 
@@ -218,10 +211,14 @@ class XDoc {
     }
   }
 
-  read(filename) {
-    const wb = XLSX.readFile(filename);
-    for (let i = 0, l = wb.SheetNames.length; i < l; i += 1) {
-      this.processSheet(wb.Sheets[wb.SheetNames[i]]);
+  /**
+   * Read every sheet of an excel file into tables.
+   * @param {String} filename Path to a `.xlsx` or `.xlsm` file.
+   */
+  async read(filename) {
+    const sheets = await readSheets(filename);
+    for (let i = 0, l = sheets.length; i < l; i += 1) {
+      this.processSheet(sheets[i]);
     }
   }
 

@@ -83,7 +83,7 @@ class Recognizer {
    * @param {String} filename Name of the file.
    */
   async loadExcel(filename) {
-    this.nlpManager.loadExcel(filename);
+    await this.nlpManager.loadExcel(filename);
     await this.train();
     this.save();
   }
