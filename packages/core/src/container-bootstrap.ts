@@ -10,44 +10,58 @@ import Timer from './timer.js';
 import logger from './logger.js';
 import MemoryStorage from './memory-storage.js';
 import fs from './mock-fs.js';
+import type {
+  ChildPipeline,
+  ContainerConfiguration,
+  ServiceConstructor,
+  ServiceInstance,
+} from './types.js';
 
-function loadPipelinesStr(instance, pipelines) {
+function loadPipelinesStr(instance: Container, pipelines: string): void {
   instance.loadPipelinesFromString(pipelines);
 }
 
-function traverse(obj, preffix) {
+/**
+ * Resolves the `$ENV_VAR` references a configuration may hold, in place of
+ * any string value and at any depth. A reference is looked up prefixed first,
+ * so a child container can override what its parent reads.
+ */
+function traverse<T>(obj: T, preffix: string): T {
   if (typeof obj === 'string') {
     if (obj.startsWith('$')) {
-      return (
-        process.env[`${preffix}${obj.slice(1)}`] || process.env[obj.slice(1)]
-      );
+      return (process.env[`${preffix}${obj.slice(1)}`] ||
+        process.env[obj.slice(1)]) as T;
     }
     return obj;
   }
   if (Array.isArray(obj)) {
-    return obj.map((x) => traverse(x, preffix));
+    return obj.map((x) => traverse(x, preffix)) as T;
   }
-  if (typeof obj === 'object') {
-    const keys = Object.keys(obj);
-    const result: any = {};
+  if (typeof obj === 'object' && obj !== null) {
+    const source = obj as Record<string, unknown>;
+    const keys = Object.keys(source);
+    const result: Record<string, unknown> = {};
     for (let i = 0; i < keys.length; i += 1) {
-      result[keys[i]] = traverse(obj[keys[i]], preffix);
+      result[keys[i]] = traverse(source[keys[i]], preffix);
     }
-    return result;
+    return result as T;
   }
   return obj;
 }
 
 function containerBootstrap(
-  inputSettings?,
-  mustLoadEnv?,
-  container?,
-  preffix?,
-  pipelines?,
-  parent?
-) {
-  const srcSettings = inputSettings || {};
-  const instance = container || new Container(preffix);
+  inputSettings?: ContainerConfiguration | string,
+  mustLoadEnv?: boolean,
+  container?: Container,
+  preffix?: string,
+  pipelines?: ChildPipeline[],
+  parent?: Container
+): Container {
+  // A string names the file the configuration is loaded from; the loader
+  // subclass of this container reads it, so here it carries no settings.
+  const srcSettings: ContainerConfiguration =
+    typeof inputSettings === 'string' ? {} : inputSettings || {};
+  const instance = container || new Container(Boolean(preffix));
   instance.parent = parent;
   if (!preffix) {
     instance.register('fs', fs);
@@ -65,9 +79,7 @@ function containerBootstrap(
   if (srcSettings.env) {
     loadEnvFromJson(preffix, srcSettings.env);
   }
-  let configuration;
-  configuration = settings;
-  configuration = traverse(configuration, preffix ? `${preffix}_` : '');
+  const configuration = traverse(settings, preffix ? `${preffix}_` : '');
   if (configuration.settings) {
     const keys = Object.keys(configuration.settings);
     for (let i = 0; i < keys.length; i += 1) {
@@ -82,7 +94,10 @@ function containerBootstrap(
     for (let i = 0; i < configuration.use.length; i += 1) {
       const item = configuration.use[i];
       if (Array.isArray(item)) {
-        instance.register(item[0], item[1]);
+        instance.register(
+          item[0],
+          item[1] as ServiceConstructor | ServiceInstance
+        );
       } else {
         instance.use(item);
       }

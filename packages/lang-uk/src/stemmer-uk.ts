@@ -92,8 +92,9 @@ class StemmerUk extends BaseStemmer {
       this.setCurrent(`${start}${word}`);
       return;
     }
+    // `index` of a successful `exec` is always a number, so this is only the
+    // fallback for a word that has no vowel to split on: it stays as it is.
     this.setCurrent(word);
-    this.setCurrent(`${word.start}${word.str}`);
   }
 }
 

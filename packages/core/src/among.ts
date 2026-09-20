@@ -1,17 +1,21 @@
+import type BaseStemmer from './base-stemmer.js';
+
 /**
  * Guard invoked by a Snowball stemmer before it accepts an among. It receives
- * the stemmer that owns the table; the rule methods it calls are generated per
- * language, so the parameter stays open.
+ * the stemmer that owns the table and calls one of its rule methods, which are
+ * generated per language: `TStemmer` is that language's stemmer.
  */
-export type AmongMethod = (instance: any) => unknown;
+export type AmongMethod<TStemmer extends BaseStemmer = BaseStemmer> = (
+  instance: TStemmer
+) => unknown;
 
 /**
  * Class for an Among of a Stemmer
  */
-class Among {
+class Among<TStemmer extends BaseStemmer = BaseStemmer> {
   /** Stemmer the `method` guard is invoked on, when the table provides one. */
-  declare instance: unknown;
-  declare method: AmongMethod | undefined;
+  declare instance: TStemmer | undefined;
+  declare method: AmongMethod<TStemmer> | undefined;
   /** Value the stemmer returns when this among matches. */
   declare result: number;
   /** Literal this among matches. */
@@ -27,8 +31,8 @@ class Among {
     s: string,
     sub: number | string,
     result: number,
-    method?: AmongMethod,
-    instance?: unknown
+    method?: AmongMethod<TStemmer>,
+    instance?: TStemmer
   ) {
     this.s_size = s.length;
     this.s = s;

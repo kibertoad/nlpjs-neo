@@ -6,8 +6,9 @@ import {
   isKoreanNumber,
   isKoreanNameVariation,
 } from './korean-substantive.js';
+import type { KoreanToken } from './korean-token.js';
 
-function getTopSlice(word) {
+function getTopSlice(word: string): string {
   initDicts();
   const max = Math.min(word.length, 2);
   for (let i = max; i > 1; i -= 1) {
@@ -28,17 +29,17 @@ function getTopSlice(word) {
   return word[0];
 }
 
-function isHangulChar(ch) {
+function isHangulChar(ch: string): boolean {
   const regex =
     /[\u1100-\u11FF\u302E\u302F\u3131-\u318E\u3200-\u321E\u3260-\u327E\uA960-\uA97C\uAC00-\uD7A3\uD7B0-\uD7C6\uD7CB-\uD7FB\uFFA0-\uFFBE\uFFC2-\uFFC7\uFFCA-\uFFCF\uFFD2-\uFFD7\uFFDA-\uFFDC]/g;
   return regex.test(ch);
 }
 
-function buildPotentials(word) {
+function buildPotentials(word: KoreanToken): string[] {
   if (!isHangulChar(word.text[0])) {
     return [word.text];
   }
-  const potentials: any[] = [];
+  const potentials: string[] = [];
   let pending = word.text;
   while (pending.length > 0) {
     const top = getTopSlice(pending);
@@ -48,9 +49,9 @@ function buildPotentials(word) {
   return potentials;
 }
 
-function tokenize(text) {
+function tokenize(text: string): string[] {
   const chunks = chunk(text);
-  const result: any[] = [];
+  const result: string[] = [];
   for (let i = 0; i < chunks.length; i += 1) {
     const potentials = buildPotentials(chunks[i]);
     for (let j = 0; j < potentials.length; j += 1) {
@@ -60,7 +61,7 @@ function tokenize(text) {
   return result;
 }
 
-function stemWord(token) {
+function stemWord(token: string): string {
   initDicts();
   const value = dictionary[token];
   if (value) {

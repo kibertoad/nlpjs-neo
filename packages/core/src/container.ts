@@ -3,64 +3,35 @@ import DefaultCompiler from './default-compiler.js';
 import logger from './logger.js';
 import type {
   ChildPipeline,
+  ChildSettings,
   Compiler,
   CompilerConstructor,
+  ConfigurableService,
+  ContainerPlugin,
   FactoryItem,
   PipelineExecutionContext,
+  PipelineResult,
   RegisteredPipeline,
+  RehydratedInstance,
   SerializedInstance,
+  ResolvedPath,
+  ResolvedValue,
+  ServiceConstructor,
+  ServiceInstance,
   Settings,
 } from './types.js';
+import type { Dock } from './dock.js';
 
 const NUMBER_LITERAL_REGEX = /^\d+(?:\.\d+)?$/;
-
-/**
- * Constructor of a service the container can build. Resolution calls it with
- * `(settings, container)`, but plugins registered by hand carry their own
- * signature, so the arguments stay open.
- */
-type ServiceConstructor = new (...args: any[]) => object;
 
 /** An instance that knows how to serialize itself. */
 interface Serializable {
   toJSON?(): SerializedInstance;
 }
 
-/**
- * An instance the container can `use`: it may name itself, carry settings and
- * register its own services when it is added.
- */
-interface Plugin {
-  name?: string;
-  settings?: Settings;
-  /** Hook called when the plugin is added, to register its own services. */
-  register?(container: Container): void;
-}
-
-/**
- * A service registered by hand. `register` stores it under a name and hands
- * it back on resolution without reading anything off it, so a service is any
- * object at all, exposing whatever API its callers expect.
- */
-type ServiceInstance = object;
-
-/**
- * Value resolved from a path expression of a pipeline. Paths are interpreted
- * at runtime against the container, the context and the input, so what comes
- * back is only known to the pipeline that asked for it.
- */
-type ResolvedValue = any;
-
-/** A path expression resolved together with the kind of value it denotes. */
-interface ResolvedPath {
-  type: 'literal' | 'function' | 'reference';
-  /** Kind of the literal, for `type: 'literal'`. */
-  subtype?: 'number' | 'string' | 'boolean';
-  /** Source expression this was resolved from. */
-  src: string;
-  value: ResolvedValue;
-  context: PipelineExecutionContext;
-  container: Container;
+/** A registered service that takes part in the startup of the container. */
+interface StartableService {
+  start?(): void | Promise<void>;
 }
 
 /**
@@ -83,6 +54,14 @@ class Container {
   declare name: string | undefined;
   declare parent: Container | undefined;
   declare pipelines: Record<string, RegisteredPipeline>;
+  /**
+   * Child containers, keyed by name. The bootstrap stores the settings each
+   * child is to be built from; the dock replaces them with the containers it
+   * built from those settings.
+   */
+  declare childs: Record<string, ChildSettings | Container> | undefined;
+  /** Dock that created this container, set while it is being created. */
+  declare dock: Dock | undefined;
 
   /**
    * Constructor of the class.
@@ -121,9 +100,7 @@ class Container {
     return result;
   }
 
-  // The instance is rebuilt from a class name, so its type is only known to
-  // the caller that exported the JSON in the first place.
-  fromJSON(obj: SerializedInstance, settings?: Settings): any {
+  fromJSON(obj: SerializedInstance, settings?: Settings): RehydratedInstance {
     const Clazz = this.classes[obj.className];
     let instance;
     if (Clazz) {
@@ -184,6 +161,7 @@ class Container {
    * @returns The service, or `undefined` when no name and no wildcard of
    * this container or of its parents matches.
    */
+  // oxlint-disable-next-line typescript/no-explicit-any -- service locator
   get<T = any>(name: string, settings?: unknown): T | undefined {
     let item = this.factory[name];
     if (!item) {
@@ -199,13 +177,15 @@ class Container {
       }
     }
     if (item.isSingleton) {
-      if (item.instance && item.instance.applySettings) {
-        item.instance.applySettings(item.instance.settings, settings);
+      const instance = item.instance as ConfigurableService | undefined;
+      if (instance && instance.applySettings) {
+        instance.applySettings(instance.settings, settings);
       }
-      return item.instance;
+      // What a name resolves to is the caller's contract, stated as `T`.
+      return instance as T | undefined;
     }
-    const Clazz = item.instance;
-    return new Clazz(settings, this);
+    const Clazz = item.instance as ServiceConstructor;
+    return new Clazz(settings, this) as T;
   }
 
   // The literal carries the container itself, so the return type has to be
@@ -482,7 +462,7 @@ class Container {
     input: unknown,
     srcObject?: unknown,
     depth = 0
-  ): Promise<any> {
+  ): Promise<PipelineResult> {
     if (depth > 10) {
       throw new Error(
         'Pipeline depth is too high: perhaps you are using recursive pipelines?'
@@ -513,12 +493,12 @@ class Container {
   }
 
   use(
-    item: Plugin | ServiceConstructor,
+    item: ContainerPlugin | ServiceConstructor,
     name?: string,
     isSingleton?: boolean,
     onlyIfNotExists = false
   ): string {
-    let instance: Plugin;
+    let instance: ContainerPlugin;
     if (typeof item === 'function') {
       if (item.name.endsWith('Compiler')) {
         // Compilers are told apart from other plugins by their name only, so
@@ -527,7 +507,7 @@ class Container {
         return item.name;
       }
       const Clazz = item;
-      instance = new Clazz({ container: this }) as Plugin;
+      instance = new Clazz({ container: this }) as ContainerPlugin;
     } else {
       instance = item;
     }
@@ -722,8 +702,11 @@ class Container {
     const keys = Object.keys(this.factory);
     for (let i = 0; i < keys.length; i += 1) {
       const current = this.factory[keys[i]];
-      if (current.isSingleton && current.instance && current.instance.start) {
-        await current.instance.start();
+      // A registered service may take part in the startup of the container by
+      // exposing `start`; most do not.
+      const instance = current.instance as StartableService | undefined;
+      if (current.isSingleton && instance && instance.start) {
+        await instance.start();
       }
     }
     if (this.getPipeline(pipelineName)) {

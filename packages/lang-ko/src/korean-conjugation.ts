@@ -22,8 +22,9 @@ const preEomis = [
   ],
 ];
 
-function build(lastChar, list) {
-  const result: any[] = [];
+/** Appends each pre-eomi of the listed groups to the syllable. */
+function build(lastChar: string, list: number[]): string[] {
+  const result: string[] = [];
   for (let i = 0; i < list.length; i += 1) {
     const eomis = preEomis[list[i]];
     for (let j = 0; j < eomis.length; j += 1) {
@@ -33,20 +34,28 @@ function build(lastChar, list) {
   return result;
 }
 
-function buildCommon(onset, vowel) {
+function buildCommon(onset: string, vowel: string): string[] {
   return ['ㅂ', 'ㅆ', 'ㄹ', 'ㄴ', 'ㅁ'].map((coda) =>
     composeHangul(onset, vowel, coda)
   );
 }
 
-function buildNoPast(onset, vowel) {
+function buildNoPast(onset: string, vowel: string): string[] {
   return ['ㅂ', 'ㄹ', 'ㄴ', 'ㅁ'].map((coda) =>
     composeHangul(onset, vowel, coda)
   );
 }
 
-function conjugate(words, isAdjective) {
-  const expanded: any[] = [];
+/**
+ * Expands every conjugated form of the given stems, as a lookup set. A string
+ * is iterated as the sequence of its syllables, so the dictionary can pass one
+ * word straight in.
+ */
+function conjugate(
+  words: Iterable<string>,
+  isAdjective: boolean
+): Record<string, number> {
+  const expanded: string[] = [];
   for (const word of words) {
     const init = word.substr(0, word.length - 1);
     const lastChar = word.substr(-1);
@@ -54,7 +63,7 @@ function conjugate(words, isAdjective) {
     const lastOnset = lastCharDecomposed.onset;
     const lastVowel = lastCharDecomposed.vowel;
     const lastCoda = lastCharDecomposed.coda;
-    let expandedLast;
+    let expandedLast: string[];
     if (lastChar === '하') {
       expandedLast = [
         ...build(lastChar, [0, 6, 10, 12]),
@@ -66,7 +75,7 @@ function conjugate(words, isAdjective) {
         ...[...(isAdjective ? '합해히하' : '합해')],
       ];
     } else if (lastVowel === 'ㅗ' && lastCoda === ' ') {
-      expandedLast = [].concat(
+      expandedLast = ([] as string[]).concat(
         build(lastChar, [13, 6, 3, 10]),
         buildNoPast(lastOnset, 'ㅗ'),
         [
@@ -76,7 +85,7 @@ function conjugate(words, isAdjective) {
         ]
       );
     } else if (lastVowel === 'ㅜ' && lastCoda === ' ') {
-      expandedLast = [].concat(
+      expandedLast = ([] as string[]).concat(
         build(lastChar, [13, 2, 6, 10]),
         buildNoPast(lastOnset, 'ㅜ'),
         [
@@ -86,7 +95,7 @@ function conjugate(words, isAdjective) {
         ]
       );
     } else if (lastVowel === 'ㅡ' && lastCoda === ' ') {
-      expandedLast = [].concat(
+      expandedLast = ([] as string[]).concat(
         build(lastChar, [6, 10]),
         buildNoPast(lastOnset, 'ㅡ'),
         [
@@ -100,19 +109,19 @@ function conjugate(words, isAdjective) {
         ]
       );
     } else if (lastChar === '귀') {
-      expandedLast = [].concat(
+      expandedLast = ([] as string[]).concat(
         build(lastChar, [6, 10]),
         buildNoPast('ㄱ', 'ㅟ'),
         ['겨', '겼', lastChar]
       );
     } else if (lastVowel === 'ㅟ' && lastCoda === ' ') {
-      expandedLast = [].concat(
+      expandedLast = ([] as string[]).concat(
         buildNoPast(lastOnset, 'ㅟ'),
         build(lastChar, [6, 10]),
         [lastChar]
       );
     } else if (lastVowel === 'ㅣ' && lastCoda === ' ') {
-      expandedLast = [].concat(
+      expandedLast = ([] as string[]).concat(
         buildNoPast(lastOnset, 'ㅣ'),
         build(lastChar, [2, 6, 10]),
         [
@@ -126,13 +135,13 @@ function conjugate(words, isAdjective) {
       (lastVowel === 'ㅞ' || lastVowel === 'ㅚ' || lastVowel === 'ㅙ') &&
       lastCoda === ' '
     ) {
-      expandedLast = [].concat(
+      expandedLast = ([] as string[]).concat(
         build(lastChar, [6, 10]),
         buildCommon(lastOnset, lastVowel),
         [lastChar]
       );
     } else if (lastCoda === ' ') {
-      expandedLast = [].concat(
+      expandedLast = ([] as string[]).concat(
         build(lastChar, [13, 1, 6, 10]),
         buildCommon(lastOnset, lastVowel),
         [lastChar]
@@ -144,7 +153,7 @@ function conjugate(words, isAdjective) {
         lastVowel === 'ㅏ' ||
         lastVowel === 'ㅜ')
     ) {
-      expandedLast = [].concat(
+      expandedLast = ([] as string[]).concat(
         build(lastChar, [2, 7]),
         build(composeHangul(lastOnset, lastVowel), [6, 10, 12]),
         [
@@ -154,38 +163,44 @@ function conjugate(words, isAdjective) {
         ]
       );
     } else if (lastVowel === 'ㅏ' && lastCoda === 'ㅅ') {
-      expandedLast = [].concat(
+      expandedLast = ([] as string[]).concat(
         build(lastChar, [6, 10]),
         build(composeHangul(lastOnset, 'ㅏ'), [8, 9]),
         [lastChar]
       );
     } else if (lastChar === '묻') {
-      expandedLast = [].concat(build(lastChar, [6, 10]), ['물', lastChar]);
+      expandedLast = ([] as string[]).concat(build(lastChar, [6, 10]), [
+        '물',
+        lastChar,
+      ]);
     } else if (lastVowel === 'ㅜ' && lastCoda === 'ㄷ') {
-      expandedLast = [].concat(
+      expandedLast = ([] as string[]).concat(
         build(lastChar, [6, 10]),
         build(composeHangul(lastOnset, 'ㅜ'), [2, 4, 8, 9]),
         [composeHangul(lastOnset, 'ㅜ', 'ㄹ'), lastChar]
       );
     } else if (lastVowel === 'ㅜ' && lastCoda === 'ㅂ') {
-      expandedLast = [].concat(
+      expandedLast = ([] as string[]).concat(
         build(lastChar, [6, 10]),
         build(composeHangul(lastOnset, 'ㅜ'), [4, 8, 9]),
         [lastChar]
       );
     } else if (lastVowel === 'ㅓ' && lastCoda === 'ㅂ' && isAdjective) {
-      expandedLast = [].concat(build(composeHangul(lastOnset, 'ㅓ'), [4, 11]), [
-        composeHangul(lastOnset, 'ㅓ'),
-        composeHangul(lastOnset, 'ㅓ', 'ㄴ'),
-        lastChar,
-      ]);
+      expandedLast = ([] as string[]).concat(
+        build(composeHangul(lastOnset, 'ㅓ'), [4, 11]),
+        [
+          composeHangul(lastOnset, 'ㅓ'),
+          composeHangul(lastOnset, 'ㅓ', 'ㄴ'),
+          lastChar,
+        ]
+      );
     } else if (lastCoda === 'ㅂ' && isAdjective) {
-      expandedLast = [].concat(
+      expandedLast = ([] as string[]).concat(
         build(composeHangul(lastOnset, lastVowel), [4, 11]),
         [composeHangul(lastOnset, lastVowel), lastChar]
       );
     } else if (lastVowel === 'ㅗ' && lastCoda === 'ㅎ') {
-      expandedLast = [].concat(
+      expandedLast = ([] as string[]).concat(
         build(lastChar, [6, 10]),
         buildCommon(lastOnset, 'ㅗ'),
         [
@@ -195,7 +210,7 @@ function conjugate(words, isAdjective) {
         ]
       );
     } else if (lastCoda === 'ㅎ' && isAdjective) {
-      expandedLast = [].concat(
+      expandedLast = ([] as string[]).concat(
         buildCommon(lastOnset, lastVowel),
         ['ㅆ', 'ㄹ', 'ㅁ'].map((coda) => composeHangul(lastOnset, 'ㅐ', coda)),
         [
@@ -206,15 +221,19 @@ function conjugate(words, isAdjective) {
       );
       // oxlint-disable-next-line no-dupe-else-if -- unreachable upstream branch, kept as-is
     } else if (word.length === 1 || (isAdjective && lastCoda === 'ㅆ')) {
-      expandedLast = [].concat(build(lastChar, [0, 2, 3, 6, 8, 9, 10]), [
-        lastChar,
-      ]);
+      expandedLast = ([] as string[]).concat(
+        build(lastChar, [0, 2, 3, 6, 8, 9, 10]),
+        [lastChar]
+      );
     } else if (word.length === 1 && isAdjective) {
-      expandedLast = [].concat(build(lastChar, [0, 2, 3, 6, 8, 9]), [lastChar]);
+      expandedLast = ([] as string[]).concat(
+        build(lastChar, [0, 2, 3, 6, 8, 9]),
+        [lastChar]
+      );
     } else {
       expandedLast = [lastChar];
     }
-    let irregularExpansion: any[] = [];
+    let irregularExpansion: string[] = [];
     const initLast = init[init.length - 1];
     if (initLast && lastChar === '르' && !hasCoda(initLast)) {
       const lastInitCharDecomposed = decomposeHangul(initLast);
@@ -227,7 +246,7 @@ function conjugate(words, isAdjective) {
         );
 
       const o = lastCharDecomposed.onset;
-      const conjugation = [].concat(
+      const conjugation = ([] as string[]).concat(
         build(lastChar, [6, 10]),
         buildNoPast(o, 'ㅡ'),
         [
@@ -246,7 +265,7 @@ function conjugate(words, isAdjective) {
     expanded.push(...irregularExpansion);
   }
 
-  const expandedMap: any = {};
+  const expandedMap: Record<string, number> = {};
   for (let i = 0; i < expanded.length; i += 1) {
     expandedMap[expanded[i]] = 1;
   }

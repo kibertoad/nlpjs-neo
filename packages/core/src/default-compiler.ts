@@ -1,13 +1,30 @@
-class DefaultCompiler {
-  declare container: any;
-  declare name: any;
+import type { Container } from './container.js';
+import type {
+  CompiledPipeline,
+  ContainerHolder,
+  PipelineExecutionContext,
+  PipelineToken,
+  ResolvedPath,
+} from './types.js';
 
-  constructor(container) {
-    this.container = container.container || container;
+/**
+ * Callable a `reference` step resolves to: either the value itself when it is
+ * a function, or the `run` method of the service it names.
+ */
+type PipelineCallable = (input: unknown, ...args: ResolvedPath[]) => unknown;
+
+class DefaultCompiler {
+  declare container: Container;
+  declare name: string;
+
+  constructor(container: ContainerHolder) {
+    this.container =
+      (container as { container?: Container }).container ||
+      (container as Container);
     this.name = 'default';
   }
 
-  getTokenFromWord(word) {
+  getTokenFromWord(word: string): PipelineToken {
     if (word.startsWith('//')) {
       return {
         type: 'comment',
@@ -50,17 +67,17 @@ class DefaultCompiler {
     };
   }
 
-  compile(pipeline) {
-    const result: any[] = [];
+  compile(pipeline: string[]): CompiledPipeline {
+    const result: CompiledPipeline = [];
     for (let i = 0; i < pipeline.length; i += 1) {
       const line = pipeline[i].trim();
       if (!line) {
         continue;
       }
       const words = line.split(' ');
-      const tokens: any[] = [];
+      const tokens: PipelineToken[] = [];
       let currentString = '';
-      let currentQuote;
+      let currentQuote: string | undefined;
       for (let j = 0; j < words.length; j += 1) {
         const word = words[j];
         let processed = false;
@@ -99,7 +116,13 @@ class DefaultCompiler {
     return result;
   }
 
-  executeCall(firstToken, context, input, srcObject, depth) {
+  executeCall(
+    firstToken: PipelineToken,
+    context: PipelineExecutionContext,
+    input: unknown,
+    srcObject: unknown,
+    depth: number
+  ): Promise<unknown> {
     const pipeline = this.container.getPipeline(firstToken.value);
     if (!pipeline) {
       throw new Error(`Pipeline $${firstToken.value} not found.`);
@@ -107,14 +130,20 @@ class DefaultCompiler {
     return this.container.runPipeline(pipeline, input, srcObject, depth + 1);
   }
 
-  executeReference(step, firstToken, context, input, srcObject) {
+  executeReference(
+    step: PipelineToken[],
+    firstToken: PipelineToken,
+    context: PipelineExecutionContext,
+    input: unknown,
+    srcObject: unknown
+  ): unknown {
     const currentObject = this.container.resolvePath(
       firstToken.value,
       context,
       input,
       srcObject
     );
-    const args: any[] = [];
+    const args: ResolvedPath[] = [];
     for (let i = 1; i < step.length; i += 1) {
       args.push(
         this.container.resolvePathWithType(
@@ -130,20 +159,27 @@ class DefaultCompiler {
     }
     const method = currentObject.run || currentObject;
     if (typeof method === 'function') {
+      const callable = method as PipelineCallable;
       return typeof currentObject === 'function'
-        ? method(input, ...args)
-        : method.bind(currentObject)(input, ...args);
+        ? callable(input, ...args)
+        : callable.bind(currentObject)(input, ...args);
     }
     return method;
   }
 
-  doGoto(label, srcContext) {
+  doGoto(label: string, srcContext: PipelineExecutionContext): void {
     const context = srcContext;
-    const index = context.labels[label];
+    const index = context.labels ? context.labels[label] : undefined;
     context.cursor = index;
   }
 
-  async executeAction(step, context, input, srcObject, depth) {
+  async executeAction(
+    step: PipelineToken[],
+    context: PipelineExecutionContext,
+    input: unknown,
+    srcObject: unknown,
+    depth: number
+  ): Promise<unknown> {
     let firstToken = step[0];
     if (firstToken && firstToken.value && firstToken.value.startsWith('->')) {
       if (depth > 0) {
@@ -273,7 +309,10 @@ class DefaultCompiler {
     return input;
   }
 
-  findLabels(compiled, srcLabels) {
+  findLabels(
+    compiled: CompiledPipeline,
+    srcLabels: Record<string, number>
+  ): void {
     const labels = srcLabels;
     for (let i = 0; i < compiled.length; i += 1) {
       const current = compiled[i];
@@ -283,19 +322,24 @@ class DefaultCompiler {
     }
   }
 
-  async execute(compiled, srcInput, srcObject?, depth?) {
+  async execute(
+    compiled: CompiledPipeline,
+    srcInput: unknown,
+    srcObject?: unknown,
+    depth = 0
+  ): Promise<unknown> {
     let input = srcInput;
-    const context = { cursor: 0, labels: {} };
-    this.findLabels(compiled, context.labels);
-    while (context.cursor < compiled.length) {
+    const context: PipelineExecutionContext = { cursor: 0, labels: {} };
+    this.findLabels(compiled, context.labels as Record<string, number>);
+    while ((context.cursor as number) < compiled.length) {
       input = await this.executeAction(
-        compiled[context.cursor],
+        compiled[context.cursor as number],
         context,
         input,
         srcObject,
         depth
       );
-      context.cursor += 1;
+      context.cursor = (context.cursor as number) + 1;
     }
     return input;
   }

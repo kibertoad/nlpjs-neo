@@ -1,6 +1,7 @@
 import { defaultContainer, type Container } from './container.js';
 import type {
   Logger,
+  PipelineResult,
   RegisteredPipeline,
   SerializedInstance,
   Settings,
@@ -20,7 +21,12 @@ type JsonRule<TArgs extends unknown[]> =
 export type JsonExportRules = Record<
   string,
   JsonRule<
-    [result: SerializedInstance, instance: Clonable, key: string, value: any]
+    [
+      result: SerializedInstance,
+      instance: Clonable,
+      key: string,
+      value: unknown,
+    ]
   >
 >;
 
@@ -28,7 +34,7 @@ export type JsonExportRules = Record<
 export type JsonImportRules = Record<
   string,
   JsonRule<
-    [instance: Clonable, json: SerializedInstance, key: string, value: any]
+    [instance: Clonable, json: SerializedInstance, key: string, value: unknown]
   >
 >;
 
@@ -147,11 +153,10 @@ class Clonable {
     return this.container.getPipeline(tag);
   }
 
-  // The result is whatever the last step of the pipeline returns.
   async runPipeline(
     input: unknown,
     pipeline?: string | string[] | RegisteredPipeline
-  ): Promise<any> {
+  ): Promise<PipelineResult> {
     return this.container.runPipeline(pipeline || this.pipeline, input, this);
   }
 

@@ -10,13 +10,13 @@ import {
   loadEnvFromJson,
 } from '@nlpjs-neo/core';
 
-function listFiles(folderPath, recursive = true) {
+function listFiles(folderPath: string, recursive = true): string[] {
   if (fs.existsSync(folderPath)) {
     const all = fs.readdirSync(folderPath).map((x) => path.join(folderPath, x));
     const files = all.filter((x) => fs.statSync(x).isFile());
     if (recursive) {
       const dirs = all.filter((x) => !files.includes(x));
-      const dirFiles = dirs.reduce(
+      const dirFiles = dirs.reduce<string[]>(
         (prev, current) => prev.concat(listFiles(current)),
         []
       );
@@ -27,19 +27,19 @@ function listFiles(folderPath, recursive = true) {
   return [];
 }
 
-function getAbsolutePath(relative?) {
+function getAbsolutePath(relative = ''): string {
   if (path.isAbsolute(relative)) {
     return relative;
   }
   return path.normalize(path.join(process.cwd(), relative));
 }
 
-function listFilesAbsolute(folderPath, recursive = true) {
+function listFilesAbsolute(folderPath: string, recursive = true): string[] {
   const files = listFiles(folderPath, recursive);
   return files.map((x) => getAbsolutePath(x));
 }
 
-function loadEnv(fileName = '.env') {
+function loadEnv(fileName = '.env'): void {
   const absolutePath = getAbsolutePath(fileName);
   if (fs.existsSync(absolutePath)) {
     const content = fs.readFileSync(absolutePath, 'utf8');

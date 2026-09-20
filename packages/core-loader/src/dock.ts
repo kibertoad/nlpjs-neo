@@ -1,50 +1,67 @@
 import fs from 'fs';
 import path from 'path';
+import {
+  Container,
+  type ChildPipeline,
+  type ChildSettings,
+} from '@nlpjs-neo/core';
 import containerBootstrap from './container-bootstrap.js';
+import type { LoaderSettings } from './types.js';
+
+/**
+ * Settings a container is created from: the loader's own settings, or the
+ * path of the configuration file holding them.
+ */
+type DockSettings = LoaderSettings | string;
 
 class Dock {
-  declare containers: any;
+  declare containers: Record<string, Container>;
 
   constructor() {
     this.containers = {};
   }
 
-  getContainer(name?) {
+  getContainer(name?: string): Container | undefined {
     return this.containers[name || 'default'];
   }
 
-  get(name) {
+  get<T = unknown>(name: string): T | undefined {
     const container = this.getContainer();
     if (container) {
-      return container.get(name);
+      return container.get<T>(name);
     }
     return undefined;
   }
 
   async createContainer(
-    name,
-    settings,
-    srcMustLoadEnv,
-    preffix,
-    parent?,
-    pipelines?
-  ) {
+    name: string | DockSettings,
+    settings?: DockSettings,
+    srcMustLoadEnv?: boolean,
+    preffix?: string,
+    parent?: Container,
+    pipelines?: ChildPipeline[]
+  ): Promise<Container> {
     const mustLoadEnv = srcMustLoadEnv === undefined ? true : srcMustLoadEnv;
+    // The name is optional: called with settings in its place, the container
+    // is the unnamed one.
+    let containerName: string;
     if (typeof name !== 'string') {
       settings = name;
-      name = '';
+      containerName = '';
+    } else {
+      containerName = name;
     }
     if (!settings) {
-      if (name === 'default' || name === '') {
+      if (containerName === 'default' || containerName === '') {
         settings = 'conf.json';
       } else {
-        settings = path.join(name, 'conf.json');
+        settings = path.join(containerName, 'conf.json');
         if (!fs.existsSync(settings)) {
-          settings = `${name}_conf.json`;
+          settings = `${containerName}_conf.json`;
         }
       }
     }
-    if (!this.containers[name]) {
+    if (!this.containers[containerName]) {
       const container = containerBootstrap(
         settings,
         mustLoadEnv,
@@ -53,23 +70,27 @@ class Dock {
         pipelines,
         parent
       );
-      container.name = name;
-      this.containers[name] = container;
-      container.dock = this;
+      container.name = containerName;
+      this.containers[containerName] = container;
+      container.dock = this as unknown as Container['dock'];
       await container.start();
       if (container.childs) {
         await this.buildChilds(container);
       }
     }
-    return this.containers[name];
+    return this.containers[containerName];
   }
 
-  async buildChilds(container) {
+  /**
+   * Replaces the settings the bootstrap left under `childs` with the
+   * containers built from them.
+   */
+  async buildChilds(container: Container): Promise<void> {
     if (container && container.childs) {
       const keys = Object.keys(container.childs);
-      const childs: any = {};
+      const childs: Record<string, Container> = {};
       for (let i = 0; i < keys.length; i += 1) {
-        const settings = container.childs[keys[i]];
+        const settings = container.childs[keys[i]] as ChildSettings;
         settings.isChild = true;
         if (!settings.pathPipeline) {
           settings.pathPipeline = `${keys[i]}_pipeline.md`;
@@ -89,7 +110,10 @@ class Dock {
     }
   }
 
-  async terraform(settings, mustLoadEnv = true) {
+  async terraform(
+    settings?: DockSettings,
+    mustLoadEnv = true
+  ): Promise<Container> {
     const defaultContainer = await this.createContainer(
       'default',
       settings,
@@ -99,7 +123,7 @@ class Dock {
     return defaultContainer;
   }
 
-  start(settings, mustLoadEnv = true) {
+  start(settings?: DockSettings, mustLoadEnv = true): Promise<Container> {
     return this.terraform(settings, mustLoadEnv);
   }
 }
@@ -107,3 +131,4 @@ class Dock {
 const dock = new Dock();
 
 export default dock;
+export { Dock };

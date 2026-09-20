@@ -1,12 +1,24 @@
-class KoreanToken {
-  declare length: any;
-  declare offset: any;
-  declare pos: any;
-  declare stem: any;
-  declare text: any;
-  declare unknown: any;
+import type { KoreanPosValue } from './korean-pos.js';
 
-  constructor(text, pos, offset, length, stem?, unknown = false) {
+/** One token of a chunked utterance, with where in the input it came from. */
+class KoreanToken {
+  declare length: number;
+  declare offset: number;
+  declare pos: KoreanPosValue;
+  /** Dictionary root of `text`, when the dictionary knows one. */
+  declare stem: string | undefined;
+  declare text: string;
+  /** `true` when no dictionary entry matched the token. */
+  declare unknown: boolean;
+
+  constructor(
+    text: string,
+    pos: KoreanPosValue,
+    offset: number,
+    length: number,
+    stem?: string,
+    unknown = false
+  ) {
     this.text = text;
     this.pos = pos;
     this.offset = offset;
@@ -15,7 +27,7 @@ class KoreanToken {
     this.unknown = unknown;
   }
 
-  equals(other) {
+  equals(other: KoreanToken): boolean {
     return (
       this.text === other.text &&
       this.pos === other.pos &&
@@ -26,7 +38,7 @@ class KoreanToken {
     );
   }
 
-  copyWithNewPos(pos) {
+  copyWithNewPos(pos: KoreanPosValue): KoreanToken {
     return new KoreanToken(
       this.text,
       pos,

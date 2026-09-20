@@ -11,4 +11,8 @@ const KoreanPos = {
   Space: 25,
 };
 
+/** Part of speech a chunk or token was recognized as. */
+type KoreanPosValue = (typeof KoreanPos)[keyof typeof KoreanPos];
+
 export { KoreanPos };
+export type { KoreanPosValue };

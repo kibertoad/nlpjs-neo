@@ -1,7 +1,7 @@
 import { decomposeHangul, codaMap, composeHangul } from './hangul.js';
 import { initDicts, names } from './korean-dictionary.js';
 
-function isName(word) {
+function isName(word: string): boolean {
   initDicts();
   if (names.Full[word] || names.Given[word]) {
     return true;
@@ -23,13 +23,13 @@ function isName(word) {
   return false;
 }
 
-function isKoreanNumber(word) {
+function isKoreanNumber(word: string): boolean {
   return /^[일이삼사오육칠팔구천백십해경조억만]*[일이삼사오육칠팔구천백십해경조억만원배분초]$/.test(
     word
   );
 }
 
-function isKoreanNameVariation(word) {
+function isKoreanNameVariation(word: string): boolean {
   if (isName(word)) {
     return true;
   }

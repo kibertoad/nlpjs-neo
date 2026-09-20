@@ -13,6 +13,17 @@ import {
   logger,
   MemoryStorage,
 } from '@nlpjs-neo/core';
+import type {
+  ChildPipeline,
+  ContainerPlugin,
+  ServiceConstructor,
+} from '@nlpjs-neo/core';
+import type {
+  LoaderConfiguration,
+  LoaderSettings,
+  PluginEntry,
+  PluginInformation,
+} from './types.js';
 import { fs as requestfs, request } from '@nlpjs-neo/request';
 import pluginInformation from './plugin-information.json' with { type: 'json' };
 import {
@@ -32,16 +43,17 @@ const defaultPathConfiguration = './conf.json';
 const defaultPathPipeline = './pipelines.md';
 const defaultPathPlugins = './plugins';
 
-function loadPipelinesStr(instance, pipelines) {
+function loadPipelinesStr(instance: Container, pipelines: string): void {
   instance.loadPipelinesFromString(pipelines);
 }
 
-function loadPipelinesFromFile(instance, fileName) {
+function loadPipelinesFromFile(instance: Container, fileName: string): void {
   const str = fs.readFileSync(fileName, 'utf8');
   instance.loadPipelinesFromString(str);
 }
 
-function loadPipelines(instance, fileName) {
+/** Loads every `.md` pipeline file under a path, a list of paths or a folder. */
+function loadPipelines(instance: Container, fileName: string | string[]): void {
   if (Array.isArray(fileName)) {
     for (let i = 0; i < fileName.length; i += 1) {
       loadPipelines(instance, fileName[i]);
@@ -60,7 +72,8 @@ function loadPipelines(instance, fileName) {
   }
 }
 
-function loadPlugins(instance, fileName) {
+/** Loads every `.js` plugin under a path, a list of paths or a folder. */
+function loadPlugins(instance: Container, fileName: string | string[]): void {
   if (Array.isArray(fileName)) {
     for (let i = 0; i < fileName.length; i += 1) {
       loadPlugins(instance, fileName[i]);
@@ -74,45 +87,54 @@ function loadPlugins(instance, fileName) {
         loadPlugins(instance, files[i]);
       }
     } else {
-      const plugin = require(fileName);
+      const plugin = require(fileName) as {
+        default?: ContainerPlugin | ServiceConstructor;
+      } & ContainerPlugin;
       instance.use(plugin.default ?? plugin);
     }
   }
 }
 
-function traverse(obj, preffix) {
+/**
+ * Resolves the `$ENV_VAR` references a configuration may hold, in place of any
+ * string value and at any depth. A reference is looked up prefixed first, so a
+ * child container can override what its parent reads.
+ */
+function traverse<T>(obj: T, preffix: string): T {
   if (typeof obj === 'string') {
     if (obj.startsWith('$')) {
-      return (
-        process.env[`${preffix}${obj.slice(1)}`] || process.env[obj.slice(1)]
-      );
+      return (process.env[`${preffix}${obj.slice(1)}`] ||
+        process.env[obj.slice(1)]) as T;
     }
     return obj;
   }
   if (Array.isArray(obj)) {
-    return obj.map((x) => traverse(x, preffix));
+    return obj.map((x) => traverse(x, preffix)) as T;
   }
-  if (typeof obj === 'object') {
-    const keys = Object.keys(obj);
-    const result: any = {};
+  if (typeof obj === 'object' && obj !== null) {
+    const source = obj as Record<string, unknown>;
+    const keys = Object.keys(source);
+    const result: Record<string, unknown> = {};
     for (let i = 0; i < keys.length; i += 1) {
-      result[keys[i]] = traverse(obj[keys[i]], preffix);
+      result[keys[i]] = traverse(source[keys[i]], preffix);
     }
-    return result;
+    return result as T;
   }
   return obj;
 }
 
+const pluginRegistry = pluginInformation as PluginInformation;
+
 function containerBootstrap(
-  inputSettings?,
-  srcMustLoadEnv?,
-  container?,
-  preffix?,
-  pipelines?,
-  parent?
-) {
+  inputSettings?: LoaderSettings | string,
+  srcMustLoadEnv?: boolean,
+  container?: Container,
+  preffix?: string,
+  pipelines?: ChildPipeline[],
+  parent?: Container
+): Container {
   const mustLoadEnv = srcMustLoadEnv === undefined ? true : srcMustLoadEnv;
-  const instance = container || new Container(preffix);
+  const instance = container || new Container(Boolean(preffix));
   instance.parent = parent;
   if (!preffix) {
     instance.register('fs', requestfs);
@@ -127,15 +149,17 @@ function containerBootstrap(
     instance.use(logger);
     instance.use(MemoryStorage);
   }
-  const srcSettings = inputSettings || {};
-  let settings = srcSettings;
-  if (typeof settings === 'string') {
+  const srcSettings: LoaderSettings =
+    typeof inputSettings === 'string' ? {} : inputSettings || {};
+  let settings: LoaderSettings;
+  if (typeof inputSettings === 'string') {
     settings = {
-      pathConfiguration: srcSettings,
+      pathConfiguration: inputSettings,
       pathPipeline: defaultPathPipeline,
       pathPlugins: defaultPathPlugins,
     };
   } else {
+    settings = srcSettings;
     if (!settings.pathConfiguration) {
       settings.pathConfiguration = defaultPathConfiguration;
     }
@@ -159,15 +183,18 @@ function containerBootstrap(
   if (srcSettings.env) {
     loadEnvFromJson(preffix, srcSettings.env);
   }
-  let configuration;
+  let srcConfiguration: LoaderConfiguration;
   if (settings.isChild || !fs.existsSync(settings.pathConfiguration)) {
-    configuration = settings;
+    srcConfiguration = settings;
   } else {
-    configuration = JSON.parse(
+    srcConfiguration = JSON.parse(
       fs.readFileSync(settings.pathConfiguration, 'utf8')
-    );
+    ) as LoaderConfiguration;
   }
-  configuration = traverse(configuration, preffix ? `${preffix}_` : '');
+  const configuration = traverse(
+    srcConfiguration,
+    preffix ? `${preffix}_` : ''
+  );
   if (configuration.pathPipeline) {
     settings.pathPipeline = configuration.pathPipeline;
   }
@@ -188,18 +215,16 @@ function containerBootstrap(
     for (let i = 0; i < configuration.use.length; i += 1) {
       const current = configuration.use[i];
       if (typeof current === 'string') {
-        let infoArr = pluginInformation[current];
-        if (!infoArr) {
+        const entry = pluginRegistry[current];
+        if (!entry) {
           throw new Error(
             `Plugin information not found for plugin "${current}"`
           );
         }
-        if (!Array.isArray(infoArr)) {
-          infoArr = [infoArr];
-        }
+        const infoArr: PluginEntry[] = Array.isArray(entry) ? entry : [entry];
         for (let j = 0; j < infoArr.length; j += 1) {
           const info = infoArr[j];
-          let lib;
+          let lib: Record<string, ContainerPlugin | ServiceConstructor>;
           try {
             lib = require(info.path);
           } catch {
@@ -217,7 +242,7 @@ function containerBootstrap(
           instance.use(lib[info.className], info.name, info.isSingleton);
         }
       } else {
-        let lib;
+        let lib: Record<string, ContainerPlugin | ServiceConstructor>;
         try {
           lib = require(current.path);
         } catch {

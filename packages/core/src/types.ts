@@ -108,6 +108,15 @@ export interface TokenizerService {
   tokenize(text: string, normalize?: NormalizeFlag): Token[] | Promise<Token[]>;
 }
 
+/**
+ * Per word overrides a stemmer applies around its rules: `before` short
+ * circuits the rules for a word, `after` rewrites the stem they produced.
+ */
+export interface StemmerDictionary {
+  before: Record<Token, Token>;
+  after: Record<Token, Token>;
+}
+
 /** Stemming service, registered as `stemmer-<locale>`. */
 export interface StemmerService {
   stem(tokens: Token[], input?: PipelineInput): Token[] | Promise<Token[]>;
@@ -147,6 +156,43 @@ export interface PipelineExecutionContext {
   [key: string]: unknown;
 }
 
+/**
+ * Value resolved from a path expression of a pipeline. Paths are interpreted
+ * at runtime against the container, the context and the input, so what comes
+ * back is only known to the pipeline that asked for it. `unknown` would put a
+ * cast on every pipeline step instead.
+ */
+// oxlint-disable-next-line typescript/no-explicit-any -- interpreted value
+export type ResolvedValue = any;
+
+/** A path expression resolved together with the kind of value it denotes. */
+export interface ResolvedPath {
+  type: 'literal' | 'function' | 'reference';
+  /** Kind of the literal, for `type: 'literal'`. */
+  subtype?: 'number' | 'string' | 'boolean';
+  /** Source expression this was resolved from. */
+  src: string;
+  value: ResolvedValue;
+  context: PipelineExecutionContext;
+  container: Container;
+}
+
+/**
+ * Result of running a pipeline: whatever its last step returned. A pipeline is
+ * written at runtime, so only its author knows what comes back; this is the
+ * documented boundary where a value leaves the type system.
+ */
+// oxlint-disable-next-line typescript/no-explicit-any -- pipeline result
+export type PipelineResult = any;
+
+/**
+ * Instance rebuilt from an exported JSON model. The class is looked up by the
+ * `className` the export carried, so the shape is known to the caller that
+ * exported it and to nobody else.
+ */
+// oxlint-disable-next-line typescript/no-explicit-any -- rehydrated instance
+export type RehydratedInstance = any;
+
 /** Contract of a pipeline compiler registered in a container. */
 export interface Compiler {
   name: string;
@@ -177,15 +223,91 @@ export interface ChildPipeline {
 }
 
 /**
+ * Constructor of a service the container can build. Resolution calls it with
+ * `(settings, container)`, but plugins registered by hand carry their own
+ * signature, so the arguments stay open. `unknown[]` would reject every
+ * constructor that declares narrower parameters, which is all of them.
+ */
+// oxlint-disable-next-line typescript/no-explicit-any -- open constructor
+export type ServiceConstructor = new (...args: any[]) => object;
+
+/**
+ * A service registered by hand. `register` stores it under a name and hands
+ * it back on resolution without reading anything off it, so a service is any
+ * object at all, exposing whatever API its callers expect.
+ */
+export type ServiceInstance = object;
+
+/**
+ * An instance the container can `use`: it may name itself, carry settings and
+ * register its own services when it is added.
+ */
+export interface ContainerPlugin {
+  name?: string;
+  settings?: Settings;
+  /** Hook called when the plugin is added, to register its own services. */
+  register?(container: Container): void;
+}
+
+/**
+ * A resolved singleton that reconciles its own settings. `Clonable` provides
+ * this; services registered by hand may not, so `get` tests for it.
+ */
+export interface ConfigurableService {
+  settings?: Settings;
+  applySettings?(current: Settings | undefined, settings: unknown): void;
+}
+
+/**
  * Entry of the container factory: either the singleton instance or the class
  * to instantiate on every `get`.
  */
 export interface FactoryItem {
   name: string;
   isSingleton: boolean;
-  // Resolution of a non singleton builds `new instance(settings, container)`,
-  // so this holds either an instance or a constructor.
-  instance: any;
+  /**
+   * Resolution of a non singleton builds `new instance(settings, container)`,
+   * so this holds either an instance or a constructor.
+   */
+  instance: ServiceConstructor | ServiceInstance | undefined;
+}
+
+/** Settings of a child container, as declared under `childs` of a configuration. */
+export interface ChildSettings extends Settings {
+  /** Set by the dock while it builds the child, so the child knows it is one. */
+  isChild?: boolean;
+  /** File the child loads its own pipelines from; defaults to `<name>_pipeline.md`. */
+  pathPipeline?: string;
+}
+
+/** Service resolved by class name and re registered under another name. */
+export interface TerraformEntry {
+  className: string;
+  name: string;
+}
+
+/**
+ * Configuration a container is bootstrapped from: the parsed `conf.json`, or
+ * the same shape passed in code. Every string value may be an `$ENV_VAR`
+ * reference, which the bootstrap resolves before reading the configuration.
+ */
+export interface ContainerConfiguration {
+  /** Environment variables to publish before the rest is resolved. */
+  env?: Record<string, string>;
+  /** Settings to register, keyed by the tag they configure. */
+  settings?: Record<string, Settings>;
+  /** Plugins to add: a plugin, a class, or a `[name, service]` pair. */
+  use?: (
+    | ContainerPlugin
+    | ServiceConstructor
+    | [string, ServiceConstructor | ServiceInstance]
+  )[];
+  terraform?: TerraformEntry[];
+  /** Child containers to build, keyed by name. */
+  childs?: Record<string, ChildSettings>;
+  /** Pipelines in the pipeline file format, as a single string. */
+  pipelines?: string;
+  [key: string]: unknown;
 }
 
 /** Serialized form of an instance, as produced by `Container.toJSON`. */

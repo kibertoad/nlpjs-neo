@@ -22,6 +22,13 @@ function createPinoLogger(destination?: DestinationStream): PinoLogger {
   return pino(prettyStream({ colorize: true }));
 }
 
+/**
+ * Arguments `pino` accepts on every level: either a record and a message, or
+ * a message and its format arguments. The `Logger` below forwards what it was
+ * called with, so it states that shape once rather than per level.
+ */
+type PinoLogArgs = Parameters<PinoLogger['info']>;
+
 class Logger {
   declare logger: PinoLogger;
   declare name: string;
@@ -31,32 +38,32 @@ class Logger {
     this.logger = createPinoLogger(destination);
   }
 
-  debug(...args) {
-    this.logger.debug(...(args as [any]));
+  debug(...args: unknown[]): void {
+    this.logger.debug(...(args as PinoLogArgs));
   }
 
-  info(...args) {
-    this.logger.info(...(args as [any]));
+  info(...args: unknown[]): void {
+    this.logger.info(...(args as PinoLogArgs));
   }
 
-  warn(...args) {
-    this.logger.warn(...(args as [any]));
+  warn(...args: unknown[]): void {
+    this.logger.warn(...(args as PinoLogArgs));
   }
 
-  error(...args) {
-    this.logger.error(...(args as [any]));
+  error(...args: unknown[]): void {
+    this.logger.error(...(args as PinoLogArgs));
   }
 
-  log(...args) {
-    this.logger.info(...(args as [any]));
+  log(...args: unknown[]): void {
+    this.logger.info(...(args as PinoLogArgs));
   }
 
-  trace(...args) {
-    this.logger.trace(...(args as [any]));
+  trace(...args: unknown[]): void {
+    this.logger.trace(...(args as PinoLogArgs));
   }
 
-  fatal(...args) {
-    this.logger.fatal(...(args as [any]));
+  fatal(...args: unknown[]): void {
+    this.logger.fatal(...(args as PinoLogArgs));
   }
 }
 

@@ -85,7 +85,14 @@ const codaMap = {
 
 const codas = Object.keys(codaMap);
 
-function decomposeHangul(c) {
+/** A Hangul syllable split into its three jamo. */
+interface DecomposedHangul {
+  onset: string;
+  vowel: string;
+  coda: string;
+}
+
+function decomposeHangul(c: string): DecomposedHangul {
   const u = c.charCodeAt(0) - hangulBase;
   return {
     onset: onsets[Math.floor(u / onsetBase)],
@@ -94,20 +101,21 @@ function decomposeHangul(c) {
   };
 }
 
-function hasCoda(c) {
+function hasCoda(c: string): boolean {
   if (!c) {
     return false;
   }
   return (c.charCodeAt(0) - hangulBase) % vowelBase > 0;
 }
 
-function composeHangul(onset, vowel, coda = ' ') {
+function composeHangul(onset: string, vowel: string, coda = ' '): string {
   return String.fromCharCode(
     hangulBase +
-      onsetMap[onset] * onsetBase +
-      vowelMap[vowel] * vowelBase +
-      codaMap[coda]
+      onsetMap[onset as keyof typeof onsetMap] * onsetBase +
+      vowelMap[vowel as keyof typeof vowelMap] * vowelBase +
+      codaMap[coda as keyof typeof codaMap]
   );
 }
 
 export { decomposeHangul, hasCoda, composeHangul, codaMap };
+export type { DecomposedHangul };

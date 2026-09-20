@@ -18,7 +18,7 @@ import {
 } from '@nlpjs-neo/core';
 
 import containerBootstrap from './container-bootstrap.js';
-import dock from './dock.js';
+import dock, { type Dock } from './dock.js';
 
 import {
   hasUnicode,
@@ -31,8 +31,12 @@ import {
   listFilesAbsolute,
   getAbsolutePath,
 } from './helper.js';
+import type { LoaderSettings } from './types.js';
 
-async function dockStart(settings, mustLoadEnv?) {
+async function dockStart(
+  settings?: LoaderSettings | string,
+  mustLoadEnv?: boolean
+): Promise<Dock> {
   await dock.start(settings, mustLoadEnv);
   return dock;
 }
@@ -68,6 +72,13 @@ export {
   dockStart,
 };
 
+export type { Dock } from './dock.js';
+export type {
+  LoaderConfiguration,
+  LoaderSettings,
+  PluginEntry,
+  PluginInformation,
+} from './types.js';
 export type {
   AmongMethod,
   JsonExportRules,
@@ -75,10 +86,14 @@ export type {
 } from '@nlpjs-neo/core';
 export type {
   ChildPipeline,
+  ChildSettings,
   CompiledPipeline,
   Compiler,
   CompilerConstructor,
+  ConfigurableService,
+  ContainerConfiguration,
   ContainerHolder,
+  ContainerPlugin,
   FactoryItem,
   Locale,
   Logger,
@@ -86,15 +101,23 @@ export type {
   NormalizerService,
   PipelineExecutionContext,
   PipelineInput,
+  PipelineResult,
   PipelineToken,
   RegisteredPipeline,
+  RehydratedInstance,
+  ResolvedPath,
+  ResolvedValue,
   SerializedInstance,
+  ServiceConstructor,
+  ServiceInstance,
   Settings,
+  StemmerDictionary,
   StemmerService,
   StopwordDictionary,
   StopwordsService,
   Storage,
   StorageItem,
+  TerraformEntry,
   Token,
   TokenMap,
   Tokens,

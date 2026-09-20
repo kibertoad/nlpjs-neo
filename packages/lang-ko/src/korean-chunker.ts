@@ -1,4 +1,5 @@
 import { KoreanPos } from './korean-pos.js';
+import type { KoreanPosValue } from './korean-pos.js';
 import { KoreanToken } from './korean-token.js';
 import ChunkMatch from './chunk-match.js';
 
@@ -22,9 +23,9 @@ const CHUNKING_ORDER = [
   KoreanPos.Punctuation,
 ];
 
-function splitBySpace(s) {
+function splitBySpace(s: string): string[] {
   const space = /\s+/g;
-  const tokens: any[] = [];
+  const tokens: string[] = [];
   let m = space.exec(s);
   let index = 0;
   while (m) {
@@ -39,8 +40,8 @@ function splitBySpace(s) {
   return tokens;
 }
 
-function fillInUnmatched(text, chunks) {
-  const chunksWithForeign: any[] = [];
+function fillInUnmatched(text: string, chunks: ChunkMatch[]): ChunkMatch[] {
+  const chunksWithForeign: ChunkMatch[] = [];
   let prevEnd = 0;
   for (let i = 0; i < chunks.length; i += 1) {
     const cm = chunks[i];
@@ -72,11 +73,11 @@ function fillInUnmatched(text, chunks) {
   return chunksWithForeign;
 }
 
-function splitChunks(text) {
+function splitChunks(text: string): ChunkMatch[] {
   if (/\s/.test(text[0])) {
     return [new ChunkMatch(0, text.length, text, KoreanPos.Space)];
   }
-  const chunksMatched: any[] = [];
+  const chunksMatched: ChunkMatch[] = [];
   let matchedLen = 0;
   for (let i = 0; i < CHUNKING_ORDER.length; i += 1) {
     if (matchedLen < text.length) {
@@ -99,8 +100,10 @@ function splitChunks(text) {
   return fillInUnmatched(text, chunksMatched);
 }
 
-function chunk(input) {
-  const l = [].concat(...splitBySpace(input).map(splitChunks));
+function chunk(input: string): KoreanToken[] {
+  const l = ([] as ChunkMatch[]).concat(
+    ...splitBySpace(input).map(splitChunks)
+  );
   let segStart = 0;
   const tokens = l.map((m) => {
     segStart = input.indexOf(m.text, segStart);
@@ -109,11 +112,11 @@ function chunk(input) {
   return tokens;
 }
 
-function getChunks(input) {
+function getChunks(input: string): string[] {
   return chunk(input).map((c) => c.text);
 }
 
-function getChunksByPos(input, pos) {
+function getChunksByPos(input: string, pos: KoreanPosValue): KoreanToken[] {
   return chunk(input).filter((x) => x.pos === pos);
 }
 
