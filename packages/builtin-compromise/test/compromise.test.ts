@@ -248,6 +248,18 @@ describe('Compromise Integration', () => {
       expect(date.getDay()).toEqual(5);
     });
 
+    test('It should number the entities when a kind matches more than once', async () => {
+      const actual = await extract('en', 'write to a@b.com and c@d.com');
+      expect(actual.edges.map((edge) => edge.entity)).toEqual([
+        'email_0',
+        'email_1',
+      ]);
+      expect(actual.edges.map((edge) => edge.sourceText)).toEqual([
+        'a@b.com',
+        'c@d.com',
+      ]);
+    });
+
     test('Compromise  Various', async () => {
       const actual = await extract(
         'en',
@@ -297,6 +309,89 @@ describe('Compromise Integration', () => {
         },
       ];
       expect(actual.edges).toEqual(expected);
+    });
+  });
+
+  describe('extract', () => {
+    test('It should keep the edges the input already carries', async () => {
+      const manager = getManager();
+      const existing = { entity: 'custom', sourceText: 'kept' };
+      const input: any = {
+        utterance: 'a@b.com',
+        locale: 'en',
+        edges: [existing],
+      };
+      const actual = await manager.extract(input);
+      expect(actual.edges[0]).toBe(existing);
+      expect(actual.edges[1].entity).toEqual('email');
+    });
+
+    test('It should create the edges and sourceEntities arrays', async () => {
+      const manager = getManager();
+      const actual = await manager.extract({
+        utterance: 'nothing here',
+        locale: 'en',
+      });
+      expect(actual.edges).toEqual([]);
+      expect(actual.sourceEntities).toEqual([]);
+    });
+
+    test('It should prefer text over utterance', async () => {
+      const manager = getManager();
+      const actual = await manager.extract({
+        text: 'a@b.com',
+        utterance: 'ignored',
+        locale: 'en',
+      });
+      expect(actual.edges).toHaveLength(1);
+      expect(actual.edges[0].sourceText).toEqual('a@b.com');
+    });
+
+    test('It should return an empty result when the extraction throws', async () => {
+      const manager = getManager();
+      const logger = container.get('logger');
+      const spy = vi.spyOn(logger, 'error').mockImplementation(() => undefined);
+      try {
+        const utterance = {
+          toString() {
+            throw new Error('unreadable utterance');
+          },
+        };
+        const actual = await manager.findBuiltinEntities(utterance);
+        expect(actual.edges).toEqual([]);
+        expect(spy).toHaveBeenCalled();
+      } finally {
+        spy.mockRestore();
+      }
+    });
+  });
+
+  describe('run', () => {
+    test('It should extract with itself when no locale extractor is registered', async () => {
+      const manager = getManager();
+      const actual = await manager.run({ utterance: 'a@b.com', locale: 'en' });
+      expect(actual.edges.map((edge) => edge.entity)).toEqual(['email']);
+    });
+
+    test('It should default to english when the input has no locale', async () => {
+      const manager = getManager();
+      const actual = await manager.run({ utterance: 'a@b.com' });
+      expect(actual.edges.map((edge) => edge.entity)).toEqual(['email']);
+    });
+
+    test('It should delegate to the extractor registered for the locale', async () => {
+      const ownContainer = containerBootstrap();
+      const manager = new BuiltinCompromise({ container: ownContainer });
+      const delegate = {
+        extract: vi.fn<(input: any) => any>((input) => ({
+          ...input,
+          delegated: true,
+        })),
+      };
+      ownContainer.register('extract-builtin-fr', delegate, true);
+      const actual = await manager.run({ utterance: 'a@b.com', locale: 'fr' });
+      expect(delegate.extract).toHaveBeenCalled();
+      expect(actual.delegated).toEqual(true);
     });
   });
 });
