@@ -32,6 +32,15 @@ describe('Recognizer', () => {
       const nlpManager = { name: 'given' };
       expect(new Recognizer({ nlpManager }).nlpManager).toBe(nlpManager);
     });
+    test('It should initialize actions from settings', async () => {
+      const action = vi.fn<(...args: any[]) => void>();
+      const recognizer = new Recognizer({ actions: { greet: action } });
+      const context = {};
+
+      await recognizer.executeAction('greet', '"world"', context);
+
+      expect(action).toHaveBeenCalledWith(recognizer, context, 'world');
+    });
   });
 
   describe('Load excel', () => {

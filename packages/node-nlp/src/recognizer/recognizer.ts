@@ -27,6 +27,11 @@ class Recognizer {
         container: this.settings.container,
         ner: { threshold: this.settings.nerThreshold || 1 },
       });
+    this.actions =
+      this.settings.actions ||
+      this.settings.action ||
+      this.nlpManager.settings?.action ||
+      {};
     this.threshold = this.settings.threshold || 0.7;
     this.conversationContext =
       this.settings.conversationContext || new MemoryConversationContext();
