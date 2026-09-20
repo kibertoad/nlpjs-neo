@@ -50,6 +50,8 @@ function runDiscard(
         } else {
           other.discarded = true;
         }
+      } else if (other.len < edge.len) {
+        other.discarded = true;
       }
     } else if (
       (useMaxLength ||
