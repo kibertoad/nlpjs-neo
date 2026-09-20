@@ -97,7 +97,7 @@ class NluManager extends Clonable {
   guessLanguage(srcInput) {
     const input = srcInput;
     const isString = typeof input === 'string';
-    if (!input) {
+    if (input === undefined || input === null) {
       return isString ? undefined : input;
     }
     if (this.locales.length === 1) {
