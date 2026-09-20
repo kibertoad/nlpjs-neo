@@ -388,7 +388,7 @@ class BaseStemmer {
 
   getStopwords() {
     if (!this.stopwords) {
-      this.stopwords = this.container.get(`tokenizer-${this.name.slice(-2)}`);
+      this.stopwords = this.container.get(`stopwords-${this.name.slice(-2)}`);
     }
     return this.stopwords;
   }
