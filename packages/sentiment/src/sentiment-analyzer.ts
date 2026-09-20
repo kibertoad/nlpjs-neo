@@ -1,10 +1,22 @@
 import { Clonable } from '@nlpjs-neo/core';
+import type {
+  Container,
+  Locale,
+  RegisteredPipeline,
+  Settings,
+  Token,
+} from '@nlpjs-neo/core';
+import type {
+  SentimentDictionaries,
+  SentimentDictionaryType,
+  SentimentInput,
+} from './types.js';
 
 class SentimentAnalyzer extends Clonable {
-  declare pipelineProcess: any;
-  declare settings: any;
+  declare pipelineProcess: string | string[] | RegisteredPipeline | undefined;
+  declare settings: Settings;
 
-  constructor(settings: any = {}, container?) {
+  constructor(settings: Settings = {}, container?: Container) {
     super(
       {
         settings: {},
@@ -27,11 +39,17 @@ class SentimentAnalyzer extends Clonable {
     });
   }
 
-  registerDefault() {
+  registerDefault(): void {
     this.container.registerConfiguration('sentiment-analyzer', {}, false);
   }
 
-  prepare(locale, text?, settings?, stemmed?) {
+  /** Turns an utterance into the tokens the dictionary is keyed by. */
+  prepare(
+    locale: Locale,
+    text?: string,
+    settings?: Settings,
+    stemmed?: boolean
+  ): Token[] | Promise<Token[]> {
     const pipeline = this.getPipeline(`${this.settings.tag}-prepare`);
     if (pipeline) {
       const input = {
@@ -62,10 +80,13 @@ class SentimentAnalyzer extends Clonable {
     return normalized.split(/[\s,.!?;:([\]'"¡¿)/]+/).filter((x) => x);
   }
 
-  async getDictionary(srcInput) {
+  /** Picks the dictionary of the locale, preferring the richest one. */
+  async getDictionary(srcInput: SentimentInput): Promise<SentimentInput> {
     const input = srcInput;
-    const dictionaries = this.container.get(`sentiment-${input.locale}`);
-    let type;
+    const dictionaries = this.container.get<SentimentDictionaries>(
+      `sentiment-${input.locale}`
+    );
+    let type: SentimentDictionaryType | undefined;
     if (dictionaries) {
       if (dictionaries.senticon) {
         type = 'senticon';
@@ -94,7 +115,7 @@ class SentimentAnalyzer extends Clonable {
     return input;
   }
 
-  async getTokens(srcInput) {
+  async getTokens(srcInput: SentimentInput): Promise<SentimentInput> {
     const input = srcInput;
     if (!input.tokens && input.sentimentDictionary.type) {
       input.tokens = await this.prepare(
@@ -107,7 +128,7 @@ class SentimentAnalyzer extends Clonable {
     return input;
   }
 
-  calculate(srcInput) {
+  calculate(srcInput: SentimentInput): SentimentInput {
     const input = srcInput;
     if (input.sentimentDictionary.type) {
       const tokens = Array.isArray(input.tokens)
@@ -167,7 +188,7 @@ class SentimentAnalyzer extends Clonable {
     return input;
   }
 
-  async defaultPipelineProcess(input) {
+  async defaultPipelineProcess(input: SentimentInput): Promise<SentimentInput> {
     let output = await this.getDictionary(input);
     output = await this.getTokens(output);
     output = await this.calculate(output);
@@ -175,7 +196,13 @@ class SentimentAnalyzer extends Clonable {
     return output;
   }
 
-  process(srcInput, settings?, _utterance?, _arg3?) {
+  /** Scores the sentiment of an utterance and attaches it to the input. */
+  process(
+    srcInput: SentimentInput,
+    settings?: Settings,
+    _utterance?: unknown,
+    _arg3?: unknown
+  ): Promise<SentimentInput> {
     const input = srcInput;
     input.settings = input.settings || settings || this.settings;
     if (this.pipelineProcess) {

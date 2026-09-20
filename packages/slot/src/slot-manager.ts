@@ -1,9 +1,18 @@
+import type {
+  RecognizedEntity,
+  Slot,
+  SlotFillingContext,
+  SlotFillingResult,
+  SlotQuestions,
+  SlotsByIntent,
+} from './types.js';
+
 /**
  * Class for a Slot Manager that takes care of the slot information.
  */
 class SlotManager {
-  declare intents: any;
-  declare isEmpty: any;
+  declare intents: SlotsByIntent;
+  declare isEmpty: boolean;
 
   /**
    * Constructor of the class.
@@ -15,11 +24,11 @@ class SlotManager {
 
   /**
    * Returns an slot given the intent and entity.
-   * @param {String} intent Name of the intent.
-   * @param {String} entity Name of the entity.
-   * @returns {Object} Slot or undefined if not found.
+   * @param intent Name of the intent.
+   * @param entity Name of the entity.
+   * @returns Slot or undefined if not found.
    */
-  getSlot(intent, entity) {
+  getSlot(intent: string, entity: string): Slot | undefined {
     if (!this.intents[intent]) {
       return undefined;
     }
@@ -28,23 +37,28 @@ class SlotManager {
 
   /**
    * Indicates if a given slot exists, given the intent and entity.
-   * @param {String} intent Name of the intent.
-   * @param {String} entity Name of the entity.
-   * @returns {boolean} True if the slot exists, false otherwise.
+   * @param intent Name of the intent.
+   * @param entity Name of the entity.
+   * @returns True if the slot exists, false otherwise.
    */
-  existsSlot(intent, entity) {
+  existsSlot(intent: string, entity: string): boolean {
     return this.getSlot(intent, entity) !== undefined;
   }
 
   /**
    * Adds a new slot for a given intent and entity.
-   * @param {String} intent Name of the intent.
-   * @param {String} entity Name of the entity.
-   * @param {boolean} [mandatory=false] Flag indicating if is mandatory or optional.
-   * @param {Object} [questions] Question to ask when is mandatory, by locale.
-   * @returns {Object} New slot instance.
+   * @param intent Name of the intent.
+   * @param entity Name of the entity.
+   * @param mandatory Flag indicating if is mandatory or optional.
+   * @param questions Question to ask when is mandatory, by locale.
+   * @returns New slot instance.
    */
-  addSlot(intent, entity, mandatory = false, questions?) {
+  addSlot(
+    intent: string,
+    entity: string,
+    mandatory = false,
+    questions?: SlotQuestions
+  ): Slot {
     this.isEmpty = false;
     if (!this.intents[intent]) {
       this.intents[intent] = {};
@@ -62,13 +76,18 @@ class SlotManager {
    * Adds/modifies the parameter of a slot for a given intent and entity.
    * Slot questions for same locales as already existing will be overwritten.
    * If the slot for the intent and entity does not exist it fill be created.
-   * @param {String} intent Name of the intent.
-   * @param {String} entity Name of the entity.
-   * @param {boolean} mandatory Flag indicating if is mandatory or optional.
-   * @param {Object} [questions] Question to ask when is mandatory, by locale.
-   * @returns {Object} New/Modified slot instance or undefined if not existing
+   * @param intent Name of the intent.
+   * @param entity Name of the entity.
+   * @param mandatory Flag indicating if is mandatory or optional.
+   * @param questions Question to ask when is mandatory, by locale.
+   * @returns New/Modified slot instance.
    */
-  updateSlot(intent, entity, mandatory, questions?) {
+  updateSlot(
+    intent: string,
+    entity: string,
+    mandatory?: boolean,
+    questions?: SlotQuestions
+  ): Slot {
     if (!this.intents[intent] || !this.intents[intent][entity]) {
       return this.addSlot(intent, entity, mandatory, questions);
     }
@@ -83,10 +102,10 @@ class SlotManager {
 
   /**
    * Remove an slot given the intent and the entity.
-   * @param {String} intent Name of the intent.
-   * @param {String} entity Name of the entity.
+   * @param intent Name of the intent.
+   * @param entity Name of the entity.
    */
-  removeSlot(intent, entity) {
+  removeSlot(intent: string, entity: string): void {
     if (this.intents[intent]) {
       delete this.intents[intent][entity];
     }
@@ -94,12 +113,12 @@ class SlotManager {
 
   /**
    * Add several entities if they don't exists.
-   * @param {String} intent Name of the intent.
-   * @param {String[]} entities List of entities.
-   * @returns {Object[]} Array of resulting entities.
+   * @param intent Name of the intent.
+   * @param entities List of entities.
+   * @returns Array of resulting slots.
    */
-  addBatch(intent, entities?) {
-    const result: any[] = [];
+  addBatch(intent: string, entities?: string[]): Slot[] {
+    const result: Slot[] = [];
     if (entities && entities.length > 0) {
       entities.forEach((entity) => {
         let slot = this.getSlot(intent, entity);
@@ -114,10 +133,10 @@ class SlotManager {
 
   /**
    * Given an intent, return the array of entity names of this intent.
-   * @param {String} intent Name of the intent.
-   * @returns {String[]} Array of entity names of the intent.
+   * @param intent Name of the intent.
+   * @returns Array of entity names of the intent.
    */
-  getIntentEntityNames(intent) {
+  getIntentEntityNames(intent: string): string[] | undefined {
     if (!this.intents[intent]) {
       return undefined;
     }
@@ -127,10 +146,10 @@ class SlotManager {
   /**
    * Given an intent return the information if the intent has entities defined
    *
-   * @param {String} intent Name of the intent.
-   * @returns {boolean} true if intent has defined entities, else false
+   * @param intent Name of the intent.
+   * @returns true if intent has defined entities, else false
    */
-  hasIntentEntities(intent) {
+  hasIntentEntities(intent: string): boolean {
     const keys = this.getIntentEntityNames(intent);
     return keys ? keys.length > 0 : false;
   }
@@ -138,34 +157,34 @@ class SlotManager {
   /**
    * Clear the slot manager.
    */
-  clear() {
+  clear(): void {
     this.intents = {};
   }
 
   /**
    * Loads the slot manager content.
-   * @param {Object} src Source content.
+   * @param src Source content.
    */
-  load(src?) {
+  load(src?: SlotsByIntent): void {
     this.intents = src || {};
     this.isEmpty = Object.keys(this.intents).length === 0;
   }
 
   /**
    * Returns the slot manager content.
-   * @returns {Object} Slot manager content.
+   * @returns Slot manager content.
    */
-  save() {
+  save(): SlotsByIntent {
     return this.intents;
   }
 
   /**
    * Given an intent return the mandatory slots.
-   * @param {String} intent Name of the intent
-   * @returns {Object} Object with the mandatory slots.
+   * @param intent Name of the intent
+   * @returns Object with the mandatory slots, by entity name.
    */
-  getMandatorySlots(intent) {
-    const result: any = {};
+  getMandatorySlots(intent: string): Record<string, Slot> {
+    const result: Record<string, Slot> = {};
     const intentSlots = this.intents[intent];
     if (intentSlots) {
       const keys = Object.keys(intentSlots);
@@ -179,7 +198,7 @@ class SlotManager {
     return result;
   }
 
-  cleanContextEntities(intent, srcContext) {
+  cleanContextEntities(intent: string, srcContext: SlotFillingContext): void {
     const context = srcContext;
     if (context.slotFill) {
       return;
@@ -194,9 +213,13 @@ class SlotManager {
     });
   }
 
-  generateEntityAliases(entities) {
-    const aliases: any[] = [];
-    const dict: any = {};
+  /**
+   * Numbers the repeated entities of an utterance, so that the second
+   * `city` of an utterance can fill the `city_1` slot.
+   */
+  generateEntityAliases(entities: RecognizedEntity[]): string[] {
+    const aliases: string[] = [];
+    const dict: Record<string, true[]> = {};
     for (let i = 0; i < entities.length; i += 1) {
       const entity = entities[i];
       if (!dict[entity.entity]) {
@@ -208,7 +231,17 @@ class SlotManager {
     return aliases;
   }
 
-  process(srcResult, srcContext?, _utterance?, _arg3?) {
+  /**
+   * Fills what it can of the mandatory slots of the recognized intent and
+   * asks for the first one still missing.
+   * @returns Whether the conversation is waiting for a slot to be filled.
+   */
+  process(
+    srcResult: SlotFillingResult,
+    srcContext?: SlotFillingContext,
+    _utterance?: unknown,
+    _arg3?: unknown
+  ): boolean {
     const result = srcResult;
     const context = srcContext;
     this.cleanContextEntities(result.intent, context);
