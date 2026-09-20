@@ -1,0 +1,278 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./packages/api-auth-jwt"
+    },
+    {
+      "path": "./packages/basic"
+    },
+    {
+      "path": "./packages/bert-open-question"
+    },
+    {
+      "path": "./packages/bert-tokenizer"
+    },
+    {
+      "path": "./packages/bot"
+    },
+    {
+      "path": "./packages/builtin-compromise"
+    },
+    {
+      "path": "./packages/builtin-default"
+    },
+    {
+      "path": "./packages/builtin-duckling"
+    },
+    {
+      "path": "./packages/builtin-microsoft"
+    },
+    {
+      "path": "./packages/connector"
+    },
+    {
+      "path": "./packages/console-connector"
+    },
+    {
+      "path": "./packages/core"
+    },
+    {
+      "path": "./packages/core-loader"
+    },
+    {
+      "path": "./packages/database"
+    },
+    {
+      "path": "./packages/dialogflow-connector"
+    },
+    {
+      "path": "./packages/directline-connector"
+    },
+    {
+      "path": "./packages/emoji"
+    },
+    {
+      "path": "./packages/evaluator"
+    },
+    {
+      "path": "./packages/express-api-server"
+    },
+    {
+      "path": "./packages/express-api-serverless"
+    },
+    {
+      "path": "./packages/fb-connector"
+    },
+    {
+      "path": "./packages/fullbot"
+    },
+    {
+      "path": "./packages/lang-all"
+    },
+    {
+      "path": "./packages/lang-ar"
+    },
+    {
+      "path": "./packages/lang-bert"
+    },
+    {
+      "path": "./packages/lang-bn"
+    },
+    {
+      "path": "./packages/lang-ca"
+    },
+    {
+      "path": "./packages/lang-cs"
+    },
+    {
+      "path": "./packages/lang-da"
+    },
+    {
+      "path": "./packages/lang-de"
+    },
+    {
+      "path": "./packages/lang-el"
+    },
+    {
+      "path": "./packages/lang-en"
+    },
+    {
+      "path": "./packages/lang-en-min"
+    },
+    {
+      "path": "./packages/lang-es"
+    },
+    {
+      "path": "./packages/lang-eu"
+    },
+    {
+      "path": "./packages/lang-fa"
+    },
+    {
+      "path": "./packages/lang-fi"
+    },
+    {
+      "path": "./packages/lang-fr"
+    },
+    {
+      "path": "./packages/lang-ga"
+    },
+    {
+      "path": "./packages/lang-gl"
+    },
+    {
+      "path": "./packages/lang-hi"
+    },
+    {
+      "path": "./packages/lang-hu"
+    },
+    {
+      "path": "./packages/lang-hy"
+    },
+    {
+      "path": "./packages/lang-id"
+    },
+    {
+      "path": "./packages/lang-it"
+    },
+    {
+      "path": "./packages/lang-ja"
+    },
+    {
+      "path": "./packages/lang-ko"
+    },
+    {
+      "path": "./packages/lang-lt"
+    },
+    {
+      "path": "./packages/lang-ms"
+    },
+    {
+      "path": "./packages/lang-ne"
+    },
+    {
+      "path": "./packages/lang-nl"
+    },
+    {
+      "path": "./packages/lang-no"
+    },
+    {
+      "path": "./packages/lang-pl"
+    },
+    {
+      "path": "./packages/lang-pt"
+    },
+    {
+      "path": "./packages/lang-ro"
+    },
+    {
+      "path": "./packages/lang-ru"
+    },
+    {
+      "path": "./packages/lang-sl"
+    },
+    {
+      "path": "./packages/lang-sr"
+    },
+    {
+      "path": "./packages/lang-sv"
+    },
+    {
+      "path": "./packages/lang-ta"
+    },
+    {
+      "path": "./packages/lang-th"
+    },
+    {
+      "path": "./packages/lang-tl"
+    },
+    {
+      "path": "./packages/lang-tr"
+    },
+    {
+      "path": "./packages/lang-uk"
+    },
+    {
+      "path": "./packages/lang-zh"
+    },
+    {
+      "path": "./packages/language"
+    },
+    {
+      "path": "./packages/language-min"
+    },
+    {
+      "path": "./packages/lexer"
+    },
+    {
+      "path": "./packages/logger"
+    },
+    {
+      "path": "./packages/mongodb-adapter"
+    },
+    {
+      "path": "./packages/msbf-connector"
+    },
+    {
+      "path": "./packages/ner"
+    },
+    {
+      "path": "./packages/neural"
+    },
+    {
+      "path": "./packages/neural-worker"
+    },
+    {
+      "path": "./packages/nlg"
+    },
+    {
+      "path": "./packages/nlp"
+    },
+    {
+      "path": "./packages/nlu"
+    },
+    {
+      "path": "./packages/nlu-luis"
+    },
+    {
+      "path": "./packages/node-nlp"
+    },
+    {
+      "path": "./packages/open-question"
+    },
+    {
+      "path": "./packages/python-compiler"
+    },
+    {
+      "path": "./packages/qna-importer"
+    },
+    {
+      "path": "./packages/request"
+    },
+    {
+      "path": "./packages/request-rn"
+    },
+    {
+      "path": "./packages/rest-connector"
+    },
+    {
+      "path": "./packages/sentiment"
+    },
+    {
+      "path": "./packages/similarity"
+    },
+    {
+      "path": "./packages/similarity-wa"
+    },
+    {
+      "path": "./packages/slot"
+    },
+    {
+      "path": "./packages/utils"
+    },
+    {
+      "path": "./packages/xtables"
+    }
+  ]
+}

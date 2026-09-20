@@ -1,0 +1,186 @@
+/*
+ * Copyright (c) AXA Group Operations Spain S.A.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+import { containerBootstrap } from '@nlpjs-neo/core';
+import { BuiltinMicrosoft } from '../src/index.js';
+import numberAgeTests from './number-age.json' with { type: 'json' };
+import numberTests from './number.json' with { type: 'json' };
+import numberOrdinalTests from './number-ordinal.json' with { type: 'json' };
+import numberPercentTests from './number-percent.json' with { type: 'json' };
+import numberCurrency from './number-currency.json' with { type: 'json' };
+import numberDimension from './number-dimension.json' with { type: 'json' };
+import sequence from './sequence.json' with { type: 'json' };
+import date from './date.json' with { type: 'json' };
+
+const container = containerBootstrap();
+
+declare module 'vitest' {
+  interface Matchers<R = void | Promise<void>> {
+    toContainResolution(expected: any): R;
+  }
+}
+
+expect.extend({
+  toContainResolution(received, argument) {
+    for (let i = 0; i < received.length; i += 1) {
+      const actual = received[i];
+      if (actual.resolution) {
+        const keys = Object.keys(argument);
+        let pass = true;
+        for (let j = 0; j < keys.length; j += 1) {
+          const key = keys[j];
+          if (!actual.resolution[key]) {
+            pass = false;
+          }
+          if (argument[key] !== '*') {
+            if (!this.equals(actual.resolution[key], argument[key])) {
+              pass = false;
+            }
+          }
+        }
+        if (pass) {
+          return {
+            message: () =>
+              `expected ${this.utils.printReceived(
+                received
+              )} not to contain resolution ${this.utils.printExpected(
+                argument
+              )}`,
+            pass: true,
+          };
+        }
+      }
+    }
+    return {
+      message: () =>
+        `expected ${this.utils.printReceived(
+          received
+        )} to contain resolution ${this.utils.printExpected(argument)}`,
+      pass: false,
+    };
+  },
+});
+
+// The first extraction for a locale loads that culture's recognizer bundle, which
+// takes seconds on a cold CI runner, so the 5s default is not enough.
+vi.setConfig({ testTimeout: 30000 });
+
+function addTests(base, locale, entityTypeName) {
+  const instance = new BuiltinMicrosoft({ container });
+  for (let i = 0; i < base.length; i += 1) {
+    const testCase = base[i];
+    const keys = Object.keys(testCase);
+    for (let j = 0; j < keys.length; j += 1) {
+      const key = keys[j];
+      if (key.startsWith('result')) {
+        const current = testCase[key];
+        const currentKeys = Object.keys(current);
+        for (let k = 0; k < currentKeys.length; k += 1) {
+          const currentKey = currentKeys[k];
+          if (
+            (currentKey.includes('date') || currentKey.includes('Date')) &&
+            testCase[key][currentKey].length === 24
+          ) {
+            testCase[key][currentKey] = new Date(testCase[key][currentKey]);
+          }
+        }
+        testCase.rawEntitiy = entityTypeName;
+      }
+    }
+    if (!testCase.avoid || !testCase.avoid.includes(locale)) {
+      const upperLocale = `${locale.charAt(0).toUpperCase()}${locale.slice(1)}`;
+      const utteranceName = `utterance${upperLocale}`;
+      const utterance = testCase[utteranceName] || testCase.utterance;
+      const resultName = `result${upperLocale}`;
+      // oxlint-disable-next-line vitest/no-conditional-tests
+      if (utterance) {
+        // oxlint-disable-next-line vitest/valid-title
+        test(utterance, async () => {
+          const expected = Object.assign(testCase.result, testCase[resultName]);
+          const input = {
+            utterance,
+            locale,
+          };
+          const result = await instance.extract(input);
+          expect(result.edges).toContainResolution(expected);
+        });
+      }
+    }
+  }
+}
+
+const languages = [
+  { locale: 'en', name: 'English' },
+  { locale: 'es', name: 'Spanish' },
+  { locale: 'fr', name: 'French' },
+  { locale: 'pt', name: 'Portuguese' },
+  { locale: 'zh', name: 'Chinese' },
+  { locale: 'ja', name: 'Japanese' },
+];
+
+describe('NER Manager builtins', () => {
+  languages.forEach((language) => {
+    describe(`Numbers ${language.name}`, () => {
+      addTests(numberTests, language.locale, 'number');
+    });
+    describe(`Ordinal ${language.name}`, () => {
+      addTests(numberOrdinalTests, language.locale, 'ordinal');
+    });
+    describe(`Percentage ${language.name}`, () => {
+      addTests(numberPercentTests, language.locale, 'percentage');
+    });
+    describe(`Age ${language.name}`, () => {
+      addTests(numberAgeTests, language.locale, 'age');
+    });
+    describe(`Currency ${language.name}`, () => {
+      addTests(numberCurrency, language.locale, 'currency');
+    });
+    describe(`Dimension ${language.name}`, () => {
+      addTests(numberDimension, language.locale, 'dimension');
+    });
+    describe(`Sequence ${language.name}`, () => {
+      addTests(sequence, language.locale, 'sequence');
+    });
+    describe(`Date ${language.name}`, () => {
+      addTests(date, language.locale, 'datetimeV2.date');
+    });
+  });
+  describe(`Date english`, () => {
+    test('tomorrow morning', async () => {
+      const instance = new BuiltinMicrosoft({ container });
+      const input = {
+        utterance: 'tomorrow morning',
+        locale: 'en',
+      };
+      const results = await instance.extract(input);
+      const result = results.edges[0];
+      expect(result).toBeDefined();
+      expect(result.end).toEqual(15);
+      expect(result.entity).toEqual('datetimerange');
+      expect(result.len).toEqual(16);
+      expect(result.sourceText).toEqual('tomorrow morning');
+      expect(result.resolution).toBeDefined();
+      expect(result.rawEntity).toEqual('datetimeV2.datetimerange');
+    });
+  });
+});

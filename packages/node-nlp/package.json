@@ -26,31 +26,27 @@
   ],
   "license": "MIT",
   "type": "module",
-  "main": "./src/index.js",
   "exports": {
-    ".": "./src/index.js",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
     "./package.json": "./package.json"
   },
-  "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
-  },
-  "keywords": [
-    "natural language processing",
-    "artifical intelligence",
-    "natural language understanding",
-    "natural language generation",
-    "NLP",
-    "NLU",
-    "NLG",
-    "sentiment analysis",
-    "classifier",
-    "logistic regression",
-    "Natural",
-    "entity extraction",
-    "named entity recognition",
-    "chatbot",
-    "bot"
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
   ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1",
+    "build": "tsc --build tsconfig.json",
+    "clean": "tsc --build tsconfig.json --clean"
+  },
+  "gitHead": "cc4249fa994c58d220e6f10a6c94fdad05df32fd",
   "dependencies": {
     "@nlpjs-neo/builtin-duckling": "workspace:^",
     "@nlpjs-neo/builtin-microsoft": "workspace:^",
@@ -68,5 +64,21 @@
     "@nlpjs-neo/similarity": "workspace:^",
     "@nlpjs-neo/xtables": "workspace:^"
   },
-  "gitHead": "cc4249fa994c58d220e6f10a6c94fdad05df32fd"
+  "keywords": [
+    "natural language processing",
+    "artifical intelligence",
+    "natural language understanding",
+    "natural language generation",
+    "NLP",
+    "NLU",
+    "NLG",
+    "sentiment analysis",
+    "classifier",
+    "logistic regression",
+    "Natural",
+    "entity extraction",
+    "named entity recognition",
+    "chatbot",
+    "bot"
+  ]
 }

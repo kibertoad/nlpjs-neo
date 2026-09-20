@@ -1,6 +1,10 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["import", "vitest", "node"],
+  "plugins": [
+    "import",
+    "vitest",
+    "node"
+  ],
   "env": {
     "builtin": true,
     "node": true,
@@ -23,15 +27,17 @@
     "dist/**",
     "node_modules/**",
     "docs/v3/static/scripts/**",
-    "packages/python-compiler/src/python-executer.js",
-    "packages/express-api-server/src/public/**",
+    "packages/python-compiler/src/python-executer.ts",
+    "packages/express-api-server/public/**",
     "examples/07-nlpjs-on-aws-lambda/**",
     "examples/16-fb-connector/**",
     "**/*BAK*"
   ],
   "overrides": [
     {
-      "files": ["examples/**/*.js"],
+      "files": [
+        "examples/**/*.js"
+      ],
       "rules": {
         "no-console": "off"
       }

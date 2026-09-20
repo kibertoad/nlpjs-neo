@@ -26,17 +26,29 @@
   ],
   "license": "MIT",
   "type": "module",
-  "main": "./src/index.js",
   "exports": {
-    ".": "./src/index.js",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
     "./package.json": "./package.json"
   },
-  "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
   },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1",
+    "build": "tsc --build tsconfig.json",
+    "clean": "tsc --build tsconfig.json --clean"
+  },
+  "gitHead": "cc4249fa994c58d220e6f10a6c94fdad05df32fd",
   "dependencies": {
     "pino": "^7.6.1",
     "pino-pretty": "^7.2.0"
-  },
-  "gitHead": "cc4249fa994c58d220e6f10a6c94fdad05df32fd"
+  }
 }

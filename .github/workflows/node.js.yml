@@ -1,5 +1,6 @@
-# Installs dependencies with pnpm, builds the source code and runs the tests
-# across several Node.js versions.
+# Installs dependencies with pnpm, builds the TypeScript sources and runs the
+# tests across several Node.js versions, plus a job that guards the quality of
+# the published types and packaging.
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
 name: Node.js CI
@@ -12,6 +13,7 @@ on:
 
 jobs:
   build:
+    name: Build and test (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
 
     strategy:
@@ -30,3 +32,27 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm run build
       - run: pnpm test
+
+  types:
+    name: Types and packaging
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - name: Lint
+        run: pnpm run lint
+      - name: Check formatting
+        run: pnpm run format:check
+      - name: Typecheck sources and tests
+        run: pnpm run typecheck
+      # `are-the-types-wrong` and `publint` inspect the packed tarballs, so the
+      # packages have to be built first.
+      - name: Check published types and packaging
+        run: pnpm run check:exports

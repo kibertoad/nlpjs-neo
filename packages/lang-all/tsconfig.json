@@ -1,0 +1,140 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "tsBuildInfoFile": "dist/.tsbuildinfo"
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.json"
+  ],
+  "references": [
+    {
+      "path": "../core"
+    },
+    {
+      "path": "../lang-ar"
+    },
+    {
+      "path": "../lang-bn"
+    },
+    {
+      "path": "../lang-ca"
+    },
+    {
+      "path": "../lang-cs"
+    },
+    {
+      "path": "../lang-da"
+    },
+    {
+      "path": "../lang-de"
+    },
+    {
+      "path": "../lang-el"
+    },
+    {
+      "path": "../lang-en"
+    },
+    {
+      "path": "../lang-es"
+    },
+    {
+      "path": "../lang-eu"
+    },
+    {
+      "path": "../lang-fa"
+    },
+    {
+      "path": "../lang-fi"
+    },
+    {
+      "path": "../lang-fr"
+    },
+    {
+      "path": "../lang-ga"
+    },
+    {
+      "path": "../lang-gl"
+    },
+    {
+      "path": "../lang-hi"
+    },
+    {
+      "path": "../lang-hu"
+    },
+    {
+      "path": "../lang-hy"
+    },
+    {
+      "path": "../lang-id"
+    },
+    {
+      "path": "../lang-it"
+    },
+    {
+      "path": "../lang-ja"
+    },
+    {
+      "path": "../lang-ko"
+    },
+    {
+      "path": "../lang-lt"
+    },
+    {
+      "path": "../lang-ms"
+    },
+    {
+      "path": "../lang-ne"
+    },
+    {
+      "path": "../lang-nl"
+    },
+    {
+      "path": "../lang-no"
+    },
+    {
+      "path": "../lang-pl"
+    },
+    {
+      "path": "../lang-pt"
+    },
+    {
+      "path": "../lang-ro"
+    },
+    {
+      "path": "../lang-ru"
+    },
+    {
+      "path": "../lang-sl"
+    },
+    {
+      "path": "../lang-sr"
+    },
+    {
+      "path": "../lang-sv"
+    },
+    {
+      "path": "../lang-ta"
+    },
+    {
+      "path": "../lang-th"
+    },
+    {
+      "path": "../lang-tl"
+    },
+    {
+      "path": "../lang-tr"
+    },
+    {
+      "path": "../lang-uk"
+    },
+    {
+      "path": "../lang-zh"
+    },
+    {
+      "path": "../language"
+    }
+  ]
+}

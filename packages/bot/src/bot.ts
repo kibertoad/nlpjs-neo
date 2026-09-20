@@ -1,0 +1,751 @@
+/*
+ * Copyright (c) AXA Group Operations Spain S.A.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+import { Clonable, containerBootstrap } from '@nlpjs-neo/core';
+import { ContextManager } from '@nlpjs-neo/nlp';
+import { JavascriptCompiler } from '@nlpjs-neo/evaluator';
+import DialogManager from './dialog-manager.js';
+import { loadScript, getDialogName, trimBetween } from './dialog-parse.js';
+import {
+  validatorEmail,
+  validatorURL,
+  validatorIP,
+  validatorIPv4,
+  validatorIPv6,
+  validatorPhoneNumber,
+  validatorNumber,
+  validatorInteger,
+  validatorDate,
+} from './validators.js';
+import BotLocalization from './bot-localization.js';
+import { getValidationMessage, tryParseJson } from './helper.js';
+
+const localeDangle = '_localization';
+
+class Bot extends Clonable {
+  declare actions: any;
+  declare cards: any;
+  declare contextManager: any;
+  declare dialogManager: any;
+  declare evaluator: any;
+  declare localization: any;
+  declare nlp: any;
+  declare onBeforeProcess: any;
+  declare onBeginDialog: any;
+  declare onFile: any;
+  declare onNextAction: any;
+  declare onNlpActionResult: any;
+  declare settings: any;
+  declare validators: any;
+
+  constructor(settings: any = {}, container?) {
+    super(
+      {
+        settings: {},
+        container:
+          settings.container ||
+          container ||
+          (settings.dock ? settings.dock.getContainer() : containerBootstrap()),
+      },
+      container
+    );
+    this.applySettings(this.settings, settings);
+    if (!this.settings.tag) {
+      this.settings.tag = `bot`;
+    }
+    this.registerDefault();
+    this.applySettings(
+      this.settings,
+      this.container.getConfiguration(this.settings.tag)
+    );
+    if (!this.settings.globalFallbackDialog) {
+      this.settings.globalFallbackDialog = '/globalFallbackDialog';
+    }
+    const { globalFallbackDialog } = this.settings;
+    this.settings.globalFallbackDialog = globalFallbackDialog.startsWith('/')
+      ? globalFallbackDialog
+      : `/${globalFallbackDialog}`;
+    this.nlp = this.container.get('nlp');
+    this.localization = new BotLocalization();
+  }
+
+  registerDefault() {
+    this.actions = {};
+    this.validators = {};
+    this.cards = {};
+    this.container.registerConfiguration('bot', {}, false);
+    this.registerValidator('email', validatorEmail);
+    this.registerValidator('url', validatorURL);
+    this.registerValidator('ip', validatorIP);
+    this.registerValidator('ipv4', validatorIPv4);
+    this.registerValidator('ipv6', validatorIPv6);
+    this.registerValidator('phone', validatorPhoneNumber);
+    this.registerValidator('number', validatorNumber);
+    this.registerValidator('integer', validatorInteger);
+    this.registerValidator('date', validatorDate);
+  }
+
+  async start() {
+    if (!this.evaluator) {
+      this.evaluator = new JavascriptCompiler({ container: this.container });
+    }
+    if (!this.contextManager) {
+      this.contextManager = this.container.get('context-manager');
+      if (!this.contextManager) {
+        this.use(ContextManager);
+        this.contextManager = this.container.get('context-manager');
+      }
+    }
+    if (!this.dialogManager) {
+      this.dialogManager = this.container.get('dialog-manager');
+      if (!this.dialogManager) {
+        this.use(DialogManager);
+        this.dialogManager = this.container.get('dialog-manager');
+      }
+    }
+    if (this.settings.scripts) {
+      await this.loadScript(this.settings.scripts);
+    }
+    if (this.nlp) {
+      await this.nlp.train();
+    }
+  }
+
+  registerAction(name, fn) {
+    this.actions[name] = fn;
+  }
+
+  registerValidator(name, fn) {
+    this.validators[name.toLowerCase()] = fn;
+  }
+
+  getValidator(name) {
+    return this.validators[name.toLowerCase()];
+  }
+
+  registerCard(name, card?) {
+    if (typeof name === 'string' && card) {
+      this.cards[name] = card;
+    } else if (Array.isArray(name)) {
+      for (let i = 0; i < name.length; i += 1) {
+        this.registerCard(name[i]);
+      }
+    } else {
+      this.registerCard(name.name, name.card || name);
+    }
+  }
+
+  async setVariable(context, variableName, variableValue) {
+    if (this.evaluator) {
+      await this.evaluator.evaluate(
+        `${variableName} = ${variableValue}`,
+        context
+      );
+    } else {
+      context[variableName] = variableValue;
+    }
+  }
+
+  getVariable(context, variableName) {
+    if (this.evaluator) {
+      return this.evaluator.evaluate(variableName, context);
+    }
+    return context[variableName];
+  }
+
+  async beginDialog(session, context, dialog) {
+    if (this.onBeginDialog) {
+      await this.onBeginDialog(session, context, dialog);
+    }
+    session.beginDialog(context, dialog);
+  }
+
+  async executeAction(session, context, action) {
+    if (typeof action === 'string') {
+      if (action.startsWith('/') && this.dialogManager.existsDialog(action)) {
+        await this.beginDialog(session, context, action);
+      } else {
+        await session.say(action, context);
+      }
+    } else {
+      let shouldContinue = true;
+      if (action.condition) {
+        shouldContinue = await this.evaluator.evaluate(
+          action.condition,
+          context
+        );
+      }
+      if (shouldContinue) {
+        const dialog =
+          (action.dialog && action.dialog.startsWith('/') ? '' : '/') +
+          action.dialog;
+        let fn;
+        switch (action.command) {
+          case 'say':
+            await session.say(action.text, context);
+            break;
+          case 'suggest':
+            session.addSuggestedActions(action.text);
+            break;
+          case 'endDialog':
+            session.endDialog(context);
+            break;
+          case 'restartDialog':
+            session.restartDialog(context);
+            break;
+          case 'beginDialog':
+            if (this.dialogManager.existsDialog(dialog)) {
+              await this.beginDialog(session, context, dialog);
+            } else {
+              await session.say(dialog, context);
+            }
+            break;
+          case 'ask':
+            context.isWaitingInput = true;
+            context.variableName = action.variableName;
+            context.validatorName = action.validatorName;
+            context.validatorParameters = action.parameters;
+            break;
+          case 'nlp':
+            if (this.nlp && session.text) {
+              const result = await this.nlp.process(
+                session,
+                undefined,
+                context,
+                { allowList: action.allowedIntents }
+              );
+              if (this.onNlpActionResult) {
+                await this.onNlpActionResult(result, session, context);
+              }
+              if (result.answer) {
+                if (
+                  result.answer.startsWith('/') &&
+                  this.dialogManager.existsDialog(result.answer)
+                ) {
+                  await this.beginDialog(session, context, result.answer);
+                } else {
+                  await session.say(result.answer, context);
+                }
+              } else if (session.activity.file && this.onFile) {
+                await this.onFile(this, session);
+              } else {
+                await session.say("Sorry, I don't understand", context);
+              }
+            } else {
+              await session.say("Sorry, I don't understand", context);
+            }
+            break;
+          case 'call':
+            fn = this.actions[action.functionName];
+            if (fn) {
+              await fn(session, context, tryParseJson(action.parameters));
+            } else {
+              console.log(`Unknown function "${action.functionName}"`);
+            }
+            break;
+          case 'inc':
+            if (!context[action.variableName]) {
+              context[action.variableName] = 0;
+            }
+            context[action.variableName] += action.increment;
+            break;
+          case 'card':
+            if (this.cards[action.cardName]) {
+              await session.sendCard(this.cards[action.cardName], context);
+            } else {
+              console.log(`Unknown card ${action.cardName}`);
+            }
+            break;
+          case 'dec':
+            if (!context[action.variableName]) {
+              context[action.variableName] = 0;
+            }
+            context[action.variableName] -= action.increment;
+            break;
+          case 'set':
+            await this.setVariable(context, action.variableName, action.value);
+            break;
+          default:
+            console.log(`Unknown command executing action "${action.command}"`);
+            break;
+        }
+      }
+    }
+  }
+
+  async runValidation(session, context) {
+    const validator = this.getValidator(context.validatorName);
+    if (!validator) {
+      console.log(`Unknown validator ${context.validatorName}`);
+    } else {
+      const validation = await validator(session, context, [
+        context.variableName,
+        tryParseJson(context.validatorParameters),
+      ]);
+      if (validation.isValid) {
+        context.validation.currentRetry = 0;
+        if (validation.changes) {
+          for (let i = 0; i < validation.changes.length; i += 1) {
+            const change = validation.changes[i];
+            context[change.name] = change.value;
+          }
+        }
+      } else {
+        context.validation.currentRetry =
+          (context.validation.currentRetry || 0) + 1;
+        if (context.validation.retries === undefined) {
+          context.validation.retries = 2;
+        }
+        if (context.validation.currentRetry > context.validation.retries) {
+          if (context.validation.failDialog) {
+            let { failDialog } = context.validation;
+            if (!failDialog.startsWith('/')) {
+              failDialog = `/${failDialog}`;
+            }
+            await this.beginDialog(session, context, failDialog);
+          } else {
+            session.restartDialog(context);
+          }
+        } else {
+          const message = getValidationMessage(context.validation);
+          await session.say(message, context);
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  async process(session, _arg1?, _utterance?, _arg3?) {
+    const context = await this.contextManager.getContext(session);
+    context.channel = session.channel;
+    context.app = session.app;
+    context.from = session.from || null;
+    if (!context.dialogStack) {
+      context.dialogStack = [];
+    }
+    if (!context.validation) {
+      context.validation = {};
+    }
+    context[localeDangle] = this.localization;
+    if (session.forcedDialog) {
+      await this.beginDialog(session, context, session.forcedDialog);
+    }
+    if (session.activity.value) {
+      const keys = Object.keys(session.activity.value);
+      for (let i = 0; i < keys.length; i += 1) {
+        context[keys[i]] = session.activity.value[keys[i]];
+      }
+    }
+    if (this.onBeforeProcess) {
+      await this.onBeforeProcess(session, context);
+    }
+    let shouldContinue = true;
+    if (context.isWaitingInput) {
+      if (context.validatorName) {
+        shouldContinue = await this.runValidation(session, context);
+      } else if (context.variableName) {
+        await this.setVariable(
+          context,
+          context.variableName,
+          `"${session.text || context[context.variableName]}"`
+        );
+      }
+    }
+    if (shouldContinue) {
+      const logger = this.container.get('logger');
+      context.isWaitingInput = false;
+      context.variableName = undefined;
+      context.validatorParameters = undefined;
+      let lastDialog;
+      let lastPosition;
+      while (!context.isWaitingInput) {
+        try {
+          const current = this.dialogManager.getNextAction(context.dialogStack);
+          if (this.onNextAction) {
+            await this.onNextAction(current, session, context);
+          }
+          if (
+            current.dialog === lastDialog &&
+            current.lastExecuted === lastPosition
+          ) {
+            await this.executeAction(session, context, { command: 'ask' });
+          } else {
+            lastDialog = current.dialog;
+            lastPosition = current.lastExecuted;
+            await this.executeAction(session, context, current.action);
+          }
+        } catch (error) {
+          logger.error(error);
+          if (!context.errorLoops) {
+            context.errorLoops = 0;
+          }
+          const { globalFallbackDialog } = this.settings;
+          const fallbackDialogExists =
+            this.dialogManager.existsDialog(globalFallbackDialog);
+          if (fallbackDialogExists && context.errorLoops < 1) {
+            context.errorLoops += 1;
+            context.validation = {};
+            delete context.validatorName;
+            delete context.variableName;
+            session.restartDialog(context);
+            await this.beginDialog(session, context, globalFallbackDialog);
+          } else {
+            if (fallbackDialogExists) {
+              logger.error('Max iterations reached in global error loop');
+            } else {
+              logger.warn('Define a global fallback handler');
+            }
+            throw error;
+          }
+        }
+      }
+    }
+    await this.contextManager.setContext(session, context);
+  }
+
+  addDialog(name, pipeline, settings?) {
+    this.dialogManager.addDialog(name, pipeline, settings);
+  }
+
+  getEntityOption(line) {
+    const tokens = line
+      .split(':')
+      .map((x) => x.trim())
+      .filter((x) => x);
+    return {
+      option: tokens[0],
+      texts: tokens[1]
+        .split(',')
+        .map((x) => x.trim())
+        .filter((x) => x),
+    };
+  }
+
+  buildAction(command, current) {
+    return {
+      command,
+      condition: current.condition,
+      settings: current.settings,
+    };
+  }
+
+  async loadScript(fileName) {
+    const fs = this.container.get('fs');
+    const script = await loadScript(fileName, fs);
+    const intents: any = {};
+    const entities: any = {};
+    let locale = 'en';
+    let currentIntent: any = {};
+    let currentEntity: any = {};
+    let currentTranslations = {
+      masterLocale: 'en',
+      fallbackLocale: 'en',
+      rules: [],
+    };
+    const translations: any[] = [];
+    let state;
+    const dialogs: any[] = [];
+    let currentDialog: any = {};
+    let action;
+    let tokens;
+    let contextData;
+    let trimmed;
+    const imports: any[] = [];
+    for (let i = 0; i < script.length; i += 1) {
+      const current = script[i];
+      if (current.type.length > 3 && current.type.startsWith('ask')) {
+        const lineComponents = current.line.split(' ');
+        const [varName, ...validatorParams] = lineComponents;
+        current.line = `${varName} ${current.type.slice(3)} ${
+          validatorParams !== '' ? validatorParams.join(' ') : []
+        }`;
+        current.type = 'ask';
+        current.validatorParams = validatorParams.join(' ');
+      }
+      let splitted;
+      switch (current.type) {
+        case 'language':
+          locale = current.line;
+          break;
+        case 'comment':
+          break;
+        case 'translations':
+          splitted = current.line ? current.line.split(' ') : ['en', 'en'];
+          currentTranslations = {
+            masterLocale: splitted[0] || 'en',
+            fallbackLocale: splitted[1] || splitted[0] || 'en',
+            rules: [],
+          };
+          translations.push(currentTranslations);
+          state = 'translations';
+          break;
+        case 'intent':
+          currentIntent = {
+            intent: current.line,
+            utterances: [],
+            tests: [],
+            answers: [],
+          };
+          if (!intents[locale]) {
+            intents[locale] = [];
+          }
+          intents[locale].push(currentIntent);
+          break;
+        case 'contextdata':
+          contextData = current.line;
+          break;
+        case 'entity':
+          currentEntity = {
+            name: current.line,
+          };
+          if (!entities[locale]) {
+            entities[locale] = [];
+          }
+          entities[locale].push(currentEntity);
+          state = 'entity';
+          break;
+        case 'utterances':
+          state = 'utterances';
+          break;
+        case 'answers':
+          state = 'answers';
+          break;
+        case 'tests':
+          state = 'tests';
+          break;
+        case 'regex':
+          currentEntity.regex = current.line;
+          break;
+        case '-':
+          if (state) {
+            switch (state) {
+              case 'translations':
+                currentTranslations.rules.push(current.line);
+                break;
+              case 'utterances':
+                currentIntent.utterances.push(current.line);
+                break;
+              case 'answers':
+                if (current.line.startsWith('[')) {
+                  trimmed = trimBetween(current.line.trim(), '[', ']', true);
+                  currentIntent.answers.push({
+                    answer: trimmed.line.trim(),
+                    opts: trimmed.trimmed,
+                  });
+                } else {
+                  currentIntent.answers.push(current.line);
+                }
+                break;
+              case 'tests':
+                currentIntent.tests.push(current.line);
+                break;
+              case 'entity':
+                if (!currentEntity.options) {
+                  currentEntity.options = [];
+                }
+                currentEntity.options.push(this.getEntityOption(current.line));
+                break;
+              default:
+                console.log(`Unknown state "${state}"`);
+                break;
+            }
+          }
+          break;
+        case 'dialog':
+          currentDialog = { name: getDialogName(current.line), actions: [] };
+          dialogs.push(currentDialog);
+          break;
+        case 'run':
+          action = this.buildAction('beginDialog', current);
+          action.dialog = current.line;
+          currentDialog.actions.push(action);
+          break;
+        case 'restart':
+          action = this.buildAction('restartDialog', current);
+          currentDialog.actions.push(action);
+          break;
+        case 'say':
+          action = this.buildAction('say', current);
+          action.text = current.line;
+          currentDialog.actions.push(action);
+          break;
+        case 'card':
+          action = this.buildAction('card', current);
+          action.cardName = current.line;
+          currentDialog.actions.push(action);
+          break;
+        case 'suggest':
+          action = this.buildAction('suggest', current);
+          action.text = current.line;
+          currentDialog.actions.push(action);
+          break;
+        case 'ask':
+          action = this.buildAction('ask', current);
+          tokens = current.line.split(' ');
+          // custom validator
+          if (current.srcLine[3] !== ' ') {
+            [
+              action.variableName,
+              action.validatorName,
+              ...action.rawValidatorParams
+            ] = tokens;
+          } else {
+            [action.variableName, ...action.rawValidatorParams] = tokens;
+            action.validatorName = undefined;
+          }
+          action.parameters = action.rawValidatorParams.join(' ');
+          delete action.rawValidatorParams;
+          currentDialog.actions.push(action);
+          break;
+        case 'nlp':
+          action = this.buildAction('nlp', current);
+          action.allowedIntents = current.line
+            ? current.line.split(' ')
+            : undefined;
+          currentDialog.actions.push(action);
+          break;
+        case 'call':
+          action = this.buildAction('call', current);
+          tokens = current.line.split(' ');
+          [action.functionName, ...action.rawParameters] = tokens;
+          action.parameters = action.rawParameters.join(' ');
+          delete action.rawParameters;
+          currentDialog.actions.push(action);
+          break;
+        case 'inc':
+          action = this.buildAction('inc', current);
+          tokens = current.line.split(' ');
+          [action.variableName] = tokens;
+          action.increment = parseInt(tokens[1] || '1', 10);
+          currentDialog.actions.push(action);
+          break;
+        case 'dec':
+          action = this.buildAction('dec', current);
+          tokens = current.line.split(' ');
+          [action.variableName] = tokens;
+          action.increment = parseInt(tokens[1] || '1', 10);
+          currentDialog.actions.push(action);
+          break;
+        case 'set':
+          action = this.buildAction('set', current);
+          tokens = current.line.split(' ');
+          [action.variableName] = tokens;
+          action.value = current.line.slice(tokens[0].length + 1);
+          currentDialog.actions.push(action);
+          break;
+        case 'import':
+          imports.push(current.content);
+          break;
+        default:
+          console.log('UNKNOWN COMMAND');
+          console.log(current);
+          break;
+      }
+    }
+    this.localization.addRule(translations);
+    const intentKeys = Object.keys(intents);
+    for (let i = 0; i < imports.length; i += 1) {
+      const currentImport = imports[i];
+      if (currentImport && !currentImport.data) {
+        this.registerCard(currentImport);
+      }
+    }
+    const nlp = this.container.get('nlp');
+    if (nlp) {
+      for (let i = 0; i < imports.length; i += 1) {
+        const currentImport = imports[i];
+        if (currentImport && currentImport.locale && currentImport.data) {
+          nlp.addCorpus(currentImport);
+        }
+      }
+      for (let i = 0; i < intentKeys.length; i += 1) {
+        const currentLocale = intentKeys[i];
+        const corpus: any = {
+          locale: currentLocale,
+          data: intents[currentLocale],
+        };
+        if (contextData) {
+          corpus.contextData = contextData;
+        }
+        const currentEntities = entities[currentLocale];
+        if (currentEntities && currentEntities.length > 0) {
+          corpus.entities = {};
+          for (let j = 0; j < currentEntities.length; j += 1) {
+            const entity = currentEntities[j];
+            if (entity.regex) {
+              corpus.entities[entity.name] = entity.regex;
+            } else {
+              const options: any = {};
+              corpus.entities[entity.name] = { options };
+              for (let k = 0; k < entity.options.length; k += 1) {
+                const option = entity.options[k];
+                options[option.option] = option.texts;
+              }
+            }
+          }
+        }
+        nlp.addCorpus(corpus);
+      }
+      if (intentKeys.length) {
+        await nlp.train();
+      }
+    }
+    this.addDialog('/#', [
+      { command: 'ask' },
+      { command: 'beginDialog', dialog: '/' },
+    ]);
+    for (let i = 0; i < dialogs.length; i += 1) {
+      this.addDialog(dialogs[i].name, dialogs[i].actions);
+    }
+  }
+
+  loadCorpus(corpus) {
+    if (this.nlp) {
+      this.nlp.addCorpus(corpus);
+    }
+  }
+
+  async resetFlows() {
+    const logger = this.container.get('logger');
+    logger.info('reseting flows...');
+    Object.keys(this.dialogManager.dialogs).forEach((dialogKey) => {
+      delete this.dialogManager.dialogs[dialogKey];
+    });
+    await this.resetContexts();
+  }
+
+  async resetContexts() {
+    const logger = this.container.get('logger');
+    logger.info('reseting context in all conversations...');
+    await this.contextManager.resetConversations();
+  }
+
+  async resetConversationContext(cid) {
+    const logger = this.container.get('logger');
+    logger.debug(`reseting context in conversation: ${cid}`);
+    await this.contextManager.resetConversation(cid);
+  }
+}
+
+export default Bot;

@@ -1,0 +1,59 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "tsBuildInfoFile": "dist/.tsbuildinfo"
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.json"
+  ],
+  "references": [
+    {
+      "path": "../builtin-duckling"
+    },
+    {
+      "path": "../builtin-microsoft"
+    },
+    {
+      "path": "../core-loader"
+    },
+    {
+      "path": "../emoji"
+    },
+    {
+      "path": "../evaluator"
+    },
+    {
+      "path": "../lang-all"
+    },
+    {
+      "path": "../language"
+    },
+    {
+      "path": "../neural"
+    },
+    {
+      "path": "../nlg"
+    },
+    {
+      "path": "../nlp"
+    },
+    {
+      "path": "../nlu"
+    },
+    {
+      "path": "../request"
+    },
+    {
+      "path": "../sentiment"
+    },
+    {
+      "path": "../similarity"
+    },
+    {
+      "path": "../xtables"
+    }
+  ]
+}

@@ -4,15 +4,18 @@
   "description": "Library for NLU (Natural Language Understanding) done in Node.js",
   "type": "module",
   "scripts": {
-    "build": "turbo run build",
+    "build": "tsc --build",
+    "build:clean": "tsc --build --clean",
     "changeset": "changeset",
-    "ci:publish": "turbo run build && changeset publish",
+    "check:exports": "node scripts/check-package-exports.mjs",
+    "ci:publish": "pnpm run build && changeset publish",
     "coveralls": "vitest run --coverage && cat ./coverage/lcov.info | coveralls",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
     "lint": "oxlint",
     "lintfix": "oxlint --fix",
-    "test": "oxfmt && oxlint --fix && vitest run --silent --coverage"
+    "test": "oxfmt && oxlint --fix && vitest run --silent --coverage",
+    "typecheck": "tsc --build && tsc --project tsconfig.test.json"
   },
   "author": {
     "email": "opensource@axa.com",
@@ -39,14 +42,17 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@changesets/cli": "^3.0.3",
+    "@types/node": "^22.20.4",
     "@vitest/coverage-v8": "^5.0.1",
     "coveralls": "^3.1.0",
     "https-proxy-agent": "^5.0.0",
     "oxfmt": "^0.68.0",
     "oxlint": "^1.83.0",
+    "publint": "^0.3.24",
     "supertest": "^6.1.3",
-    "turbo": "^2.11.2",
+    "typescript": "^7.0.2",
     "vitest": "^5.0.1"
   },
   "packageManager": "pnpm@11.25.0",

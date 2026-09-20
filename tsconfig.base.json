@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    // Output: ESM only, targeting the Node versions declared in engines.
+    "target": "es2023",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "moduleDetection": "force",
+    "resolveJsonModule": true,
+
+    // Every package ships types, source maps and declaration maps.
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "composite": true,
+    "noEmitOnError": true,
+
+    // Keep the emit a faithful, file-by-file translation of the source so the
+    // published ESM stays readable and transpiler-friendly.
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "useDefineForClassFields": true,
+
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "types": ["node"],
+
+    // The migration from JavaScript is mechanical: implicit `any` is still
+    // allowed so that untyped legacy code compiles. Tightening this (and then
+    // `strict`) is tracked as follow-up work, package by package.
+    "strict": false,
+    "noImplicitAny": false
+  }
+}

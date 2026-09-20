@@ -26,22 +26,34 @@
   ],
   "license": "MIT",
   "type": "module",
-  "main": "./src/index.js",
   "exports": {
-    ".": "./src/index.js",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
     "./package.json": "./package.json"
   },
-  "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
   },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1",
+    "build": "tsc --build tsconfig.json",
+    "clean": "tsc --build tsconfig.json --clean"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "cc4249fa994c58d220e6f10a6c94fdad05df32fd",
   "dependencies": {
     "@nlpjs-neo/bert-tokenizer": "workspace:^",
     "@nlpjs-neo/core": "workspace:^",
     "@nlpjs-neo/utils": "workspace:^",
     "@tensorflow/tfjs-node": "^3.0.0"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "gitHead": "cc4249fa994c58d220e6f10a6c94fdad05df32fd"
+  }
 }

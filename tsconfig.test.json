@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    // Tests are never emitted; they are type-checked against the sources so a
+    // check does not depend on `dist/` being up to date.
+    "noEmit": true,
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false,
+    "types": ["node", "vitest/globals"],
+    "paths": {
+      "@nlpjs-neo/*": ["./packages/*/src/index.ts"]
+    }
+  },
+  "include": ["packages/*/test/**/*.ts"]
+}

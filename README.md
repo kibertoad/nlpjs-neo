@@ -194,10 +194,11 @@ If you're looking to use NLP.js in your Node application, you can install via NP
     pnpm add node-nlp-neo
 ```
 
-### ESM only
+### ESM only, typed
 
-All packages are published as ES modules and require **Node.js 22.12 or later**. They have
-no CommonJS build, so `require('node-nlp-neo')` does not work; use `import` instead:
+All packages are written in TypeScript, published as ES modules with bundled type
+declarations, and require **Node.js 22.12 or later**. There is no CommonJS build, so
+`require('node-nlp-neo')` does not work; use `import` instead:
 
 ```javascript
 import { NlpManager } from 'node-nlp-neo';

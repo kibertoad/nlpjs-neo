@@ -19,6 +19,18 @@ Generally we like to see pull requests that:
 - Have tests
 - Don't decrease the current code coverage
 
+## Building
+
+The packages are written in TypeScript and compiled with [TypeScript 7](https://www.typescriptlang.org/)
+to ESM plus type declarations in each package's `dist/` directory. The workspace is wired up
+with project references, so a single build from the root compiles every package in dependency
+order.
+
+```shell
+pnpm install
+pnpm build
+```
+
 ## Running tests
 
 To run tests locally, first install all dependencies.
@@ -27,11 +39,29 @@ To run tests locally, first install all dependencies.
 pnpm install
 ```
 
-From the root directory, run the tests.
+From the root directory, run the tests. Tests run against the TypeScript sources, so no build
+is needed first.
 
 ```shell
 pnpm test
 ```
+
+## Checking types and packaging
+
+```shell
+pnpm typecheck      # type-checks the package sources and the tests
+pnpm build          # compiles every package to dist/
+pnpm check:exports  # are-the-types-wrong + publint for every package
+```
+
+`check:exports` inspects the packed tarballs, so run `pnpm build` before it.
+
+### Migrating from JavaScript
+
+The port from JavaScript was mechanical, so the compiler runs without `strict` and with
+`noImplicitAny` disabled, and classes declare their instance properties as `any`. Tightening
+this package by package is welcome: prefer replacing an `any` with a real type over adding new
+ones.
 
 ## Changesets
 
