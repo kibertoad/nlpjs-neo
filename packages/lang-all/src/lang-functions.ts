@@ -1,6 +1,6 @@
 import { Language } from '@nlpjs-neo/language';
 import * as langAr from '@nlpjs-neo/lang-ar';
-import * as langBr from '@nlpjs-neo/lang-bn';
+import * as langBn from '@nlpjs-neo/lang-bn';
 import * as langCa from '@nlpjs-neo/lang-ca';
 import * as langCs from '@nlpjs-neo/lang-cs';
 import * as langDa from '@nlpjs-neo/lang-da';
@@ -42,7 +42,7 @@ import * as langZh from '@nlpjs-neo/lang-zh';
 
 const langs = {
   ar: langAr,
-  br: langBr,
+  bn: langBn,
   ca: langCa,
   cs: langCs,
   da: langDa,

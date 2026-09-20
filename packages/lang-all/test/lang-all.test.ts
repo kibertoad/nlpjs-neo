@@ -22,7 +22,7 @@
  */
 
 import { Container } from '@nlpjs-neo/core';
-import { LangAll } from '../src/index.js';
+import { getStemmer, LangAll } from '../src/index.js';
 
 describe('Language All', () => {
   describe('Use plugin', () => {
@@ -35,6 +35,13 @@ describe('Language All', () => {
       expect(stemmer.constructor.name).toEqual('StemmerEn');
       const stopwords = instance.get('stopwords-en');
       expect(stopwords.constructor.name).toEqual('StopwordsEn');
+    });
+  });
+
+  describe('Language functions', () => {
+    test('Should resolve Bengali by its ISO code and language name', () => {
+      expect(getStemmer('bn').constructor.name).toEqual('StemmerBn');
+      expect(getStemmer('bengali').constructor.name).toEqual('StemmerBn');
     });
   });
 });
