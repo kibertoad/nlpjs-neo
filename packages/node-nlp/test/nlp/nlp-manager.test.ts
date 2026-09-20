@@ -1,4 +1,6 @@
 import { NlpManager } from '../../src/index.js';
+import type { NlpResult } from '@nlpjs-neo/nlp';
+import type { ProcessTransformer } from '../../src/types.js';
 import corpus from './corpus-en.json' with { type: 'json' };
 
 function addEntities(manager) {
@@ -1021,7 +1023,7 @@ describe('NLP Manager', () => {
     });
 
     test('Should call transformer function if it is passed', async () => {
-      const transformer = vi.fn<(value: any) => any>((_) => _);
+      const transformer = vi.fn<ProcessTransformer>((_) => _);
       const manager = new NlpManager({
         processTransformer: transformer,
       });
@@ -1046,7 +1048,7 @@ describe('NLP Manager', () => {
         transformed: 'VALUE',
       };
       const transformer = vi
-        .fn<(...args: any[]) => any>()
+        .fn<ProcessTransformer>()
         .mockReturnValue(transformedValue);
       const manager = new NlpManager({
         processTransformer: transformer,
@@ -1065,7 +1067,7 @@ describe('NLP Manager', () => {
         transformed: 'VALUE',
       };
       const transformer = vi
-        .fn<(...args: any[]) => any>()
+        .fn<ProcessTransformer>()
         .mockReturnValue(Promise.resolve(transformedValue));
       const manager = new NlpManager({
         processTransformer: transformer,

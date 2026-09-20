@@ -10,7 +10,7 @@ describe('Tokenizer Ja', () => {
   });
   describe('Tokenize', () => {
     test('It empty string is provided return empty array', () => {
-      const expected: any[] = [];
+      const expected: string[] = [];
       const actual = tokenizer.tokenize('');
       expect(actual).toEqual(expected);
     });

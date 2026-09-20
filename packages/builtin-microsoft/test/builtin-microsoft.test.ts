@@ -13,7 +13,7 @@ const container = containerBootstrap();
 
 declare module 'vitest' {
   interface Matchers<R = void | Promise<void>> {
-    toContainResolution(expected: any): R;
+    toContainResolution(expected: unknown): R;
   }
 }
 

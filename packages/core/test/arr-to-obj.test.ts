@@ -1,4 +1,5 @@
 import ArrToObj from '../src/arr-to-obj.js';
+import type { Token, TokenMap } from '../src/index.js';
 import { Container } from '../src/container.js';
 import containerBootstrap from '../src/container-bootstrap.js';
 
@@ -24,9 +25,9 @@ describe('ArrToObj', () => {
       expect(actual).toEqual(expected);
     });
     test('If an empty array is provided return empty object', () => {
-      const arr: any[] = [];
+      const arr: Token[] = [];
       const actual = ArrToObj.arrToObj(arr);
-      const expected: any = {};
+      const expected: TokenMap = {};
       expect(actual).toEqual(expected);
     });
   });

@@ -1,4 +1,5 @@
 import { SlotManager } from '../src/index.js';
+import type { SlotFillingContext, SlotFillingResult } from '../src/index.js';
 
 describe('Slot Manager', () => {
   describe('Constructor', () => {
@@ -351,7 +352,7 @@ describe('Slot Manager', () => {
       const result = {
         intent: 'blau',
       };
-      const context: any = {};
+      const context: SlotFillingContext = {};
       const actual = manager.process(result, context);
       expect(actual).toBeFalsy();
       expect(result).toEqual({ intent: 'blau' });
@@ -359,8 +360,11 @@ describe('Slot Manager', () => {
     test('If result carries no entities, should fill the list it completes', () => {
       const manager = new SlotManager();
       manager.addSlot('intent', 'entity', true, { en: 'Which entity?' });
-      const result: any = { intent: 'intent', localeIso2: 'en' };
-      const context: any = {};
+      const result: SlotFillingResult = {
+        intent: 'intent',
+        localeIso2: 'en',
+      };
+      const context: SlotFillingContext = {};
       const actual = manager.process(result, context);
       expect(actual).toBeTruthy();
       expect(result.entities).toEqual([]);
@@ -373,7 +377,7 @@ describe('Slot Manager', () => {
         intent: undefined,
         score: 1,
       };
-      const context: any = {};
+      const context: SlotFillingContext = {};
       const actual = manager.process(result, context);
       expect(actual).toBeFalsy();
       expect(result).toEqual({ intent: undefined, score: 1 });
@@ -420,7 +424,7 @@ describe('Slot Manager', () => {
           },
         ],
       };
-      const context: any = {};
+      const context: SlotFillingContext = {};
       const actual = manager.process(result, context);
       expect(actual).toBeTruthy();
       expect(result).toEqual({
@@ -453,7 +457,7 @@ describe('Slot Manager', () => {
           },
         ],
       };
-      const context: any = {};
+      const context: SlotFillingContext = {};
       const actual = manager.process(result, context);
       expect(actual).toBeTruthy();
       expect(result).toEqual({

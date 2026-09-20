@@ -1,4 +1,5 @@
 import { Evaluator, JavascriptCompiler } from '../src/index.js';
+import type { EvaluationContext, EvaluatorNode } from '../src/index.js';
 
 const container = {
   get() {
@@ -15,9 +16,9 @@ const container = {
  */
 describe('Parsing and code generation', () => {
   const evaluate = {
-    evaluator: (source: string, context: any = {}) =>
+    evaluator: (source: string, context: EvaluationContext = {}) =>
       new Evaluator().evaluate(source, context),
-    compiler: (source: string, context: any = {}) =>
+    compiler: (source: string, context: EvaluationContext = {}) =>
       new JavascriptCompiler(container).evaluate(source, context),
   };
 
@@ -68,7 +69,7 @@ describe('Parsing and code generation', () => {
         expect(await run('1 + 1; 2 + 2')).toEqual(4);
       });
       test('It should evaluate the statements in order', async () => {
-        const context: any = { a: 0 };
+        const context: EvaluationContext = { a: 0 };
         expect(await run('a = 1; a + 2', context)).toEqual(3);
       });
       test('It should tolerate a trailing semicolon', async () => {

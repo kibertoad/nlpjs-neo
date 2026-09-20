@@ -2,14 +2,20 @@ import http from 'http';
 import https from 'https';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import { HttpProxyAgent } from 'http-proxy-agent';
+import type { RequestOptions, RequestResult } from './types.js';
 
-function request(options) {
-  if (typeof options === 'string') {
-    options = {
-      url: options,
-    };
-  }
-  let client;
+/**
+ * Makes one HTTP request and answers its body, parsed as JSON when it is
+ * JSON and as it came when it is not.
+ *
+ * A string is read as the url of a GET. An object carries the options
+ * `http.request` takes, with a full `url` in place of host, port and path,
+ * and a `postData` body that is form encoded when it is not already a string.
+ */
+function request(srcOptions: string | RequestOptions): Promise<RequestResult> {
+  const options: RequestOptions =
+    typeof srcOptions === 'string' ? { url: srcOptions } : srcOptions;
+  let client: typeof http | typeof https | undefined;
   if (options.url) {
     client = options.url.startsWith('http:') ? http : https;
     const requrl = new URL(options.url);
@@ -24,10 +30,12 @@ function request(options) {
   if (!client) {
     client = options.port === 80 ? http : https;
   }
-  let { postData } = options;
+  let postData = options.postData as string | undefined;
   if (postData) {
     if (typeof postData !== 'string') {
-      postData = new URLSearchParams(postData).toString();
+      postData = new URLSearchParams(
+        postData as Record<string, string>
+      ).toString();
     }
     delete options.postData;
     if (!options.headers) {
@@ -68,7 +76,7 @@ function request(options) {
     options.headers['Proxy-Connections'] = 'keep-alive';
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise<RequestResult>((resolve, reject) => {
     const req = client.request(options, (res) => {
       let result = '';
       res.on('data', (chunk) => {
@@ -76,7 +84,7 @@ function request(options) {
       });
       res.on('end', () => {
         try {
-          const obj = JSON.parse(result);
+          const obj = JSON.parse(result) as RequestResult;
           resolve(obj);
         } catch {
           resolve(result);

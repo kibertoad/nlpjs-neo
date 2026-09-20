@@ -1,4 +1,5 @@
 import type { Classification } from '../src/index.js';
+import type { CorpusEntry } from '../src/index.js';
 import {
   ArrToObj,
   Container,
@@ -10,7 +11,7 @@ import {
 import { NluNeural } from '../src/index.js';
 import srccorpus from './corpus50.json' with { type: 'json' };
 
-const corpus: any[] = [];
+const corpus: CorpusEntry[] = [];
 for (let i = 0; i < srccorpus.data.length; i += 1) {
   const { intent, utterances } = srccorpus.data[i];
   for (let j = 0; j < utterances.length; j += 1) {

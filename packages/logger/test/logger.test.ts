@@ -2,8 +2,16 @@ import { Writable } from 'node:stream';
 import prettyStream from 'pino-pretty';
 import { Logger, logger } from '../src/index.js';
 
+/** One record as `pino` writes it, with the fields these tests read. */
+interface LogRecord {
+  level?: number;
+  msg?: string;
+  err?: { message?: string; stack?: string };
+  [key: string]: unknown;
+}
+
 interface Capture {
-  lines: () => any[];
+  lines: () => LogRecord[];
   stream: Writable;
 }
 

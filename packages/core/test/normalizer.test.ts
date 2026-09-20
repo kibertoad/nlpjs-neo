@@ -3,13 +3,14 @@ import { defaultContainer } from '../src/container.js';
 import { Container } from '../src/container.js';
 
 class MockNormalizer {
-  declare char: any;
-  declare container: any;
-  declare locale: any;
-  declare name: any;
-  declare regex: any;
+  /** The character this normalizer strips. */
+  declare char: string;
+  declare container: Container;
+  declare locale: string;
+  declare name: string;
+  declare regex: RegExp;
 
-  constructor(container, locale, char) {
+  constructor(container: Container, locale: string, char: string) {
     this.container = container;
     this.locale = locale;
     this.char = char;
@@ -48,12 +49,12 @@ describe('Normalizer', () => {
       expect(normalizer.container).toBe(defaultContainer);
     });
     test('I can provide a container', () => {
-      const container: any = {};
+      const container = {} as Container;
       const normalizer = new Normalizer(container);
       expect(normalizer.container).toBe(container);
     });
     test('I can provide a container inside a settings object', () => {
-      const container: any = {};
+      const container = {} as Container;
       const normalizer = new Normalizer({ container });
       expect(normalizer.container).toBe(container);
     });

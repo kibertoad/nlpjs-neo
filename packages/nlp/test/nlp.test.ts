@@ -1,4 +1,5 @@
 import { Nlp } from '../src/index.js';
+import type { Context } from '../src/index.js';
 import TemplateMock from './template-mock.js';
 
 const defaultCorpus = {
@@ -908,7 +909,7 @@ describe('NLP', () => {
         return data;
       });
       await nlp.train();
-      const context: any = {};
+      const context: Context = {};
       const output = await nlp.process('en', 'Who am i?', context);
       expect(output.utterance).toEqual('Who am i?');
       expect(output.intent).toEqual('who_am_i');
@@ -934,7 +935,7 @@ describe('NLP', () => {
         return data;
       });
       await nlp.train();
-      const context: any = {};
+      const context: Context = {};
       const output = await nlp.process('en', 'Who am i?', context);
       expect(output.utterance).toEqual('Who am i?');
       expect(output.intent).toEqual('who_am_i');

@@ -1,4 +1,5 @@
 import Timer from '../src/timer.js';
+import type { Container, PipelineInput } from '../src/index.js';
 
 describe('Timer', () => {
   describe('Constructor', () => {
@@ -8,13 +9,13 @@ describe('Timer', () => {
     });
 
     test('I can provide a container', () => {
-      const container: any = {};
+      const container = {} as Container;
       const timer = new Timer(container);
       expect(timer.container).toBe(container);
     });
 
     test('I can provide an object with a container', () => {
-      const container: any = {};
+      const container = {} as Container;
       const timer = new Timer(container);
       expect(timer.container).toBe(container);
     });
@@ -23,7 +24,7 @@ describe('Timer', () => {
   describe('Start', () => {
     test('It should add an hrstart to the input', () => {
       const timer = new Timer();
-      const input: any = {};
+      const input: PipelineInput = {};
       timer.start(input);
       expect(input.hrstart).toBeDefined();
     });
@@ -35,7 +36,7 @@ describe('Timer', () => {
     });
     test('Run call start', () => {
       const timer = new Timer();
-      const input: any = {};
+      const input: PipelineInput = {};
       timer.run(input);
       expect(input.hrstart).toBeDefined();
     });
@@ -44,14 +45,14 @@ describe('Timer', () => {
   describe('Stop', () => {
     test('It should set an elapsed property to the input', () => {
       const timer = new Timer();
-      const input: any = {};
+      const input: PipelineInput = {};
       timer.start(input);
       timer.stop(input);
       expect(input.elapsed).toBeDefined();
     });
     test('It should remove hrstart', () => {
       const timer = new Timer();
-      const input: any = {};
+      const input: PipelineInput = {};
       timer.start(input);
       timer.stop(input);
       expect(input.hrstart).toBeUndefined();
@@ -65,7 +66,7 @@ describe('Timer', () => {
     });
     test('If not timer started on input, then do nothing', () => {
       const timer = new Timer();
-      const input: any = {};
+      const input: PipelineInput = {};
       timer.stop(input);
       expect(input.elapsed).toBeUndefined();
     });

@@ -5,7 +5,14 @@ import JavascriptCompiler from './javascript-compiler.js';
 
 export { Evaluator, compile, Template, JavascriptCompiler };
 
-export type { Identifier, Literal, UnaryExpression } from 'acorn';
+// The node kinds the walkers take, so a consumer can name one without
+// depending on `acorn` itself.
+export type {
+  Identifier,
+  Literal,
+  ThisExpression,
+  UnaryExpression,
+} from 'acorn';
 export type {
   CompilerContainer,
   CompilerContainerHolder,

@@ -1,11 +1,12 @@
 import Stopwords from '../src/stopwords.js';
+import type { StopwordDictionary } from '../src/index.js';
 import { containerBootstrap } from '../src/index.js';
 import { defaultContainer } from '../src/container.js';
 import { Container } from '../src/container.js';
 
 class MockedStopwords extends Stopwords {
-  declare dictionary: any;
-  declare name: any;
+  declare dictionary: StopwordDictionary;
+  declare name: string;
 
   constructor(container, locale, words) {
     super(container);

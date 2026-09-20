@@ -1,4 +1,5 @@
 import { NluManager } from '../src/index.js';
+import type { Classification } from '../src/index.js';
 import container from './bootstrap.js';
 import {
   addFoodDomainEn,
@@ -392,7 +393,7 @@ describe('NLU Manager', () => {
   describe('Is equal classification', () => {
     test('Should return true if the two first classifications have the same score', () => {
       const manager = new NluManager({ container });
-      const classifications: any[] = [];
+      const classifications: Classification[] = [];
       classifications.push({ intent: 'a', score: 0.6 });
       classifications.push({ intent: 'b', score: 0.6 });
       classifications.push({ intent: 'c', score: 0.5 });
@@ -404,7 +405,7 @@ describe('NLU Manager', () => {
     });
     test('Should return false if first score is different than second score', () => {
       const manager = new NluManager({ container });
-      const classifications: any[] = [];
+      const classifications: Classification[] = [];
       classifications.push({ intent: 'a', score: 0.7 });
       classifications.push({ intent: 'b', score: 0.6 });
       classifications.push({ intent: 'c', score: 0.6 });

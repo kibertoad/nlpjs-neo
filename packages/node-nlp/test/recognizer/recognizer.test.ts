@@ -1,4 +1,5 @@
 import { Recognizer } from '../../src/index.js';
+import type { RecognizerContext } from '../../src/types.js';
 
 const rulesFile = './packages/node-nlp/test/nlp/rules.xlsx';
 
@@ -9,7 +10,7 @@ const rulesFile = './packages/node-nlp/test/nlp/rules.xlsx';
  */
 function buildRecognizer() {
   const recognizer = new Recognizer({ threshold: 0.5 });
-  const save = vi.fn<(...args: any[]) => void>();
+  const save = vi.fn<(...args: unknown[]) => void>();
   recognizer.nlpManager.save = save;
   return { recognizer, save };
 }
@@ -71,7 +72,7 @@ describe('Recognizer', () => {
     test('It should carry recognized entities into the context', async () => {
       const { recognizer } = buildRecognizer();
       await recognizer.loadExcel(rulesFile);
-      const context: any = {};
+      const context: RecognizerContext = {};
       await recognizer.process(context, 'en', 'where is spiderman?');
       expect(context.hero).toEqual('spiderman');
     }, 30000);

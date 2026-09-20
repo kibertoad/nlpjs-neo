@@ -78,7 +78,7 @@ describe('Cosine similarity', () => {
   });
 
   test('should add keys to dictionary', () => {
-    const dic1: any = {};
+    const dic1: Record<string, boolean> = {};
 
     cosineSimilarityTools.addKeysToDict({ hey: 1, you: 1 }, dic1);
     expect(dic1).toEqual({ hey: true, you: true });

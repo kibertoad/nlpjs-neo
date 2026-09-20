@@ -6,9 +6,9 @@ import { ConsoleConnector } from '../src/index.js';
 const container = containerBootstrap();
 
 global.console = {
-  warn: vi.fn<(...args: any[]) => void>(),
-  log: vi.fn<(...args: any[]) => void>(),
-  error: vi.fn<(...args: any[]) => void>(),
+  warn: vi.fn<(...args: unknown[]) => void>(),
+  log: vi.fn<(...args: unknown[]) => void>(),
+  error: vi.fn<(...args: unknown[]) => void>(),
 } as unknown as Console;
 
 afterEach(() => {
@@ -27,7 +27,7 @@ describe('Console Connector', () => {
 
   describe('Say', () => {
     test('It should say an string', () => {
-      console.log = vi.fn<(...args: any[]) => void>();
+      console.log = vi.fn<(...args: unknown[]) => void>();
       const connector = new ConsoleConnector(
         container as unknown as ConnectorSettings
       );
@@ -41,7 +41,7 @@ describe('Console Connector', () => {
       const testContainer = containerBootstrap();
       const pipeline = {} as RegisteredPipeline;
       const runPipeline = vi
-        .fn<(...args: any[]) => Promise<void>>()
+        .fn<(...args: unknown[]) => Promise<void>>()
         .mockResolvedValue(undefined);
       vi.spyOn(testContainer, 'getPipeline').mockReturnValue(pipeline);
       vi.spyOn(testContainer, 'runPipeline').mockImplementation(runPipeline);

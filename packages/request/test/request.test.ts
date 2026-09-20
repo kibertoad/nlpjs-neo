@@ -1,4 +1,11 @@
 import http from 'node:http';
+/** What the echo server of these tests answers: the request it received. */
+interface EchoedRequest {
+  method?: string;
+  url?: string;
+  message?: string;
+}
+
 import { request } from '../src/index.js';
 
 type ReceivedRequest = {
@@ -91,7 +98,7 @@ afterEach(async () => {
 describe('Request', () => {
   describe('GET', () => {
     test('It should accept a plain URL string and parse a JSON answer', async () => {
-      const actual: any = await request(`${baseUrl}/hello`);
+      const actual = (await request(`${baseUrl}/hello`)) as EchoedRequest;
       expect(actual.method).toEqual('GET');
       expect(actual.url).toEqual('/hello');
     });
@@ -113,7 +120,7 @@ describe('Request', () => {
     });
 
     test('It should resolve, not reject, on an error status', async () => {
-      const actual: any = await request(`${baseUrl}/error`);
+      const actual = (await request(`${baseUrl}/error`)) as EchoedRequest;
       expect(actual.message).toEqual('boom');
     });
 
@@ -128,11 +135,11 @@ describe('Request', () => {
 
   describe('POST', () => {
     test('It should url-encode an object body', async () => {
-      const actual: any = await request({
+      const actual = (await request({
         url: `${baseUrl}/submit`,
         method: 'POST',
         postData: { name: 'Anna', city: 'a b' },
-      });
+      })) as EchoedRequest;
       expect(actual.method).toEqual('POST');
       expect(received.at(-1)?.body).toEqual('name=Anna&city=a+b');
     });
@@ -204,10 +211,10 @@ describe('Request', () => {
       });
       const proxyPort = await listen(proxy);
       try {
-        const actual: any = await request({
+        const actual = (await request({
           url: `${baseUrl}/through-proxy`,
           proxy: `http://127.0.0.1:${proxyPort}`,
-        });
+        })) as EchoedRequest;
         expect(actual.url).toEqual('/through-proxy');
         expect(proxied).toHaveLength(1);
         expect(proxied[0]).toEqual(`${baseUrl}/through-proxy`);

@@ -89,7 +89,7 @@ describe('BuiltinDuckling request', () => {
       body: '[{"body":"42","dim":"number","value":{"value":42}}]',
     };
     const duckling = newDuckling();
-    const actual: any = await duckling.request('The number is 42', 'en');
+    const actual = await duckling.request('The number is 42', 'en');
     expect(actual).toHaveLength(1);
     expect(actual[0].dim).toEqual('number');
   });

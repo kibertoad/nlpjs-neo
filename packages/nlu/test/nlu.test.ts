@@ -1,8 +1,9 @@
 import container from './bootstrap.js';
+import type { CorpusEntry } from '../src/index.js';
 import Nlu from '../src/nlu.js';
 import srccorpus from './corpus50.json' with { type: 'json' };
 
-const corpus: any[] = [];
+const corpus: CorpusEntry[] = [];
 for (let i = 0; i < srccorpus.data.length; i += 1) {
   const { intent, utterances } = srccorpus.data[i];
   for (let j = 0; j < utterances.length; j += 1) {

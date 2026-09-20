@@ -1,11 +1,17 @@
 import { containerBootstrap } from '@nlpjs-neo/core';
 import { BuiltinDefault } from '../src/index.js';
+import type { BuiltinEdge, BuiltinInput } from '../src/index.js';
 
 const container = containerBootstrap();
 const builtin = new BuiltinDefault({ container });
 
-function buildExpected(value, start, entityName, typeName?) {
-  const result = {
+function buildExpected(
+  value: string,
+  start: number,
+  entityName: string,
+  typeName?: string
+): BuiltinEdge {
+  const result: BuiltinEdge = {
     start,
     end: start + value.length - 1,
     len: value.length,
@@ -13,7 +19,7 @@ function buildExpected(value, start, entityName, typeName?) {
     sourceText: value,
     utteranceText: value,
     entity: entityName,
-    resolution: { value } as any,
+    resolution: { value },
   };
   if (typeName) {
     result.resolution.type = typeName;
@@ -21,8 +27,12 @@ function buildExpected(value, start, entityName, typeName?) {
   return result;
 }
 
-function buildInput(text, builtins, locale = 'en') {
-  const result: any = {
+function buildInput(
+  text: string,
+  builtins?: string | string[],
+  locale = 'en'
+): BuiltinInput {
+  const result: BuiltinInput = {
     text,
     locale,
   };

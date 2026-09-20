@@ -1,5 +1,5 @@
 import { Container } from '@nlpjs-neo/core';
-import { LangJa } from '../src/index.js';
+import { LangJa, StemmerJa } from '../src/index.js';
 
 /**
  * Characterization tests for the kuromoji-backed stemmer. Everything here is
@@ -11,7 +11,14 @@ import { LangJa } from '../src/index.js';
  * a good deal more per token (dictionary ids, costs, conjugation tables), and
  * pinning those would make these tests a test of kuromoji rather than of us.
  */
-const pick = (tokens: any[]) =>
+interface KuromojiToken {
+  surface_form: string;
+  reading?: string;
+  pronunciation?: string;
+  pos?: string;
+}
+
+const pick = (tokens: KuromojiToken[]) =>
   tokens.map(({ surface_form, reading, pronunciation, pos }) => ({
     surface_form,
     reading,
@@ -20,12 +27,12 @@ const pick = (tokens: any[]) =>
   }));
 
 describe('Stemmer Japanese', () => {
-  let stemmer: any;
+  let stemmer: StemmerJa;
 
   beforeAll(async () => {
     const container = new Container();
     container.use(LangJa);
-    stemmer = container.get('stemmer-ja');
+    stemmer = container.get<StemmerJa>('stemmer-ja');
     await stemmer.init();
   });
 

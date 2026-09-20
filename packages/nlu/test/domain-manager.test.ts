@@ -1,4 +1,5 @@
 import { DomainManager } from '../src/index.js';
+import type { DomainManagerInput } from '../src/index.js';
 import container from './bootstrap.js';
 import { addFoodDomain, addPersonalityDomain } from './domains.js';
 
@@ -174,7 +175,7 @@ describe('Domain Manager', () => {
     test('A domain can be generated', async () => {
       const manager = new DomainManager({ container });
       addFoodDomain(manager);
-      const input: any = {};
+      const input: DomainManagerInput = {};
       const output = await manager.generateCorpus(input);
       expect(output.corpus).toBeDefined();
       expect(output.corpus.master_domain).toBeDefined();
@@ -185,7 +186,7 @@ describe('Domain Manager', () => {
       const manager = new DomainManager({ container });
       addFoodDomain(manager);
       addPersonalityDomain(manager);
-      const input: any = {};
+      const input: DomainManagerInput = {};
       const output = await manager.generateCorpus(input);
       expect(output.corpus).toBeDefined();
       expect(output.corpus.master_domain).toBeDefined();
@@ -194,7 +195,7 @@ describe('Domain Manager', () => {
     test('If train by domain the corpus will be by domain', async () => {
       const manager = new DomainManager({ container, trainByDomain: true });
       addFoodDomain(manager);
-      const input: any = {};
+      const input: DomainManagerInput = {};
       const output = await manager.generateCorpus(input);
       expect(output.corpus).toBeDefined();
       expect(output.corpus.master_domain).toBeDefined();

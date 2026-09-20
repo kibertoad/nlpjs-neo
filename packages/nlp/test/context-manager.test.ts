@@ -1,4 +1,5 @@
 import { containerBootstrap } from '@nlpjs-neo/core';
+import type { Context } from '../src/index.js';
 import { ContextManager } from '../src/index.js';
 
 const dataName = '_data';
@@ -73,7 +74,7 @@ describe('ContextManager', () => {
   describe('setContext', () => {
     test('If no id, do not crash', async () => {
       const contextManager = new ContextManager();
-      const context: any = {};
+      const context: Context = {};
       await contextManager.setContext({}, context);
       expect(contextManager.contextDictionary).toEqual({});
     });

@@ -1,5 +1,11 @@
 import { Evaluator } from '../src/index.js';
-import type { Identifier, Literal, UnaryExpression } from 'acorn';
+import type { EvaluationContext, EvaluatorNode } from '../src/index.js';
+import type {
+  Identifier,
+  Literal,
+  ThisExpression,
+  UnaryExpression,
+} from 'acorn';
 
 describe('Evaluator', () => {
   describe('Constructor', () => {
@@ -81,14 +87,14 @@ describe('Evaluator', () => {
     test('If context has a this property, return it', () => {
       const context = { this: { a: 17 } };
       const evaluator = new Evaluator(context);
-      const node: any = {};
+      const node = {} as ThisExpression;
       const result = evaluator.walkThis(node, context);
       expect(result).toBe(context.this);
     });
     test('If context does not contain this, then return undefined', () => {
-      const context: any = {};
+      const context: EvaluationContext = {};
       const evaluator = new Evaluator();
-      const node: any = {};
+      const node = {} as ThisExpression;
       const result = evaluator.walkThis(node, context);
       expect(result).toBe(undefined);
     });
@@ -557,7 +563,7 @@ describe('Evaluator', () => {
 
   describe('If statement', () => {
     test('Should be able to resolve if-then-else expressions then path', () => {
-      const context: any = { a: 12, b: 2 };
+      const context: EvaluationContext = { a: 12, b: 2 };
       const evaluator = new Evaluator();
       const question = 'if (a > 10) { c = 7; b++ } else { c = 3; b-- }';
       const result = evaluator.evaluate(question, context);
@@ -566,7 +572,7 @@ describe('Evaluator', () => {
       expect(context.b).toEqual(3);
     });
     test('Should be able to resolve if-then-else expressions else path', () => {
-      const context: any = { a: 12, b: 2 };
+      const context: EvaluationContext = { a: 12, b: 2 };
       const evaluator = new Evaluator();
       const question = 'if (a < 10) { c = 7; b++ } else { c = 3; b-- }';
       const result = evaluator.evaluate(question, context);
@@ -575,7 +581,7 @@ describe('Evaluator', () => {
       expect(context.b).toEqual(1);
     });
     test('Should be able to resolve if-then expressions then path', () => {
-      const context: any = { a: 12, b: 2 };
+      const context: EvaluationContext = { a: 12, b: 2 };
       const evaluator = new Evaluator();
       const question = 'if (a > 10) { c = 7; b++ }; d = 1;';
       const result = evaluator.evaluate(question, context);
@@ -584,7 +590,7 @@ describe('Evaluator', () => {
       expect(context.b).toEqual(3);
     });
     test('Should be able to resolve if-then expressions else path', () => {
-      const context: any = { a: 12, b: 2 };
+      const context: EvaluationContext = { a: 12, b: 2 };
       const evaluator = new Evaluator();
       const question = 'if (a < 10) { c = 7; b++ }; d = 1;';
       const result = evaluator.evaluate(question, context);
@@ -652,7 +658,7 @@ describe('Evaluator', () => {
       expect(context.c).toEqual([3, 2]);
     });
     test('It should not set a member of a non existing variable', () => {
-      const context: any = { a: 12, b: 2 };
+      const context: EvaluationContext = { a: 12, b: 2 };
       const evaluator = new Evaluator();
       const question = 'c[0] = 3';
       evaluator.evaluate(question, context);

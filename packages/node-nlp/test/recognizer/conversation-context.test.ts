@@ -70,7 +70,7 @@ describe('Conversation Context', () => {
       expect(result).toBeUndefined();
     });
     test('It should return undefined if the session does not provide a message', () => {
-      const session: any = {};
+      const session: BotSession = {};
       const context = new ConversationContext();
       const result = context.getConversationId(session as BotSession);
       expect(result).toBeUndefined();

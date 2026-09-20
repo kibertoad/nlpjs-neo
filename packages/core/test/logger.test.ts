@@ -1,12 +1,12 @@
 import logger from '../src/logger.js';
 
 global.console = {
-  debug: vi.fn<(...args: any[]) => void>(),
-  info: vi.fn<(...args: any[]) => void>(),
-  warn: vi.fn<(...args: any[]) => void>(),
-  log: vi.fn<(...args: any[]) => void>(),
-  error: vi.fn<(...args: any[]) => void>(),
-  trace: vi.fn<(...args: any[]) => void>(),
+  debug: vi.fn<(...args: unknown[]) => void>(),
+  info: vi.fn<(...args: unknown[]) => void>(),
+  warn: vi.fn<(...args: unknown[]) => void>(),
+  log: vi.fn<(...args: unknown[]) => void>(),
+  error: vi.fn<(...args: unknown[]) => void>(),
+  trace: vi.fn<(...args: unknown[]) => void>(),
 } as unknown as Console;
 
 describe('Logger', () => {

@@ -12,7 +12,9 @@ import type { SentimentResult } from '@nlpjs-neo/sentiment';
  */
 
 /** Rewrites a recognition before it is answered. */
-export type ProcessTransformer = (result: NlpResult) => NlpResult;
+export type ProcessTransformer = (
+  result: NlpResult
+) => NlpResult | Promise<NlpResult>;
 
 /** Settings of an `NlpManager`. */
 export interface NlpManagerSettings extends NlpSettings {
