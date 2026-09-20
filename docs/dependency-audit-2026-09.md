@@ -1,7 +1,14 @@
 # Dependency audit, September 2026
 
-Status: findings and recommendations, no changes applied. Written 2026-09-20 against the
-`pnpm-lock.yaml` on `main` (commit `7f49b81`).
+Status: in progress. Written 2026-09-20 against the `pnpm-lock.yaml` on `main`
+(commit `7f49b81`), and kept up to date as the work lands. The Status column of the
+recommendations table and the checklist under "Suggested order of work" are the record of
+what is done; **Progress log** at the end of the document records each landed step,
+including the places where the original finding turned out to be wrong.
+
+Items 1 to 4, 7, 8, 16, 19 to 24 are done. `pnpm audit` is down from 51 advisories
+(3 critical, 23 high, 24 moderate, 1 low) to 6 (4 high, 2 moderate), all of which belong
+to items 5, 6, 9 and 10.
 
 Scope: every third-party dependency declared in the root `package.json` and in
 `packages/*/package.json`. The `examples/` folders are not part of the pnpm workspace and
@@ -15,7 +22,8 @@ are covered briefly at the end. Version data comes from the npm registry on the 
 | CI matrix | Node 22.x, 24.x, 26.x |
 | Package manager | pnpm 11.25.0 |
 | Module system | ESM only, TypeScript 7, `module: nodenext` |
-| `pnpm audit` result | 51 advisories: 3 critical, 23 high, 24 moderate, 1 low |
+| `pnpm audit` result at the time of writing | 51 advisories: 3 critical, 23 high, 24 moderate, 1 low |
+| `pnpm audit` result now | 6 advisories: 4 high, 2 moderate |
 
 The toolchain itself is current: `typescript` 7.0.2, `vitest` 5.0.1, `@vitest/coverage-v8`
 5.0.1, `oxlint` 1.83.0, `oxfmt` 0.68.0, `@changesets/cli` 3.0.3, `publint` 0.3.24 and
@@ -26,33 +34,33 @@ the 22 line on purpose: it matches the engine floor, so keep it there rather tha
 
 Ordered by how much risk each item removes per unit of work.
 
-| # | Dependency | Package(s) | Finding | Recommendation |
-| --- | --- | --- | --- | --- |
-| 1 | `tar` 6.2.1 | utils (and 4.4.19 via tfjs-node) | 13 advisories, 1 critical, fixed only in 7.5.x | Upgrade to `^7.5.22`, add a pnpm override for the tfjs-node path |
-| 2 | `axios` 0.26.1 | request-rn | 23 advisories | Replace with global `fetch` |
-| 3 | `decompress` 4.2.1 | fullbot | Critical zip-slip, no fixed version, last release 2020 | Replace with `node-stream-zip` |
-| 4 | `coveralls` 3.1.1 | root dev | Unmaintained, pulls `request` 2.88 with 7 advisories, not used by CI | Remove |
-| 5 | `xlsx` 0.18.5 | xtables | Two unfixed CVEs on npm, no npm releases since 2022 | Follow `docs/migrate-sheetjs-to-office-kit.md` |
-| 6 | `@tensorflow/tfjs-node` 3.21.1 | open-question | Two majors behind, project in maintenance mode, drags in vulnerable `tar` 4, `adm-zip` 0.5, `rimraf` 2, `https-proxy-agent` 2 | Migrate to `@huggingface/transformers`; bump to `^4.22` as a stopgap |
-| 7 | `node-fetch` 2.6.7 | directline-connector | Node has had `fetch` since 18 | Remove, use global `fetch` |
-| 8 | `rimraf` 3.0.2 | fullbot | Node has `fs.rmSync` since 14.14 | Remove, use `fs.rmSync` |
-| 9 | `actions-on-google` 3.0.0 | dialogflow-connector | Platform shut down June 2023, library archived | Retire the package or rewrite as a plain Dialogflow ES webhook |
-| 10 | `botbuilder-adapter-facebook` 1.0.12 | fb-connector | Botkit adapter, last release 2022, pulls all of Botkit and Bot Framework | Replace with a small Graph API client on `fetch` |
-| 11 | `serverless-express` 2.0.12 | express-api-serverless | Abandoned fork, last release 2021 | Replace with `@codegenie/serverless-express` |
-| 12 | `esprima` 4.0.1 + `escodegen` 2.1.0 | evaluator | Parser frozen since 2018, no ES2020+ syntax | Replace with `acorn` + `astring` |
-| 13 | `mongodb` 3.7.4 | mongodb-adapter | Four majors behind, uses removed APIs | Upgrade to `^7.6.0` and update the adapter |
-| 14 | `compromise` 13 + `compromise-numbers` + `compromise-dates` 1 | builtin-compromise | One major behind, numbers plugin folded into core | Upgrade to `compromise` 14 + `compromise-dates` 3, drop `compromise-numbers` |
-| 15 | `pino` 7 + `pino-pretty` 7 | logger | Three and six majors behind, `prettyPrint` option no longer exists | Upgrade and switch to `transport` |
-| 16 | `https-proxy-agent` 5 + `http-proxy-agent` 5 | request, utils, root dev | Four majors behind; Node 24 has built-in env proxy support | Upgrade to `^9.1.0` now, drop once the floor is Node 24 |
-| 17 | `kuromoji` 0.1.2 | lang-ja | Last release 2018, callback API, dictionary path hand-resolved | Switch to `@patdx/kuromoji` |
-| 18 | `express` 4 | express-api-server | One major behind, still patched | Upgrade to 5 when convenient, one line to verify |
-| 19 | `formidable` 2 | directline-connector | One major behind | Upgrade to `^3.5.4` |
-| 20 | `archiver` 5 | fullbot | Three majors behind | Upgrade to `^8.0.0` |
-| 21 | `bcryptjs` 2 | api-auth-jwt | One major behind; Node `crypto.scrypt` is native | Upgrade to 3, or move to `scrypt` |
-| 22 | `supertest` 6 | root dev, express-api-server dev | One major behind, declared twice | Upgrade to 7, keep only the package-level declaration |
-| 23 | `passport` 0.6 | api-auth-jwt | Minor behind; whole stack is optional for two strategies | Upgrade to 0.7, consider dropping passport |
-| 24 | `@microsoft/recognizers-text-suite` 1.3.0 | builtin-microsoft | Pinned exactly, patch behind | Change to `^1.3.1` |
-| 25 | `exceljs` 4.4.0 | utils | Last release 2023, deprecated transitive chain | Consolidate onto `@office-kit/xlsx` after item 5 |
+| # | Dependency | Package(s) | Finding | Recommendation | Status |
+| --- | --- | --- | --- | --- | --- |
+| 1 | `tar` 6.2.1 | utils (and 4.4.19 via tfjs-node) | 13 advisories, 1 critical, fixed only in 7.5.x | Upgrade to `^7.5.22`, add a pnpm override for the tfjs-node path | Done |
+| 2 | `axios` 0.26.1 | request-rn | 23 advisories | Replace with global `fetch` | Done |
+| 3 | `decompress` 4.2.1 | fullbot | Critical zip-slip, no fixed version, last release 2020 | Replace with `node-stream-zip` | Done |
+| 4 | `coveralls` 3.1.1 | root dev | Unmaintained, pulls `request` 2.88 with 7 advisories, not used by CI | Remove | Done |
+| 5 | `xlsx` 0.18.5 | xtables | Two unfixed CVEs on npm, no npm releases since 2022 | Follow `docs/migrate-sheetjs-to-office-kit.md` | Open |
+| 6 | `@tensorflow/tfjs-node` 3.21.1 | open-question | Two majors behind, project in maintenance mode, drags in vulnerable `tar` 4, `adm-zip` 0.5, `rimraf` 2, `https-proxy-agent` 2 | Migrate to `@huggingface/transformers`; bump to `^4.22` as a stopgap | Open |
+| 7 | `node-fetch` 2.6.7 | directline-connector | Node has had `fetch` since 18 | Remove, use global `fetch` | Done |
+| 8 | `rimraf` 3.0.2 | fullbot | Node has `fs.rmSync` since 14.14 | Remove, use `fs.rmSync` | Done |
+| 9 | `actions-on-google` 3.0.0 | dialogflow-connector | Platform shut down June 2023, library archived | Retire the package or rewrite as a plain Dialogflow ES webhook | Open |
+| 10 | `botbuilder-adapter-facebook` 1.0.12 | fb-connector | Botkit adapter, last release 2022, pulls all of Botkit and Bot Framework | Replace with a small Graph API client on `fetch` | Open |
+| 11 | `serverless-express` 2.0.12 | express-api-serverless | Abandoned fork, last release 2021 | Replace with `@codegenie/serverless-express` | Open |
+| 12 | `esprima` 4.0.1 + `escodegen` 2.1.0 | evaluator | Parser frozen since 2018, no ES2020+ syntax | Replace with `acorn` + `astring` | Open |
+| 13 | `mongodb` 3.7.4 | mongodb-adapter | Four majors behind, uses removed APIs | Upgrade to `^7.6.0` and update the adapter | Open |
+| 14 | `compromise` 13 + `compromise-numbers` + `compromise-dates` 1 | builtin-compromise | One major behind, numbers plugin folded into core | Upgrade to `compromise` 14 + `compromise-dates` 3, drop `compromise-numbers` | Open |
+| 15 | `pino` 7 + `pino-pretty` 7 | logger | Three and six majors behind, `prettyPrint` option no longer exists | Upgrade and switch to `transport` | Open |
+| 16 | `https-proxy-agent` 5 + `http-proxy-agent` 5 | request, utils, root dev | Four majors behind; Node 24 has built-in env proxy support | Upgrade to `^9.1.0` now, drop once the floor is Node 24 | Done (upgraded; removal waits for Node 24) |
+| 17 | `kuromoji` 0.1.2 | lang-ja | Last release 2018, callback API, dictionary path hand-resolved | Switch to `@patdx/kuromoji` | Open |
+| 18 | `express` 4 | express-api-server | One major behind, still patched | Upgrade to 5 when convenient, one line to verify | Open |
+| 19 | `formidable` 2 | directline-connector | One major behind | Upgrade to `^3.5.4` | Done |
+| 20 | `archiver` 5 | fullbot | Three majors behind | Upgrade to `^8.0.0` | Done |
+| 21 | `bcryptjs` 2 | api-auth-jwt | One major behind; Node `crypto.scrypt` is native | Upgrade to 3, or move to `scrypt` | Done (upgraded to 3; scrypt not adopted) |
+| 22 | `supertest` 6 | root dev, express-api-server dev | One major behind, declared twice | Upgrade to 7, keep only the package-level declaration | Done |
+| 23 | `passport` 0.6 | api-auth-jwt | Minor behind; whole stack is optional for two strategies | Upgrade to 0.7, consider dropping passport | Done (upgraded to 0.7; passport kept) |
+| 24 | `@microsoft/recognizers-text-suite` 1.3.0 | builtin-microsoft | Pinned exactly, patch behind | Change to `^1.3.1` | Done |
+| 25 | `exceljs` 4.4.0 | utils | Last release 2023, deprecated transitive chain | Consolidate onto `@office-kit/xlsx` after item 5 | Open |
 
 ## Findings in detail
 
@@ -66,8 +74,8 @@ chains, a decompression denial of service rated critical, and several crash bugs
 landed in the 7.5.x line only (7.5.8 through 7.5.21). Latest is 7.5.22 (July 2026), which
 requires Node 18 or later.
 
-`Downloader` calls `tar.x({ file, strip, C })`. The 7.x API is the same, but the package is
-ESM and TypeScript native, so the default import becomes a named import:
+Done. `Downloader` called `tar.x({ file, strip, C })`. The 7.x API is the same, but the
+package is ESM and TypeScript native, so the default import becomes a named import:
 
 ```ts
 import { extract } from 'tar';
@@ -135,6 +143,11 @@ Alternatives considered: `yauzl` 3.4.0 (maintained, streaming, but leaves path s
 the caller), `adm-zip` 0.6.1 (patched this month, but a long history of extraction CVEs),
 `fflate` 0.8.3 (in-memory only, fine for small archives). There is no zip support in Node
 core.
+
+Done, with one behaviour change worth knowing about: `node-stream-zip` rejects on an
+archive it cannot read, where `decompress` resolved with an empty list. `mount` depends on
+that rejection to roll back to its backup, so before this change a corrupt download left
+the bot folder empty.
 
 #### `coveralls` ^3.1.0 (dev, root)
 
@@ -265,10 +278,13 @@ The engine floor is Node 22.12, which makes these removals safe today.
 | `dotenv` (examples only) | examples/16 | `node --env-file=.env` or `process.loadEnvFile()` | Node 20.12 |
 
 `directline-controller.ts` calls `fetch(url, { method, body, headers })` twice; the global
-has the same signature, so the change is deleting the import and the dependency.
+has the same signature, so the change was deleting the import and the dependency. Done.
 
-`fullbot/src/utils.ts` uses `rimraf.sync(dirPath)`; `fs.rmSync` with `recursive` and
-`force` has identical semantics for a directory that may not exist.
+`fullbot/src/utils.ts` used `rimraf.sync(dirPath)`; `fs.rmSync` with `recursive` and
+`force` has identical semantics for a directory that may not exist. Done.
+
+The `dotenv` row is the only one of the four still open; it is in `examples/`, which is
+outside the workspace.
 
 #### Proxy agents: native later, upgrade now
 
@@ -280,6 +296,10 @@ has the same signature, so the change is deleting the import and the dependency.
 import { HttpsProxyAgent } from 'https-proxy-agent';
 options.agent = new HttpsProxyAgent(proxyServer);
 ```
+
+The upgrade to `^9.1.0` has landed, along with the removal of the root
+`devDependencies` entry. One caller-visible edge: 6+ parses the proxy with `new URL`, so a
+proxy configured as a bare `host:port` no longer works and needs a scheme.
 
 Node 24.0.0 added `NODE_USE_ENV_PROXY=1` and the `--use-env-proxy` flag, which make
 `http`, `https` and `fetch` honour `HTTP_PROXY`, `HTTPS_PROXY` and `NO_PROXY` without any
@@ -356,14 +376,20 @@ path-to-regexp 8 syntax change does not affect them. `cors` 2.8.6 is the latest 
 
 #### `formidable` ^2.0.1 in `@nlpjs-neo/directline-connector`
 
-3.5.4 (April 2025) is ESM-first and the `formidable({ ... })` factory used in the connector
-is unchanged. `form.parse` gains a promise form, which lets the upload handler drop its
-callback.
+Done. 3.5.4 (April 2025) is ESM-first and the `formidable({ ... })` factory is unchanged.
+`form.parse` gains a promise form, which let the upload handler drop its callback, and
+every field is now an array.
+
+What the audit missed: the upload route was already broken under the declared version 2.
+It read `files.activity.path`, but formidable renamed that property to `filepath` in 2, so
+every upload threw. The route had no test; it has one now.
 
 #### `archiver` ^5.2.0 in `@nlpjs-neo/fullbot`
 
-8.0.0 (May 2026, Node 18 floor). The `archiver('zip')`, `.directory()`, `.pipe()`,
-`.finalize()` sequence in `compressFolder` is unchanged across 6, 7 and 8.
+8.0.0 (May 2026, Node 18 floor). Done, and this paragraph was wrong when written:
+`.directory()`, `.pipe()` and `.finalize()` are unchanged, but 8 removed the
+`archiver(format)` factory, so `compressFolder` builds `new ZipArchive()`. The package
+ships no types either, so `@types/archiver` is a dev dependency of `fullbot`.
 
 #### `bcryptjs` ^2.4.3 in `@nlpjs-neo/api-auth-jwt`
 
@@ -428,20 +454,86 @@ These do not affect the published packages but are what new users copy.
 
 ## Suggested order of work
 
-1. **One security PR, no API changes:** `tar` to 7.5, `archiver` to 8, `formidable` to 3,
+1. **[x] One security PR, no API changes:** `tar` to 7.5, `archiver` to 8, `formidable` to 3,
    `https-proxy-agent`/`http-proxy-agent` to 9, `supertest` to 7, `bcryptjs` to 3,
    `passport` to 0.7, `@microsoft/recognizers-text-suite` to `^1.3.1`; remove `coveralls`
    and the root `https-proxy-agent` and `supertest` entries; add the `tar` override. This
    clears the 13 `tar` advisories and six of the seven from the `coveralls` chain.
-2. **Built-in replacements:** delete `node-fetch`, `rimraf`, `axios`; migrate `url.parse`
+2. **[x] Built-in replacements:** delete `node-fetch`, `rimraf`, `axios`; migrate `url.parse`
    and `querystring` in the same files. Clears the 23 `axios` advisories.
-3. **`decompress` to `node-stream-zip`** in `fullbot`. Clears the last unfixed critical.
-4. **`pino` 10, `compromise` 14, `mongodb` 7, `esprima`/`escodegen` to `acorn`/`astring`.**
+3. **[x] `decompress` to `node-stream-zip`** in `fullbot`. Clears the last unfixed critical.
+4. **[ ] `pino` 10, `compromise` 14, `mongodb` 7, `esprima`/`escodegen` to `acorn`/`astring`.**
    Each is a contained change to one package with its own tests.
-5. **`xlsx` to `@office-kit/xlsx`** per the existing plan, then `exceljs` onto the same library.
-6. **Connector clean-up:** rewrite `fb-connector` on `fetch`, replace `serverless-express`
+5. **[ ] `xlsx` to `@office-kit/xlsx`** per the existing plan, then `exceljs` onto the same library.
+6. **[ ] Connector clean-up:** rewrite `fb-connector` on `fetch`, replace `serverless-express`
    with `@codegenie/serverless-express` 4.17, decide the future of `dialogflow-connector`.
-7. **`open-question` to `@huggingface/transformers`.** Largest item; bump `tfjs-node` to
+7. **[ ] `open-question` to `@huggingface/transformers`.** Largest item; bump `tfjs-node` to
    `^4.22` first if it has to wait.
-8. **When the floor moves to Node 24:** drop the proxy agents in favour of
+8. **[ ] When the floor moves to Node 24:** drop the proxy agents in favour of
    `NODE_USE_ENV_PROXY`, and move `@codegenie/serverless-express` to 5.
+
+## Progress log
+
+### 2026-09-20 — coverage for everything steps 1 to 3 touch
+
+None of the code behind these dependencies had integration coverage, so it was written
+first, against the dependencies as they were still declared. New suites:
+`utils/test/downloader.test.ts` (rewritten), `request/test/request.test.ts`,
+`request-rn/test/request.test.ts`, `fullbot/test/utils.test.ts`,
+`builtin-duckling/test/duckling-request.test.ts`,
+`directline-connector/test/directline-controller.test.ts` and
+`directline-connector/test/directline-connector.test.ts`. They all drive a real local HTTP
+server and real archives rather than mocks, and each clears the ambient proxy environment
+variables so it behaves the same behind a corporate proxy.
+
+### 2026-09-20 — step 1, the upgrades with no API change
+
+Items 1, 4, 16, 20, 21, 22, 23 and 24. Two corrections to what this document assumed:
+
+- **Item 20 was not a no-op.** `archiver` 8 removed the `archiver(format)` factory
+  entirely; the call site now builds a `ZipArchive`. The package also ships no types, so
+  `@types/archiver` was added.
+- **Item 16 has a caller-visible edge.** `https-proxy-agent` 6+ parses the proxy with
+  `new URL`, so a bare `host:port` no longer works; a proxy setting must carry a scheme.
+
+### 2026-09-20 — step 2, the built-in replacements
+
+Items 2, 7 and 8, plus the `url.parse` and `querystring` clean-up and the
+`application/x-wwww-form-urlencoded` typo called out in section 3.
+
+`@nlpjs-neo/request-rn` keeps the axios-shaped options (`data`, `params`, `headers`) and
+the rejection on an error status, rather than the narrower shape sketched in item 2, so
+callers do not have to change. An error is now a plain `Error` carrying `status` and
+`data`.
+
+Two bugs surfaced while migrating and were fixed in the same change: `Content-Length` was
+computed with `String.length` in both `request.ts` and `builtin-duckling.ts`, which
+truncates a body containing non-ASCII characters, and a url-encoded body now encodes a
+space as `+` rather than `%20`.
+
+### 2026-09-20 — step 3, `decompress` to `node-stream-zip`
+
+Item 3. Beyond the zip-slip fix, `restore` now rejects on an archive it cannot read.
+`decompress` resolved with an empty list instead, which meant `mount` treated a corrupt
+download as a success and left the bot folder empty after clearing it; the rollback to the
+backup never ran. Both the zip-slip guard and the rollback have tests.
+
+### 2026-09-20 — item 19, `formidable`
+
+Writing the missing coverage showed that
+`POST /directline/conversations/:conversationId/upload` could not have worked under the
+declared `formidable` 2: the handler read `files.activity.path`, which formidable renamed
+to `filepath` in version 2. The upgrade to 3 repairs the route (fields are arrays,
+`form.parse` resolves instead of taking a callback), creates the upload folder if it is
+missing, removes temporary files on the error path as well, and answers 500 instead of
+throwing for a malformed upload.
+
+### Remaining advisories
+
+The 6 that are left all belong to items still open:
+
+| Package | Path | Item |
+| --- | --- | --- |
+| `xlsx` (2 high) | `xtables > xlsx` | 5 |
+| `adm-zip` (2 high, 1 moderate) | `open-question > @tensorflow/tfjs-node > adm-zip` | 6 |
+| `uuid` (1 moderate) | `dialogflow-connector > actions-on-google > ...`, `fb-connector > botbuilder > ...` | 9, 10 |
