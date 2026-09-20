@@ -188,23 +188,49 @@ describe('Stemmer Japanese', () => {
       expect(result.isKeigo).toBeFalsy();
     });
 
-    /*
-     * Known defect, pinned here so that a change of tokenizer is not blamed for
-     * it: `keigo.json` spells two of its levels `kenjogo` and `teneigo`, while
-     * `formalityLevel` counts into `kenjougo` and `teineigo`. A match on either
-     * of the misspelled levels increments an absent counter, which yields `NaN`
-     * and leaves `isKeigo` false for sentences that are plainly polite.
-     */
-    test('It should mis-count the levels that keigo.json spells differently', () => {
-      const teneigo = stemmer.formalityLevel('元気です');
-      expect(teneigo.informalTokens).toEqual(['ゲンキ', 'ダ']);
-      expect(teneigo.counts.teneigo).toBeNaN();
-      expect(teneigo.isKeigo).toBeFalsy();
+    test('It should count a teineigo copula', () => {
+      const result = stemmer.formalityLevel('元気です');
+      expect(result.informalTokens).toEqual(['ゲンキ', 'ダ']);
+      expect(result.counts).toEqual({
+        keigo: 1,
+        teineigo: 1,
+        sonkeigo: 0,
+        kenjougo: 0,
+        informal: 0,
+      });
+      expect(result.isKeigo).toBeTruthy();
+    });
 
-      const kenjogo = stemmer.formalityLevel('拝見する');
-      expect(kenjogo.informalTokens).toEqual(['ミル']);
-      expect(kenjogo.counts.kenjogo).toBeNaN();
-      expect(kenjogo.isKeigo).toBeFalsy();
+    test('It should count a kenjougo verb and replace it with the plain verb', () => {
+      const result = stemmer.formalityLevel('拝見する');
+      expect(result.informalTokens).toEqual(['ミル']);
+      expect(result.counts).toEqual({
+        keigo: 1,
+        teineigo: 0,
+        sonkeigo: 0,
+        kenjougo: 1,
+        informal: 0,
+      });
+      expect(result.isKeigo).toBeTruthy();
+    });
+
+    /*
+     * `dictionary` entries are synonyms rather than a formality level, and an
+     * unknown level would be a typo in `keigo.json`. Neither may reach the
+     * counters, which used to take any spelling and yield NaN.
+     */
+    test('It should not add a counter for a level it does not know', () => {
+      for (const text of ['元気です', '拝見する', 'お休みになる', '来る']) {
+        const { counts } = stemmer.formalityLevel(text);
+        expect(Object.keys(counts).sort()).toEqual([
+          'informal',
+          'keigo',
+          'kenjougo',
+          'sonkeigo',
+          'teineigo',
+        ]);
+        expect(Object.values(counts).every(Number.isInteger)).toBe(true);
+      }
     });
   });
 

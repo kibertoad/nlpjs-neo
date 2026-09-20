@@ -203,7 +203,7 @@
         "value": [
           "ミル"
         ],
-        "keigo": "kenjogo"
+        "keigo": "kenjougo"
       }
     }
   },
@@ -224,7 +224,7 @@
             "value": [
               "アウ"
             ],
-            "keigo": "kenjogo"
+            "keigo": "kenjougo"
           }
         }
       }
@@ -272,7 +272,7 @@
         "value": [
           "アル"
         ],
-        "keigo": "kenjogo"
+        "keigo": "kenjougo"
       }
     }
   },
@@ -281,7 +281,7 @@
       "value": [
         "イル"
       ],
-      "keigo": "kenjogo"
+      "keigo": "kenjougo"
     }
   },
   "ウカガウ": {
@@ -289,7 +289,7 @@
       "value": [
         "タズネル"
       ],
-      "keigo": "kenjogo"
+      "keigo": "kenjougo"
     }
   },
   "マイル": {
@@ -297,7 +297,7 @@
       "value": [
         "イク"
       ],
-      "keigo": "kenjogo"
+      "keigo": "kenjougo"
     }
   },
   "ゾンジアゲル": {
@@ -305,7 +305,7 @@
       "value": [
         "シル"
       ],
-      "keigo": "kenjogo"
+      "keigo": "kenjougo"
     }
   },
   "イタダク": {
@@ -313,7 +313,7 @@
       "value": [
         "モラウ"
       ],
-      "keigo": "kenjogo"
+      "keigo": "kenjougo"
     }
   },
   "チョウダイ": {
@@ -322,7 +322,7 @@
         "value": [
           "モラウ"
         ],
-        "keigo": "kenjogo"
+        "keigo": "kenjougo"
       }
     }
   },
@@ -331,7 +331,7 @@
       "value": [
         "アゲル"
       ],
-      "keigo": "kenjogo"
+      "keigo": "kenjougo"
     }
   },
   "イタス": {
@@ -339,7 +339,7 @@
       "value": [
         "スル"
       ],
-      "keigo": "kenjogo"
+      "keigo": "kenjougo"
     }
   },
   "モウシアゲル": {
@@ -347,7 +347,7 @@
       "value": [
         "イウ"
       ],
-      "keigo": "kenjogo"
+      "keigo": "kenjougo"
     }
   },
   "モウス": {
@@ -355,7 +355,7 @@
       "value": [
         "イウ"
       ],
-      "keigo": "kenjogo"
+      "keigo": "kenjougo"
     }
   },
   "ゴラン": {
@@ -561,7 +561,7 @@
       "value": [
         "ダ"
       ],
-      "keigo": "teneigo"
+      "keigo": "teineigo"
     }
   },
   "デシ": {
@@ -569,7 +569,7 @@
       "value": [
         "ダッ"
       ],
-      "keigo": "teneigo"
+      "keigo": "teineigo"
     }
   },
   "マス": {
@@ -577,7 +577,7 @@
       "value": [
         "スル"
       ],
-      "keigo": "teneigo"
+      "keigo": "teineigo"
     }
   }
 }

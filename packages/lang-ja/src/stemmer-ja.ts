@@ -472,7 +472,13 @@ class StemmerJa extends BaseStemmer {
       const token = tokens[pnt];
       const currentKeigo = this.findKeigo(tokens, pnt);
       if (currentKeigo) {
-        if (currentKeigo.keigo !== 'dictionary') {
+        /*
+         * `dictionary` entries are plain synonyms and carry no formality, and
+         * a level the counter does not know is a typo in `keigo.json`. Testing
+         * for the key rather than incrementing blind keeps such a typo from
+         * turning a count into NaN and dropping it out of `keigo` below.
+         */
+        if (Object.hasOwn(counts, currentKeigo.keigo)) {
           counts[currentKeigo.keigo] += 1;
         }
         for (let i = 0; i < currentKeigo.value.length; i += 1) {
