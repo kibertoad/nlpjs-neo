@@ -1,6 +1,6 @@
 {
   "name": "@nlpjs-neo/fullbot",
-  "version": "6.0.0",
+  "version": "6.0.1",
   "description": "Full bot for NLP.js",
   "author": {
     "email": "opensource@axa.com",
