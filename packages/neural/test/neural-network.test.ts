@@ -14,12 +14,14 @@ describe('Neural Network', () => {
     });
 
     test('A log function can be provided', () => {
+      let logCalls = 0;
       const net = new NeuralNetwork({
         log: () => {
-          net.logCalls = (net.logCalls || 0) + 1;
+          logCalls += 1;
         },
       });
       expect(typeof net.logFn).toEqual('function');
+      expect(logCalls).toEqual(0);
     });
   });
 

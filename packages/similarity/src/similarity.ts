@@ -1,6 +1,10 @@
 import leven from './leven.js';
 
-function similarity(str1, str2, normalize = false) {
+/**
+ * Levenshtein distance between two strings, `0` when they are equal.
+ * @param normalize Strip diacritics and lowercase both sides first.
+ */
+function similarity(str1: string, str2: string, normalize = false): number {
   if (normalize) {
     /* oxlint-disable */
     str1 = str1

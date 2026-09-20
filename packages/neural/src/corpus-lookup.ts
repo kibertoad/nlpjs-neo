@@ -1,12 +1,21 @@
 import Lookup from './lookup.js';
+import type {
+  Corpus,
+  Feature,
+  FeatureMap,
+  Intent,
+  PreparedEntry,
+  SparseVector,
+} from './types.js';
 
+/** The feature and intent lookups of a corpus, kept together. */
 class CorpusLookup {
-  declare inputLookup: any;
-  declare numInputs: any;
-  declare numOutputs: any;
-  declare outputLookup: any;
+  declare inputLookup: Lookup;
+  declare numInputs: number;
+  declare numOutputs: number;
+  declare outputLookup: Lookup;
 
-  constructor(features?, intents?) {
+  constructor(features?: Feature[], intents?: Intent[]) {
     if (features) {
       this.inputLookup = new Lookup();
       this.outputLookup = new Lookup();
@@ -21,12 +30,13 @@ class CorpusLookup {
     }
   }
 
-  build(corpus) {
+  /** Builds the lookups from a corpus and returns it in vector form. */
+  build(corpus: Corpus): PreparedEntry[] {
     this.inputLookup = new Lookup(corpus, 'input');
     this.outputLookup = new Lookup(corpus, 'output');
     this.numInputs = this.inputLookup.items.length;
     this.numOutputs = this.outputLookup.items.length;
-    const result: any[] = [];
+    const result: PreparedEntry[] = [];
     for (let i = 0; i < corpus.length; i += 1) {
       const { input, output } = corpus[i];
       result.push({
@@ -37,7 +47,7 @@ class CorpusLookup {
     return result;
   }
 
-  transformInput(input) {
+  transformInput(input: FeatureMap): SparseVector {
     return this.inputLookup.prepare(input);
   }
 }

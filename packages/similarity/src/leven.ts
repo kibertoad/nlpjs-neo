@@ -1,13 +1,15 @@
-const array: any[] = [];
-const charCodeCache: any[] = [];
+// Scratch buffers reused across calls, so that a distance calculation in a
+// hot loop does not allocate.
+const array: number[] = [];
+const charCodeCache: number[] = [];
 
 /**
  * Calculates levenshtein distance
- * @param {string} left Left string
- * @param {string} right Right string
- * @returns {number} levenshtein distance of the two strings
+ * @param left Left string
+ * @param right Right string
+ * @returns levenshtein distance of the two strings
  */
-function leven(left, right) {
+function leven(left: string, right: string): number {
   if (left.length > right.length) {
     // oxlint-disable-next-line no-param-reassign
     [left, right] = [right, left];
@@ -39,10 +41,10 @@ function leven(left, right) {
     charCodeCache[i] = left.charCodeAt(start + i);
     array[i] = i + 1;
   }
-  let bCharCode;
-  let result;
-  let temp;
-  let temp2;
+  let bCharCode: number;
+  let result = 0;
+  let temp: number;
+  let temp2: number;
   let j = 0;
   while (j < rightLength) {
     bCharCode = right.charCodeAt(start + j);
@@ -50,9 +52,7 @@ function leven(left, right) {
     j += 1;
     result = j;
     for (let i = 0; i < leftLength; i += 1) {
-      /* oxlint-disable */
-      temp2 = (temp + (bCharCode !== charCodeCache[i])) | 0;
-      /* oxlint-enable */
+      temp2 = (temp + (bCharCode !== charCodeCache[i] ? 1 : 0)) | 0;
       temp = array[i];
       if (temp > result) {
         array[i] = temp2 > result ? result + 1 : temp2;

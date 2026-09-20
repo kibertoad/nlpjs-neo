@@ -1,8 +1,16 @@
-class Lookup {
-  declare dict: any;
-  declare items: any;
+import type { CorpusEntry, SparseVector } from './types.js';
 
-  constructor(data?, propName = 'input') {
+/**
+ * Two way lookup between the terms of a corpus and the positions they take in
+ * the vectors the network works with.
+ */
+class Lookup {
+  /** Position of every known term. */
+  declare dict: Record<string, number>;
+  /** Known terms, by position. */
+  declare items: string[];
+
+  constructor(data?: CorpusEntry[], propName: 'input' | 'output' = 'input') {
     this.dict = {};
     this.items = [];
     if (data) {
@@ -10,14 +18,14 @@ class Lookup {
     }
   }
 
-  add(key) {
+  add(key: string): void {
     if (this.dict[key] === undefined) {
       this.dict[key] = this.items.length;
       this.items.push(key);
     }
   }
 
-  buildFromData(data, propName) {
+  buildFromData(data: CorpusEntry[], propName: 'input' | 'output'): void {
     for (let i = 0; i < data.length; i += 1) {
       const item = data[i][propName];
       const keys = Object.keys(item);
@@ -27,10 +35,11 @@ class Lookup {
     }
   }
 
-  prepare(item) {
+  /** Translates a map of terms into a vector, dropping unknown terms. */
+  prepare(item: Record<string, number>): SparseVector {
     const keys = Object.keys(item);
-    const resultKeys: any[] = [];
-    const resultData: any = {};
+    const resultKeys: number[] = [];
+    const resultData: Record<number, number> = {};
     for (let i = 0; i < keys.length; i += 1) {
       const key = keys[i];
       if (this.dict[key] !== undefined) {

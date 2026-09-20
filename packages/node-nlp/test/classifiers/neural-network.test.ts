@@ -79,7 +79,6 @@ describe('Neural Network', () => {
   describe('Initialize', () => {
     test('It should initialize based on num of features and the intent names', () => {
       const net = new NeuralNetwork();
-      net.sizes = [2, 4];
       net.initialize(2, ['a', 'b', 'c', 'd']);
       expect(net.perceptrons).toHaveLength(4);
       expect(net.outputs).toEqual({ a: 0, b: 0, c: 0, d: 0 });

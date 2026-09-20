@@ -1,6 +1,21 @@
 import CorpusLookup from './corpus-lookup.js';
+import type {
+  Corpus,
+  Explanation,
+  FeatureMap,
+  Intent,
+  IntentMap,
+  NeuralNetworkJson,
+  NeuralNetworkSettings,
+  Perceptron,
+  PreparedEntry,
+  SparseVector,
+  TrainLogger,
+  TrainResult,
+  TrainStatus,
+} from './types.js';
 
-const defaultSettings = {
+const defaultSettings: NeuralNetworkSettings = {
   iterations: 20000,
   errorThresh: 0.00005,
   deltaErrorThresh: 0.000001,
@@ -11,25 +26,23 @@ const defaultSettings = {
 };
 
 class NeuralNetwork {
-  declare sizes: any;
+  /** Learning rate of the current iteration, decayed over time. */
+  declare decayLearningRate: number;
+  declare logFn: TrainLogger | undefined;
+  declare lookup: CorpusLookup | undefined;
+  declare numPerceptrons: number;
+  /** Score of every intent for the last input that was run. */
+  declare outputs: IntentMap;
+  declare perceptrons: Perceptron[];
+  declare perceptronsByName: Record<Intent, Perceptron>;
+  declare settings: NeuralNetworkSettings;
+  declare status: TrainStatus | undefined;
 
-  declare logCalls: any;
-
-  declare decayLearningRate: any;
-  declare logFn: any;
-  declare lookup: any;
-  declare numPerceptrons: any;
-  declare outputs: any;
-  declare perceptrons: any;
-  declare perceptronsByName: any;
-  declare settings: any;
-  declare status: any;
-
-  constructor(settings: any = {}, _container?) {
+  constructor(settings: NeuralNetworkSettings = {}, _container?: unknown) {
     this.settings = settings;
     this.applySettings(this.settings, defaultSettings);
     if (this.settings.log === true) {
-      this.logFn = (status, time) =>
+      this.logFn = (status: TrainStatus, time: number) =>
         console.log(
           `Epoch ${status.iterations} loss ${status.error} time ${time}ms`
         );
@@ -38,16 +51,20 @@ class NeuralNetwork {
     }
   }
 
-  applySettings(obj: any = {}, settings: any = {}) {
+  /** Fills in every setting the object does not define itself. */
+  applySettings<T extends NeuralNetworkSettings>(
+    obj: T = {} as T,
+    settings: NeuralNetworkSettings = {}
+  ): T {
     Object.keys(settings).forEach((key) => {
       if (obj[key] === undefined) {
-        obj[key] = settings[key];
+        (obj as NeuralNetworkSettings)[key] = settings[key];
       }
     });
     return obj;
   }
 
-  initialize(numInputs, outputNames) {
+  initialize(numInputs: number, outputNames: Intent[]): void {
     this.perceptronsByName = {};
     this.perceptrons = [];
     this.outputs = {};
@@ -55,7 +72,7 @@ class NeuralNetwork {
     for (let i = 0; i < outputNames.length; i += 1) {
       const name = outputNames[i];
       this.outputs[name] = 0;
-      const perceptron = {
+      const perceptron: Perceptron = {
         name,
         id: i,
         weights: new Float32Array(numInputs),
@@ -67,7 +84,7 @@ class NeuralNetwork {
     }
   }
 
-  runInputPerceptron(perceptron, input) {
+  runInputPerceptron(perceptron: Perceptron, input: SparseVector): number {
     const sum = input.keys.reduce(
       (prev, key) => prev + input.data[key] * perceptron.weights[key],
       perceptron.bias
@@ -75,7 +92,7 @@ class NeuralNetwork {
     return sum <= 0 ? 0 : this.settings.alpha * sum;
   }
 
-  runInput(input) {
+  runInput(input: SparseVector): IntentMap {
     for (let i = 0; i < this.numPerceptrons; i += 1) {
       this.outputs[this.perceptrons[i].name] = this.runInputPerceptron(
         this.perceptrons[i],
@@ -85,28 +102,30 @@ class NeuralNetwork {
     return this.outputs;
   }
 
-  get isRunnable() {
+  get isRunnable(): boolean {
     return !!this.numPerceptrons;
   }
 
-  run(input) {
+  /** Scores every intent for an utterance, or nothing when untrained. */
+  run(input: FeatureMap): IntentMap | undefined {
     return this.numPerceptrons
       ? this.runInput(this.lookup.transformInput(input))
       : undefined;
   }
 
-  prepareCorpus(corpus) {
+  prepareCorpus(corpus: Corpus): PreparedEntry[] {
     this.lookup = new CorpusLookup();
     return this.lookup.build(corpus);
   }
 
-  verifyIsInitialized() {
+  verifyIsInitialized(): void {
     if (!this.perceptrons) {
       this.initialize(this.lookup.numInputs, this.lookup.outputLookup.items);
     }
   }
 
-  trainPerceptron(perceptron, data) {
+  /** Trains one perceptron over the corpus, returning its squared error. */
+  trainPerceptron(perceptron: Perceptron, data: PreparedEntry[]): number {
     const { alpha, momentum } = this.settings;
     const { changes, weights } = perceptron;
     let error = 0;
@@ -133,14 +152,14 @@ class NeuralNetwork {
     return error;
   }
 
-  train(corpus?) {
+  train(corpus?: Corpus): TrainResult {
     if (!corpus || !corpus.length) {
       return {};
     }
     const useNoneFeature =
       corpus[corpus.length - 1].input.nonefeature !== undefined;
     if (useNoneFeature) {
-      const intents: any = {};
+      const intents: Record<Intent, number> = {};
       for (let i = 0; i < corpus.length - 1; i += 1) {
         const tokens = Object.keys(corpus[i].output);
         for (let j = 0; j < tokens.length; j += 1) {
@@ -186,9 +205,10 @@ class NeuralNetwork {
     return this.status;
   }
 
-  explain(input, intent) {
+  /** Weight every feature of an utterance carries for one intent. */
+  explain(input: FeatureMap, intent: Intent): Explanation {
     const transformedInput = this.lookup.transformInput(input);
-    const result: any = {};
+    const result: Record<string, number> = {};
     const intentIndex = this.lookup.outputLookup.dict[intent];
     if (intentIndex === undefined) {
       return {};
@@ -204,8 +224,8 @@ class NeuralNetwork {
     };
   }
 
-  toJSON() {
-    const settings: any = {};
+  toJSON(): NeuralNetworkJson {
+    const settings: NeuralNetworkSettings = {};
     const keys = Object.keys(this.settings);
     for (let i = 0; i < keys.length; i += 1) {
       const key = keys[i];
@@ -220,7 +240,7 @@ class NeuralNetwork {
     }
     const features = this.lookup.inputLookup.items;
     const intents = this.lookup.outputLookup.items;
-    const perceptrons: any[] = [];
+    const perceptrons: number[][] = [];
     for (let i = 0; i < this.perceptrons.length; i += 1) {
       const perceptron = this.perceptrons[i];
       const weights = [...perceptron.weights, perceptron.bias];
@@ -234,7 +254,7 @@ class NeuralNetwork {
     };
   }
 
-  fromJSON(json) {
+  fromJSON(json: NeuralNetworkJson): void {
     this.settings = this.applySettings({
       ...defaultSettings,
       ...json.settings,

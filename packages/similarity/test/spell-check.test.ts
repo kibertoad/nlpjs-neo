@@ -13,7 +13,7 @@ describe('Similar Search', () => {
   describe('Set features', () => {
     test('Features can be changed with a method', () => {
       const spellCheck = new SpellCheck();
-      spellCheck.setFeatures({ features: { word: 1, other: 2 } });
+      spellCheck.setFeatures({ word: 1, other: 2 });
       const actual = spellCheck.checkToken('word', 1);
       expect(actual).toEqual('word');
     });
