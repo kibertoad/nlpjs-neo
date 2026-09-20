@@ -268,9 +268,7 @@ describe('NLU', () => {
         classifications: { food: 0.75 },
         settings: nlu.settings,
       });
-      expect(result.classifications).toEqual([
-        { intent: 'food', score: 0.75 },
-      ]);
+      expect(result.classifications).toEqual([{ intent: 'food', score: 0.75 }]);
     });
   });
 
