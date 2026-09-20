@@ -1,3 +1,4 @@
+import type { Classification } from '../src/index.js';
 import {
   ArrToObj,
   Container,
@@ -42,11 +43,13 @@ describe('NLU Neural', () => {
       for (let i = 0; i < srccorpus.data.length; i += 1) {
         const { intent, tests } = srccorpus.data[i];
         for (let j = 0; j < tests.length; j += 1) {
-          let result = await nlu.process(tests[j]);
-          if (result.classifications) {
-            result = result.classifications;
-          }
-          const best = result[0] || 'None';
+          const answer = (await nlu.process(tests[j])) as {
+            classifications?: Classification[];
+          };
+          const result = (answer.classifications ||
+            answer) as unknown as Classification[];
+          const best = (result[0] ||
+            'None') as unknown as Partial<Classification>;
           if (best.intent === intent) {
             if (intent === 'None' || best.score >= 0.5) {
               good += 1;

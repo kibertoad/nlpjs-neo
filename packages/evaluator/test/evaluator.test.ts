@@ -1,4 +1,5 @@
 import { Evaluator } from '../src/index.js';
+import type { Identifier, Literal, UnaryExpression } from 'acorn';
 
 describe('Evaluator', () => {
   describe('Constructor', () => {
@@ -23,7 +24,7 @@ describe('Evaluator', () => {
   describe('Walk Literal', () => {
     test('It should return the literal of the node', () => {
       const evaluator = new Evaluator();
-      const node = { value: 'This is the value' };
+      const node = { value: 'This is the value' } as Literal;
       const result = evaluator.walkLiteral(node);
       expect(result).toEqual(node.value);
     });
@@ -60,7 +61,10 @@ describe('Evaluator', () => {
     });
     test('If the operator is unknown, return fail result', () => {
       const evaluator = new Evaluator();
-      const node = { argument: 17, operator: '*' };
+      const node = {
+        argument: 17,
+        operator: '*',
+      } as unknown as UnaryExpression;
       const result = evaluator.walkUnary(node);
       expect(result).toBe(evaluator.failResult);
     });
@@ -101,14 +105,14 @@ describe('Evaluator', () => {
     test('If context has the identifier, return the value', () => {
       const context = { a: 17 };
       const evaluator = new Evaluator();
-      const node = { name: 'a' };
+      const node = { name: 'a' } as Identifier;
       const result = evaluator.walkIdentifier(node, context);
       expect(result).toEqual(context.a);
     });
     test('If context does not contain the identifier, return undefined', () => {
       const context = { a: 17 };
       const evaluator = new Evaluator(context);
-      const node = { name: 'b' };
+      const node = { name: 'b' } as Identifier;
       const result = evaluator.walkIdentifier(node, context);
       expect(result).toEqual(undefined);
     });

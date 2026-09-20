@@ -29,14 +29,18 @@ describe('Brain NLU', () => {
     });
     test('Should check that the utterance is an string', () => {
       const nlu = new BrainNLU({ language: 'fr' });
-      expect(() => nlu.add(1, 'greet')).toThrow('Utterance must be an string');
+      expect(() => nlu.add(1 as unknown as string, 'greet')).toThrow(
+        'Utterance must be an string'
+      );
       expect(() => nlu.add(undefined, 'greet')).toThrow(
         'Utterance must be an string'
       );
     });
     test('Should check that the intent is an string', () => {
       const nlu = new BrainNLU({ language: 'fr' });
-      expect(() => nlu.add('Bonjour', 1)).toThrow('Intent must be an string');
+      expect(() => nlu.add('Bonjour', 1 as unknown as string)).toThrow(
+        'Intent must be an string'
+      );
       expect(() => nlu.add('Bonjour', undefined)).toThrow(
         'Intent must be an string'
       );

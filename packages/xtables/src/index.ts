@@ -4,9 +4,11 @@ import XDoc from './xdoc.js';
 
 export { XTableUtils, XTable, XDoc };
 
-export type { SheetCell, SheetCells } from './workbook-reader.js';
+export type { ReadSheet, SheetCell } from './workbook-reader.js';
 export type {
+  BlockCell,
   CellBlock,
+  SheetCells,
   Coordinate,
   CoordinateRange,
   SheetRect,

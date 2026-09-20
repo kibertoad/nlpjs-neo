@@ -196,7 +196,11 @@ class NlpManager {
     return this.nlp.train();
   }
 
-  classify(locale, utterance?, settings?) {
+  classify(
+    locale: Parameters<Nlp['classify']>[0],
+    utterance?: string,
+    settings?: Parameters<Nlp['classify']>[2]
+  ): ReturnType<Nlp['classify']> {
     return this.nlp.classify(locale, utterance, settings);
   }
 

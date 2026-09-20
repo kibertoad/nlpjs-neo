@@ -197,7 +197,9 @@ describe('NLP Manager', () => {
       addEntities(manager);
       manager.removeNamedEntityText('hero', 'iron man', 'en', 'iron-man');
       const ironman = manager.nlp.getRulesByName('en', 'hero');
-      expect(ironman.rules[1].texts).toEqual(['iron man']);
+      expect((ironman.rules[1] as { texts: string[] }).texts).toEqual([
+        'iron man',
+      ]);
     });
   });
 

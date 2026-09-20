@@ -1,5 +1,4 @@
-import type { SheetCell } from './workbook-reader.js';
-import type { CellBlock, TableQuery, TableRow } from './types.js';
+import type { BlockCell, CellBlock, TableQuery, TableRow } from './types.js';
 
 /**
  * Represents an excel table, where first row is the title, second row the
@@ -33,13 +32,15 @@ class XTable {
       return;
     }
     const titleCell = matrix[0].find(
-      (cell: SheetCell | undefined) => cell && cell.w !== undefined
+      (cell: BlockCell | undefined) => cell && cell.w !== undefined
     );
-    this.name = titleCell ? titleCell.w : '';
+    // A title and a column name are text in every sheet the reader produces,
+    // where `w` is the displayed string of the cell.
+    this.name = titleCell ? (titleCell.w as string) : '';
     let row = matrix[1];
     for (let i = 0, l = row.length; i < l; i += 1) {
       if (row[i] && row[i].w) {
-        this.keys.push(row[i].w);
+        this.keys.push(row[i].w as string);
       } else {
         this.keys.push(`_column_${i}`);
       }

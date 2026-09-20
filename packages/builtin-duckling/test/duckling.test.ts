@@ -84,10 +84,10 @@ function getManager() {
           case 'raise exception':
             return reject(new Error('Exception!'));
           default:
-            return resolve({});
+            return resolve([]);
         }
       }
-      return resolve({});
+      return resolve([]);
     });
   return manager;
 }

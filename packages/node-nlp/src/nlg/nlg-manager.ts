@@ -10,7 +10,7 @@ import { Evaluator } from '@nlpjs-neo/evaluator';
 
 /** Evaluates the condition of an answer against the context. */
 interface ConditionEvaluator {
-  evaluate(condition: string, context?: Record<string, unknown>): unknown;
+  evaluate(condition: unknown, context?: Record<string, unknown>): unknown;
 }
 
 class NlgManager extends NlgManagerBase {
@@ -52,7 +52,7 @@ class NlgManager extends NlgManagerBase {
     return this.remove(locale, intent, answer, opts);
   }
 
-  isValid(condition?: string, context?: Record<string, unknown>): boolean {
+  isValid(condition?: unknown, context?: Record<string, unknown>): boolean {
     const evaluator = this.container.get<ConditionEvaluator>('Evaluator');
     if (evaluator) {
       return (

@@ -172,7 +172,7 @@ class Nlu extends Clonable {
    * a classifier is trained and queried with.
    */
   async prepare(
-    text: string | string[] | NluInput,
+    text: unknown,
     srcSettings?: NluSettings
   ): Promise<TokenMap | TokenMap[] | NluInput> {
     const settings = srcSettings || this.settings;
@@ -195,23 +195,21 @@ class Nlu extends Clonable {
         }
         return result;
       }
+      const source = text as NluInput;
       let item = settings.fieldNameSrc
-        ? text[settings.fieldNameSrc]
-        : text.texts || text.utterances;
+        ? source[settings.fieldNameSrc]
+        : source.texts || source.utterances;
       if (!item && typeof item !== 'string') {
-        if (typeof text.text === 'string') {
-          item = text.text;
-        } else if (typeof text.utterance === 'string') {
-          item = text.utterance;
+        if (typeof source.text === 'string') {
+          item = source.text;
+        } else if (typeof source.utterance === 'string') {
+          item = source.utterance;
         }
       }
       if (item || typeof item === 'string') {
-        const result = await this.prepare(
-          item as string | string[] | NluInput,
-          settings
-        );
+        const result = await this.prepare(item, settings);
         const targetField = settings.fieldNameTgt || 'tokens';
-        return { [targetField]: result, ...text };
+        return { [targetField]: result, ...source };
       }
     }
     throw new Error(

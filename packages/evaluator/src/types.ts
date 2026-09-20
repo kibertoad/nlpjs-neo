@@ -36,7 +36,8 @@ export type ParsedProgram = Program;
  */
 export interface CompilerContainer {
   get<T = unknown>(name: string): T | undefined;
-  runPipeline(
+  /** Only reached by a `run` step, so a container without one still works. */
+  runPipeline?(
     pipeline: unknown,
     input: unknown,
     srcObject?: unknown,

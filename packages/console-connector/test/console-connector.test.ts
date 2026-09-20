@@ -1,4 +1,6 @@
 import { Container, containerBootstrap } from '@nlpjs-neo/core';
+import type { RegisteredPipeline } from '@nlpjs-neo/core';
+import type { ConnectorSettings } from '@nlpjs-neo/connector';
 import { ConsoleConnector } from '../src/index.js';
 
 const container = containerBootstrap();
@@ -16,7 +18,9 @@ afterEach(() => {
 describe('Console Connector', () => {
   describe('Constructor', () => {
     test('Constructor', () => {
-      const connector = new ConsoleConnector(container);
+      const connector = new ConsoleConnector(
+        container as unknown as ConnectorSettings
+      );
       expect(connector).toBeDefined();
     });
   });
@@ -24,7 +28,9 @@ describe('Console Connector', () => {
   describe('Say', () => {
     test('It should say an string', () => {
       console.log = vi.fn<(...args: any[]) => void>();
-      const connector = new ConsoleConnector(container);
+      const connector = new ConsoleConnector(
+        container as unknown as ConnectorSettings
+      );
       connector.say('Hello world');
       expect(console.log).toHaveBeenCalledWith('bot> Hello world');
     });
@@ -33,7 +39,7 @@ describe('Console Connector', () => {
   describe('Hear', () => {
     test('It waits for the hear pipeline', async () => {
       const testContainer = containerBootstrap();
-      const pipeline = {};
+      const pipeline = {} as RegisteredPipeline;
       const runPipeline = vi
         .fn<(...args: any[]) => Promise<void>>()
         .mockResolvedValue(undefined);
@@ -57,7 +63,7 @@ describe('Console Connector', () => {
 
     test('It logs a rejected line handler promise', async () => {
       const testContainer = containerBootstrap();
-      const pipeline = {};
+      const pipeline = {} as RegisteredPipeline;
       const error = new Error('pipeline failed');
       const logger = testContainer.get('logger');
       const logError = vi

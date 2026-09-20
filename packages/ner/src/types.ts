@@ -91,8 +91,8 @@ export interface Edge {
   /** Length of `utteranceText`. */
   len?: number;
   accuracy: number;
-  /** The text as the rule spells it. */
-  sourceText: string;
+  /** The text as the rule spells it, when the extractor reports one. */
+  sourceText?: string;
   /** The text as the utterance spells it. */
   utteranceText?: string;
   entity?: EntityName;

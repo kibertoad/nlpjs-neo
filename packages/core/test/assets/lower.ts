@@ -1,13 +1,28 @@
-class Lower {
-  declare register: any;
+import type {
+  Container,
+  PipelineExecutionContext,
+  PipelineInput,
+  ResolvedPath,
+} from '../../src/index.js';
 
-  declare name: any;
+/** A pipeline step that lowercases its input, for the container tests. */
+class Lower {
+  /** Set by a test, to check that `use` calls it when the step is added. */
+  declare register: (() => void) | undefined;
+
+  declare name: string;
 
   constructor() {
     this.name = 'lower';
   }
 
-  toLower(srcInput, text, holder, container, context) {
+  toLower(
+    srcInput: PipelineInput,
+    text: string,
+    holder: string | undefined,
+    container: Container | undefined,
+    context: PipelineExecutionContext
+  ): PipelineInput {
     const input = srcInput;
     const result = text.toLowerCase();
     if (holder && container) {
@@ -18,11 +33,15 @@ class Lower {
     return input;
   }
 
-  run(input, arg1?, arg2?) {
+  run(
+    input: PipelineInput,
+    arg1?: ResolvedPath,
+    arg2?: ResolvedPath
+  ): PipelineInput {
     let text = input.text ? input.text : input;
-    let holder;
-    let container;
-    let context: any = {};
+    let holder: string | undefined;
+    let container: Container | undefined;
+    let context: PipelineExecutionContext = {};
     if (arg1) {
       if (arg1.type === 'literal') {
         text = arg1.value;
@@ -33,7 +52,7 @@ class Lower {
         context = arg1.context;
       }
     }
-    return this.toLower(input, text, holder, container, context);
+    return this.toLower(input, text as string, holder, container, context);
   }
 }
 

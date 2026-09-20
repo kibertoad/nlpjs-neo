@@ -762,7 +762,7 @@ describe('NLP', () => {
       expect(output.utterance).toEqual(input.utterance);
       expect(output.intent).toEqual('None');
       expect(output.answer).toBeUndefined();
-      expect(output.from.id).toEqual(input.from.id);
+      expect((output.from as { id: string }).id).toEqual(input.from.id);
     });
   });
 
@@ -1149,7 +1149,9 @@ describe('NLP', () => {
       expect(nlp.ner.rules.es.fromCity.rules).toBeDefined();
       expect(nlp.ner.rules.es.fromCity.rules[0]).toBeDefined();
       // Verify betweenlast was converted to a between Rule on example of this es rule
-      expect(nlp.ner.rules.es.fromCity.rules[0].type).toEqual('between');
+      expect(
+        (nlp.ner.rules.es.fromCity.rules[0] as { type: string }).type
+      ).toEqual('between');
     });
 
     test('The corpus can contain entities with slotFilling details', async () => {

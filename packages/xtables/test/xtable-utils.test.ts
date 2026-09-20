@@ -69,7 +69,9 @@ describe('XTableUtils', () => {
       expect(XTableUtils.number2alpha(12356630)).toEqual('AAAAAA');
     });
     test('Should throw an error if its not a valid number', () => {
-      expect(() => XTableUtils.number2alpha('A')).toThrow('Invalid number');
+      expect(() => XTableUtils.number2alpha('A' as unknown as number)).toThrow(
+        'Invalid number'
+      );
     });
     test('Should throw an error if its not a negative number', () => {
       expect(() => XTableUtils.number2alpha(-10)).toThrow(

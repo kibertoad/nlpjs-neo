@@ -31,7 +31,9 @@ class NlpExcelReader {
 
   loadNamedEntities(): void {
     this.xdoc.getTable('Named Entities').data.forEach((row) => {
-      const languages = row.language.split(',').map((x) => x.trim());
+      const languages = (row.language as string)
+        .split(',')
+        .map((x) => x.trim());
       this.manager.addNamedEntityText(
         row.entity,
         row.option,
@@ -45,7 +47,9 @@ class NlpExcelReader {
     const table = this.xdoc.getTable('Regex Entities');
     if (table) {
       table.data.forEach((row) => {
-        const languages = row.language.split(',').map((x) => x.trim());
+        const languages = (row.language as string)
+          .split(',')
+          .map((x) => x.trim());
         this.manager.addRegexEntity(row.entity, languages, row.regex);
       });
     }

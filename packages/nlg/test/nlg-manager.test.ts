@@ -1,5 +1,6 @@
 import { Container } from '@nlpjs-neo/core';
 import { NlgManager } from '../src/index.js';
+import type { NlgInput } from '../src/index.js';
 import container from './bootstrap.js';
 
 class Evaluator {
@@ -24,26 +25,26 @@ describe('NLG Manager', () => {
   describe('Choose Random', () => {
     test('It should do nothing if answers is not defined', () => {
       const manager = new NlgManager({ container });
-      const input: any = {};
+      const input: NlgInput = {};
       manager.chooseRandom(input);
       expect(input.answer).toBeUndefined();
     });
     test('It should do nothing if answers is empty', () => {
       const manager = new NlgManager({ container });
-      const input: any = { answers: [] };
+      const input: NlgInput = { answers: [] };
       manager.chooseRandom(input);
       expect(input.answer).toBeUndefined();
     });
     test('If there is only one answer, return this answer', () => {
       const manager = new NlgManager({ container });
-      const input: any = { answers: [{ answer: 'a' }] };
+      const input: NlgInput = { answers: [{ answer: 'a' }] };
       manager.chooseRandom(input);
       expect(input.answer).toEqual('a');
     });
     test('If there is more than one should return at random', () => {
       const manager = new NlgManager({ container });
       const input = { answers: [{ answer: 'a' }, { answer: 'b' }] };
-      const responses: any = {};
+      const responses: Record<string, number> = {};
       for (let i = 0; i < 100; i += 1) {
         responses[manager.chooseRandom(input).answer] = 1;
       }
@@ -57,7 +58,10 @@ describe('NLG Manager', () => {
       manager.add('en', 'greet', 'Hello');
       expect(manager.responses.en.greet).toHaveLength(1);
       expect(manager.responses.en.greet[0].answer).toEqual('Hello');
-      expect(manager.responses.en.greet[0].condition).toBeUndefined();
+      // The condition lives under `opts`; nothing is stored beside it.
+      expect(
+        (manager.responses.en.greet[0] as { condition?: unknown }).condition
+      ).toBeUndefined();
     });
     test('Should add an answer with condition', () => {
       const manager = new NlgManager({ container });
@@ -143,19 +147,28 @@ describe('NLG Manager', () => {
       manager.add('en', 'greet', 'Hello');
       manager.add('en', 'greet', 'Greetings');
       manager.add('en', 'greet', 'Hi');
-      const result = manager.findAllAnswers({ locale: 'en', intent: 'greet' });
+      const result = manager.findAllAnswers({
+        locale: 'en',
+        intent: 'greet',
+      }) as NlgInput;
       expect(result.answers).toHaveLength(3);
     });
     test('It should return an empty array if location does not have answers', () => {
       const manager = new NlgManager({ container });
       manager.add('en', 'greet', 'Hello');
-      const result = manager.findAllAnswers({ locale: 'es', intent: 'greet' });
+      const result = manager.findAllAnswers({
+        locale: 'es',
+        intent: 'greet',
+      }) as NlgInput;
       expect(result.answers).toHaveLength(0);
     });
     test('It should return an empty array if intent does not exists', () => {
       const manager = new NlgManager({ container });
       manager.add('en', 'greet', 'Hello');
-      const result = manager.findAllAnswers({ locale: 'en', intent: 'bye' });
+      const result = manager.findAllAnswers({
+        locale: 'en',
+        intent: 'bye',
+      }) as NlgInput;
       expect(result.answers).toHaveLength(0);
     });
   });
@@ -163,7 +176,7 @@ describe('NLG Manager', () => {
   describe('Filter answers', () => {
     test('If answers is undefined do nothing', () => {
       const manager = new NlgManager({ container });
-      const input: any = {};
+      const input: NlgInput = {};
       manager.filterAnswers(input);
       expect(input.answers).toBeUndefined();
     });
@@ -178,7 +191,10 @@ describe('NLG Manager', () => {
       manager.add('en', 'intent', 'a1', { condition: { a: 1 } });
       manager.add('en', 'intent', 'a2', { condition: { a: 2 } });
       manager.add('en', 'intent', 'a3', { condition: { a: 3 } });
-      const input = manager.findAllAnswers({ locale: 'en', intent: 'intent' });
+      const input = manager.findAllAnswers({
+        locale: 'en',
+        intent: 'intent',
+      }) as NlgInput;
       manager.filterAnswers(input);
       expect(input.answers).toHaveLength(3);
     });
@@ -193,7 +209,7 @@ describe('NLG Manager', () => {
         locale: 'en',
         intent: 'intent',
         context: { a: 2 },
-      });
+      }) as NlgInput;
       manager.filterAnswers(input);
       expect(input.answers).toHaveLength(1);
     });

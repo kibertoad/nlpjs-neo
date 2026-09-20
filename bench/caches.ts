@@ -25,10 +25,14 @@ interface CachingTokenizer {
   };
 }
 
-/** A `BaseStemmer`, which memoizes `stemWord()` per word. */
+/**
+ * A `BaseStemmer`, which memoizes `stemWord()` per word. Its `getTokenizer`
+ * promises only a tokenizer, so what it answers is read as a caching one
+ * here, which every tokenizer of the repository is.
+ */
 interface CachingStemmer {
   cache: Record<string, string>;
-  getTokenizer(): CachingTokenizer;
+  getTokenizer(): unknown;
 }
 
 /** An `Nlu` domain, which memoizes the tokens of the prepare step per locale and text. */
@@ -58,7 +62,7 @@ export function clearTokenizerCache(tokenizer: CachingTokenizer): void {
  */
 export function clearStemmerCache(stemmer: CachingStemmer): void {
   stemmer.cache = {};
-  clearTokenizerCache(stemmer.getTokenizer());
+  clearTokenizerCache(stemmer.getTokenizer() as CachingTokenizer);
 }
 
 /**

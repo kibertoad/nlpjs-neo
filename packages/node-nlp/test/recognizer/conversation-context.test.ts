@@ -1,4 +1,5 @@
 import { ConversationContext } from '../../src/index.js';
+import type { BotSession } from '../../src/types.js';
 
 describe('Conversation Context', () => {
   describe('Constructor', () => {
@@ -47,7 +48,7 @@ describe('Conversation Context', () => {
         },
       };
       const context = new ConversationContext();
-      const result = context.getConversationId(session);
+      const result = context.getConversationId(session as BotSession);
       expect(result).toBeUndefined();
     });
     test('It should return undefined if the session does not provide a conversation', () => {
@@ -57,7 +58,7 @@ describe('Conversation Context', () => {
         },
       };
       const context = new ConversationContext();
-      const result = context.getConversationId(session);
+      const result = context.getConversationId(session as BotSession);
       expect(result).toBeUndefined();
     });
     test('It should return undefined if the session does not provide an address', () => {
@@ -65,13 +66,13 @@ describe('Conversation Context', () => {
         message: {},
       };
       const context = new ConversationContext();
-      const result = context.getConversationId(session);
+      const result = context.getConversationId(session as BotSession);
       expect(result).toBeUndefined();
     });
     test('It should return undefined if the session does not provide a message', () => {
       const session: any = {};
       const context = new ConversationContext();
-      const result = context.getConversationId(session);
+      const result = context.getConversationId(session as BotSession);
       expect(result).toBeUndefined();
     });
     test('It should return undefined if the session is not provided', () => {

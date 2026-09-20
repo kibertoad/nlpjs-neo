@@ -10,12 +10,14 @@ import type {
 /**
  * Rule for one property of a `toJSON`/`fromJSON` mapping: `false` skips the
  * property, `true` copies it, a string renames it and a function computes the
- * value to store or restore.
+ * value to store or restore. Anything else matches none of those and skips
+ * the property, as `false` does.
  */
 type JsonRule<TArgs extends unknown[]> =
   | boolean
   | string
-  | ((...args: TArgs) => unknown);
+  | ((...args: TArgs) => unknown)
+  | object;
 
 /** Rules applied by `toJSON`, keyed by property name. */
 export type JsonExportRules = Record<

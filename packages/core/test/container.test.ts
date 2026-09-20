@@ -1,18 +1,19 @@
 import { Container, Timer } from '../src/index.js';
+import type { PipelineInput } from '../src/index.js';
 import Cloned from './assets/cloned.js';
 import Lower from './assets/lower.js';
 import Char from './assets/char.js';
 
 class Other {
-  declare name: any;
+  declare name: string;
 
   constructor() {
     this.name = 'name';
   }
 
-  run(srcInput) {
+  run(srcInput: PipelineInput) {
     const input = srcInput;
-    input.text = input.arr.join('');
+    input.text = (input.arr as string[]).join('');
     return input;
   }
 }
@@ -197,7 +198,7 @@ describe('Container', () => {
   describe('Resolve Path', () => {
     test('If path is a number, return the number', () => {
       const instance = new Container();
-      const input: any = {};
+      const input: PipelineInput = {};
       const srcObject = new Other();
       const actual = instance.resolvePath('17', input, srcObject);
       expect(actual).toBe(17);
@@ -209,21 +210,21 @@ describe('Container', () => {
     });
     test('If path is a boolean true, return the boolean true', () => {
       const instance = new Container();
-      const input: any = {};
+      const input: PipelineInput = {};
       const srcObject = new Other();
       const actual = instance.resolvePath('true', input, srcObject);
       expect(actual).toBe(true);
     });
     test('If path is a boolean false, return the boolean false', () => {
       const instance = new Container();
-      const input: any = {};
+      const input: PipelineInput = {};
       const srcObject = new Other();
       const actual = instance.resolvePath('false', input, srcObject);
       expect(actual).toBe(false);
     });
     test('If path is an string double quoted, returns the string without quotes', () => {
       const instance = new Container();
-      const input: any = {};
+      const input: PipelineInput = {};
       const srcObject = new Other();
       const actual = instance.resolvePath('"hello"', input, srcObject);
       expect(actual).toBe('hello');
@@ -235,14 +236,14 @@ describe('Container', () => {
     });
     test('If path is an string single quoted, returns the string without quotes', () => {
       const instance = new Container();
-      const input: any = {};
+      const input: PipelineInput = {};
       const srcObject = new Other();
       const actual = instance.resolvePath("'hello'", {}, input, srcObject);
       expect(actual).toBe('hello');
     });
     test('If the path does not exists throw an error', () => {
       const instance = new Container();
-      const input: any = {};
+      const input: PipelineInput = {};
       const srcObject = new Other();
       expect(() =>
         instance.resolvePath('this.potato.cucumber', {}, input, srcObject)
@@ -276,6 +277,7 @@ describe('Container', () => {
       const instance = new Container();
       const lower = new Lower();
       let registered = false;
+      // A plugin may register services of its own when it is added.
       lower.register = () => {
         registered = true;
       };
@@ -438,7 +440,7 @@ describe('Container', () => {
         'set input.value 7',
         'inc input.value',
       ]);
-      const input: any = {};
+      const input: PipelineInput = {};
       const actual = await instance.runPipeline(pipeline, input, new Other());
       expect(actual).toEqual({ value: 8 });
     });
@@ -450,7 +452,7 @@ describe('Container', () => {
         'set input.value 7',
         'inc input.value 3',
       ]);
-      const input: any = {};
+      const input: PipelineInput = {};
       const actual = await instance.runPipeline(pipeline, input, new Other());
       expect(actual).toEqual({ value: 10 });
     });
@@ -462,7 +464,7 @@ describe('Container', () => {
         'set input.value 7',
         'dec input.value',
       ]);
-      const input: any = {};
+      const input: PipelineInput = {};
       const actual = await instance.runPipeline(pipeline, input, new Other());
       expect(actual).toEqual({ value: 6 });
     });
@@ -474,7 +476,7 @@ describe('Container', () => {
         'set input.value 7',
         'dec input.value 3',
       ]);
-      const input: any = {};
+      const input: PipelineInput = {};
       const actual = await instance.runPipeline(pipeline, input, new Other());
       expect(actual).toEqual({ value: 4 });
     });
@@ -487,7 +489,7 @@ describe('Container', () => {
         'eq input.value 7',
         'get',
       ]);
-      const input: any = {};
+      const input: PipelineInput = {};
       const actual = await instance.runPipeline(pipeline, input, new Other());
       expect(actual).toBe(true);
     });
@@ -500,7 +502,7 @@ describe('Container', () => {
         'neq input.value 7',
         'get',
       ]);
-      const input: any = {};
+      const input: PipelineInput = {};
       const actual = await instance.runPipeline(pipeline, input, new Other());
       expect(actual).toBe(false);
     });
@@ -513,7 +515,7 @@ describe('Container', () => {
         'lt input.value 7',
         'get',
       ]);
-      const input: any = {};
+      const input: PipelineInput = {};
       const actual = await instance.runPipeline(pipeline, input, new Other());
       expect(actual).toBe(false);
     });
@@ -526,7 +528,7 @@ describe('Container', () => {
         'le input.value 7',
         'get',
       ]);
-      const input: any = {};
+      const input: PipelineInput = {};
       const actual = await instance.runPipeline(pipeline, input, new Other());
       expect(actual).toBe(true);
     });
@@ -539,7 +541,7 @@ describe('Container', () => {
         'gt input.value 7',
         'get',
       ]);
-      const input: any = {};
+      const input: PipelineInput = {};
       const actual = await instance.runPipeline(pipeline, input, new Other());
       expect(actual).toBe(false);
     });
@@ -552,7 +554,7 @@ describe('Container', () => {
         'ge input.value 7',
         'get',
       ]);
-      const input: any = {};
+      const input: PipelineInput = {};
       const actual = await instance.runPipeline(pipeline, input, new Other());
       expect(actual).toBe(true);
     });
@@ -568,7 +570,7 @@ describe('Container', () => {
         'jne first',
         'get counter',
       ]);
-      const input: any = {};
+      const input: PipelineInput = {};
       const actual = await instance.runPipeline(pipeline, input, new Other());
       expect(actual).toEqual(10);
     });
@@ -584,7 +586,7 @@ describe('Container', () => {
         'je first',
         'get counter',
       ]);
-      const input: any = {};
+      const input: PipelineInput = {};
       const actual = await instance.runPipeline(pipeline, input, new Other());
       expect(actual).toEqual(2);
     });
@@ -602,7 +604,7 @@ describe('Container', () => {
         'label last',
         'get counter',
       ]);
-      const input: any = {};
+      const input: PipelineInput = {};
       const actual = await instance.runPipeline(pipeline, input, new Other());
       expect(actual).toEqual(10);
     });

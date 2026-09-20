@@ -15,8 +15,13 @@ export type Intent = string;
 
 /** When an answer applies, beyond the intent it answers. */
 export interface AnswerOptions {
-  /** Expression the context must satisfy for the answer to be offered. */
-  condition?: string;
+  /**
+   * What the context must satisfy for the answer to be offered. It is handed
+   * to whatever evaluator the container holds, so what counts as a condition
+   * is that evaluator's to decide; the one this package ships reads it as an
+   * expression.
+   */
+  condition?: unknown;
   [key: string]: unknown;
 }
 
@@ -55,7 +60,7 @@ export interface NlgInput extends PipelineInput {
 
 /** Evaluates the condition of an answer against the context. */
 export interface ConditionEvaluator {
-  evaluate(condition: string, context: Record<string, unknown>): unknown;
+  evaluate(condition: unknown, context: Record<string, unknown>): unknown;
 }
 
 /** Compiles the templates an answer carries against the context. */
@@ -77,7 +82,7 @@ export interface ActionReference {
 
 /** What an action does when its intent is answered. */
 export type ActionFunction = (
-  input: NlgInput | string,
+  input: NlgInput,
   ...parameters: unknown[]
 ) => unknown | Promise<unknown>;
 

@@ -60,10 +60,15 @@ class ContextManager extends Clonable {
     );
   }
 
-  async getInputContextId(input: ContextInput): Promise<string | undefined> {
-    let result: string | undefined;
+  async getInputContextId(
+    input: ContextInput
+  ): Promise<string | number | undefined> {
+    let result: string | number | undefined;
     if (this.onGetInputContextId) {
-      result = (await this.onGetInputContextId(input)) as string | undefined;
+      result = (await this.onGetInputContextId(input)) as
+        | string
+        | number
+        | undefined;
     }
     if (!result && input && input.activity) {
       if (input.activity.address && input.activity.address.conversation) {

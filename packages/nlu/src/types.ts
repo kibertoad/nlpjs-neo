@@ -5,7 +5,7 @@ import type {
   Settings,
   TokenMap,
 } from '@nlpjs-neo/core';
-import type { NeuralNetworkJson } from '@nlpjs-neo/neural';
+import type { NeuralNetworkJson, TrainResult } from '@nlpjs-neo/neural';
 
 /**
  * Types of the natural language understanding packages: what a classifier is
@@ -21,11 +21,17 @@ export type Feature = string;
 /** Name of a domain an intent belongs to; `default` when none was given. */
 export type Domain = string;
 
-/** Features known to a classifier, as a lookup set. */
-export type FeatureSet = Record<Feature, 1>;
+/**
+ * Features known to a classifier, as a lookup set. Training writes `1`, which
+ * the spell checker reads as the frequency of the feature.
+ */
+export type FeatureSet = Record<Feature, number>;
 
-/** Intents known to a classifier, as a lookup set. */
-export type IntentSet = Record<Intent, 1>;
+/**
+ * Intents known to a classifier, as a lookup set. Training writes `1`; a
+ * model exported by an older version may carry any truthy value.
+ */
+export type IntentSet = Record<Intent, number | boolean>;
 
 /** Features seen for each intent while training, as lookup sets per intent. */
 export type IntentFeatures = Record<Intent, FeatureSet>;
@@ -70,7 +76,7 @@ export interface NeuralExplanation {
  * Intents a lookup may be restricted to: either patterns matched with
  * wildcards, or a lookup set of exact names.
  */
-export type AllowList = string[] | Record<Intent, boolean>;
+export type AllowList = string[] | Record<Intent, unknown>;
 
 /**
  * Settings of a classifier. They are merged from the constructor, the
@@ -124,6 +130,8 @@ export interface NluInputBase extends PipelineInput {
 export interface NluInput extends NluInputBase {
   corpus?: CorpusEntry[] | PreparedCorpusEntry[];
   explanation?: NeuralExplanation;
+  /** Filled in by `innerTrain` with how the training run went. */
+  status?: TrainResult;
 }
 
 /**
@@ -243,13 +251,17 @@ export interface DomainManagerJson extends SerializedInstance {
   domains: Record<Domain, NluJson>;
 }
 
-/** Exported classifier, as produced by `Nlu.toJSON`. */
+/**
+ * Exported classifier, as produced by `Nlu.toJSON`. Everything but the
+ * settings is missing from the export of a classifier that never trained,
+ * and `fromJSON` starts such a model from empty.
+ */
 export interface NluJson extends SerializedInstance {
   settings: NluSettings;
-  features: FeatureSet;
-  intents: IntentSet;
-  intentFeatures: IntentFeatures;
-  featuresToIntent: FeaturesToIntent;
+  features?: FeatureSet;
+  intents?: IntentSet;
+  intentFeatures?: IntentFeatures;
+  featuresToIntent?: FeaturesToIntent;
   /** Present on a `NluNeural`, absent while it is still untrained. */
   neuralNetwork?: NeuralNetworkJson;
 }

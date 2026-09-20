@@ -1,14 +1,15 @@
 import reduceEdges from '../src/reduce-edges.js';
+import type { Edge } from '../src/index.js';
 
 describe('Reduce Edges', () => {
   describe('reduceEdges', () => {
     test('It should take the edge with best accuracy', () => {
-      const edgeA = {
+      const edgeA: Edge = {
         accuracy: 0.8,
         start: 0,
         end: 10,
       };
-      const edgeB = {
+      const edgeB: Edge = {
         accuracy: 0.9,
         start: 0,
         end: 10,
@@ -17,12 +18,12 @@ describe('Reduce Edges', () => {
       expect(actual).toEqual([edgeB]);
     });
     test('If one edge is discarded then should not take it into account', () => {
-      const edgeA = {
+      const edgeA: Edge = {
         accuracy: 0.8,
         start: 0,
         end: 10,
       };
-      const edgeB = {
+      const edgeB: Edge = {
         accuracy: 0.9,
         start: 0,
         end: 10,
@@ -32,12 +33,12 @@ describe('Reduce Edges', () => {
       expect(actual).toEqual([edgeA]);
     });
     test('It should take the edge with best accuracy even if the overlap is small', () => {
-      const edgeA = {
+      const edgeA: Edge = {
         accuracy: 0.8,
         start: 0,
         end: 10,
       };
-      const edgeB = {
+      const edgeB: Edge = {
         accuracy: 0.9,
         start: 10,
         end: 15,
@@ -46,12 +47,12 @@ describe('Reduce Edges', () => {
       expect(actual).toEqual([edgeB]);
     });
     test('It should take the edge with best accuracy even with different sorting', () => {
-      const edgeA = {
+      const edgeA: Edge = {
         accuracy: 0.8,
         start: 0,
         end: 10,
       };
-      const edgeB = {
+      const edgeB: Edge = {
         accuracy: 0.9,
         start: 0,
         end: 10,
@@ -60,12 +61,12 @@ describe('Reduce Edges', () => {
       expect(actual).toEqual([edgeB]);
     });
     test('It should keep both if no overlap', () => {
-      const edgeA = {
+      const edgeA: Edge = {
         accuracy: 0.8,
         start: 0,
         end: 10,
       };
-      const edgeB = {
+      const edgeB: Edge = {
         accuracy: 0.9,
         start: 11,
         end: 20,
@@ -74,14 +75,14 @@ describe('Reduce Edges', () => {
       expect(actual).toEqual([edgeA, edgeB]);
     });
     test('It should keep both if they have same priority', () => {
-      const edgeA = {
+      const edgeA: Edge = {
         accuracy: 0.9,
         start: 0,
         end: 10,
         len: 11,
         entity: 'entity',
       };
-      const edgeB = {
+      const edgeB: Edge = {
         accuracy: 0.9,
         start: 5,
         end: 16,
@@ -92,14 +93,14 @@ describe('Reduce Edges', () => {
       expect(actual).toEqual([edgeA, edgeB]);
     });
     test('It should keep both if they have same priority if useMaxLength is false', () => {
-      const edgeA = {
+      const edgeA: Edge = {
         accuracy: 0.9,
         start: 0,
         end: 10,
         len: 11,
         entity: 'entity',
       };
-      const edgeB = {
+      const edgeB: Edge = {
         accuracy: 0.9,
         start: 5,
         end: 16,
@@ -110,14 +111,14 @@ describe('Reduce Edges', () => {
       expect(actual).toEqual([edgeA, edgeB]);
     });
     test('It should keep both if one is a number and useMaxLength is false', () => {
-      const edgeA = {
+      const edgeA: Edge = {
         accuracy: 0.9,
         start: 0,
         end: 10,
         len: 11,
         entity: 'entity',
       };
-      const edgeB = {
+      const edgeB: Edge = {
         accuracy: 0.9,
         start: 5,
         end: 16,
@@ -128,7 +129,7 @@ describe('Reduce Edges', () => {
       expect(actual).toEqual([edgeA, edgeB]);
     });
     test('It should detect if is the same enum option entity to discard one', () => {
-      const edgeA = {
+      const edgeA: Edge = {
         accuracy: 0.9,
         start: 0,
         end: 10,
@@ -137,7 +138,7 @@ describe('Reduce Edges', () => {
         entity: 'entity',
         option: 'op1',
       };
-      const edgeB = {
+      const edgeB: Edge = {
         accuracy: 0.9,
         start: 0,
         end: 10,
@@ -150,7 +151,7 @@ describe('Reduce Edges', () => {
       expect(actual).toEqual([edgeB]);
     });
     test('It should choose the largest one', () => {
-      const edgeA = {
+      const edgeA: Edge = {
         accuracy: 0.9,
         start: 0,
         end: 10,
@@ -159,7 +160,7 @@ describe('Reduce Edges', () => {
         entity: 'entity',
         option: 'op1',
       };
-      const edgeB = {
+      const edgeB: Edge = {
         accuracy: 0.9,
         start: 0,
         end: 9,
@@ -172,7 +173,7 @@ describe('Reduce Edges', () => {
       expect(actual).toEqual([edgeA]);
     });
     test('If both are enums and one is substring of the other, discard the smaller', () => {
-      const edgeA = {
+      const edgeA: Edge = {
         accuracy: 0.9,
         start: 0,
         end: 10,
@@ -182,7 +183,7 @@ describe('Reduce Edges', () => {
         option: 'op1',
         utteranceText: 'abcdefghijk',
       };
-      const edgeB = {
+      const edgeB: Edge = {
         accuracy: 0.9,
         start: 0,
         end: 9,

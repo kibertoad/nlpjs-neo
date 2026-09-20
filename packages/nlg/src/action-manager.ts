@@ -115,8 +115,10 @@ class ActionManager extends Clonable {
 
     for (const { fn, parameters } of actionList) {
       if (fn) {
+        // A previous action may have answered with a bare string, which is
+        // then what the next one is handed.
         const newProcessedAnswer = await fn(
-          processedAnswer,
+          processedAnswer as NlgInput,
           ...(parameters || [])
         );
         if (newProcessedAnswer) {

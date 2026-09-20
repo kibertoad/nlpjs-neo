@@ -38,7 +38,7 @@ describe('Stemmer Korean', () => {
       for (let i = 0; i < tests.length; i += 2) {
         const input = tests[i];
         const expected = tests[i + 1];
-        const actual = stemmer.tokenizeAndStem(input);
+        const actual = stemmer.tokenizeAndStem(input as string);
         expect(actual).toEqual(expected);
       }
     });

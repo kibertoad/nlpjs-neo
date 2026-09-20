@@ -1,7 +1,14 @@
-import { readSheets, type SheetCells } from './workbook-reader.js';
+import { readSheets } from './workbook-reader.js';
 import XTable from './xtable.js';
 import XTableUtils from './xtable-utils.js';
-import type { CellBlock, SheetRect, TableQuery, TableRow } from './types.js';
+import type {
+  BlockCell,
+  CellBlock,
+  SheetCells,
+  SheetRect,
+  TableQuery,
+  TableRow,
+} from './types.js';
 
 /**
  * Every table of a workbook. A sheet is cut into tables along its blank rows
@@ -174,7 +181,9 @@ class XDoc {
       currentBlock.push(currentRow);
       for (let i = rect.left; i <= rect.right; i += 1) {
         const cellRef = XTableUtils.coord2excel({ row: j, column: i });
-        currentRow.push(sheet[cellRef]);
+        // Only the `!` prefixed keys of a sheet are not cells, and no A1
+        // reference ever looks like one.
+        currentRow.push(sheet[cellRef] as BlockCell | undefined);
       }
     }
     pendingBlocks.push(currentBlock);

@@ -1,4 +1,5 @@
 import { JavascriptCompiler } from '../src/index.js';
+import type { Identifier, Literal, UnaryExpression } from 'acorn';
 
 const container = {
   get() {
@@ -17,7 +18,7 @@ describe('JavascriptCompiler', () => {
   describe('Walk Literal', () => {
     test('It should return the literal of the node', async () => {
       const evaluator = new JavascriptCompiler(container);
-      const node = { value: 'This is the value' };
+      const node = { value: 'This is the value' } as Literal;
       const result = await evaluator.walkLiteral(node);
       expect(result).toEqual(node.value);
     });
@@ -54,7 +55,10 @@ describe('JavascriptCompiler', () => {
     });
     test('If the operator is unknown, return fail result', async () => {
       const evaluator = new JavascriptCompiler(container);
-      const node = { argument: 17, operator: '*' };
+      const node = {
+        argument: 17,
+        operator: '*',
+      } as unknown as UnaryExpression;
       const result = await evaluator.walkUnary(node);
       expect(result).toBe(evaluator.failResult);
     });
@@ -95,14 +99,14 @@ describe('JavascriptCompiler', () => {
     test('If context has the identifier, return the value', async () => {
       const context = { a: 17 };
       const evaluator = new JavascriptCompiler(container);
-      const node = { name: 'a' };
+      const node = { name: 'a' } as Identifier;
       const result = await evaluator.walkIdentifier(node, context);
       expect(result).toEqual(context.a);
     });
     test('If context does not contain the identifier, return undefined', async () => {
       const context = { a: 17 };
       const evaluator = new JavascriptCompiler(container);
-      const node = { name: 'b' };
+      const node = { name: 'b' } as Identifier;
       const result = await evaluator.walkIdentifier(node, context);
       expect(result).toEqual(undefined);
     });

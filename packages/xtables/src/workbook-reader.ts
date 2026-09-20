@@ -12,16 +12,15 @@ import { iterCells } from '@office-kit/xlsx/worksheet';
 export const SUPPORTED_EXTENSIONS = ['.xlsx', '.xlsm'];
 
 /**
- * A cell as the table builders consume it: only the formatted text matters.
+ * A cell as this reader writes it: the formatted text of the cell, which is
+ * the only thing the table builders read.
  */
 export interface SheetCell {
   w: string;
 }
 
-/**
- * A sheet keyed by A1 reference, the shape `XDoc.processSheet` walks.
- */
-export type SheetCells = Record<string, SheetCell>;
+/** A sheet as this reader writes it, keyed by A1 reference. */
+export type ReadSheet = Record<string, SheetCell>;
 
 /**
  * Read every worksheet of a workbook as a map of A1 reference to formatted
@@ -34,7 +33,7 @@ export type SheetCells = Record<string, SheetCell>;
  *
  * @param {String} filename Path to a `.xlsx` or `.xlsm` file.
  */
-export async function readSheets(filename: string): Promise<SheetCells[]> {
+export async function readSheets(filename: string): Promise<ReadSheet[]> {
   const extension = path.extname(filename).toLowerCase();
   if (!SUPPORTED_EXTENSIONS.includes(extension)) {
     throw new Error(
@@ -42,12 +41,12 @@ export async function readSheets(filename: string): Promise<SheetCells[]> {
     );
   }
   const workbook = await loadWorkbook(fromFile(filename));
-  const sheets: SheetCells[] = [];
+  const sheets: ReadSheet[] = [];
   for (const entry of workbook.sheets) {
     if (entry.kind !== 'worksheet') {
       continue;
     }
-    const cells: SheetCells = {};
+    const cells: ReadSheet = {};
     for (const cell of iterCells(entry.sheet)) {
       if (!isEmptyCell(cell)) {
         cells[getCoordinate(cell)] = { w: getCellDisplayText(workbook, cell) };

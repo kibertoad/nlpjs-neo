@@ -6,7 +6,12 @@ import type {
   Storage,
 } from '@nlpjs-neo/core';
 import { NluManager, NluNeural } from '@nlpjs-neo/nlu';
-import type { Domain, Intent, NluSettings } from '@nlpjs-neo/nlu';
+import type {
+  Domain,
+  Intent,
+  NluManagerInput,
+  NluSettings,
+} from '@nlpjs-neo/nlu';
 import {
   Ner,
   ExtractorEnum,
@@ -345,7 +350,7 @@ class Nlp extends Clonable {
   }
 
   addNerRule(
-    locale: Locale,
+    locale: Locale | Locale[],
     name: EntityName,
     type: Rule['type'],
     rule: RuleCondition
@@ -358,7 +363,7 @@ class Nlp extends Clonable {
   }
 
   addNerRuleOptionTexts(
-    locale: Locale,
+    locale: Locale | Locale[],
     name: EntityName,
     option: string,
     texts?: string | string[]
@@ -367,7 +372,7 @@ class Nlp extends Clonable {
   }
 
   removeNerRuleOptionTexts(
-    locale: Locale,
+    locale: Locale | Locale[],
     name: EntityName,
     option: string,
     texts?: string | string[]
@@ -376,7 +381,7 @@ class Nlp extends Clonable {
   }
 
   addNerRegexRule(
-    locale: Locale,
+    locale: Locale | Locale[],
     name: EntityName,
     regex: string | RegExp
   ): void {
@@ -384,7 +389,7 @@ class Nlp extends Clonable {
   }
 
   addNerBetweenCondition(
-    locale: Locale,
+    locale: Locale | Locale[],
     name: EntityName,
     left: string | string[],
     right: string | string[],
@@ -394,7 +399,7 @@ class Nlp extends Clonable {
   }
 
   addNerBetweenLastCondition(
-    locale: Locale,
+    locale: Locale | Locale[],
     name: EntityName,
     left: string | string[],
     right: string | string[],
@@ -404,7 +409,7 @@ class Nlp extends Clonable {
   }
 
   addNerPositionCondition(
-    locale: Locale,
+    locale: Locale | Locale[],
     name: EntityName,
     position: TrimTypeValue,
     words: string | string[],
@@ -414,7 +419,7 @@ class Nlp extends Clonable {
   }
 
   addNerAfterCondition(
-    locale: Locale,
+    locale: Locale | Locale[],
     name: EntityName,
     words: string | string[],
     opts?: TrimOptions
@@ -423,7 +428,7 @@ class Nlp extends Clonable {
   }
 
   addNerAfterFirstCondition(
-    locale: Locale,
+    locale: Locale | Locale[],
     name: EntityName,
     words: string | string[],
     opts?: TrimOptions
@@ -432,7 +437,7 @@ class Nlp extends Clonable {
   }
 
   addNerAfterLastCondition(
-    locale: Locale,
+    locale: Locale | Locale[],
     name: EntityName,
     words: string | string[],
     opts?: TrimOptions
@@ -441,7 +446,7 @@ class Nlp extends Clonable {
   }
 
   addNerBeforeCondition(
-    locale: Locale,
+    locale: Locale | Locale[],
     name: EntityName,
     words: string | string[],
     opts?: TrimOptions
@@ -450,7 +455,7 @@ class Nlp extends Clonable {
   }
 
   addNerBeforeFirstCondition(
-    locale: Locale,
+    locale: Locale | Locale[],
     name: EntityName,
     words: string | string[],
     opts?: TrimOptions
@@ -459,7 +464,7 @@ class Nlp extends Clonable {
   }
 
   addNerBeforeLastCondition(
-    locale: Locale,
+    locale: Locale | Locale[],
     name: EntityName,
     words: string | string[],
     opts?: TrimOptions
@@ -809,7 +814,7 @@ class Nlp extends Clonable {
     locale: Locale,
     utterance?: string,
     settings?: NluSettings
-  ): Promise<unknown> {
+  ): Promise<NluManagerInput> {
     return this.nluManager.process(
       locale,
       utterance,

@@ -25,6 +25,7 @@ import type {
   NlgManagerJson,
 } from '@nlpjs-neo/nlg';
 import type { SlotFillState, SlotsByIntent } from '@nlpjs-neo/slot';
+import type { SentimentResult } from '@nlpjs-neo/sentiment';
 import type Nlp from './nlp.js';
 
 /**
@@ -35,7 +36,7 @@ import type Nlp from './nlp.js';
 /** Conversation state, kept between the turns of one conversation. */
 export interface Context {
   /** Identifier this context is stored under. */
-  conversationId?: string;
+  conversationId?: string | number;
   id?: string;
   channel?: string;
   app?: string;
@@ -64,8 +65,9 @@ export type ContextIdResolver = (input: ContextInput) => unknown;
 export interface ContextInput {
   activity?: {
     id?: string;
-    conversation?: { id?: string };
-    address?: { conversation?: { id?: string } };
+    /** Channels identify a conversation by a string; a few use a number. */
+    conversation?: { id?: string | number };
+    address?: { conversation?: { id?: string | number } };
     [key: string]: unknown;
   };
   [key: string]: unknown;
@@ -88,7 +90,10 @@ export interface TrimEntityDefinition {
 
 /** An entity as a corpus declares it: options, expressions or trims. */
 export interface EntityDefinition {
-  locale?: Locale;
+  /** Locales this entity is declared for; all of them when absent. */
+  locale?: Locale | Locale[];
+  /** How it is recognized, when a corpus states it rather than implying it. */
+  type?: string;
   /** Texts per option of an enum entity. */
   options?: Record<string, string | string[]>;
   regex?: string | string[];
@@ -217,7 +222,7 @@ export interface NlpResult {
   /** Edges while extraction runs, organized entities once it is done. */
   entities?: (Edge | StructuredEntity)[];
   sourceEntities?: unknown[];
-  sentiment?: unknown;
+  sentiment?: SentimentResult;
   context?: Context;
   /** The utterance with its entities rewritten, when that scored better. */
   optionalUtterance?: string;
