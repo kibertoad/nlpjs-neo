@@ -62,14 +62,15 @@ class Context extends Clonable {
   setContext(key, value) {
     const storage = this.getStorage();
     const change = {
-      [key]: value,
+      [`${this.settings.tag}-${key}`]: value,
     };
     return storage.write(change);
   }
 
   async getContextValue(key, valueName) {
     const context = await this.getContext(key);
-    return context ? context[valueName] : undefined;
+    const item = context[`${this.settings.tag}-${key}`];
+    return item ? item[valueName] : undefined;
   }
 
   async setContextValue(key, valueName, value) {
