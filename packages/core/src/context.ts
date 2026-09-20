@@ -1,11 +1,12 @@
-import { defaultContainer } from './container.js';
+import { defaultContainer, type Container } from './container.js';
 import Clonable from './clonable.js';
+import type { Settings, Storage, StorageItem } from './types.js';
 
 class Context extends Clonable {
-  declare container: any;
-  declare settings: any;
+  declare container: Container;
+  declare settings: Settings;
 
-  constructor(settings: any = {}, container = undefined) {
+  constructor(settings: Settings = {}, container?: Container) {
     super(
       {
         settings: {},
@@ -23,20 +24,22 @@ class Context extends Clonable {
     );
   }
 
-  getStorage() {
-    const storage = this.container.get(this.settings.storageName || 'storage');
+  getStorage(): Storage {
+    const storage = this.container.get<Storage>(
+      this.settings.storageName || 'storage'
+    );
     if (!storage) {
       throw new Error('Storage not found');
     }
     return storage;
   }
 
-  getContext(key) {
+  getContext(key: string): Promise<Record<string, StorageItem>> {
     const storage = this.getStorage();
     return storage.read(`${this.settings.tag}-${key}`);
   }
 
-  setContext(key, value) {
+  setContext(key: string, value: StorageItem): Promise<StorageItem> {
     const storage = this.getStorage();
     const change = {
       [`${this.settings.tag}-${key}`]: value,
@@ -44,14 +47,20 @@ class Context extends Clonable {
     return storage.write(change);
   }
 
-  async getContextValue(key, valueName) {
+  async getContextValue(key: string, valueName: string): Promise<unknown> {
     const context = await this.getContext(key);
     const item = context[`${this.settings.tag}-${key}`];
     return item ? item[valueName] : undefined;
   }
 
-  async setContextValue(key, valueName, value) {
-    let context = await this.getContext(key);
+  async setContextValue(
+    key: string,
+    valueName: string,
+    value: unknown
+  ): Promise<StorageItem> {
+    // The stored context doubles as the read result, so it is written
+    // back as a single item.
+    let context: StorageItem = await this.getContext(key);
     if (!context) {
       context = {};
     }

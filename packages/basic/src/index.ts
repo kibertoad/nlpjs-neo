@@ -87,3 +87,36 @@ export {
   logger,
   Nlp,
 };
+
+export type {
+  AmongMethod,
+  JsonExportRules,
+  JsonImportRules,
+} from '@nlpjs-neo/core-loader';
+export type {
+  ChildPipeline,
+  CompiledPipeline,
+  Compiler,
+  CompilerConstructor,
+  ContainerHolder,
+  FactoryItem,
+  Locale,
+  Logger,
+  NormalizeFlag,
+  NormalizerService,
+  PipelineExecutionContext,
+  PipelineInput,
+  PipelineToken,
+  RegisteredPipeline,
+  SerializedInstance,
+  Settings,
+  StemmerService,
+  StopwordDictionary,
+  StopwordsService,
+  Storage,
+  StorageItem,
+  Token,
+  TokenMap,
+  Tokens,
+  TokenizerService,
+} from '@nlpjs-neo/core-loader';

@@ -1,30 +1,57 @@
-import { defaultContainer } from './container.js';
+import { defaultContainer, type Container } from './container.js';
 import Normalizer from './normalizer.js';
+import type {
+  ContainerHolder,
+  NormalizeFlag,
+  NormalizerService,
+  PipelineInput,
+  Token,
+  TokenizerService,
+} from './types.js';
 
-class Tokenizer {
-  declare cache: any;
-  declare container: any;
-  declare name: any;
-  declare normalizer: any;
-  declare shouldNormalize: any;
+/**
+ * Tokenizations already computed, kept for an hour and separated by whether
+ * the text was normalized first.
+ */
+interface TokenizerCache {
+  created: number;
+  normalized: Record<string, Token[]>;
+  nonNormalized: Record<string, Token[]>;
+}
 
-  constructor(container = defaultContainer, shouldNormalize = false) {
-    this.container = container.container || container;
+/** The BERT tokenizer additionally reports the locales it can handle. */
+interface BertTokenizer extends TokenizerService {
+  activeFor(locale: string): boolean;
+}
+
+class Tokenizer implements TokenizerService {
+  declare cache: TokenizerCache | undefined;
+  declare container: Container;
+  declare name: string;
+  declare normalizer: NormalizerService | undefined;
+  declare shouldNormalize: boolean;
+
+  constructor(
+    container: ContainerHolder = defaultContainer,
+    shouldNormalize = false
+  ) {
+    this.container = container.container || (container as Container);
 
     this.name = 'tokenize';
     this.shouldNormalize = shouldNormalize;
   }
 
-  getNormalizer() {
+  getNormalizer(): NormalizerService {
     if (!this.normalizer) {
       this.normalizer =
-        this.container.get(`normalizer-${this.name.slice(-2)}`) ||
-        new Normalizer();
+        this.container.get<NormalizerService>(
+          `normalizer-${this.name.slice(-2)}`
+        ) || new Normalizer();
     }
     return this.normalizer;
   }
 
-  normalize(text, force) {
+  normalize(text: string, force?: NormalizeFlag): string {
     if ((force === undefined && this.shouldNormalize) || force === true) {
       const normalizer = this.getNormalizer();
       return normalizer.normalize(text);
@@ -32,12 +59,12 @@ class Tokenizer {
     return text;
   }
 
-  innerTokenize(text, _normalize?) {
+  innerTokenize(text: string, _normalize?: NormalizeFlag): Token[] {
     return text.split(/[\s,.!?;:([\]'"¡¿)/]+/).filter((x) => x);
   }
 
-  tokenize(text, normalize?) {
-    let result;
+  tokenize(text: string, normalize?: NormalizeFlag): Token[] {
+    let result: Token[] | undefined;
     if (this.cache) {
       const now = new Date();
       const diff = Math.abs(now.getTime() - this.cache.created) / 3600000;
@@ -74,19 +101,19 @@ class Tokenizer {
     return result;
   }
 
-  async run(srcInput) {
+  async run(srcInput: PipelineInput): Promise<PipelineInput> {
     const input = srcInput;
     const locale = input.locale || 'en';
-    let tokenizer = this.container.get(`tokenizer-${locale}`);
+    let tokenizer = this.container.get<TokenizerService>(`tokenizer-${locale}`);
     if (!tokenizer) {
-      const tokenizerBert = this.container.get(`tokenizer-bert`);
+      const tokenizerBert = this.container.get<BertTokenizer>(`tokenizer-bert`);
       if (tokenizerBert && tokenizerBert.activeFor(locale)) {
         tokenizer = tokenizerBert;
       } else {
         tokenizer = this;
       }
     }
-    const tokens = await tokenizer.tokenize(input.text, input);
+    const tokens = await tokenizer.tokenize(input.text as string, input);
     input.tokens = tokens.filter((x) => x);
     return input;
   }

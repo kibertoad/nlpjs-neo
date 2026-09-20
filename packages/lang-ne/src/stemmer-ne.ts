@@ -187,19 +187,19 @@ StemmerNe.a_0 = [
   ['सँगै', -1, 1],
   ['मै', -1, 1],
   ['को', -1, 2],
-].map((x) => new Among(x[0], x[1], x[2]));
+].map((x) => new Among(x[0] as string, x[1] as number, x[2] as number));
 
 StemmerNe.a_1 = [
   ['ँ', -1, -1],
   ['ं', -1, -1],
   ['ै', -1, -1],
-].map((x) => new Among(x[0], x[1], x[2]));
+].map((x) => new Among(x[0] as string, x[1] as number, x[2] as number));
 
 StemmerNe.a_2 = [
   ['ँ', -1, 1],
   ['ं', -1, 1],
   ['ै', -1, 2],
-].map((x) => new Among(x[0], x[1], x[2]));
+].map((x) => new Among(x[0] as string, x[1] as number, x[2] as number));
 
 StemmerNe.a_3 = [
   ['थिए', -1, 1],
@@ -293,6 +293,6 @@ StemmerNe.a_3 = [
   ['थिस्', 87, 1],
   ['छेस्', -1, 1],
   ['होस्', -1, 1],
-].map((x) => new Among(x[0], x[1], x[2]));
+].map((x) => new Among(x[0] as string, x[1] as number, x[2] as number));
 
 export default StemmerNe;

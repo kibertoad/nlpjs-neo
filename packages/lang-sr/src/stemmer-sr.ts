@@ -2013,7 +2013,7 @@ StemmerSr.a_0 = [
   ['\u045A', -1, 17],
   ['\u045B', -1, 23],
   ['\u045F', -1, 29],
-].map((x) => new Among(x[0], x[1], x[2]));
+].map((x) => new Among(x[0] as string, x[1] as number, x[2] as number));
 
 StemmerSr.a_1 = [
   ['daba', -1, 73],
@@ -2146,7 +2146,7 @@ StemmerSr.a_1 = [
   ['enat', -1, 48],
   ['oscu', -1, 72],
   ['o\u0161\u0107u', -1, 71],
-].map((x) => new Among(x[0], x[1], x[2]));
+].map((x) => new Among(x[0] as string, x[1] as number, x[2] as number));
 
 StemmerSr.a_2 = [
   ['aca', -1, 124],
@@ -4184,7 +4184,7 @@ StemmerSr.a_2 = [
   ['a\u010Di\u0161', 2029, 101],
   ['lu\u010Di\u0161', 2029, 117],
   ['ro\u0161i\u0161', 2029, 90],
-].map((x) => new Among(x[0], x[1], x[2]));
+].map((x) => new Among(x[0] as string, x[1] as number, x[2] as number));
 
 StemmerSr.a_3 = [
   ['a', -1, 1],
@@ -4213,7 +4213,7 @@ StemmerSr.a_3 = [
   ['ost', -1, 1],
   ['u', -1, 1],
   ['enu', 24, 1],
-].map((x) => new Among(x[0], x[1], x[2]));
+].map((x) => new Among(x[0] as string, x[1] as number, x[2] as number));
 
 StemmerSr.g_v = [17, 65, 16];
 StemmerSr.g_sa = [65, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 128];

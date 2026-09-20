@@ -442,7 +442,7 @@ StemmerLt.a_0 = [
   ['\u0173', -1, -1],
   ['i\u0173', 201, -1],
   ['er\u0173', 201, -1],
-].map((x) => new Among(x[0], x[1], x[2]));
+].map((x) => new Among(x[0] as string, x[1] as number, x[2] as number));
 
 StemmerLt.a_1 = [
   ['ing', -1, -1],
@@ -507,7 +507,7 @@ StemmerLt.a_1 = [
   ['yk\u0161\u010D', -1, -1],
   ['\u0119', -1, -1],
   ['\u0117j\u0119', 60, -1],
-].map((x) => new Among(x[0], x[1], x[2]));
+].map((x) => new Among(x[0] as string, x[1] as number, x[2] as number));
 
 StemmerLt.a_2 = [
   ['ojime', -1, 7],
@@ -521,7 +521,7 @@ StemmerLt.a_2 = [
   ['ait\u0117s', -1, 1],
   ['uot\u0117s', -1, 2],
   ['esiu', -1, 4],
-].map((x) => new Among(x[0], x[1], x[2]));
+].map((x) => new Among(x[0] as string, x[1] as number, x[2] as number));
 
 StemmerLt.a_3 = [new Among('\u010D', -1, 1), new Among('d\u017E', -1, 2)];
 

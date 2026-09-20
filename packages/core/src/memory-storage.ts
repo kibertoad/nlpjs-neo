@@ -1,11 +1,19 @@
-import { defaultContainer } from './container.js';
+import { defaultContainer, type Container } from './container.js';
 import Clonable from './clonable.js';
+import type { Settings, Storage, StorageItem } from './types.js';
 
-class MemoryStorage extends Clonable {
-  declare container: any;
-  declare settings: any;
+interface MemoryStorageSettings extends Settings {
+  /** Revision counter handed out as the `eTag` of the next written item. */
+  etag: number;
+  /** Items by key, serialized so that reads and writes are by value. */
+  memory: Record<string, string>;
+}
 
-  constructor(settings: any = {}, container = undefined) {
+class MemoryStorage extends Clonable implements Storage {
+  declare container: Container;
+  declare settings: MemoryStorageSettings;
+
+  constructor(settings: Settings = {}, container?: Container) {
     super(
       {
         settings: {},
@@ -24,13 +32,11 @@ class MemoryStorage extends Clonable {
     );
   }
 
-  read(keys) {
+  read(keys: string | string[]): Promise<Record<string, StorageItem>> {
     return new Promise((resolve) => {
-      const data: any = {};
-      if (!Array.isArray(keys)) {
-        keys = [keys];
-      }
-      keys.forEach((key) => {
+      const data: Record<string, StorageItem> = {};
+      const keyList = Array.isArray(keys) ? keys : [keys];
+      keyList.forEach((key) => {
         const item = this.settings.memory[key];
         if (item) {
           data[key] = JSON.parse(item);
@@ -40,7 +46,7 @@ class MemoryStorage extends Clonable {
     });
   }
 
-  saveItem(key, item) {
+  saveItem(key: string, item: StorageItem): StorageItem {
     const clone = { ...item };
     clone.eTag = this.settings.etag.toString();
     this.settings.etag += 1;
@@ -48,7 +54,7 @@ class MemoryStorage extends Clonable {
     return clone;
   }
 
-  write(changes) {
+  write(changes: Record<string, StorageItem>): Promise<StorageItem> {
     return new Promise((resolve, reject) => {
       Object.keys(changes).forEach((key) => {
         const newItem = changes[key];
@@ -67,7 +73,7 @@ class MemoryStorage extends Clonable {
     });
   }
 
-  delete(keys) {
+  delete(keys: string[]): Promise<void> {
     return new Promise<void>((resolve) => {
       keys.forEach((key) => delete this.settings.memory[key]);
       resolve();

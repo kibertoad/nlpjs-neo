@@ -1,41 +1,43 @@
-class Logger {
-  declare name: any;
+import type { Logger as LoggerContract } from './types.js';
+
+class Logger implements LoggerContract {
+  declare name: string;
 
   constructor() {
     this.name = 'logger';
   }
 
-  debug(...args) {
+  debug(...args: unknown[]): void {
     // oxlint-disable-next-line no-console
     console.debug(...args);
   }
 
-  info(...args) {
+  info(...args: unknown[]): void {
     // oxlint-disable-next-line no-console
     console.info(...args);
   }
 
-  warn(...args) {
+  warn(...args: unknown[]): void {
     // oxlint-disable-next-line no-console
     console.warn(...args);
   }
 
-  error(...args) {
+  error(...args: unknown[]): void {
     // oxlint-disable-next-line no-console
     console.error(...args);
   }
 
-  log(...args) {
+  log(...args: unknown[]): void {
     // oxlint-disable-next-line no-console
     console.log(...args);
   }
 
-  trace(...args) {
+  trace(...args: unknown[]): void {
     // oxlint-disable-next-line no-console
     console.trace(...args);
   }
 
-  fatal(...args) {
+  fatal(...args: unknown[]): void {
     // oxlint-disable-next-line no-console
     console.error(...args);
   }

@@ -1,23 +1,38 @@
-import { defaultContainer } from './container.js';
+import { defaultContainer, type Container } from './container.js';
+import type {
+  ContainerHolder,
+  PipelineInput,
+  StemmerService,
+  Token,
+} from './types.js';
 
-class Stemmer {
-  declare container: any;
-  declare name: any;
+/**
+ * A stemmer resolved from the container. Language stemmers add their own
+ * training hooks on top of the `stem` contract.
+ */
+interface ResolvedStemmer extends StemmerService {
+  addUtterance?(utterance: string, intent: string): unknown;
+  innerTrain?(): unknown;
+}
 
-  constructor(container = defaultContainer) {
-    this.container = container.container || container;
+class Stemmer implements StemmerService {
+  declare container: Container;
+  declare name: string;
+
+  constructor(container: ContainerHolder = defaultContainer) {
+    this.container = container.container || (container as Container);
     this.name = 'stem';
   }
 
-  stem(tokens) {
+  stem(tokens: Token[]): Token[] {
     return tokens;
   }
 
-  getStemmer(srcInput?) {
+  getStemmer(srcInput?: PipelineInput): ResolvedStemmer {
     const input = srcInput;
     const locale =
       input.locale || (input.settings ? input.settings.locale || 'en' : 'en');
-    let stemmer = this.container.get(`stemmer-${locale}`);
+    let stemmer = this.container.get<ResolvedStemmer>(`stemmer-${locale}`);
     if (!stemmer) {
       const stemmerBert = this.container.get(`stemmer-bert`);
       if (stemmerBert && stemmerBert.activeFor(locale)) {
@@ -29,7 +44,7 @@ class Stemmer {
     return stemmer;
   }
 
-  async addForTraining(srcInput) {
+  async addForTraining(srcInput: PipelineInput): Promise<PipelineInput> {
     const stemmer = this.getStemmer(srcInput);
     if (stemmer.addUtterance) {
       await stemmer.addUtterance(srcInput.utterance, srcInput.intent);
@@ -37,7 +52,7 @@ class Stemmer {
     return srcInput;
   }
 
-  async train(srcInput?) {
+  async train(srcInput?: PipelineInput): Promise<PipelineInput | undefined> {
     const stemmer = this.getStemmer(srcInput);
     if (stemmer.innerTrain) {
       await stemmer.innerTrain();
@@ -45,10 +60,10 @@ class Stemmer {
     return srcInput;
   }
 
-  async run(srcInput) {
+  async run(srcInput: PipelineInput): Promise<PipelineInput> {
     const input = srcInput;
     const stemmer = this.getStemmer(input);
-    input.tokens = await stemmer.stem(input.tokens, input);
+    input.tokens = await stemmer.stem(input.tokens as Token[], input);
     return input;
   }
 }

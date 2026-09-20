@@ -1,26 +1,26 @@
-import { defaultContainer } from './container.js';
+import { defaultContainer, type Container } from './container.js';
+import type { ContainerHolder, PipelineInput } from './types.js';
 
 /**
  * Class for a simple timer
  */
 class Timer {
-  declare container: any;
-  declare name: any;
+  declare container: Container;
+  declare name: string;
 
   /**
    * Constructor of the class
-   * @param {object} container Parent container
+   * @param container Parent container
    */
-  constructor(container = defaultContainer) {
-    this.container = container.container || container;
+  constructor(container: ContainerHolder = defaultContainer) {
+    this.container = container.container || (container as Container);
     this.name = 'timer';
   }
 
   /**
-   * Starts the timer
-   * @param {object} input
+   * Starts the timer, writing the start mark into the input.
    */
-  start(input) {
+  start<T extends PipelineInput | undefined>(input: T): T {
     if (input) {
       input.hrstart = new Date();
     }
@@ -28,10 +28,9 @@ class Timer {
   }
 
   /**
-   * Stops the timer
-   * @param {object} srcInput
+   * Stops the timer, replacing the start mark by the elapsed milliseconds.
    */
-  stop(srcInput) {
+  stop<T extends PipelineInput | undefined>(srcInput: T): T {
     const input = srcInput;
     if (input && input.hrstart) {
       const hrend = new Date();
@@ -41,7 +40,7 @@ class Timer {
     return input;
   }
 
-  run(srcInput) {
+  run(srcInput: PipelineInput): void {
     this.start(srcInput);
   }
 }
