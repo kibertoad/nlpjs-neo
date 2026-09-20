@@ -48,6 +48,10 @@ class StemmerZh {
   }
 
   clearText(text) {
+    text = text.replace(
+      /[.:+\-=()"'!?\u060c,\u061b;\u3002\uff0c\uff1f\uff01\uffe5\uff1a\uff1b\u300a\u300b\u3010\u3011\uff08\uff09]/g,
+      ' '
+    );
     text = text.replace('？', ' ');
     text = text.replace('！', ' ');
     return text.replace(
