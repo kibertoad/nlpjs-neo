@@ -21,8 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const DialogflowConnector = require('./dialogflow-connector');
+import DialogflowConnector from './dialogflow-connector.js';
 
-module.exports = {
-  DialogflowConnector,
-};
+export { DialogflowConnector };

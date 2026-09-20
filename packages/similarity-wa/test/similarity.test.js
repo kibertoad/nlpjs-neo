@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { similarity } = require('../src');
+import { similarity } from '../src/index.js';
 
 describe('similarity', () => {
   test('Should return correct levenshtein distance', () => {

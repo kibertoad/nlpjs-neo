@@ -103,7 +103,4 @@ function isGibberish(text) {
   return gibberishScore(text) > 0.5;
 }
 
-module.exports = {
-  gibberishScore,
-  isGibberish,
-};
+export { gibberishScore, isGibberish };

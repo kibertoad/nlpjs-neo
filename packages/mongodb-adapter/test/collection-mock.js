@@ -1,4 +1,6 @@
-const { ObjectId } = require('mongodb');
+import mongodb from 'mongodb';
+
+const { ObjectId } = mongodb;
 
 const idField = '_id';
 
@@ -50,4 +52,4 @@ class CollectionMock {
   }
 }
 
-module.exports = CollectionMock;
+export default CollectionMock;

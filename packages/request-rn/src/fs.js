@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const request = require('./request');
+import request from './request.js';
 
 function isWeb(str) {
   return str.startsWith('https:') || str.startsWith('http:');
@@ -57,7 +57,7 @@ function readFileSync() {
   return undefined;
 }
 
-module.exports = {
+export default {
   readFile,
   writeFile,
   existsSync,

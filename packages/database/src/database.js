@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Clonable } = require('@nlpjs-neo/core');
-const Collection = require('./collection');
-const MemorydbAdapter = require('./memory-adapter');
+import { Clonable } from '@nlpjs-neo/core';
+import Collection from './collection.js';
+import MemorydbAdapter from './memory-adapter.js';
 
 class Database extends Clonable {
   constructor(settings = {}, container = undefined) {
@@ -160,4 +160,4 @@ class Database extends Clonable {
   }
 }
 
-module.exports = Database;
+export default Database;

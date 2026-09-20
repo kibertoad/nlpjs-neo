@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Recognizers } = require('@nlpjs-neo/builtin-default');
+import { Recognizers } from '@nlpjs-neo/builtin-default';
 
 function findEntity(edges, entity, typeName) {
   for (let i = 0; i < edges.length; i += 1) {
@@ -165,7 +165,7 @@ function validatorDate(session, context, params) {
   );
 }
 
-module.exports = {
+export {
   validatorBuiltin,
   validatorEmail,
   validatorURL,

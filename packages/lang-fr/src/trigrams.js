@@ -32,4 +32,4 @@ function registerTrigrams(container) {
   }
 }
 
-module.exports = registerTrigrams;
+export default registerTrigrams;

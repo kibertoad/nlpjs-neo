@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { fs } = require('../src');
+import { fs } from '../src/index.js';
 
 describe('fs', () => {
   describe('readFile', () => {

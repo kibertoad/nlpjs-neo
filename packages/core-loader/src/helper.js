@@ -21,17 +21,17 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
-const {
+import {
   hasUnicode,
   unicodeToArray,
   asciiToArray,
   stringToArray,
   compareWildcars,
   loadEnvFromJson,
-} = require('@nlpjs-neo/core');
+} from '@nlpjs-neo/core';
 
 function listFiles(folderPath, recursive = true) {
   if (fs.existsSync(folderPath)) {
@@ -92,7 +92,7 @@ function loadEnv(fileName = '.env') {
   }
 }
 
-module.exports = {
+export {
   hasUnicode,
   unicodeToArray,
   asciiToArray,

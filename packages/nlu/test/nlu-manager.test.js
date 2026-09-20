@@ -21,14 +21,14 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { NluManager } = require('../src');
-const container = require('./bootstrap');
-const {
+import { NluManager } from '../src/index.js';
+import container from './bootstrap.js';
+import {
   addFoodDomainEn,
   addFoodDomainEs,
   addPersonalityDomainEn,
   addPersonalityDomainEs,
-} = require('./domains');
+} from './domains.js';
 
 describe('NLU Manager', () => {
   describe('constructor', () => {

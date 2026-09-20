@@ -21,10 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Nlp = require('./nlp');
-const ContextManager = require('./context-manager');
+import Nlp from './nlp.js';
+import ContextManager from './context-manager.js';
 
-module.exports = {
-  Nlp,
-  ContextManager,
-};
+export { Nlp, ContextManager };

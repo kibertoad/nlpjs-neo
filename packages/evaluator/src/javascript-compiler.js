@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { generate: unparse } = require('escodegen');
-const { parse } = require('esprima');
+import { generate as unparse } from 'escodegen';
+import { parse } from 'esprima';
 
 class JavascriptCompiler {
   constructor(container) {
@@ -562,4 +562,4 @@ class JavascriptCompiler {
   }
 }
 
-module.exports = JavascriptCompiler;
+export default JavascriptCompiler;

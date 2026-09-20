@@ -21,21 +21,26 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Language } = require('./language');
-const { NlpUtil, NlpManager, NlpExcelReader } = require('./nlp');
-const { XTableUtils, XTable, XDoc } = require('./xtables');
-const { removeEmojis, Evaluator, SpellCheck, Handlebars } = require('./util');
-const { ActionManager, NlgManager } = require('./nlg');
-const { NeuralNetwork } = require('./classifiers');
-const { SentimentAnalyzer, SentimentManager } = require('./sentiment');
-const {
+import { Language } from './language/index.js';
+import { NlpUtil, NlpManager, NlpExcelReader } from './nlp/index.js';
+import { XTableUtils, XTable, XDoc } from './xtables/index.js';
+import {
+  removeEmojis,
+  Evaluator,
+  SpellCheck,
+  Handlebars,
+} from './util/index.js';
+import { ActionManager, NlgManager } from './nlg/index.js';
+import { NeuralNetwork } from './classifiers/index.js';
+import { SentimentAnalyzer, SentimentManager } from './sentiment/index.js';
+import {
   Recognizer,
   ConversationContext,
   MemoryConversationContext,
-} = require('./recognizer');
-const { BrainNLU } = require('./nlu');
+} from './recognizer/index.js';
+import { BrainNLU } from './nlu/index.js';
 
-module.exports = {
+export {
   Language,
   NlpUtil,
   NlpManager,

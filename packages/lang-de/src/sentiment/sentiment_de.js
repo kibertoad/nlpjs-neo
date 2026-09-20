@@ -21,10 +21,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const senticon = require('./senticon_de.json');
-const negations = require('./negations_de.json');
+import senticon from './senticon_de.json' with { type: 'json' };
+import negations from './negations_de.json' with { type: 'json' };
 
-module.exports = {
+export default {
   afinn: undefined,
   pattern: undefined,
   senticon,

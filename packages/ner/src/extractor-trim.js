@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { defaultContainer } = require('@nlpjs-neo/core');
-const reduceEdges = require('./reduce-edges');
-const { TrimType } = require('./trim-types');
+import { defaultContainer } from '@nlpjs-neo/core';
+import reduceEdges from './reduce-edges.js';
+import { TrimType } from './trim-types.js';
 
 class ExtractorTrim {
   constructor(container = defaultContainer) {
@@ -342,4 +342,4 @@ class ExtractorTrim {
   }
 }
 
-module.exports = ExtractorTrim;
+export default ExtractorTrim;

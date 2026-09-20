@@ -21,10 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const ExpressApiApp = require('./express-api-app');
-const ExpressApiServer = require('./express-api-server');
+import ExpressApiApp from './express-api-app.js';
+import ExpressApiServer from './express-api-server.js';
 
-module.exports = {
-  ExpressApiApp,
-  ExpressApiServer,
-};
+export { ExpressApiApp, ExpressApiServer };

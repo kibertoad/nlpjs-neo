@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const path = require('path');
+import path from 'path';
 
 function getAbsolutePath(pathToCheck, rootDir = process.cwd()) {
   if (!pathToCheck) {
@@ -32,6 +32,4 @@ function getAbsolutePath(pathToCheck, rootDir = process.cwd()) {
     : path.join(rootDir, pathToCheck);
 }
 
-module.exports = {
-  getAbsolutePath,
-};
+export { getAbsolutePath };

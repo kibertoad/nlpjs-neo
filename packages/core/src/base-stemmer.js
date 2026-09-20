@@ -20,8 +20,8 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const { defaultContainer } = require('./container');
-const Tokenizer = require('./tokenizer');
+import { defaultContainer } from './container.js';
+import Tokenizer from './tokenizer.js';
 
 /* oxlint-disable */
 class BaseStemmer {
@@ -373,4 +373,4 @@ class BaseStemmer {
   }
 }
 
-module.exports = BaseStemmer;
+export default BaseStemmer;

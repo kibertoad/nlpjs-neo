@@ -21,11 +21,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const TokenizerTa = require('./tokenizer-ta');
-const StemmerTa = require('./stemmer-ta');
-const StopwordsTa = require('./stopwords-ta');
-const NormalizerTa = require('./normalizer-ta');
-const SentimentTa = require('./sentiment/sentiment_ta');
+import TokenizerTa from './tokenizer-ta.js';
+import StemmerTa from './stemmer-ta.js';
+import StopwordsTa from './stopwords-ta.js';
+import NormalizerTa from './normalizer-ta.js';
+import SentimentTa from './sentiment/sentiment_ta.js';
 
 class LangTa {
   register(container) {
@@ -37,4 +37,4 @@ class LangTa {
   }
 }
 
-module.exports = LangTa;
+export default LangTa;

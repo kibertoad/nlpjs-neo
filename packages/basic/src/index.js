@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { ConsoleConnector } = require('@nlpjs-neo/console-connector');
-const {
+import { ConsoleConnector } from '@nlpjs-neo/console-connector';
+import {
   Among,
   ArrToObj,
   BaseStemmer,
@@ -50,25 +50,25 @@ const {
   dock,
   Context,
   dockStart,
-} = require('@nlpjs-neo/core-loader');
-const {
+} from '@nlpjs-neo/core-loader';
+import {
   Evaluator,
   compile,
   Template,
   JavascriptCompiler,
-} = require('@nlpjs-neo/evaluator');
-const {
+} from '@nlpjs-neo/evaluator';
+import {
   LangEn,
   StemmerEn,
   StopwordsEn,
   TokenizerEn,
   NormalizerEn,
   SentimentEn,
-} = require('@nlpjs-neo/lang-en');
-const { logger } = require('@nlpjs-neo/logger');
-const { Nlp } = require('@nlpjs-neo/nlp');
+} from '@nlpjs-neo/lang-en';
+import { logger } from '@nlpjs-neo/logger';
+import { Nlp } from '@nlpjs-neo/nlp';
 
-module.exports = {
+export {
   ConsoleConnector,
   Among,
   ArrToObj,

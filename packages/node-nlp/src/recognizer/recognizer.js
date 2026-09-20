@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { NlpManager } = require('../nlp');
-const MemoryConversationContext = require('./memory-conversation-context');
+import { NlpManager } from '../nlp/index.js';
+import MemoryConversationContext from './memory-conversation-context.js';
 
 /**
  * Microsoft Bot Framework compatible recognizer for nlp.js.
@@ -365,4 +365,4 @@ class Recognizer {
   }
 }
 
-module.exports = Recognizer;
+export default Recognizer;

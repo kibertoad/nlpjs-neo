@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const similarity = require('./similarity');
+import similarity from './similarity.js';
 
 class SpellCheck {
   constructor(settings) {
@@ -108,4 +108,4 @@ class SpellCheck {
   }
 }
 
-module.exports = SpellCheck;
+export default SpellCheck;

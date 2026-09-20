@@ -33,8 +33,8 @@ pnpm add @nlpjs-neo/request
 
 And to use the plugin in your container, register it:
 ```javascript
-const { Container } = require('@nlpjs-neo/core');
-const { fs: requestfs } = require('@nlpjs-neo/request');
+import { Container } from '@nlpjs-neo/core';
+import { fs as requestfs } from '@nlpjs-neo/request';
 
 
 async function main() {
@@ -53,8 +53,8 @@ If the resolved data from the URL is a valid JSON object, then it will be return
 Also you can load files from the file system:
 
 ```javascript
-const { Container } = require('@nlpjs-neo/core');
-const { fs: requestfs } = require('@nlpjs-neo/request');
+import { Container } from '@nlpjs-neo/core';
+import { fs as requestfs } from '@nlpjs-neo/request';
 
 
 async function main() {
@@ -79,8 +79,8 @@ pnpm add @nlpjs-neo/request-rn
 
 And to use the plugin in your container, register it:
 ```javascript
-const { Container } = require('@nlpjs-neo/core');
-const { fs: requestfs } = require('@nlpjs-neo/request-rn');
+import { Container } from '@nlpjs-neo/core';
+import { fs as requestfs } from '@nlpjs-neo/request-rn';
 
 
 async function main() {

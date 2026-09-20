@@ -21,8 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const FbConnector = require('./fb-connector');
+import FbConnector from './fb-connector.js';
 
-module.exports = {
-  FbConnector,
-};
+export { FbConnector };

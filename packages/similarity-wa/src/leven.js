@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 /* oxlint-disable */
 const memory = new WebAssembly.Memory({ initial: 2 });
@@ -13,7 +13,9 @@ const importObject = {
 };
 
 /* oxlint-disable */
-const source = fs.readFileSync(path.resolve(__dirname, '../wa/leven.wasm'));
+const source = fs.readFileSync(
+  path.resolve(import.meta.dirname, '../wa/leven.wasm')
+);
 const mod = new WebAssembly.Module(new Uint8Array(source));
 const webAssemblyObj = new WebAssembly.Instance(mod, importObject);
 /* oxlint-enable */
@@ -34,4 +36,4 @@ function leven(left, right) {
   return webAssemblyObj.exports.leven(left.length, right.length);
 }
 
-module.exports = leven;
+export default leven;

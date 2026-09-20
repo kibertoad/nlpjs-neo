@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { normalize, tokenize } = require('./base-fn');
+import { normalize, tokenize } from './base-fn.js';
 
 class NGrams {
   constructor(settings = {}) {
@@ -91,4 +91,4 @@ class NGrams {
   }
 }
 
-module.exports = NGrams;
+export default NGrams;

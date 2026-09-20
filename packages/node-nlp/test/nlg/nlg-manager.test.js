@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { NlgManager } = require('../../src');
+import { NlgManager } from '../../src/index.js';
 
 describe('NLG Manager', () => {
   describe('constructor', () => {

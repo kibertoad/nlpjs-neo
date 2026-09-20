@@ -21,37 +21,37 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Expression = require('./expression');
-const ConstantExpression = require('./constant-expression');
-const VariableExpression = require('./variable-expression');
-const NewExpression = require('./new-expression');
-const MinusExpression = require('./minus-expression');
-const GlobalVariableCommand = require('./global-variable-command');
-const StringExpression = require('./string-expression');
-const DottedExpression = require('./dotted-expression');
-const BinaryExpression = require('./binary-expression');
-const CallExpression = require('./call-expression');
-const ListExpression = require('./list-expression');
-const DictionaryExpression = require('./dictionary-expression');
-const GroupExpression = require('./group-expression');
-const IndexExpression = require('./index-expression');
-const BreakCommand = require('./break-command');
-const ContinueCommand = require('./continue-command');
-const PassCommand = require('./pass-command');
-const ForInCommand = require('./for-in-command');
-const ExpressionCommand = require('./expression-command');
-const ReturnCommand = require('./return-command');
-const AssignmentCommand = require('./assignment-command');
-const AssertCommand = require('./assert-command');
-const RaiseCommand = require('./raise-command');
-const IfCommand = require('./if-command');
-const WhileCommand = require('./while-command');
-const ImportCommand = require('./import-command');
-const DefCommand = require('./def-command');
-const ClassCommand = require('./class-command');
-const CompositeCommand = require('./composite-command');
+import Expression from './expression.js';
+import ConstantExpression from './constant-expression.js';
+import VariableExpression from './variable-expression.js';
+import NewExpression from './new-expression.js';
+import MinusExpression from './minus-expression.js';
+import GlobalVariableCommand from './global-variable-command.js';
+import StringExpression from './string-expression.js';
+import DottedExpression from './dotted-expression.js';
+import BinaryExpression from './binary-expression.js';
+import CallExpression from './call-expression.js';
+import ListExpression from './list-expression.js';
+import DictionaryExpression from './dictionary-expression.js';
+import GroupExpression from './group-expression.js';
+import IndexExpression from './index-expression.js';
+import BreakCommand from './break-command.js';
+import ContinueCommand from './continue-command.js';
+import PassCommand from './pass-command.js';
+import ForInCommand from './for-in-command.js';
+import ExpressionCommand from './expression-command.js';
+import ReturnCommand from './return-command.js';
+import AssignmentCommand from './assignment-command.js';
+import AssertCommand from './assert-command.js';
+import RaiseCommand from './raise-command.js';
+import IfCommand from './if-command.js';
+import WhileCommand from './while-command.js';
+import ImportCommand from './import-command.js';
+import DefCommand from './def-command.js';
+import ClassCommand from './class-command.js';
+import CompositeCommand from './composite-command.js';
 
-module.exports = {
+export {
   Expression,
   ConstantExpression,
   VariableExpression,

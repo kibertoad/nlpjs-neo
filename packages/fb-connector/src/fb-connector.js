@@ -21,12 +21,12 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { containerBootstrap } = require('@nlpjs-neo/core');
-const { Connector } = require('@nlpjs-neo/connector');
-const { ActivityTypes } = require('botbuilder');
-const { FacebookAdapter } = require('botbuilder-adapter-facebook');
+import { containerBootstrap } from '@nlpjs-neo/core';
+import { Connector } from '@nlpjs-neo/connector';
+import { ActivityTypes } from 'botbuilder';
+import { FacebookAdapter } from 'botbuilder-adapter-facebook';
 
-const FB = require('./settings');
+import * as FB from './settings.js';
 
 const pageToken = {
   [FB.PAGE_ID]: FB.ACCESS_TOKEN,
@@ -218,4 +218,4 @@ class FbConnector extends Connector {
   }
 }
 
-module.exports = FbConnector;
+export default FbConnector;

@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Clonable } = require('@nlpjs-neo/core');
+import { Clonable } from '@nlpjs-neo/core';
 
 class BertWordPieceTokenizer extends Clonable {
   constructor(settings = {}) {
@@ -425,4 +425,4 @@ class BertWordPieceTokenizer extends Clonable {
   }
 }
 
-module.exports = BertWordPieceTokenizer;
+export default BertWordPieceTokenizer;

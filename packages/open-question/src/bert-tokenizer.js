@@ -21,11 +21,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const fs = require('fs');
-const path = require('path');
-const { BertWordPieceTokenizer } = require('@nlpjs-neo/bert-tokenizer');
-const { getAbsolutePath } = require('@nlpjs-neo/utils');
-const { DEFAULT_ASSETS_DIR } = require('./constants');
+import fs from 'fs';
+import path from 'path';
+import { BertWordPieceTokenizer } from '@nlpjs-neo/bert-tokenizer';
+import { getAbsolutePath } from '@nlpjs-neo/utils';
+import { DEFAULT_ASSETS_DIR } from './constants.js';
 
 class BertTokenizer {
   constructor(settings) {
@@ -104,4 +104,4 @@ class BertTokenizer {
   setTruncation() {}
 }
 
-module.exports = BertTokenizer;
+export default BertTokenizer;

@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { ConsoleConnector } = require('../../packages/console-connector/src');
-// const { ConsoleConnector } = require('@nlpjs-neo/console-connector');
+import { ConsoleConnector } from '../../packages/console-connector/src/index.js';
+// import { ConsoleConnector } from '@nlpjs-neo/console-connector';
 
 const connector = new ConsoleConnector();
 connector.onHear = (self, text) => {

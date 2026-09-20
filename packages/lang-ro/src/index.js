@@ -21,14 +21,14 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const LangRo = require('./lang-ro');
-const TokenizerRo = require('./tokenizer-ro');
-const StemmerRo = require('./stemmer-ro');
-const StopwordsRo = require('./stopwords-ro');
-const NormalizerRo = require('./normalizer-ro');
-const SentimentRo = require('./sentiment/sentiment_ro');
+import LangRo from './lang-ro.js';
+import TokenizerRo from './tokenizer-ro.js';
+import StemmerRo from './stemmer-ro.js';
+import StopwordsRo from './stopwords-ro.js';
+import NormalizerRo from './normalizer-ro.js';
+import SentimentRo from './sentiment/sentiment_ro.js';
 
-module.exports = {
+export {
   LangRo,
   StemmerRo,
   StopwordsRo,

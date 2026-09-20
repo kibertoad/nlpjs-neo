@@ -69,10 +69,4 @@ function len(value) {
   return value.length;
 }
 
-module.exports = {
-  forEach,
-  range,
-  print,
-  getIndex,
-  len,
-};
+export { forEach, range, print, getIndex, len };

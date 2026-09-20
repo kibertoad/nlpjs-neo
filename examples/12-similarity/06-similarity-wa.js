@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { similarity } = require('../../packages/similarity-wa/src');
-// const { similarity } = require('@nlpjs-neo/similarity-wa');
+import { similarity } from '../../packages/similarity-wa/src/index.js';
+// import { similarity } from '@nlpjs-neo/similarity-wa';
 
 function showDistances(word1, word2) {
   console.log(`"${word1}" vs "${word2}" :`);

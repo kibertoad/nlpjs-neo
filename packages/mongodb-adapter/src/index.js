@@ -21,8 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const MongodbAdapter = require('./mongodb-adapter');
+import MongodbAdapter from './mongodb-adapter.js';
 
-module.exports = {
-  MongodbAdapter,
-};
+export { MongodbAdapter };

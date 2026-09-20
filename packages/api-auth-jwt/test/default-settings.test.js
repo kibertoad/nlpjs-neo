@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Container } = require('@nlpjs-neo/core');
-const getSettings = require('../src/default-settings');
+import { Container } from '@nlpjs-neo/core';
+import getSettings from '../src/default-settings.js';
 
 describe('Default settings', () => {
   test('It should return default settings', () => {

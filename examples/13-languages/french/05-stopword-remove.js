@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { StopwordsFr } = require('../../../packages/lang-fr/src');
+import { StopwordsFr } from '../../../packages/lang-fr/src/index.js';
 
 const stopwords = new StopwordsFr();
 console.log(stopwords.removeStopwords(['qui', 'est', 'grand', 'et', 'mature']));

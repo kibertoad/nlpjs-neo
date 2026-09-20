@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Bench } = require('../src');
+import { Bench } from '../src/index.js';
 
 function init() {
   return [7, 12, 0, -3, 4, 9, 11, 5, 3, 6, -2, 8];

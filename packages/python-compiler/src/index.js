@@ -21,12 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const PythonParser = require('./python-parser');
-const PythonCompiler = require('./python-compiler');
-const executePython = require('./python-executer');
+import PythonParser from './python-parser.js';
+import PythonCompiler from './python-compiler.js';
+import executePython from './python-executer.js';
 
-module.exports = {
-  PythonParser,
-  PythonCompiler,
-  executePython,
-};
+export { PythonParser, PythonCompiler, executePython };

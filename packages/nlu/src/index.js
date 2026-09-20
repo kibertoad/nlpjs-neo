@@ -21,14 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Nlu = require('./nlu');
-const NluNeural = require('./nlu-neural');
-const DomainManager = require('./domain-manager');
-const NluManager = require('./nlu-manager');
+import Nlu from './nlu.js';
+import NluNeural from './nlu-neural.js';
+import DomainManager from './domain-manager.js';
+import NluManager from './nlu-manager.js';
 
-module.exports = {
-  Nlu,
-  NluNeural,
-  DomainManager,
-  NluManager,
-};
+export { Nlu, NluNeural, DomainManager, NluManager };

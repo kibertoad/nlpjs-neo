@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { BaseStemmer } = require('@nlpjs-neo/core');
-const IndonesianStemmer = require('./indonesian-stemmer');
+import { BaseStemmer } from '@nlpjs-neo/core';
+import IndonesianStemmer from './indonesian-stemmer.js';
 
 class StemmerId extends BaseStemmer {
   constructor(container) {
@@ -36,4 +36,4 @@ class StemmerId extends BaseStemmer {
   }
 }
 
-module.exports = StemmerId;
+export default StemmerId;

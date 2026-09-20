@@ -21,14 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { removeEmojis } = require('@nlpjs-neo/emoji');
-const { Evaluator } = require('@nlpjs-neo/evaluator');
-const { SpellCheck } = require('./spell-check');
-const { Handlebars } = require('./handlebars');
+import { removeEmojis } from '@nlpjs-neo/emoji';
+import { Evaluator } from '@nlpjs-neo/evaluator';
+import { SpellCheck } from './spell-check.js';
+import { Handlebars } from './handlebars.js';
 
-module.exports = {
-  removeEmojis,
-  Evaluator,
-  SpellCheck,
-  Handlebars,
-};
+export { removeEmojis, Evaluator, SpellCheck, Handlebars };

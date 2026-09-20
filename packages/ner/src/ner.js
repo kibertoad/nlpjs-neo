@@ -21,13 +21,13 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Clonable } = require('@nlpjs-neo/core');
-const ExtractorEnum = require('./extractor-enum');
-const ExtractorRegex = require('./extractor-regex');
-const ExtractorTrim = require('./extractor-trim');
-const ExtractorBuiltin = require('./extractor-builtin');
+import { Clonable } from '@nlpjs-neo/core';
+import ExtractorEnum from './extractor-enum.js';
+import ExtractorRegex from './extractor-regex.js';
+import ExtractorTrim from './extractor-trim.js';
+import ExtractorBuiltin from './extractor-builtin.js';
 
-const { TrimType } = require('./trim-types');
+import { TrimType } from './trim-types.js';
 
 function isObject(obj) {
   return obj !== undefined && obj !== null && obj.constructor === Object;
@@ -564,4 +564,4 @@ class Ner extends Clonable {
   }
 }
 
-module.exports = Ner;
+export default Ner;

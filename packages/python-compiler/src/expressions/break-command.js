@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Expression = require('./expression');
+import Expression from './expression.js';
 
 class BreakCommand extends Expression {
   transpile() {
@@ -29,4 +29,4 @@ class BreakCommand extends Expression {
   }
 }
 
-module.exports = BreakCommand;
+export default BreakCommand;

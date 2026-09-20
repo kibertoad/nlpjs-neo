@@ -21,13 +21,13 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const NGrams = require('./ngrams');
-const {
+import NGrams from './ngrams.js';
+import {
   lowerNormalize,
   wordPunctTokenize,
   tokenize,
   normalize,
-} = require('./base-fn');
+} from './base-fn.js';
 
 class MarkovChain {
   constructor(settings = {}) {
@@ -198,4 +198,4 @@ class MarkovChain {
   }
 }
 
-module.exports = MarkovChain;
+export default MarkovChain;

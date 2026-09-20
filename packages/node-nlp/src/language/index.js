@@ -21,8 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Language } = require('@nlpjs-neo/language');
+import { Language } from '@nlpjs-neo/language';
 
-module.exports = {
-  Language,
-};
+export { Language };

@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Nlp } = require('../src');
-const TemplateMock = require('./template-mock');
+import { Nlp } from '../src/index.js';
+import TemplateMock from './template-mock.js';
 
 const defaultCorpus = {
   name: 'corpus',

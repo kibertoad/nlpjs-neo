@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { StopwordsId } = require('../../../packages/lang-id/src');
-// const { StopwordsId } = require('@nlpjs-neo/lang-id');
+import { StopwordsId } from '../../../packages/lang-id/src/index.js';
+// import { StopwordsId } from '@nlpjs-neo/lang-id';
 
 const stopwords = new StopwordsId();
 stopwords.dictionary = {};

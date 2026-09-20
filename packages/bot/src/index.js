@@ -21,12 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Bot = require('./bot');
-const DialogManager = require('./dialog-manager');
-const TestConnector = require('./test-connector');
+import Bot from './bot.js';
+import DialogManager from './dialog-manager.js';
+import TestConnector from './test-connector.js';
 
-module.exports = {
-  Bot,
-  DialogManager,
-  TestConnector,
-};
+export { Bot, DialogManager, TestConnector };

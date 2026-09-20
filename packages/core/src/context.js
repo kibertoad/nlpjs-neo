@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { defaultContainer } = require('./container');
-const Clonable = require('./clonable');
+import { defaultContainer } from './container.js';
+import Clonable from './clonable.js';
 
 class Context extends Clonable {
   constructor(settings = {}, container = undefined) {
@@ -79,4 +79,4 @@ class Context extends Clonable {
   }
 }
 
-module.exports = Context;
+export default Context;

@@ -114,4 +114,4 @@ class XTable {
   }
 }
 
-module.exports = XTable;
+export default XTable;

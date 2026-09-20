@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Expression = require('./expression');
+import Expression from './expression.js';
 
 class GlobalVariableCommand extends Expression {
   collectNames(names) {
@@ -37,4 +37,4 @@ class GlobalVariableCommand extends Expression {
   }
 }
 
-module.exports = GlobalVariableCommand;
+export default GlobalVariableCommand;

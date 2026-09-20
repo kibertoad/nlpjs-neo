@@ -175,7 +175,7 @@ function addPersonalityDomainEs(manager) {
   manager.add('es', 'dime tu edad', 'agent.age');
 }
 
-module.exports = {
+export {
   addFoodDomain,
   addPersonalityDomain,
   addFoodDomainEn,

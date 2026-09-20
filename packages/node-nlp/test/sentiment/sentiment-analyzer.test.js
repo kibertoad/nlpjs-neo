@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { SentimentAnalyzer } = require('../../src');
+import { SentimentAnalyzer } from '../../src/index.js';
 
 describe('Sentiment Analyzer', () => {
   describe('Constructor', () => {

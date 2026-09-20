@@ -31,9 +31,9 @@ You can install @nlpjs-neo/lang-fr:
 ## Example of Usage
 
 ```javascript
-const { containerBootstrap } = require('@nlpjs-neo/core');
-const { Nlp } = require('@nlpjs-neo/nlp');
-const { LangFr } = require('@nlpjs-neo/lang-fr');
+import { containerBootstrap } from '@nlpjs-neo/core';
+import { Nlp } from '@nlpjs-neo/nlp';
+import { LangFr } from '@nlpjs-neo/lang-fr';
 
 (async () => {
   const container = await containerBootstrap();

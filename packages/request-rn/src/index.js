@@ -21,10 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const request = require('./request');
-const fs = require('./fs');
+import request from './request.js';
+import fs from './fs.js';
 
-module.exports = {
-  request,
-  fs,
-};
+export { request, fs };

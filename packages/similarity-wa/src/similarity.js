@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const leven = require('./leven');
+import leven from './leven.js';
 
 function similarity(str1, str2, normalize = false) {
   if (normalize) {
@@ -39,4 +39,4 @@ function similarity(str1, str2, normalize = false) {
   return str1 === str2 ? 0 : leven(str1, str2);
 }
 
-module.exports = similarity;
+export default similarity;

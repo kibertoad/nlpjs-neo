@@ -80,4 +80,4 @@ class BotLocalization {
   }
 }
 
-module.exports = BotLocalization;
+export default BotLocalization;

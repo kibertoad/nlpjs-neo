@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { leven } = require('../../packages/similarity/src');
-// const { leven } = require('@nlpjs-neo/similarity');
+import { leven } from '../../packages/similarity/src/index.js';
+// import { leven } from '@nlpjs-neo/similarity';
 
 console.log(leven('potatoe', 'potatoe')); // expected: 0
 console.log(leven('distance', 'eistancd')); // expected: 2

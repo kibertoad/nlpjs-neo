@@ -91,4 +91,4 @@ class QnaImporter {
   }
 }
 
-module.exports = QnaImporter;
+export default QnaImporter;

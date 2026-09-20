@@ -20,7 +20,7 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const { defaultContainer } = require('./container');
+import { defaultContainer } from './container.js';
 
 /**
  * Plugin to convert an array to a hashmap where every item existing in the
@@ -59,4 +59,4 @@ class ArrToObj {
   }
 }
 
-module.exports = ArrToObj;
+export default ArrToObj;

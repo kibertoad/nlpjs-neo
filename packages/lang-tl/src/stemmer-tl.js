@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { BaseStemmer } = require('@nlpjs-neo/core');
+import { BaseStemmer } from '@nlpjs-neo/core';
 
 class StemmerTl extends BaseStemmer {
   constructor(container) {
@@ -304,4 +304,4 @@ StemmerTl.suffixes = ['han', 'hin', 'an', 'in', 'ng'];
 
 StemmerTl.infixes = ['in', 'um'];
 
-module.exports = StemmerTl;
+export default StemmerTl;

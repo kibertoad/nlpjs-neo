@@ -15,10 +15,10 @@ A language can be used as a plugin in order to use the correct tokenizer and ste
 In this example both versions, with language and without language, are used in order to compare the results.
 
 ```javascript
-const { containerBootstrap } = require('@nlpjs-neo/core');
-const { NluNeural } = require('@nlpjs-neo/nlu');
-const { LangEn } = require('@nlpjs-neo/lang-en');
-const corpus = require('./corpus50.json');
+import { containerBootstrap } from '@nlpjs-neo/core';
+import { NluNeural } from '@nlpjs-neo/nlu';
+import { LangEn } from '@nlpjs-neo/lang-en';
+import corpus from './corpus50.json' with { type: 'json' };
 
 function prepareCorpus(input, isTests = false) {
   const result = [];
@@ -72,9 +72,9 @@ It can be trained by domain or all together:
 - By domain means that every single domain has its own model trained, and there is a master model that is trained to classify an utterance into a domain. That way, when a utterance is classified, it is processed by the master domain to classify into the domain, and then is processed by the model of the domain to calculate the intent.
 
 ```javascript
-const { containerBootstrap } = require('@nlpjs-neo/core');
-const { DomainManager, NluNeural } = require('@nlpjs-neo/nlu');
-const { LangEn } = require('@nlpjs-neo/lang-en');
+import { containerBootstrap } from '@nlpjs-neo/core';
+import { DomainManager, NluNeural } from '@nlpjs-neo/nlu';
+import { LangEn } from '@nlpjs-neo/lang-en';
 
 function addFoodDomain(manager) {
   manager.add('food', 'what do I have in my basket', 'order.check');
@@ -170,10 +170,10 @@ _NluManager_ is the abstraction over _DomainManager_: it contains one _DomainMan
 This is an example with two languages (English and Spanish) with two domains each (personality and food).
 
 ```javascript
-const { containerBootstrap } = require('@nlpjs-neo/core');
-const { NluManager, NluNeural } = require('@nlpjs-neo/nlu');
-const { LangEn } = require('@nlpjs-neo/lang-en');
-const { LangEs } = require('@nlpjs-neo/lang-es');
+import { containerBootstrap } from '@nlpjs-neo/core';
+import { NluManager, NluNeural } from '@nlpjs-neo/nlu';
+import { LangEn } from '@nlpjs-neo/lang-en';
+import { LangEs } from '@nlpjs-neo/lang-es';
 
 function addFoodDomainEn(manager) {
   manager.assignDomain('en', 'order.check', 'food');

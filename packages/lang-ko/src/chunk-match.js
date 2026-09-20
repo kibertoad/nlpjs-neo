@@ -37,4 +37,4 @@ class ChunkMatch {
   }
 }
 
-module.exports = ChunkMatch;
+export default ChunkMatch;

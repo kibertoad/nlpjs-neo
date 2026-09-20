@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { defaultContainer } = require('../../packages/core/src');
+import { defaultContainer } from '../../packages/core/src/index.js';
 
 const loggerInstance = {
   trace: (msg) => console.trace(`[TRACE] ${msg}`),

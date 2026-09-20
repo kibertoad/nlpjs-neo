@@ -21,8 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const BuiltinMicrosoft = require('./builtin-microsoft');
+import BuiltinMicrosoft from './builtin-microsoft.js';
 
-module.exports = {
-  BuiltinMicrosoft,
-};
+export { BuiltinMicrosoft };

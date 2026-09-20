@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { BaseStemmer } = require('@nlpjs-neo/core');
+import { BaseStemmer } from '@nlpjs-neo/core';
 
 /* oxlint-disable */
 class StemmerPl extends BaseStemmer {
@@ -191,4 +191,4 @@ class StemmerPl extends BaseStemmer {
   }
 }
 
-module.exports = StemmerPl;
+export default StemmerPl;

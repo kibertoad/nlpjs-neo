@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Clonable, uuid } = require('@nlpjs-neo/core');
-const path = require('path');
+import { Clonable, uuid } from '@nlpjs-neo/core';
+import path from 'path';
 
 class MemorydbAdapter extends Clonable {
   constructor(settings = {}, container = undefined) {
@@ -250,4 +250,4 @@ class MemorydbAdapter extends Clonable {
   }
 }
 
-module.exports = MemorydbAdapter;
+export default MemorydbAdapter;

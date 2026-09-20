@@ -21,4 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-require('../../packages/core-loader/src').dockStart();
+import { dockStart } from '../../packages/core-loader/src/index.js';
+
+dockStart();

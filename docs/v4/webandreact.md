@@ -48,9 +48,9 @@ and finally @nlpjs-neo/lang-en-min installs the English language but without the
 
 Now create an _index.js_ with this content:
 ```javascript
-const { containerBootstrap } = require('@nlpjs-neo/core');
-const { Nlp } = require('@nlpjs-neo/nlp');
-const { LangEn } = require('@nlpjs-neo/lang-en-min');
+import { containerBootstrap } from '@nlpjs-neo/core';
+import { Nlp } from '@nlpjs-neo/nlp';
+import { LangEn } from '@nlpjs-neo/lang-en-min';
 
 (async () => {
   const container = await containerBootstrap();
@@ -103,9 +103,9 @@ But, what if we can compile and expose the classes and functions of the NLP.js m
 First modify the _index.js_ to not include our bot logic and to simply import everything from the NLP.js libraries and expose them using the window object:
 
 ```javascript
-const core = require('@nlpjs-neo/core');
-const nlp = require('@nlpjs-neo/nlp');
-const langenmin = require('@nlpjs-neo/lang-en-min');
+import * as core from '@nlpjs-neo/core';
+import * as nlp from '@nlpjs-neo/nlp';
+import * as langenmin from '@nlpjs-neo/lang-en-min';
 
 window.nlpjs = { ...core, ...nlp, ...langenmin };
 ```
@@ -171,10 +171,10 @@ pnpm add @nlpjs-neo/request-rn
 
 Now we need to expose it in our _index.js_:
 ```javascript
-const core = require('@nlpjs-neo/core');
-const nlp = require('@nlpjs-neo/nlp');
-const langenmin = require('@nlpjs-neo/lang-en-min');
-const requestrn = require('@nlpjs-neo/request-rn');
+import * as core from '@nlpjs-neo/core';
+import * as nlp from '@nlpjs-neo/nlp';
+import * as langenmin from '@nlpjs-neo/lang-en-min';
+import * as requestrn from '@nlpjs-neo/request-rn';
 
 window.nlpjs = { ...core, ...nlp, ...langenmin, ...requestrn };
 ```

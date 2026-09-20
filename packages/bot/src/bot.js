@@ -21,12 +21,12 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Clonable, containerBootstrap } = require('@nlpjs-neo/core');
-const { ContextManager } = require('@nlpjs-neo/nlp');
-const { JavascriptCompiler } = require('@nlpjs-neo/evaluator');
-const DialogManager = require('./dialog-manager');
-const { loadScript, getDialogName, trimBetween } = require('./dialog-parse');
-const {
+import { Clonable, containerBootstrap } from '@nlpjs-neo/core';
+import { ContextManager } from '@nlpjs-neo/nlp';
+import { JavascriptCompiler } from '@nlpjs-neo/evaluator';
+import DialogManager from './dialog-manager.js';
+import { loadScript, getDialogName, trimBetween } from './dialog-parse.js';
+import {
   validatorEmail,
   validatorURL,
   validatorIP,
@@ -36,9 +36,9 @@ const {
   validatorNumber,
   validatorInteger,
   validatorDate,
-} = require('./validators');
-const BotLocalization = require('./bot-localization');
-const { getValidationMessage, tryParseJson } = require('./helper');
+} from './validators.js';
+import BotLocalization from './bot-localization.js';
+import { getValidationMessage, tryParseJson } from './helper.js';
 
 const localeDangle = '_localization';
 
@@ -733,4 +733,4 @@ class Bot extends Clonable {
   }
 }
 
-module.exports = Bot;
+export default Bot;

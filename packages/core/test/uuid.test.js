@@ -44,7 +44,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const uuid = require('../src/uuid');
+import uuid from '../src/uuid.js';
 
 describe('uuid', () => {
   describe('uuid', () => {

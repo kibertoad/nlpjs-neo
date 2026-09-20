@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const fs = require('fs');
-const path = require('path');
-const containerBootstrap = require('./container-bootstrap');
+import fs from 'fs';
+import path from 'path';
+import containerBootstrap from './container-bootstrap.js';
 
 class Dock {
   constructor() {
@@ -127,4 +127,4 @@ class Dock {
 
 const dock = new Dock();
 
-module.exports = dock;
+export default dock;

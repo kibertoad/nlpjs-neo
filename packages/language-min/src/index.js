@@ -21,8 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Language = require('./language');
+import Language from './language.js';
 
-module.exports = {
-  Language,
-};
+export { Language };

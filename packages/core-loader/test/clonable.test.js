@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Cloned = require('./assets/cloned');
+import Cloned from './assets/cloned.js';
 
 const settings = {
   name: 'Name',

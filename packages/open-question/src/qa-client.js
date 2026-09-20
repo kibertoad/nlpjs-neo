@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { softMax } = require('@nlpjs-neo/utils');
-const BertTokenizer = require('./bert-tokenizer');
-const Model = require('./model');
+import { softMax } from '@nlpjs-neo/utils';
+import BertTokenizer from './bert-tokenizer.js';
+import Model from './model.js';
 
 class QAClient {
   constructor(settings = {}) {
@@ -191,4 +191,4 @@ class QAClient {
   }
 }
 
-module.exports = QAClient;
+export default QAClient;

@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { SpellCheck } = require('../src');
+import { SpellCheck } from '../src/index.js';
 
 describe('Similar Search', () => {
   describe('Constructor', () => {

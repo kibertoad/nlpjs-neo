@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { isGibberish } = require('../src');
+import { isGibberish } from '../src/index.js';
 
 describe('Gibberish', () => {
   describe('isGibberish', () => {

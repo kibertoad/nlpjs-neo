@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Expression = require('./expression');
+import Expression from './expression.js';
 
 class WhileCommand extends Expression {
   transpile(options = {}) {
@@ -31,4 +31,4 @@ class WhileCommand extends Expression {
   }
 }
 
-module.exports = WhileCommand;
+export default WhileCommand;

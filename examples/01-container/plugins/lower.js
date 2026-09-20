@@ -43,4 +43,4 @@ class Lower {
   }
 }
 
-module.exports = Lower;
+export default Lower;

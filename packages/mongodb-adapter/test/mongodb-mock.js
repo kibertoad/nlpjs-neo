@@ -1,4 +1,4 @@
-const CollectionMock = require('./collection-mock');
+import CollectionMock from './collection-mock.js';
 
 class MongoClientMock {
   constructor() {
@@ -23,4 +23,4 @@ class MongoClientMock {
   }
 }
 
-module.exports = MongoClientMock;
+export default MongoClientMock;

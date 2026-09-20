@@ -64,8 +64,8 @@ This will train the corpus and run the input equivalent to the sentence "when bi
 The result is a list of all intents with the score for each intent.
 
 ```javascript
-const { NeuralNetwork } = require('@nlpjs-neo/neural');
-const corpus = require('./corpus.json');
+import { NeuralNetwork } from '@nlpjs-neo/neural';
+import corpus from './corpus.json' with { type: 'json' };
 
 const net = new NeuralNetwork();
 net.train(corpus);
@@ -78,8 +78,8 @@ console.log(net.run({ when: 1, birthday: 1 }));
 You can export the model to a json with the _toJSON_ method, and import a model from a json with _fromJSON_ method:
 
 ```javascript
-const { NeuralNetwork } = require('@nlpjs-neo/neural');
-const corpus = require('./corpus.json');
+import { NeuralNetwork } from '@nlpjs-neo/neural';
+import corpus from './corpus.json' with { type: 'json' };
 
 let net = new NeuralNetwork();
 net.train(corpus);
@@ -102,8 +102,8 @@ There are several options that you can customize:
 
 Example of how to provide parameters:
 ```javascript
-const { NeuralNetwork } = require('@nlpjs-neo/neural');
-const corpus = require('./corpus.json');
+import { NeuralNetwork } from '@nlpjs-neo/neural';
+import corpus from './corpus.json' with { type: 'json' };
 
 const net = new NeuralNetwork({ learningRate: 0.01, log: true });
 net.train(corpus);

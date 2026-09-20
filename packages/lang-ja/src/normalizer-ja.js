@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Normalizer } = require('@nlpjs-neo/core');
-const { converters, fixCompositeSymbols } = require('./helper');
+import { Normalizer } from '@nlpjs-neo/core';
+import { converters, fixCompositeSymbols } from './helper.js';
 
 class NormalizerJa extends Normalizer {
   constructor(container) {
@@ -45,4 +45,4 @@ class NormalizerJa extends Normalizer {
   }
 }
 
-module.exports = NormalizerJa;
+export default NormalizerJa;

@@ -20,7 +20,7 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const { TrimTypesList } = require('./trim-types');
+import { TrimTypesList } from './trim-types.js';
 
 function runDiscard(srcEdge, srcOther, useMaxLength, intentEntities = []) {
   let edge;
@@ -175,4 +175,4 @@ function reduceEdges(edges, useMaxLength = true, intentEntities = []) {
   return edges.filter((x) => !x.discarded);
 }
 
-module.exports = reduceEdges;
+export default reduceEdges;

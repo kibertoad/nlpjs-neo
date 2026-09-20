@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const fs = require('fs');
-const BertWordPieceTokenizer = require('./bert-word-piece-tokenizer');
+import fs from 'fs';
+import BertWordPieceTokenizer from './bert-word-piece-tokenizer.js';
 
 class MultiBertWordPieceTokenizer {
   constructor(settings = {}) {
@@ -68,4 +68,4 @@ class MultiBertWordPieceTokenizer {
   }
 }
 
-module.exports = MultiBertWordPieceTokenizer;
+export default MultiBertWordPieceTokenizer;

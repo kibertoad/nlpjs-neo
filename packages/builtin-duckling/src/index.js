@@ -21,8 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const BuiltinDuckling = require('./builtin-duckling');
+import BuiltinDuckling from './builtin-duckling.js';
 
-module.exports = {
-  BuiltinDuckling,
-};
+export { BuiltinDuckling };

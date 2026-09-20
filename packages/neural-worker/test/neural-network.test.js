@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { NeuralNetwork } = require('../src');
-const corpus = require('./corpus.json');
+import { NeuralNetwork } from '../src/index.js';
+import corpus from './corpus.json' with { type: 'json' };
 
 describe('Neural Network', () => {
   describe('Constructor', () => {

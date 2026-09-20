@@ -12,7 +12,7 @@ The code for this example is here: https://github.com/jesus-seijas-sp/nlpjs-exam
 Then you can create a file called index.js with this content:
 
 ```javascript
-const { dockStart } = require('@nlpjs-neo/basic');
+import { dockStart } from '@nlpjs-neo/basic';
 
 (async () => {
   const dock = await dockStart({ use: ['Basic']});
@@ -71,7 +71,7 @@ You can create the corpus as json files. The format of the json is:
 So the new code will be: 
 
 ```javascript
-const { dockStart } = require('@nlpjs-neo/basic');
+import { dockStart } from '@nlpjs-neo/basic';
 
 (async () => {
   const dock = await dockStart({ use: ['Basic']});
@@ -105,7 +105,7 @@ Add a _conf.json_ file with this content:
 
 And the new code will be:
 ```javascript
-const { dockStart } = require('@nlpjs-neo/basic');
+import { dockStart } from '@nlpjs-neo/basic';
 
 (async () => {
   const dock = await dockStart();
@@ -133,7 +133,7 @@ nlp.train
 
 And remove the nlp.train() from the code:
 ```javascript
-const { dockStart } = require('@nlpjs-neo/basic');
+import { dockStart } from '@nlpjs-neo/basic';
 
 (async () => {
   const dock = await dockStart();
@@ -165,7 +165,7 @@ Now modify the _conf.json_ to also use the plugin called _ConsoleConnector_:
 And in the _index.js_ you will only need the dockStart:
 
 ```javascript
-const { dockStart } = require('@nlpjs-neo/basic');
+import { dockStart } from '@nlpjs-neo/basic';
 
 (async () => {
   await dockStart();
@@ -211,7 +211,7 @@ To explain the pipeline better:
 The _index.js_ file will be:
 
 ```javascript
-const { dockStart } = require('@nlpjs-neo/basic');
+import { dockStart } from '@nlpjs-neo/basic';
 
 (async () => {
   await dockStart();

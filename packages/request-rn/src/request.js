@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const axios = require('axios');
+import axios from 'axios';
 
 async function request(options) {
   if (typeof options === 'string') {
@@ -39,4 +39,4 @@ async function request(options) {
   return result.data;
 }
 
-module.exports = request;
+export default request;

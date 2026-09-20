@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { NlpUtil } = require('../../../src/nlp');
+import { NlpUtil } from '../../../src/nlp/index.js';
 
 const tokenizer = NlpUtil.getTokenizer('ja');
 

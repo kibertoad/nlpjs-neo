@@ -21,11 +21,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const TokenizerNo = require('./tokenizer-no');
-const StemmerNo = require('./stemmer-no');
-const StopwordsNo = require('./stopwords-no');
-const NormalizerNo = require('./normalizer-no');
-const SentimentNo = require('./sentiment/sentiment_no');
+import TokenizerNo from './tokenizer-no.js';
+import StemmerNo from './stemmer-no.js';
+import StopwordsNo from './stopwords-no.js';
+import NormalizerNo from './normalizer-no.js';
+import SentimentNo from './sentiment/sentiment_no.js';
 
 class LangNo {
   register(container) {
@@ -37,4 +37,4 @@ class LangNo {
   }
 }
 
-module.exports = LangNo;
+export default LangNo;

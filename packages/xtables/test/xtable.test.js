@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { XTable } = require('../src');
+import { XTable } from '../src/index.js';
 
 const matrix1 = [
   [{ w: 'Table 1' }],

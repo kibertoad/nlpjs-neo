@@ -30,7 +30,7 @@ Default normalization of a text is done this way:
 ## Example of use without container
 
 ```javascript
-const { Normalizer } = require('@nlpjs-neo/core');
+import { Normalizer } from '@nlpjs-neo/core';
 
 const normalizer = new Normalizer();
 const actual = normalizer.normalize('Ñam aquí, Lérn');
@@ -43,8 +43,8 @@ Within a container the normalizer can be used in a multilanguage way: you can re
 You can visit the section on Languages to find out how to register language plugins.
 
 ```javascript
-const { containerBootstrap } = require('@nlpjs-neo/core');
-const { LangEs } = require('@nlpjs-neo/lang-es')
+import { containerBootstrap } from '@nlpjs-neo/core';
+import { LangEs } from '@nlpjs-neo/lang-es';
 
 const container = containerBootstrap();
 container.use(LangEs);
@@ -59,7 +59,7 @@ Suppose that you want a normalizer that replaces all the occurences of the chara
 To build this new Normalizer you will need to extend the Normalizer class, create a constructor that calls super with the container, and add a property "name" with the value "normalizer-{your locale}".
 
 ```javascript
-const { containerBootstrap, Normalizer } = require('@nlpjs-neo/core');
+import { containerBootstrap, Normalizer } from '@nlpjs-neo/core';
 
 class OddNormalizer extends Normalizer {
   constructor(container) {

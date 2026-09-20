@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Language } = require('../src');
-const fixtures = require('./fixtures.json');
-const data = require('./testdata.json');
+import { Language } from '../src/index.js';
+import fixtures from './fixtures.json' with { type: 'json' };
+import data from './testdata.json' with { type: 'json' };
 
 function getLanguage() {
   const result = new Language();

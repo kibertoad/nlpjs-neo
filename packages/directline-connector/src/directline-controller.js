@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { uuid } = require('@nlpjs-neo/core');
-const fetch = require('node-fetch');
+import { uuid } from '@nlpjs-neo/core';
+import fetch from 'node-fetch';
 
 class DirectlineController {
   constructor(settings, parent) {
@@ -272,4 +272,4 @@ class DirectlineController {
   }
 }
 
-module.exports = DirectlineController;
+export default DirectlineController;

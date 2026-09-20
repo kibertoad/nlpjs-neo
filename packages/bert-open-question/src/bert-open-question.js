@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Clonable } = require('@nlpjs-neo/core');
+import { Clonable } from '@nlpjs-neo/core';
 
 class BertOpenQuestion extends Clonable {
   constructor(settings = {}, container = undefined) {
@@ -87,4 +87,4 @@ class BertOpenQuestion extends Clonable {
   }
 }
 
-module.exports = BertOpenQuestion;
+export default BertOpenQuestion;

@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Lexer } = require('@nlpjs-neo/lexer');
-const expressions = require('./expressions');
+import { Lexer } from '@nlpjs-neo/lexer';
+import * as expressions from './expressions/index.js';
 
 const { TokenType } = Lexer;
 
@@ -446,4 +446,4 @@ class PythonParser {
   }
 }
 
-module.exports = PythonParser;
+export default PythonParser;

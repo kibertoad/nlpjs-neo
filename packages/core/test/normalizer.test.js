@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Normalizer = require('../src/normalizer');
-const { defaultContainer } = require('../src/container');
-const { Container } = require('../src/container');
+import Normalizer from '../src/normalizer.js';
+import { defaultContainer } from '../src/container.js';
+import { Container } from '../src/container.js';
 
 class MockNormalizer {
   constructor(container, locale, char) {

@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Excel = require('exceljs');
-const { XTableUtils } = require('@nlpjs-neo/xtables');
+import Excel from 'exceljs';
+import { XTableUtils } from '@nlpjs-neo/xtables';
 
 class NlpAnalyzer {
   constructor(settings = {}) {
@@ -386,4 +386,4 @@ class NlpAnalyzer {
   }
 }
 
-module.exports = NlpAnalyzer;
+export default NlpAnalyzer;

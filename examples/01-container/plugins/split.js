@@ -36,4 +36,4 @@ class Split {
   }
 }
 
-module.exports = Split;
+export default Split;

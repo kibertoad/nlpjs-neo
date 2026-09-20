@@ -88,4 +88,4 @@ function leven(left, right) {
   return result;
 }
 
-module.exports = leven;
+export default leven;

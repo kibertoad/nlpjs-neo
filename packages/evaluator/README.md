@@ -31,7 +31,7 @@ You can install @nlpjs-neo/evaluator:
 ## Example of Usage
 
 ```javascript
-const { Evaluator } = require('@nlpjs-neo/evaluator');
+import { Evaluator } from '@nlpjs-neo/evaluator';
 
 const context = { a: 1, b: 2 };
 const evaluator = new Evaluator();

@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { TokenizerIt } = require('../../../packages/lang-it/src');
-// const { TokenizerIt } = require('@nlpjs-neo/lang-it');
+import { TokenizerIt } from '../../../packages/lang-it/src/index.js';
+// import { TokenizerIt } from '@nlpjs-neo/lang-it';
 
 const tokenizer = new TokenizerIt();
 const input = 'Questo dovrebbe essere tokenizzato';

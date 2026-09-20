@@ -21,14 +21,14 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Container } = require('@nlpjs-neo/core');
-const { TokenizerBert } = require('../src');
-const {
+import { Container } from '@nlpjs-neo/core';
+import { TokenizerBert } from '../src/index.js';
+import {
   setResponse,
   request,
   resetNumCalls,
   getNumCalls,
-} = require('./request-mock');
+} from './request-mock.js';
 
 describe('Tokenizer Bert', () => {
   describe('Constructor', () => {

@@ -45,7 +45,7 @@ function readFileSync() {
   return undefined;
 }
 
-module.exports = {
+export default {
   readFile,
   writeFile,
   existsSync,

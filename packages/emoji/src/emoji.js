@@ -21,10 +21,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { stringToArray } = require('@nlpjs-neo/core');
+import { stringToArray } from '@nlpjs-neo/core';
+import emojiByName from './emoji.json' with { type: 'json' };
 
 const nonSpacingRegex = new RegExp(String.fromCharCode(65039), 'g');
-const emojiByName = require('./emoji.json');
 
 const strip = (x) => x.replace(nonSpacingRegex, '');
 
@@ -47,4 +47,4 @@ const removeEmojis = (str) =>
         .join('')
     : str;
 
-module.exports = { removeEmojis };
+export { removeEmojis };

@@ -21,8 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { NeuralNetwork } = require('@nlpjs-neo/neural');
+import { NeuralNetwork } from '@nlpjs-neo/neural';
 
-module.exports = {
-  NeuralNetwork,
-};
+export { NeuralNetwork };

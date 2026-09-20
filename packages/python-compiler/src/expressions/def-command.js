@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Expression = require('./expression');
+import Expression from './expression.js';
 
 class DefCommand extends Expression {
   transpile(options = {}) {
@@ -55,4 +55,4 @@ class DefCommand extends Expression {
   }
 }
 
-module.exports = DefCommand;
+export default DefCommand;

@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {
+import {
   Among,
   ArrToObj,
   BaseStemmer,
@@ -38,12 +38,12 @@ const {
   MemoryStorage,
   uuid,
   Context,
-} = require('@nlpjs-neo/core');
+} from '@nlpjs-neo/core';
 
-const containerBootstrap = require('./container-bootstrap');
-const dock = require('./dock');
+import containerBootstrap from './container-bootstrap.js';
+import dock from './dock.js';
 
-const {
+import {
   hasUnicode,
   unicodeToArray,
   asciiToArray,
@@ -53,14 +53,14 @@ const {
   loadEnv,
   listFilesAbsolute,
   getAbsolutePath,
-} = require('./helper');
+} from './helper.js';
 
 async function dockStart(settings, mustLoadEnv) {
   await dock.start(settings, mustLoadEnv);
   return dock;
 }
 
-module.exports = {
+export {
   Among,
   ArrToObj,
   BaseStemmer,

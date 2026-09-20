@@ -21,329 +21,329 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {
+import {
   LangAr,
   NormalizerAr,
   SentimentAr,
   StemmerAr,
   StopwordsAr,
   TokenizerAr,
-} = require('@nlpjs-neo/lang-ar');
-const {
+} from '@nlpjs-neo/lang-ar';
+import {
   LangBn,
   NormalizerBn,
   SentimentBn,
   StemmerBn,
   StopwordsBn,
   TokenizerBn,
-} = require('@nlpjs-neo/lang-bn');
-const {
+} from '@nlpjs-neo/lang-bn';
+import {
   LangCa,
   NormalizerCa,
   SentimentCa,
   StemmerCa,
   StopwordsCa,
   TokenizerCa,
-} = require('@nlpjs-neo/lang-ca');
-const {
+} from '@nlpjs-neo/lang-ca';
+import {
   LangCs,
   NormalizerCs,
   SentimentCs,
   StemmerCs,
   StopwordsCs,
   TokenizerCs,
-} = require('@nlpjs-neo/lang-cs');
-const {
+} from '@nlpjs-neo/lang-cs';
+import {
   LangDa,
   NormalizerDa,
   SentimentDa,
   StemmerDa,
   StopwordsDa,
   TokenizerDa,
-} = require('@nlpjs-neo/lang-da');
-const {
+} from '@nlpjs-neo/lang-da';
+import {
   LangDe,
   NormalizerDe,
   SentimentDe,
   StemmerDe,
   StopwordsDe,
   TokenizerDe,
-} = require('@nlpjs-neo/lang-de');
-const {
+} from '@nlpjs-neo/lang-de';
+import {
   LangEl,
   NormalizerEl,
   SentimentEl,
   StemmerEl,
   StopwordsEl,
   TokenizerEl,
-} = require('@nlpjs-neo/lang-el');
-const {
+} from '@nlpjs-neo/lang-el';
+import {
   LangEn,
   NormalizerEn,
   SentimentEn,
   StemmerEn,
   StopwordsEn,
   TokenizerEn,
-} = require('@nlpjs-neo/lang-en');
-const {
+} from '@nlpjs-neo/lang-en';
+import {
   LangEs,
   NormalizerEs,
   SentimentEs,
   StemmerEs,
   StopwordsEs,
   TokenizerEs,
-} = require('@nlpjs-neo/lang-es');
-const {
+} from '@nlpjs-neo/lang-es';
+import {
   LangEu,
   NormalizerEu,
   SentimentEu,
   StemmerEu,
   StopwordsEu,
   TokenizerEu,
-} = require('@nlpjs-neo/lang-eu');
-const {
+} from '@nlpjs-neo/lang-eu';
+import {
   LangFa,
   NormalizerFa,
   SentimentFa,
   StemmerFa,
   StopwordsFa,
   TokenizerFa,
-} = require('@nlpjs-neo/lang-fa');
-const {
+} from '@nlpjs-neo/lang-fa';
+import {
   LangFi,
   NormalizerFi,
   SentimentFi,
   StemmerFi,
   StopwordsFi,
   TokenizerFi,
-} = require('@nlpjs-neo/lang-fi');
-const {
+} from '@nlpjs-neo/lang-fi';
+import {
   LangFr,
   NormalizerFr,
   SentimentFr,
   StemmerFr,
   StopwordsFr,
   TokenizerFr,
-} = require('@nlpjs-neo/lang-fr');
-const {
+} from '@nlpjs-neo/lang-fr';
+import {
   LangGa,
   NormalizerGa,
   SentimentGa,
   StemmerGa,
   StopwordsGa,
   TokenizerGa,
-} = require('@nlpjs-neo/lang-ga');
-const {
+} from '@nlpjs-neo/lang-ga';
+import {
   LangGl,
   NormalizerGl,
   SentimentGl,
   StemmerGl,
   StopwordsGl,
   TokenizerGl,
-} = require('@nlpjs-neo/lang-gl');
-const {
+} from '@nlpjs-neo/lang-gl';
+import {
   LangHi,
   NormalizerHi,
   SentimentHi,
   StemmerHi,
   StopwordsHi,
   TokenizerHi,
-} = require('@nlpjs-neo/lang-hi');
-const {
+} from '@nlpjs-neo/lang-hi';
+import {
   LangHu,
   NormalizerHu,
   SentimentHu,
   StemmerHu,
   StopwordsHu,
   TokenizerHu,
-} = require('@nlpjs-neo/lang-hu');
-const {
+} from '@nlpjs-neo/lang-hu';
+import {
   LangHy,
   NormalizerHy,
   SentimentHy,
   StemmerHy,
   StopwordsHy,
   TokenizerHy,
-} = require('@nlpjs-neo/lang-hy');
-const {
+} from '@nlpjs-neo/lang-hy';
+import {
   LangId,
   NormalizerId,
   SentimentId,
   StemmerId,
   StopwordsId,
   TokenizerId,
-} = require('@nlpjs-neo/lang-id');
-const {
+} from '@nlpjs-neo/lang-id';
+import {
   LangIt,
   NormalizerIt,
   SentimentIt,
   StemmerIt,
   StopwordsIt,
   TokenizerIt,
-} = require('@nlpjs-neo/lang-it');
-const {
+} from '@nlpjs-neo/lang-it';
+import {
   LangJa,
   NormalizerJa,
   SentimentJa,
   StemmerJa,
   StopwordsJa,
   TokenizerJa,
-} = require('@nlpjs-neo/lang-ja');
-const {
+} from '@nlpjs-neo/lang-ja';
+import {
   LangKo,
   NormalizerKo,
   SentimentKo,
   StemmerKo,
   StopwordsKo,
   TokenizerKo,
-} = require('@nlpjs-neo/lang-ko');
-const {
+} from '@nlpjs-neo/lang-ko';
+import {
   LangLt,
   NormalizerLt,
   SentimentLt,
   StemmerLt,
   StopwordsLt,
   TokenizerLt,
-} = require('@nlpjs-neo/lang-lt');
-const {
+} from '@nlpjs-neo/lang-lt';
+import {
   LangMs,
   NormalizerMs,
   SentimentMs,
   StemmerMs,
   StopwordsMs,
   TokenizerMs,
-} = require('@nlpjs-neo/lang-ms');
-const {
+} from '@nlpjs-neo/lang-ms';
+import {
   LangNe,
   NormalizerNe,
   SentimentNe,
   StemmerNe,
   StopwordsNe,
   TokenizerNe,
-} = require('@nlpjs-neo/lang-ne');
-const {
+} from '@nlpjs-neo/lang-ne';
+import {
   LangNl,
   NormalizerNl,
   SentimentNl,
   StemmerNl,
   StopwordsNl,
   TokenizerNl,
-} = require('@nlpjs-neo/lang-nl');
-const {
+} from '@nlpjs-neo/lang-nl';
+import {
   LangNo,
   NormalizerNo,
   SentimentNo,
   StemmerNo,
   StopwordsNo,
   TokenizerNo,
-} = require('@nlpjs-neo/lang-no');
-const {
+} from '@nlpjs-neo/lang-no';
+import {
   LangPl,
   NormalizerPl,
   SentimentPl,
   StemmerPl,
   StopwordsPl,
   TokenizerPl,
-} = require('@nlpjs-neo/lang-pl');
-const {
+} from '@nlpjs-neo/lang-pl';
+import {
   LangPt,
   NormalizerPt,
   SentimentPt,
   StemmerPt,
   StopwordsPt,
   TokenizerPt,
-} = require('@nlpjs-neo/lang-pt');
-const {
+} from '@nlpjs-neo/lang-pt';
+import {
   LangRo,
   NormalizerRo,
   SentimentRo,
   StemmerRo,
   StopwordsRo,
   TokenizerRo,
-} = require('@nlpjs-neo/lang-ro');
-const {
+} from '@nlpjs-neo/lang-ro';
+import {
   LangRu,
   NormalizerRu,
   SentimentRu,
   StemmerRu,
   StopwordsRu,
   TokenizerRu,
-} = require('@nlpjs-neo/lang-ru');
-const {
+} from '@nlpjs-neo/lang-ru';
+import {
   LangSl,
   NormalizerSl,
   SentimentSl,
   StemmerSl,
   StopwordsSl,
   TokenizerSl,
-} = require('@nlpjs-neo/lang-sl');
-const {
+} from '@nlpjs-neo/lang-sl';
+import {
   LangSr,
   NormalizerSr,
   SentimentSr,
   StemmerSr,
   StopwordsSr,
   TokenizerSr,
-} = require('@nlpjs-neo/lang-sr');
-const {
+} from '@nlpjs-neo/lang-sr';
+import {
   LangSv,
   NormalizerSv,
   SentimentSv,
   StemmerSv,
   StopwordsSv,
   TokenizerSv,
-} = require('@nlpjs-neo/lang-sv');
-const {
+} from '@nlpjs-neo/lang-sv';
+import {
   LangTa,
   NormalizerTa,
   SentimentTa,
   StemmerTa,
   StopwordsTa,
   TokenizerTa,
-} = require('@nlpjs-neo/lang-ta');
-const {
+} from '@nlpjs-neo/lang-ta';
+import {
   LangTh,
   NormalizerTh,
   SentimentTh,
   StemmerTh,
   StopwordsTh,
   TokenizerTh,
-} = require('@nlpjs-neo/lang-th');
-const {
+} from '@nlpjs-neo/lang-th';
+import {
   LangTl,
   NormalizerTl,
   SentimentTl,
   StemmerTl,
   StopwordsTl,
   TokenizerTl,
-} = require('@nlpjs-neo/lang-tl');
-const {
+} from '@nlpjs-neo/lang-tl';
+import {
   LangTr,
   NormalizerTr,
   SentimentTr,
   StemmerTr,
   StopwordsTr,
   TokenizerTr,
-} = require('@nlpjs-neo/lang-tr');
-const {
+} from '@nlpjs-neo/lang-tr';
+import {
   LangUk,
   NormalizerUk,
   SentimentUk,
   StemmerUk,
   StopwordsUk,
   TokenizerUk,
-} = require('@nlpjs-neo/lang-uk');
-const {
+} from '@nlpjs-neo/lang-uk';
+import {
   LangZh,
   NormalizerZh,
   SentimentZh,
   StemmerZh,
   StopwordsZh,
   TokenizerZh,
-} = require('@nlpjs-neo/lang-zh');
-const LangAll = require('./lang-all');
+} from '@nlpjs-neo/lang-zh';
+import LangAll from './lang-all.js';
 
-const {
+import {
   langDict,
   getNormalizer,
   getTokenizer,
@@ -356,291 +356,250 @@ const {
   removeStopwords,
   dict,
   bow,
-} = require('./lang-functions');
+} from './lang-functions.js';
 
-module.exports = {
+export {
   LangAll,
-
   LangAr,
   NormalizerAr,
   SentimentAr,
   StemmerAr,
   StopwordsAr,
   TokenizerAr,
-
   LangBn,
   NormalizerBn,
   SentimentBn,
   StemmerBn,
   StopwordsBn,
   TokenizerBn,
-
   LangCa,
   NormalizerCa,
   SentimentCa,
   StemmerCa,
   StopwordsCa,
   TokenizerCa,
-
   LangCs,
   NormalizerCs,
   SentimentCs,
   StemmerCs,
   StopwordsCs,
   TokenizerCs,
-
   LangDa,
   NormalizerDa,
   SentimentDa,
   StemmerDa,
   StopwordsDa,
   TokenizerDa,
-
   LangDe,
   NormalizerDe,
   SentimentDe,
   StemmerDe,
   StopwordsDe,
   TokenizerDe,
-
   LangEl,
   NormalizerEl,
   SentimentEl,
   StemmerEl,
   StopwordsEl,
   TokenizerEl,
-
   LangEn,
   NormalizerEn,
   SentimentEn,
   StemmerEn,
   StopwordsEn,
   TokenizerEn,
-
   LangEs,
   NormalizerEs,
   SentimentEs,
   StemmerEs,
   StopwordsEs,
   TokenizerEs,
-
   LangEu,
   NormalizerEu,
   SentimentEu,
   StemmerEu,
   StopwordsEu,
   TokenizerEu,
-
   LangFa,
   NormalizerFa,
   SentimentFa,
   StemmerFa,
   StopwordsFa,
   TokenizerFa,
-
   LangFi,
   NormalizerFi,
   SentimentFi,
   StemmerFi,
   StopwordsFi,
   TokenizerFi,
-
   LangFr,
   NormalizerFr,
   SentimentFr,
   StemmerFr,
   StopwordsFr,
   TokenizerFr,
-
   LangGa,
   NormalizerGa,
   SentimentGa,
   StemmerGa,
   StopwordsGa,
   TokenizerGa,
-
   LangGl,
   NormalizerGl,
   SentimentGl,
   StemmerGl,
   StopwordsGl,
   TokenizerGl,
-
   LangHi,
   NormalizerHi,
   SentimentHi,
   StemmerHi,
   StopwordsHi,
   TokenizerHi,
-
   LangHu,
   NormalizerHu,
   SentimentHu,
   StemmerHu,
   StopwordsHu,
   TokenizerHu,
-
   LangHy,
   NormalizerHy,
   SentimentHy,
   StemmerHy,
   StopwordsHy,
   TokenizerHy,
-
   LangIt,
   NormalizerIt,
   SentimentIt,
   StemmerIt,
   StopwordsIt,
   TokenizerIt,
-
   LangId,
   NormalizerId,
   SentimentId,
   StemmerId,
   StopwordsId,
   TokenizerId,
-
   LangJa,
   NormalizerJa,
   SentimentJa,
   StemmerJa,
   StopwordsJa,
   TokenizerJa,
-
   LangKo,
   NormalizerKo,
   SentimentKo,
   StemmerKo,
   StopwordsKo,
   TokenizerKo,
-
   LangLt,
   NormalizerLt,
   SentimentLt,
   StemmerLt,
   StopwordsLt,
   TokenizerLt,
-
   LangMs,
   NormalizerMs,
   SentimentMs,
   StemmerMs,
   StopwordsMs,
   TokenizerMs,
-
   LangNe,
   NormalizerNe,
   SentimentNe,
   StemmerNe,
   StopwordsNe,
   TokenizerNe,
-
   LangNl,
   NormalizerNl,
   SentimentNl,
   StemmerNl,
   StopwordsNl,
   TokenizerNl,
-
   LangNo,
   NormalizerNo,
   SentimentNo,
   StemmerNo,
   StopwordsNo,
   TokenizerNo,
-
   LangPl,
   NormalizerPl,
   SentimentPl,
   StemmerPl,
   StopwordsPl,
   TokenizerPl,
-
   LangPt,
   NormalizerPt,
   SentimentPt,
   StemmerPt,
   StopwordsPt,
   TokenizerPt,
-
   LangRo,
   NormalizerRo,
   SentimentRo,
   StemmerRo,
   StopwordsRo,
   TokenizerRo,
-
   LangRu,
   NormalizerRu,
   SentimentRu,
   StemmerRu,
   StopwordsRu,
   TokenizerRu,
-
   LangSl,
   NormalizerSl,
   SentimentSl,
   StemmerSl,
   StopwordsSl,
   TokenizerSl,
-
   LangSr,
   NormalizerSr,
   SentimentSr,
   StemmerSr,
   StopwordsSr,
   TokenizerSr,
-
   LangSv,
   NormalizerSv,
   SentimentSv,
   StemmerSv,
   StopwordsSv,
   TokenizerSv,
-
   LangTa,
   NormalizerTa,
   SentimentTa,
   StemmerTa,
   StopwordsTa,
   TokenizerTa,
-
   LangTh,
   NormalizerTh,
   SentimentTh,
   StemmerTh,
   StopwordsTh,
   TokenizerTh,
-
   LangTl,
   NormalizerTl,
   SentimentTl,
   StemmerTl,
   StopwordsTl,
   TokenizerTl,
-
   LangTr,
   NormalizerTr,
   SentimentTr,
   StemmerTr,
   StopwordsTr,
   TokenizerTr,
-
   LangUk,
   NormalizerUk,
   SentimentUk,
   StemmerUk,
   StopwordsUk,
   TokenizerUk,
-
   LangZh,
   NormalizerZh,
   SentimentZh,
   StemmerZh,
   StopwordsZh,
   TokenizerZh,
-
   langDict,
   getNormalizer,
   getTokenizer,

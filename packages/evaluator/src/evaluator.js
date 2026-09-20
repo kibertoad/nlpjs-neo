@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { generate: unparse } = require('escodegen');
-const { parse } = require('esprima');
+import { generate as unparse } from 'escodegen';
+import { parse } from 'esprima';
 
 class Evaluator {
   constructor(context) {
@@ -454,4 +454,4 @@ class Evaluator {
   }
 }
 
-module.exports = Evaluator;
+export default Evaluator;

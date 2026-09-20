@@ -21,14 +21,14 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const path = require('path');
-const { Worker, SHARE_ENV, MessageChannel } = require('worker_threads');
+import path from 'path';
+import { Worker, SHARE_ENV, MessageChannel } from 'worker_threads';
 
 const threadName = '../runtime-thread.js';
 
 class RuntimeWorker extends Worker {
   constructor() {
-    super(path.join(__filename, threadName), { env: SHARE_ENV });
+    super(path.join(import.meta.filename, threadName), { env: SHARE_ENV });
     this.models = new Map();
     this.queues = new Map();
     this.taskId = 0;
@@ -144,4 +144,4 @@ class RuntimeWorker extends Worker {
   }
 }
 
-module.exports = RuntimeWorker;
+export default RuntimeWorker;

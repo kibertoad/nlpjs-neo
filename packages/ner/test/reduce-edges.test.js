@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const reduceEdges = require('../src/reduce-edges');
+import reduceEdges from '../src/reduce-edges.js';
 
 describe('Reduce Edges', () => {
   describe('reduceEdges', () => {

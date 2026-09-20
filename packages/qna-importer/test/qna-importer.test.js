@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const fs = require('fs');
-const path = require('path');
-const { QnaImporter } = require('../src');
+import fs from 'fs';
+import path from 'path';
+import { QnaImporter } from '../src/index.js';
 
 describe('QnA Importer', () => {
   describe('constructor', () => {
@@ -35,7 +35,10 @@ describe('QnA Importer', () => {
 
   describe('Transform', () => {
     it('Should transform a qna into a corpus', () => {
-      const content = fs.readFileSync(path.join(__dirname, 'qna.tsv'), 'utf8');
+      const content = fs.readFileSync(
+        path.join(import.meta.dirname, 'qna.tsv'),
+        'utf8'
+      );
       const instance = new QnaImporter();
       const corpus = instance.transform(content, { locale: 'en' })[0];
       expect(corpus).toBeDefined();

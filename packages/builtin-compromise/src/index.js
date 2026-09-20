@@ -21,8 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const BuiltinCompromise = require('./builtin-compromise');
+import BuiltinCompromise from './builtin-compromise.js';
 
-module.exports = {
-  BuiltinCompromise,
-};
+export { BuiltinCompromise };

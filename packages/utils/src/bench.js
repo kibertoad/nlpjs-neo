@@ -83,4 +83,4 @@ class Bench {
   }
 }
 
-module.exports = Bench;
+export default Bench;

@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { request } = require('@nlpjs-neo/request');
+import { request } from '@nlpjs-neo/request';
 
 const generateMsbfToken = async (req, res) => {
   const { userId } = req.params;
@@ -43,4 +43,4 @@ const generateMsbfToken = async (req, res) => {
   }
 };
 
-module.exports = generateMsbfToken;
+export default generateMsbfToken;

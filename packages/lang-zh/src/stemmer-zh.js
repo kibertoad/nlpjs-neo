@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const TranslateZh = require('./translate-zh');
-const dictionary = require('./dictionary');
+import TranslateZh from './translate-zh.js';
+import dictionary from './dictionary.js';
 
 class StemmerZh {
   constructor(container) {
@@ -130,4 +130,4 @@ class StemmerZh {
   }
 }
 
-module.exports = StemmerZh;
+export default StemmerZh;

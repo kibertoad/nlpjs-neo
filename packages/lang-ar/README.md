@@ -31,9 +31,9 @@ You can install @nlpjs-neo/lang-ar:
 ## Example of Usage
 
 ```javascript
-const { containerBootstrap } = require('@nlpjs-neo/core');
-const { Nlp } = require('@nlpjs-neo/nlp');
-const { LangAr } = require('@nlpjs-neo/lang-ar');
+import { containerBootstrap } from '@nlpjs-neo/core';
+import { Nlp } from '@nlpjs-neo/nlp';
+import { LangAr } from '@nlpjs-neo/lang-ar';
 
 (async () => {
   const container = await containerBootstrap();

@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const fs = require('fs');
+import fs from 'fs';
 
-module.exports = async function trainnlp(manager) {
+export default async function trainnlp(manager) {
   if (fs.existsSync('./model.nlp')) {
     manager.load('./model.nlp');
     return;
@@ -789,4 +789,4 @@ module.exports = async function trainnlp(manager) {
   );
   manager.addAnswer('en', 'None', "Sorry, I don't understand");
   manager.save();
-};
+}

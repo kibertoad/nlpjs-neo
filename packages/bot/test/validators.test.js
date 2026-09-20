@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {
+import {
   validatorEmail,
   validatorURL,
   validatorIP,
@@ -31,7 +31,7 @@ const {
   validatorNumber,
   validatorInteger,
   validatorDate,
-} = require('../src/validators');
+} from '../src/validators.js';
 
 function buildSession(text) {
   return {

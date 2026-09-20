@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { TokenizerPt } = require('../src');
+import { TokenizerPt } from '../src/index.js';
 
 const tokenizer = new TokenizerPt();
 

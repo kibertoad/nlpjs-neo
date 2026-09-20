@@ -21,12 +21,12 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { containerBootstrap } = require('../../packages/core/src');
-const { DomainManager, NluNeural } = require('../../packages/nlu/src');
-const { LangEn } = require('../../packages/lang-en/src');
-// const { containerBootstrap } = require('@nlpjs-neo/core');
-// const { DomainManager, NluNeural } = require('@nlpjs-neo/nlu');
-// const { LangEn } = require('@nlpjs-neo/lang-en');
+import { containerBootstrap } from '../../packages/core/src/index.js';
+import { DomainManager, NluNeural } from '../../packages/nlu/src/index.js';
+import { LangEn } from '../../packages/lang-en/src/index.js';
+// import { containerBootstrap } from '@nlpjs-neo/core';
+// import { DomainManager, NluNeural } from '@nlpjs-neo/nlu';
+// import { LangEn } from '@nlpjs-neo/lang-en';
 
 function addFoodDomain(manager) {
   manager.add('food', 'what do I have in my basket', 'order.check');

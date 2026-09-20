@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { defaultContainer } = require('./container');
+import { defaultContainer } from './container.js';
 
 class Normalizer {
   constructor(container = defaultContainer) {
@@ -45,4 +45,4 @@ class Normalizer {
   }
 }
 
-module.exports = Normalizer;
+export default Normalizer;

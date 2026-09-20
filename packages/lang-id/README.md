@@ -42,7 +42,7 @@ You can install @nlpjs-neo/lang-id:
 Normalization of a text converts it to lowercase and remove decorations of characters.
 
 ```javascript
-const { NormalizerId } = require('@nlpjs-neo/lang-id');
+import { NormalizerId } from '@nlpjs-neo/lang-id';
 
 const normalizer = new NormalizerId();
 const input = 'apa yang dikembangkan perúsahaan Anda';
@@ -56,7 +56,7 @@ console.log(result);
 Tokenization splits a sentence into words.
 
 ```javascript
-const { TokenizerId } = require('@nlpjs-neo/lang-id');
+import { TokenizerId } from '@nlpjs-neo/lang-id';
 
 const tokenizer = new TokenizerId();
 const input = 'apa yang dikembangkan perusahaan Anda';
@@ -68,7 +68,7 @@ console.log(result);
 Tokenizer can also normalize the sentence before tokenizing, to do that provide a _true_ as second argument to the method _tokenize_
 
 ```javascript
-const { TokenizerId } = require('@nlpjs-neo/lang-id');
+import { TokenizerId } from '@nlpjs-neo/lang-id';
 
 const tokenizer = new TokenizerId();
 const input = 'apa yang dikembangkan perusahaan Anda';
@@ -82,7 +82,7 @@ console.log(result);
 Using the class _StopwordsId_ you can identify if a word is an stopword:
 
 ```javascript
-const { StopwordsId } = require('@nlpjs-neo/lang-id');
+import { StopwordsId } from '@nlpjs-neo/lang-id';
 
 const stopwords = new StopwordsId();
 console.log(stopwords.isStopword('apa'));
@@ -96,7 +96,7 @@ console.log(stopwords.isStopword('perusahaan'));
 Using the class _StopwordsId_ you can remove stopwords form an array of words:
 
 ```javascript
-const { StopwordsId } = require('@nlpjs-neo/lang-id');
+import { StopwordsId } from '@nlpjs-neo/lang-id';
 
 const stopwords = new StopwordsId();
 console.log(
@@ -115,7 +115,7 @@ console.log(
 Using the class _StopwordsId_ you can restart it dictionary and build it from another set of words:
 
 ```javascript
-const { StopwordsId } = require('@nlpjs-neo/lang-id');
+import { StopwordsId } from '@nlpjs-neo/lang-id';
 
 const stopwords = new StopwordsId();
 stopwords.dictionary = {};
@@ -139,7 +139,7 @@ An stemmer is an algorithm to calculate the _stem_ (root) of a word, removing af
 You can stem one word using method _stemWord_:
 
 ```javascript
-const { StemmerId } = require('@nlpjs-neo/lang-id');
+import { StemmerId } from '@nlpjs-neo/lang-id';
 
 const stemmer = new StemmerId();
 const input = 'dikembangkan';
@@ -152,7 +152,7 @@ console.log(stemmer.stemWord(input));
 You can stem an array of words using method _stem_:
 
 ```javascript
-const { StemmerId } = require('@nlpjs-neo/lang-id');
+import { StemmerId } from '@nlpjs-neo/lang-id';
 
 const stemmer = new StemmerId();
 const input = ['apa', 'yang', 'dikembangkan', 'perusahaan', 'Anda'];
@@ -168,7 +168,7 @@ Also, stemmer works with lowercased affixes, so _perusahaan_ will be stemmed as 
 You can tokenize and stem a sentence, including normalization, with the method _tokenizeAndStem_:
 
 ```javascript
-const { StemmerId } = require('@nlpjs-neo/lang-id');
+import { StemmerId } from '@nlpjs-neo/lang-id';
 
 const stemmer = new StemmerId();
 const input = 'apa yang dikembangkan PERUSAHAAN Anda';
@@ -181,7 +181,7 @@ console.log(stemmer.tokenizeAndStem(input));
 When calling _tokenizeAndStem_ method from the class _StemmerId_, the second parameter is a boolean to set if the stemmer must keep the stopwords (true) or remove them (false). Before using it, the stopwords instance must be set into the stemmer:
 
 ```javascript
-const { StemmerId, StopwordsId } = require('@nlpjs-neo/lang-id');
+import { StemmerId, StopwordsId } from '@nlpjs-neo/lang-id';
 
 const stemmer = new StemmerId();
 stemmer.stopwords = new StopwordsId();
@@ -195,9 +195,9 @@ console.log(stemmer.tokenizeAndStem(input, false));
 To use sentiment analysis you'll need to create a new _Container_ and use the plugin _LangId_, because internally the _SentimentAnalyzer_ class try to retrieve the normalizer, tokenizer, stemmmer and sentiment dictionaries from the container.
 
 ```javascript
-const { Container } = require('@nlpjs-neo/core');
-const { SentimentAnalyzer } = require('@nlpjs-neo/sentiment');
-const { LangId } = require('@nlpjs-neo/lang-id');
+import { Container } from '@nlpjs-neo/core';
+import { SentimentAnalyzer } from '@nlpjs-neo/sentiment';
+import { LangId } from '@nlpjs-neo/lang-id';
 
 (async () => {
   const container = new Container();

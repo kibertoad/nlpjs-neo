@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { NlpManager } = require('../../src');
-const corpus = require('./corpus-en.json');
+import { NlpManager } from '../../src/index.js';
+import corpus from './corpus-en.json' with { type: 'json' };
 
 function addEntities(manager) {
   manager.addNamedEntityText(

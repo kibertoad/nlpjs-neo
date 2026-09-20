@@ -2,6 +2,7 @@
   "name": "root",
   "private": true,
   "description": "Library for NLU (Natural Language Understanding) done in Node.js",
+  "type": "module",
   "scripts": {
     "build": "turbo run build",
     "changeset": "changeset",
@@ -50,6 +51,6 @@
   },
   "packageManager": "pnpm@11.25.0",
   "engines": {
-    "node": ">=22"
+    "node": ">=22.12.0"
   }
 }

@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { compareWildcars } = require('./helper');
-const DefaultCompiler = require('./default-compiler');
-const logger = require('./logger');
+import { compareWildcars } from './helper.js';
+import DefaultCompiler from './default-compiler.js';
+import logger from './logger.js';
 
 /**
  * Container class
@@ -532,7 +532,4 @@ class Container {
 
 const defaultContainer = new Container();
 
-module.exports = {
-  Container,
-  defaultContainer,
-};
+export { Container, defaultContainer };

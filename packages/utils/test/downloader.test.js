@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Downloader } = require('../src');
+import { Downloader } from '../src/index.js';
 
 describe('Downloader', () => {
   describe('constructor', () => {

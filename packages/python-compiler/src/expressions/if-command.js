@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Expression = require('./expression');
+import Expression from './expression.js';
 
 class IfCommand extends Expression {
   transpile(options = {}) {
@@ -39,4 +39,4 @@ class IfCommand extends Expression {
   }
 }
 
-module.exports = IfCommand;
+export default IfCommand;

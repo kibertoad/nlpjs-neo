@@ -20,9 +20,9 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const { JavascriptCompiler } = require('@nlpjs-neo/evaluator');
-const PythonParser = require('./python-parser');
-const { forEach, range, print, getIndex, len } = require('./helper');
+import { JavascriptCompiler } from '@nlpjs-neo/evaluator';
+import PythonParser from './python-parser.js';
+import { forEach, range, print, getIndex, len } from './helper.js';
 
 class PythonCompiler extends JavascriptCompiler {
   constructor(container) {
@@ -75,4 +75,4 @@ class PythonCompiler extends JavascriptCompiler {
   }
 }
 
-module.exports = PythonCompiler;
+export default PythonCompiler;

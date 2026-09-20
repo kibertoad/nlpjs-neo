@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { defaultContainer } = require('@nlpjs-neo/core');
-const reduceEdges = require('./reduce-edges');
+import { defaultContainer } from '@nlpjs-neo/core';
+import reduceEdges from './reduce-edges.js';
 
 class ExtractorBuiltin {
   constructor(container = defaultContainer) {
@@ -64,4 +64,4 @@ class ExtractorBuiltin {
   }
 }
 
-module.exports = ExtractorBuiltin;
+export default ExtractorBuiltin;

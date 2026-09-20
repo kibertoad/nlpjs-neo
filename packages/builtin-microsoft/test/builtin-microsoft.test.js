@@ -21,16 +21,16 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { containerBootstrap } = require('@nlpjs-neo/core');
-const { BuiltinMicrosoft } = require('../src');
-const numberAgeTests = require('./number-age.json');
-const numberTests = require('./number.json');
-const numberOrdinalTests = require('./number-ordinal.json');
-const numberPercentTests = require('./number-percent.json');
-const numberCurrency = require('./number-currency.json');
-const numberDimension = require('./number-dimension.json');
-const sequence = require('./sequence.json');
-const date = require('./date.json');
+import { containerBootstrap } from '@nlpjs-neo/core';
+import { BuiltinMicrosoft } from '../src/index.js';
+import numberAgeTests from './number-age.json' with { type: 'json' };
+import numberTests from './number.json' with { type: 'json' };
+import numberOrdinalTests from './number-ordinal.json' with { type: 'json' };
+import numberPercentTests from './number-percent.json' with { type: 'json' };
+import numberCurrency from './number-currency.json' with { type: 'json' };
+import numberDimension from './number-dimension.json' with { type: 'json' };
+import sequence from './sequence.json' with { type: 'json' };
+import date from './date.json' with { type: 'json' };
 
 const container = containerBootstrap();
 

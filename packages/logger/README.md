@@ -34,7 +34,7 @@ You can install @nlpjs-neo/logger:
 ## Example of Usage
 
 ```javascript
-const { Logger } = require('@nlpjs-neo/logger');
+import { Logger } from '@nlpjs-neo/logger';
 
 const logger = new Logger();
 
@@ -45,7 +45,7 @@ logger.info('Hello world!!!')
 By default, a logger based on console is added to the NLP.js container
 
 ```javascript
-const { defaultContainer } = require('@nlpjs-neo/core');
+import { defaultContainer } from '@nlpjs-neo/core';
 
 const logger = defaultContainer.get('logger');
 logger.info('This is an info message');
@@ -56,7 +56,7 @@ logger.info('This is an info message');
 When using the basic package of NLP.js, a logger based on pino is added.
 
 ```javascript
-const { dockStart } = require('@nlpjs-neo/basic');
+import { dockStart } from '@nlpjs-neo/basic';
 
 (async () => {
   const dock = await dockStart({ use: ['Basic']});
@@ -72,7 +72,7 @@ const { dockStart } = require('@nlpjs-neo/basic');
 You can register your own logger to the container:
 
 ```javascript
-const { dockStart } = require('@nlpjs-neo/basic');
+import { dockStart } from '@nlpjs-neo/basic';
 
 (async () => {
   const dock = await dockStart({ use: ['Basic']});

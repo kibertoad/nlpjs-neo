@@ -21,15 +21,15 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const LangZh = require('./lang-zh');
-const TokenizerZh = require('./tokenizer-zh');
-const StemmerZh = require('./stemmer-zh');
-const StopwordsZh = require('./stopwords-zh');
-const NormalizerZh = require('./normalizer-zh');
-const SentimentZh = require('./sentiment/sentiment_zh');
-const TranslateZh = require('./translate-zh');
+import LangZh from './lang-zh.js';
+import TokenizerZh from './tokenizer-zh.js';
+import StemmerZh from './stemmer-zh.js';
+import StopwordsZh from './stopwords-zh.js';
+import NormalizerZh from './normalizer-zh.js';
+import SentimentZh from './sentiment/sentiment_zh.js';
+import TranslateZh from './translate-zh.js';
 
-module.exports = {
+export {
   LangZh,
   StemmerZh,
   StopwordsZh,

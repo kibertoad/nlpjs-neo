@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Database = require('../src/database');
+import Database from '../src/database.js';
 
 describe('Database', () => {
   describe('Constructor', () => {

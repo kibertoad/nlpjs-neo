@@ -21,12 +21,12 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const TokenizerEn = require('./tokenizer-en');
-const StemmerEn = require('./stemmer-en');
-const StopwordsEn = require('./stopwords-en');
-const NormalizerEn = require('./normalizer-en');
-const SentimentEn = require('./sentiment/sentiment_en');
-const registerTrigrams = require('./trigrams');
+import TokenizerEn from './tokenizer-en.js';
+import StemmerEn from './stemmer-en.js';
+import StopwordsEn from './stopwords-en.js';
+import NormalizerEn from './normalizer-en.js';
+import SentimentEn from './sentiment/sentiment_en.js';
+import registerTrigrams from './trigrams.js';
 
 class LangEn {
   register(container) {
@@ -39,4 +39,4 @@ class LangEn {
   }
 }
 
-module.exports = LangEn;
+export default LangEn;

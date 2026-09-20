@@ -21,14 +21,14 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {
+import {
   cartesian,
   splitPattern,
   composeFromPattern,
   composeCorpus,
-} = require('../src');
-const corpusPattern = require('./corpus-pattern.json');
-const corpusComposed = require('./corpus-composed.json');
+} from '../src/index.js';
+import corpusPattern from './corpus-pattern.json' with { type: 'json' };
+import corpusComposed from './corpus-composed.json' with { type: 'json' };
 
 describe('Pattern', () => {
   describe('cartesian', () => {

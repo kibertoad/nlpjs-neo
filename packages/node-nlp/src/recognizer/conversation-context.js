@@ -74,4 +74,4 @@ class ConversationContext {
   }
 }
 
-module.exports = ConversationContext;
+export default ConversationContext;

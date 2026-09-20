@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const container = require('./bootstrap');
-const { SentimentAnalyzer } = require('../src');
+import container from './bootstrap.js';
+import { SentimentAnalyzer } from '../src/index.js';
 
 describe('Sentiment Analyzer', () => {
   describe('Constructor', () => {

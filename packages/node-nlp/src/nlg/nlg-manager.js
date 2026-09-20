@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { NlgManager: NlgManagerBase } = require('@nlpjs-neo/nlg');
-const { Evaluator } = require('@nlpjs-neo/evaluator');
+import { NlgManager as NlgManagerBase } from '@nlpjs-neo/nlg';
+import { Evaluator } from '@nlpjs-neo/evaluator';
 
 class NlgManager extends NlgManagerBase {
   constructor(settings = {}, container) {
@@ -78,4 +78,4 @@ class NlgManager extends NlgManagerBase {
   }
 }
 
-module.exports = NlgManager;
+export default NlgManager;

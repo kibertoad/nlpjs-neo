@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const fs = require('../src/mock-fs');
+import fs from '../src/mock-fs.js';
 
 describe('mock fs', () => {
   describe('readFile', () => {

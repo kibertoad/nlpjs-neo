@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Expression = require('./expression');
+import Expression from './expression.js';
 
 class ForInCommand extends Expression {
   transpile() {
@@ -38,4 +38,4 @@ class ForInCommand extends Expression {
   }
 }
 
-module.exports = ForInCommand;
+export default ForInCommand;

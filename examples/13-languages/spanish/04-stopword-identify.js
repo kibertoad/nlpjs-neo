@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { StopwordsEs } = require('../../../packages/lang-es/src');
-// const { StopwordsEs } = require('@nlpjs-neo/lang-es');
+import { StopwordsEs } from '../../../packages/lang-es/src/index.js';
+// import { StopwordsEs } from '@nlpjs-neo/lang-es';
 
 const stopwords = new StopwordsEs();
 console.log(stopwords.isStopword('un'));

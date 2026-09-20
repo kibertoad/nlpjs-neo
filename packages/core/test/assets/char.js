@@ -39,4 +39,4 @@ class Char {
   }
 }
 
-module.exports = Char;
+export default Char;

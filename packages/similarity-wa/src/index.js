@@ -21,12 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const leven = require('./leven');
-const similarity = require('./similarity');
-const SpellCheck = require('./spell-check');
+import leven from './leven.js';
+import similarity from './similarity.js';
+import SpellCheck from './spell-check.js';
 
-module.exports = {
-  leven,
-  similarity,
-  SpellCheck,
-};
+export { leven, similarity, SpellCheck };

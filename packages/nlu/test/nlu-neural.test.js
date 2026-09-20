@@ -21,16 +21,16 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {
+import {
   ArrToObj,
   Container,
   Normalizer,
   Tokenizer,
   Stemmer,
   Stopwords,
-} = require('@nlpjs-neo/core');
-const { NluNeural } = require('../src');
-const srccorpus = require('./corpus50.json');
+} from '@nlpjs-neo/core';
+import { NluNeural } from '../src/index.js';
+import srccorpus from './corpus50.json' with { type: 'json' };
 
 const corpus = [];
 for (let i = 0; i < srccorpus.data.length; i += 1) {

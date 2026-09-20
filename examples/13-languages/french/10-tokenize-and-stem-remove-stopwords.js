@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { StemmerFr, StopwordsFr } = require('../../../packages/lang-fr/src');
+import { StemmerFr, StopwordsFr } from '../../../packages/lang-fr/src/index.js';
 
 const stemmer = new StemmerFr();
 stemmer.stopwords = new StopwordsFr();

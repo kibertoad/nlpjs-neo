@@ -21,6 +21,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import { createRequire } from 'module';
+
+// The dictionary is ~9MB, so it is only pulled in when `start()` is called.
+const require = createRequire(import.meta.url);
+
 class Dictionary {
   getElement(line) {
     if (!line) {
@@ -45,8 +50,7 @@ class Dictionary {
 
   start() {
     if (!this.cedict) {
-      // oxlint-disable-next-line global-require
-      this.cedict = require('./cedict_ts.u8');
+      this.cedict = require('./cedict_ts.u8.js').default;
       console.log('Compiling dictionary');
       this.cache = {};
       this.simplified = {};
@@ -117,4 +121,4 @@ class Dictionary {
 }
 
 const instance = new Dictionary();
-module.exports = instance;
+export default instance;

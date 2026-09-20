@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { softMax } = require('../src');
+import { softMax } from '../src/index.js';
 
 describe('SoftMax', () => {
   test('It should calculate softmax of an array of numbers', () => {

@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Evaluator = require('./evaluator');
+import Evaluator from './evaluator.js';
 
 const evaluator = new Evaluator();
 
@@ -74,4 +74,4 @@ function compile(str) {
   return (context = {}) => process(str, context);
 }
 
-module.exports = compile;
+export default compile;

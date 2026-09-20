@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const ObjToArr = require('../src/obj-to-arr');
-const { Container } = require('../src/container');
-const containerBootstrap = require('../src/container-bootstrap');
+import ObjToArr from '../src/obj-to-arr.js';
+import { Container } from '../src/container.js';
+import containerBootstrap from '../src/container-bootstrap.js';
 
 describe('ObjToArr', () => {
   describe('Constructor', () => {

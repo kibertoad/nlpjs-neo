@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { NormalizerId } = require('../../../packages/lang-id/src');
-// const { NormalizerId } = require('@nlpjs-neo/lang-id');
+import { NormalizerId } from '../../../packages/lang-id/src/index.js';
+// import { NormalizerId } from '@nlpjs-neo/lang-id';
 
 const normalizer = new NormalizerId();
 const input = 'apa yang dikembangkan perúsahaan Anda';

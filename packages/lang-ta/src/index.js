@@ -21,14 +21,14 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const LangTa = require('./lang-ta');
-const TokenizerTa = require('./tokenizer-ta');
-const StemmerTa = require('./stemmer-ta');
-const StopwordsTa = require('./stopwords-ta');
-const NormalizerTa = require('./normalizer-ta');
-const SentimentTa = require('./sentiment/sentiment_ta');
+import LangTa from './lang-ta.js';
+import TokenizerTa from './tokenizer-ta.js';
+import StemmerTa from './stemmer-ta.js';
+import StopwordsTa from './stopwords-ta.js';
+import NormalizerTa from './normalizer-ta.js';
+import SentimentTa from './sentiment/sentiment_ta.js';
 
-module.exports = {
+export {
   LangTa,
   StemmerTa,
   StopwordsTa,

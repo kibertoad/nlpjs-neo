@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Tokenizer } = require('@nlpjs-neo/core');
-const dictionary = require('./dictionary');
+import { Tokenizer } from '@nlpjs-neo/core';
+import dictionary from './dictionary.js';
 
 class TokenizerZh extends Tokenizer {
   constructor(container, shouldTokenize) {
@@ -35,4 +35,4 @@ class TokenizerZh extends Tokenizer {
   }
 }
 
-module.exports = TokenizerZh;
+export default TokenizerZh;

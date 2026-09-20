@@ -51,4 +51,4 @@ class RouterMock {
   }
 }
 
-module.exports = RouterMock;
+export default RouterMock;

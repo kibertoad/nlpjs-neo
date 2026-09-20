@@ -21,14 +21,14 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const LangAr = require('./lang-ar');
-const StemmerAr = require('./stemmer-ar');
-const TokenizerAr = require('./tokenizer-ar');
-const StopwordsAr = require('./stopwords-ar');
-const NormalizerAr = require('./normalizer-ar');
-const SentimentAr = require('./sentiment/sentiment_ar');
+import LangAr from './lang-ar.js';
+import StemmerAr from './stemmer-ar.js';
+import TokenizerAr from './tokenizer-ar.js';
+import StopwordsAr from './stopwords-ar.js';
+import NormalizerAr from './normalizer-ar.js';
+import SentimentAr from './sentiment/sentiment_ar.js';
 
-module.exports = {
+export {
   LangAr,
   StemmerAr,
   TokenizerAr,

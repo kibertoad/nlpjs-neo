@@ -21,10 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const BertWordPieceTokenizer = require('./bert-word-piece-tokenizer');
-const MultiBertWordPieceTokenizer = require('./multi-bert-word-piece-tokenizer');
+import BertWordPieceTokenizer from './bert-word-piece-tokenizer.js';
+import MultiBertWordPieceTokenizer from './multi-bert-word-piece-tokenizer.js';
 
-module.exports = {
-  BertWordPieceTokenizer,
-  MultiBertWordPieceTokenizer,
-};
+export { BertWordPieceTokenizer, MultiBertWordPieceTokenizer };

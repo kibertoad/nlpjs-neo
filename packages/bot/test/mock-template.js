@@ -36,4 +36,4 @@ class MockTemplate {
   }
 }
 
-module.exports = MockTemplate;
+export default MockTemplate;

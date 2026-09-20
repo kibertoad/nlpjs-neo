@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const passport = require('passport');
+import passport from 'passport';
 
 function ensureAuthenticated(req, res, next) {
   passport.authenticate('jwt', { session: false }, (err, user, info) => {
@@ -41,4 +41,4 @@ function ensureAuthenticated(req, res, next) {
   })(req, res, next);
 }
 
-module.exports = ensureAuthenticated;
+export default ensureAuthenticated;

@@ -21,8 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Lexer = require('./lexer');
+import Lexer from './lexer.js';
 
-module.exports = {
-  Lexer,
-};
+export { Lexer };

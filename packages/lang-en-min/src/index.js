@@ -21,15 +21,15 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const LangEn = require('./lang-en');
-const TokenizerEn = require('./tokenizer-en');
-const StemmerEn = require('./stemmer-en');
-const StopwordsEn = require('./stopwords-en');
-const NormalizerEn = require('./normalizer-en');
-const SentimentEn = require('./sentiment/sentiment_en');
-const registerTrigrams = require('./trigrams');
+import LangEn from './lang-en.js';
+import TokenizerEn from './tokenizer-en.js';
+import StemmerEn from './stemmer-en.js';
+import StopwordsEn from './stopwords-en.js';
+import NormalizerEn from './normalizer-en.js';
+import SentimentEn from './sentiment/sentiment_en.js';
+import registerTrigrams from './trigrams.js';
 
-module.exports = {
+export {
   LangEn,
   StemmerEn,
   StopwordsEn,

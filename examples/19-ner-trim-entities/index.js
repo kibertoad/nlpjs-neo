@@ -1,5 +1,5 @@
-// const { Ner } = require('@nlpjs-neo/ner');
-const { Ner } = require('../../packages/ner');
+// import { Ner } from '@nlpjs-neo/ner';
+import { Ner } from '../../packages/ner/src/index.js';
 
 (async () => {
   const ner = new Ner();

@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Expression = require('./expression');
+import Expression from './expression.js';
 
 class CompositeCommand extends Expression {
   collectNames(names) {
@@ -50,4 +50,4 @@ class CompositeCommand extends Expression {
   }
 }
 
-module.exports = CompositeCommand;
+export default CompositeCommand;

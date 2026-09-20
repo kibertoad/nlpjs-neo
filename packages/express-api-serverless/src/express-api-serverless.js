@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { defaultContainer, Clonable } = require('@nlpjs-neo/core');
-const express = require('serverless-express/express');
+import { defaultContainer, Clonable } from '@nlpjs-neo/core';
+import express from 'serverless-express/express.js';
 
 class ExpressApiServerless extends Clonable {
   constructor(settings = {}, container = undefined) {
@@ -61,4 +61,4 @@ class ExpressApiServerless extends Clonable {
   }
 }
 
-module.exports = ExpressApiServerless;
+export default ExpressApiServerless;

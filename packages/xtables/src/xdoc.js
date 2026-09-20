@@ -21,9 +21,16 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const XLSX = require('xlsx');
-const XTable = require('./xtable');
-const XTableUtils = require('./xtable-utils');
+/*
+ * The linter's resolver picks up the `module` entry of xlsx, an ESM shim that
+ * re-exports a subset of the API and no default. Node resolves the CommonJS
+ * `main` instead, whose default export carries the full API, `readFile`
+ * included, which is what this module uses.
+ */
+/* oxlint-disable import/default, import/no-named-as-default-member */
+import XLSX from 'xlsx';
+import XTable from './xtable.js';
+import XTableUtils from './xtable-utils.js';
 
 class XDoc {
   constructor() {
@@ -236,4 +243,4 @@ class XDoc {
   }
 }
 
-module.exports = XDoc;
+export default XDoc;

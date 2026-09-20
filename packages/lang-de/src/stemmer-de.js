@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Among, BaseStemmer } = require('@nlpjs-neo/core');
+import { Among, BaseStemmer } from '@nlpjs-neo/core';
 
 /* oxlint-disable */
 class StemmerDe extends BaseStemmer {
@@ -776,4 +776,4 @@ StemmerDe.g_v = [
 StemmerDe.g_s_ending = [117, 30, 5];
 StemmerDe.g_st_ending = [117, 30, 4];
 
-module.exports = StemmerDe;
+export default StemmerDe;

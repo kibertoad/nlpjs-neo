@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const fs = require('fs');
+import fs from 'fs';
 
 function readFile(fileName) {
   return new Promise((resolve) => {
@@ -62,7 +62,7 @@ function unlinkSync(fileName) {
   return fs.unlinkSync(fileName);
 }
 
-module.exports = {
+export default {
   readFile,
   writeFile,
   existsSync,

@@ -21,13 +21,15 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {
+import {
   BaseStemmer,
   Tokenizer,
   defaultContainer,
   containerBootstrap,
-} = require('@nlpjs-neo/core-loader');
-const LangAll = require('@nlpjs-neo/lang-all');
+} from '@nlpjs-neo/core-loader';
+import * as langAll from '@nlpjs-neo/lang-all';
+
+const LangAll = { ...langAll };
 
 const cultures = {
   ar: 'ar-ae', // Arabic
@@ -146,4 +148,4 @@ NlpUtil.tokenizers = {};
 containerBootstrap({}, true, defaultContainer);
 defaultContainer.use(LangAll.LangAll);
 
-module.exports = NlpUtil;
+export default NlpUtil;

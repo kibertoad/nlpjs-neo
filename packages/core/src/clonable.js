@@ -20,7 +20,7 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const { defaultContainer } = require('./container');
+import { defaultContainer } from './container.js';
 
 class Clonable {
   /**
@@ -135,4 +135,4 @@ class Clonable {
   }
 }
 
-module.exports = Clonable;
+export default Clonable;

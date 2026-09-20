@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { defaultContainer } = require('@nlpjs-neo/core');
-const reduceEdges = require('./reduce-edges');
+import { defaultContainer } from '@nlpjs-neo/core';
+import reduceEdges from './reduce-edges.js';
 
 class ExtractorRegex {
   constructor(container = defaultContainer) {
@@ -110,4 +110,4 @@ class ExtractorRegex {
   }
 }
 
-module.exports = ExtractorRegex;
+export default ExtractorRegex;

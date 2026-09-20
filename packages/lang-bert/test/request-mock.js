@@ -41,9 +41,4 @@ function getNumCalls() {
   return numCalls;
 }
 
-module.exports = {
-  setResponse,
-  request,
-  resetNumCalls,
-  getNumCalls,
-};
+export { setResponse, request, resetNumCalls, getNumCalls };

@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Clonable, containerBootstrap } = require('@nlpjs-neo/core');
-const Session = require('./session');
+import { Clonable, containerBootstrap } from '@nlpjs-neo/core';
+import Session from './session.js';
 
 class Connector extends Clonable {
   constructor(settings = {}, container = undefined) {
@@ -75,4 +75,4 @@ class Connector extends Clonable {
   }
 }
 
-module.exports = Connector;
+export default Connector;

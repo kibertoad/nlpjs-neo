@@ -37,7 +37,7 @@ const regexHashtag = /(#[a-zA-Z0-9]+,? *)*#[a-zA-Z0-9_/-]+/gi;
 const regexNumber = /[+-]?([0-9]*[.])?[0-9]+/g;
 const regexDate = /(\d{4}-\d{2}-\d{2}|\d{2}\/\d{2}\/\d{4})/gi;
 
-module.exports = {
+export {
   regexEmail,
   regexURL,
   regexIPv4,

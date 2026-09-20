@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { removeEmojis } = require('../../packages/emoji/src');
-// const { removeEmojis } = require('@nlpjs-neo/emoji');
+import { removeEmojis } from '../../packages/emoji/src/index.js';
+// import { removeEmojis } from '@nlpjs-neo/emoji';
 
 const actual = removeEmojis('I ❤️  ☕️! -  😯⭐️😍  ::: test : : 👍+');
 console.log(actual);

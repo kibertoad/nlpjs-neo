@@ -9,7 +9,7 @@ You can use it directly without a container system.
 
 Example of use:
 ```javascript
-const { ArrToObj } = require('@nlpjs-neo/core');
+import { ArrToObj } from '@nlpjs-neo/core';
 
 const arr = ['the', 'water', 'the', 'pot'];
 const obj = ArrToObj.arrToObj(arr);
@@ -22,7 +22,7 @@ Used with a container the plugin is defined as input.tokens: string[] -> input.t
 
 Example of use:
 ```javascript
-const { ArrToObj, Container } = require('@nlpjs-neo/core');
+import { ArrToObj, Container } from '@nlpjs-neo/core';
 
 const input = {
   tokens: ['the', 'water', 'the', 'pot'] 
@@ -39,7 +39,7 @@ The container bootstrap already includes this plugin, so you don't need to requi
 
 Example of use:
 ```javascript
-const { containerBootstrap } = require('@nlpjs-neo/core');
+import { containerBootstrap } from '@nlpjs-neo/core';
 
 const input = {
   tokens: ['the', 'water', 'the', 'pot'] 

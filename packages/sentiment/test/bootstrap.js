@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { containerBootstrap } = require('@nlpjs-neo/core');
+import { containerBootstrap } from '@nlpjs-neo/core';
 
 const container = containerBootstrap();
 container.registerPipeline(
@@ -41,4 +41,4 @@ container.register('sentiment-en', {
   negations: { words: ['not'] },
 });
 
-module.exports = container;
+export default container;

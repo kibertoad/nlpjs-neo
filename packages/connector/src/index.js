@@ -21,8 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Connector = require('./connector');
+import Connector from './connector.js';
 
-module.exports = {
-  Connector,
-};
+export { Connector };

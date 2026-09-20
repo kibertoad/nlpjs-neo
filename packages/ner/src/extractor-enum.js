@@ -21,10 +21,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { defaultContainer } = require('@nlpjs-neo/core');
-const { Language } = require('@nlpjs-neo/language-min');
-const { similarity } = require('@nlpjs-neo/similarity');
-const reduceEdges = require('./reduce-edges');
+import { defaultContainer } from '@nlpjs-neo/core';
+import { Language } from '@nlpjs-neo/language-min';
+import { similarity } from '@nlpjs-neo/similarity';
+import reduceEdges from './reduce-edges.js';
 
 class ExtractorEnum {
   constructor(container = defaultContainer) {
@@ -354,4 +354,4 @@ class ExtractorEnum {
   }
 }
 
-module.exports = ExtractorEnum;
+export default ExtractorEnum;

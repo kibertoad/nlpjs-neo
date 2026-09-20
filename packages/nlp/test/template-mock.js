@@ -10,4 +10,4 @@ class TemplateMock {
   }
 }
 
-module.exports = TemplateMock;
+export default TemplateMock;

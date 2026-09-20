@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { NormalizerFr } = require('../../../packages/lang-fr/src');
+import { NormalizerFr } from '../../../packages/lang-fr/src/index.js';
 
 const normalizer = new NormalizerFr();
 const input = 'Ceci devrait être normalisé, Je dis la vérité non ? ';

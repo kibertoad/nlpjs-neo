@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { SlotManager } = require('../src');
+import { SlotManager } from '../src/index.js';
 
 describe('Slot Manager', () => {
   describe('Constructor', () => {

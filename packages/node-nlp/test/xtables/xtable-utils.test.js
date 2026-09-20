@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { XTableUtils } = require('../../src/xtables');
+import { XTableUtils } from '../../src/xtables/index.js';
 
 describe('XTableUtils', () => {
   describe('Alpha Index', () => {

@@ -21,19 +21,19 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Clonable, containerBootstrap } = require('@nlpjs-neo/core');
-const { NluManager, NluNeural } = require('@nlpjs-neo/nlu');
-const {
+import { Clonable, containerBootstrap } from '@nlpjs-neo/core';
+import { NluManager, NluNeural } from '@nlpjs-neo/nlu';
+import {
   Ner,
   ExtractorEnum,
   ExtractorRegex,
   ExtractorTrim,
   ExtractorBuiltin,
-} = require('@nlpjs-neo/ner');
-const { ActionManager, NlgManager } = require('@nlpjs-neo/nlg');
-const { SentimentAnalyzer } = require('@nlpjs-neo/sentiment');
-const { SlotManager } = require('@nlpjs-neo/slot');
-const ContextManager = require('./context-manager');
+} from '@nlpjs-neo/ner';
+import { ActionManager, NlgManager } from '@nlpjs-neo/nlg';
+import { SentimentAnalyzer } from '@nlpjs-neo/sentiment';
+import { SlotManager } from '@nlpjs-neo/slot';
+import ContextManager from './context-manager.js';
 
 class Nlp extends Clonable {
   constructor(settings = {}, container) {
@@ -927,4 +927,4 @@ class Nlp extends Clonable {
   }
 }
 
-module.exports = Nlp;
+export default Nlp;

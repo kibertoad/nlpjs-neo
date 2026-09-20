@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { containerBootstrap } = require('@nlpjs-neo/core');
+import { containerBootstrap } from '@nlpjs-neo/core';
 
 const container = containerBootstrap();
 
-module.exports = container;
+export default container;

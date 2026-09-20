@@ -96,7 +96,7 @@ The PipeLine is always executed as last step before returning the respone. This 
 instead of the Pipeline you can also create a method onIntent on the Nlp instance which is executed. If this method is set t pipeline is not executed anymore!
 
 ```javascript
-const { dockStart } = require('@nlpjs-neo/basic');
+import { dockStart } from '@nlpjs-neo/basic';
 
 function onIntent(nlp, input) {
   if (input.intent === 'joke.chucknorris') {

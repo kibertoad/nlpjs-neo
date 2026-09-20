@@ -21,14 +21,14 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { chunk } = require('./korean-chunker');
-const { initDicts, dictionary } = require('./korean-dictionary');
+import { chunk } from './korean-chunker.js';
+import { initDicts, dictionary } from './korean-dictionary.js';
 
-const {
+import {
   isName,
   isKoreanNumber,
   isKoreanNameVariation,
-} = require('./korean-substantive');
+} from './korean-substantive.js';
 
 function getTopSlice(word) {
   initDicts();
@@ -92,7 +92,4 @@ function stemWord(token) {
   return token;
 }
 
-module.exports = {
-  tokenize,
-  stemWord,
-};
+export { tokenize, stemWord };

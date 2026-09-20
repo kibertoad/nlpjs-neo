@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { normalize, tokenize } = require('./base-fn');
+import { normalize, tokenize } from './base-fn.js';
 
 class TfIdf {
   constructor(settings = {}) {
@@ -124,4 +124,4 @@ class TfIdf {
   }
 }
 
-module.exports = TfIdf;
+export default TfIdf;

@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { ProgressBar } = require('../src');
+import { ProgressBar } from '../src/index.js';
 
 class StreamMock {
   constructor() {

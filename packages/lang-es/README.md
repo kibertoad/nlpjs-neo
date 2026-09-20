@@ -43,7 +43,7 @@ You can install @nlpjs-neo/lang-es:
 Normalization of a text converts it to lowercase and remove decorations of characters.
 
 ```javascript
-const { NormalizerEs } = require('@nlpjs-neo/lang-es');
+import { NormalizerEs } from '@nlpjs-neo/lang-es';
 
 const normalizer = new NormalizerEs();
 const input = 'Esto debería ser normalizado';
@@ -57,7 +57,7 @@ console.log(result);
 Tokenization splits a sentence into words.
 
 ```javascript
-const { TokenizerEs } = require('@nlpjs-neo/lang-es');
+import { TokenizerEs } from '@nlpjs-neo/lang-es';
 
 const tokenizer = new TokenizerEs();
 const input = "Esto debería ser tokenizado";
@@ -69,7 +69,7 @@ console.log(result);
 Tokenizer can also normalize the sentence before tokenizing, to do that provide a _true_ as second argument to the method _tokenize_
 
 ```javascript
-const { TokenizerEs } = require('@nlpjs-neo/lang-es');
+import { TokenizerEs } from '@nlpjs-neo/lang-es';
 
 const tokenizer = new TokenizerEs();
 const input = "Esto debería ser tokenizado";
@@ -83,7 +83,7 @@ console.log(result);
 Using the class _StopwordsEs_ you can identify if a word is an stopword:
 
 ```javascript
-const { StopwordsEs } = require('@nlpjs-neo/lang-es');
+import { StopwordsEs } from '@nlpjs-neo/lang-es';
 
 const stopwords = new StopwordsEs();
 console.log(stopwords.isStopword('un'));
@@ -97,7 +97,7 @@ console.log(stopwords.isStopword('desarrollador'));
 Using the class _StopwordsEs_ you can remove stopwords form an array of words:
 
 ```javascript
-const { StopwordsEs } = require('@nlpjs-neo/lang-es');
+import { StopwordsEs } from '@nlpjs-neo/lang-es';
 
 const stopwords = new StopwordsEs();
 console.log(stopwords.removeStopwords(['he', 'visto', 'a', 'un', 'programador']));
@@ -108,7 +108,7 @@ console.log(stopwords.removeStopwords(['he', 'visto', 'a', 'un', 'programador'])
 Using the class _StopwordsEs_ you can restart it dictionary and build it from another set of words:
 
 ```javascript
-const { StopwordsEs } = require('@nlpjs-neo/lang-es');
+import { StopwordsEs } from '@nlpjs-neo/lang-es';
 
 const stopwords = new StopwordsEs();
 stopwords.dictionary = {};
@@ -124,7 +124,7 @@ An stemmer is an algorithm to calculate the _stem_ (root) of a word, removing af
 You can stem one word using method _stemWord_:
 
 ```javascript
-const { StemmerEs } = require('@nlpjs-neo/lang-es');
+import { StemmerEs } from '@nlpjs-neo/lang-es';
 
 const stemmer = new StemmerEs();
 const input = 'programador';
@@ -137,7 +137,7 @@ console.log(stemmer.stemWord(input));
 You can stem an array of words using method _stem_:
 
 ```javascript
-const { StemmerEs } = require('@nlpjs-neo/lang-es');
+import { StemmerEs } from '@nlpjs-neo/lang-es';
 
 const stemmer = new StemmerEs();
 const input = ['he', 'visto', 'a', 'un', 'programador'];
@@ -153,7 +153,7 @@ Also, stemmer works with lowercased affixes, so _programador_ will be stemmed as
 You can tokenize and stem a sentence, including normalization, with the method _tokenizeAndStem_:
 
 ```javascript
-const { StemmerEs } = require('@nlpjs-neo/lang-es');
+import { StemmerEs } from '@nlpjs-neo/lang-es';
 
 const stemmer = new StemmerEs();
 const input = 'He visto a un PROGRAMADOR';
@@ -166,7 +166,7 @@ console.log(stemmer.tokenizeAndStem(input));
 When calling _tokenizeAndStem_ method from the class _StemmerES_, the second parameter is a boolean to set if the stemmer must keep the stopwords (true) or remove them (false). Before using it, the stopwords instance must be set into the stemmer:
 
 ```javascript
-const { StemmerEs, StopwordsEs } = require('@nlpjs-neo/lang-es');
+import { StemmerEs, StopwordsEs } from '@nlpjs-neo/lang-es';
 
 const stemmer = new StemmerEs();
 stemmer.stopwords = new StopwordsEs();
@@ -180,9 +180,9 @@ console.log(stemmer.tokenizeAndStem(input, false));
 To use sentiment analysis you'll need to create a new _Container_ and use the plugin _LangES_, because internally the _SentimentAnalyzer_ class try to retrieve the normalizer, tokenizer, stemmmer and sentiment dictionaries from the container.
 
 ```javascript
-const { Container } = require('@nlpjs-neo/core');
-const { SentimentAnalyzer } = require('@nlpjs-neo/sentiment');
-const { LangEs } = require('@nlpjs-neo/lang-es');
+import { Container } from '@nlpjs-neo/core';
+import { SentimentAnalyzer } from '@nlpjs-neo/sentiment';
+import { LangEs } from '@nlpjs-neo/lang-es';
 
 (async () => {
   const container = new Container();
@@ -215,9 +215,9 @@ The output of the sentiment analysis includes:
 ## Example of usage on a classifier
 
 ```javascript
-const { containerBootstrap } = require('@nlpjs-neo/core');
-const { Nlp } = require('@nlpjs-neo/nlp');
-const { LangEs } = require('@nlpjs-neo/lang-es');
+import { containerBootstrap } from '@nlpjs-neo/core';
+import { Nlp } from '@nlpjs-neo/nlp';
+import { LangEs } from '@nlpjs-neo/lang-es';
 
 (async () => {
   const container = await containerBootstrap();

@@ -1,6 +1,7 @@
 {
   "name": "nlpjs_lambda_function",
   "version": "1.0.0",
+  "type": "commonjs",
   "main": "app.js",
   "dependencies": {
     "node-nlp": "^4.3.0"

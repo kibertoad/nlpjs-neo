@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { NlpManager, NlpExcelReader } = require('../../src');
+import { NlpManager, NlpExcelReader } from '../../src/index.js';
 
 describe('NLP Excel Reader', () => {
   describe('Constructor', () => {

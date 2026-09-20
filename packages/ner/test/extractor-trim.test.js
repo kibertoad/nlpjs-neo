@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Ner, ExtractorTrim } = require('../src');
+import { Ner, ExtractorTrim } from '../src/index.js';
 
 describe('Extractor Trim', () => {
   describe('Constructor', () => {

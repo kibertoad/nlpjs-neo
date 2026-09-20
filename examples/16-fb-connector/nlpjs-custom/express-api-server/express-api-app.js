@@ -21,11 +21,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const path = require('path');
-const express = require('express');
+import path from 'path';
+import express from 'express';
 
-// const nlpjs = require('@nlpjs-neo/express-api-server')
-const nlpjs = require('../../../../packages/express-api-server');
+// import * as nlpjs from '@nlpjs-neo/express-api-server';
+import * as nlpjs from '../../../../packages/express-api-server/src/index.js';
 
 class ExpressApiApp extends nlpjs.ExpressApiApp {
 
@@ -65,4 +65,4 @@ class ExpressApiApp extends nlpjs.ExpressApiApp {
   }
 }
 
-module.exports = ExpressApiApp;
+export default ExpressApiApp;

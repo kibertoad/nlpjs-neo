@@ -21,10 +21,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { containerBootstrap } = require('@nlpjs-neo/core');
-const { Connector } = require('@nlpjs-neo/connector');
-const { BotFrameworkAdapter, ActivityTypes } = require('botbuilder');
-const generateMsbfToken = require('./get-msbf-token');
+import { containerBootstrap } from '@nlpjs-neo/core';
+import { Connector } from '@nlpjs-neo/connector';
+import { BotFrameworkAdapter, ActivityTypes } from 'botbuilder';
+import generateMsbfToken from './get-msbf-token.js';
 
 class MsbfConnector extends Connector {
   constructor(settings = {}, container = undefined) {
@@ -135,4 +135,4 @@ class MsbfConnector extends Connector {
   }
 }
 
-module.exports = MsbfConnector;
+export default MsbfConnector;

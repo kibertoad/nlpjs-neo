@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Clonable } = require('../../src');
+import { Clonable } from '../../src/index.js';
 
 class Cloned extends Clonable {
   constructor(settings) {
@@ -60,4 +60,4 @@ class Cloned extends Clonable {
   }
 }
 
-module.exports = Cloned;
+export default Cloned;

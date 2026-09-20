@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { containerBootstrap } = require('@nlpjs-neo/core');
-const { LangJa } = require('../../lang-ja');
-const { Ner, ExtractorEnum } = require('../src');
+import { containerBootstrap } from '@nlpjs-neo/core';
+import { LangJa } from '../../lang-ja/src/index.js';
+import { Ner, ExtractorEnum } from '../src/index.js';
 
 describe('Extractor Enum', () => {
   describe('Constructor', () => {

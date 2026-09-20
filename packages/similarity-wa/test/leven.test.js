@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { leven } = require('../src');
+import { leven } from '../src/index.js';
 
 describe('levenshtein', () => {
   test('Should return correct levenshtein distance', () => {

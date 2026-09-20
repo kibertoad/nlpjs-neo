@@ -50,4 +50,4 @@ function getSettings(container) {
   return settings;
 }
 
-module.exports = getSettings;
+export default getSettings;

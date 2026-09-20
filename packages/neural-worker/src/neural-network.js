@@ -20,27 +20,17 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const { Clonable } = require('@nlpjs-neo/core');
-const path = require('path');
-const {
+import { Clonable } from '@nlpjs-neo/core';
+import path from 'path';
+import { Worker, isMainThread } from 'worker_threads';
+import {
   LookupTable,
   lookupToArray,
   lookupToObject,
   toHash,
   getTypedArrayFn,
-} = require('./helper');
-const defaultSettings = require('./default-settings.json');
-
-let Worker;
-let isMainThread;
-try {
-  // oxlint-disable-next-line global-require
-  const workerThreads = require('worker_threads');
-  Worker = workerThreads.Worker;
-  isMainThread = workerThreads.isMainThread;
-} catch {
-  console.log('No worker threads');
-}
+} from './helper.js';
+import defaultSettings from './default-settings.json' with { type: 'json' };
 
 /**
  * Class for a dense neural network, with an input and output layers fully connected,
@@ -154,9 +144,12 @@ class NeuralNetwork extends Clonable {
     }
     if (isMainThread) {
       return new Promise((resolve, reject) => {
-        const worker = new Worker(path.join(__dirname, './worker.js'), {
-          workerData: { settings: this.perceptronSettings, data: srcData },
-        });
+        const worker = new Worker(
+          path.join(import.meta.dirname, './worker.js'),
+          {
+            workerData: { settings: this.perceptronSettings, data: srcData },
+          }
+        );
         worker.on('message', (data) => {
           this.fromJSON(data.json);
           return resolve(data.status);
@@ -360,4 +353,4 @@ class NeuralNetwork extends Clonable {
   }
 }
 
-module.exports = NeuralNetwork;
+export default NeuralNetwork;

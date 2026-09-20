@@ -143,4 +143,4 @@ class XTableUtils {
 
 XTableUtils.alphachars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-module.exports = XTableUtils;
+export default XTableUtils;

@@ -21,16 +21,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const BertTokenizer = require('./bert-tokenizer');
-const ModelDownloader = require('./model-downloader');
-const Model = require('./model');
-const Runtime = require('./runtime');
-const QAClient = require('./qa-client');
+import BertTokenizer from './bert-tokenizer.js';
+import ModelDownloader from './model-downloader.js';
+import Model from './model.js';
+import Runtime from './runtime.js';
+import QAClient from './qa-client.js';
 
-module.exports = {
-  BertTokenizer,
-  ModelDownloader,
-  Model,
-  Runtime,
-  QAClient,
-};
+export { BertTokenizer, ModelDownloader, Model, Runtime, QAClient };

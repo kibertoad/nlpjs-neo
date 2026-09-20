@@ -112,7 +112,7 @@ Create the file _heros.json_ with this content:
 Create the file _index.js_ with this content:
 
 ```javascript
-const { dockStart } = require('@nlpjs-neo/basic');
+import { dockStart } from '@nlpjs-neo/basic';
 
 (async () => {
   const dock = await dockStart();

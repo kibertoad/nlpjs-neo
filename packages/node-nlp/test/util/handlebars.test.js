@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Handlebars } = require('../../src');
+import { Handlebars } from '../../src/index.js';
 
 describe('Handlebars', () => {
   describe('compile', () => {

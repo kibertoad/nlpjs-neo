@@ -54,6 +54,4 @@ class KoreanToken {
   }
 }
 
-module.exports = {
-  KoreanToken,
-};
+export { KoreanToken };

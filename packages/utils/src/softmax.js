@@ -34,4 +34,4 @@ function softMax(values) {
   return exps.map((e) => e / expsSum);
 }
 
-module.exports = softMax;
+export default softMax;

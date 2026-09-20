@@ -21,11 +21,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const fs = require('fs');
-const { containerBootstrap } = require('@nlpjs-neo/core');
-const { Nlp } = require('@nlpjs-neo/nlp');
-const { Bot, TestConnector } = require('../src');
-const MockTemplate = require('./mock-template');
+import fs from 'fs';
+import { containerBootstrap } from '@nlpjs-neo/core';
+import { Nlp } from '@nlpjs-neo/nlp';
+import { Bot, TestConnector } from '../src/index.js';
+import MockTemplate from './mock-template.js';
 
 const container = containerBootstrap();
 container.use(Nlp);

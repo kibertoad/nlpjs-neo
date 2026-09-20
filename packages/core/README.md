@@ -89,7 +89,7 @@ output.text
 This is the way of creating a bootstrapped container:
 
 ```javascript
-const { containerBootstrap } = require('@nlpjs-neo/core');
+import { containerBootstrap } from '@nlpjs-neo/core';
 const container = containerBootstrap()
 ```
 
@@ -107,7 +107,7 @@ Important: this input usually travel through each step of the pipeline, so can b
 This is an example of code calling the pipeline *reverse-and-capitalize*, that shows how to do inheritance of pipelines, call other pipelines, and have commands that are only executed if the depth of the call is 0 (belongs to the called pipeline).
 
 ```javascript
-const { containerBootstrap } = require('@nlpjs-neo/core');
+import { containerBootstrap } from '@nlpjs-neo/core';
 
 async function main() {
   const container = containerBootstrap();

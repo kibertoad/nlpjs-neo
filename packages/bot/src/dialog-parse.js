@@ -133,10 +133,4 @@ async function loadScript(fileName, fs, alreadyLoaded = [], script = []) {
   return script;
 }
 
-module.exports = {
-  dialogParse,
-  loadScript,
-  getDialogName,
-  getName,
-  trimBetween,
-};
+export { dialogParse, loadScript, getDialogName, getName, trimBetween };

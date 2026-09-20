@@ -21,9 +21,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const fs = require('fs');
-const path = require('path');
-const {
+import fs from 'fs';
+import path from 'path';
+import { pathToFileURL } from 'url';
+import {
   dock,
   dockStart,
   logger,
@@ -33,15 +34,15 @@ const {
   Template,
   LangEn,
   listFilesAbsolute,
-} = require('@nlpjs-neo/basic');
-const { ExpressApiServer } = require('@nlpjs-neo/express-api-server');
-const { DirectlineConnector } = require('@nlpjs-neo/directline-connector');
-const { Bot } = require('@nlpjs-neo/bot');
-const { BuiltinMicrosoft } = require('@nlpjs-neo/builtin-microsoft');
-const { BuiltinDuckling } = require('@nlpjs-neo/builtin-duckling');
-const { Database } = require('@nlpjs-neo/database');
-const { MongodbAdapter } = require('@nlpjs-neo/mongodb-adapter');
-const { mount, getUrlFileName, ensureDir } = require('./utils');
+} from '@nlpjs-neo/basic';
+import { ExpressApiServer } from '@nlpjs-neo/express-api-server';
+import { DirectlineConnector } from '@nlpjs-neo/directline-connector';
+import { Bot } from '@nlpjs-neo/bot';
+import { BuiltinMicrosoft } from '@nlpjs-neo/builtin-microsoft';
+import { BuiltinDuckling } from '@nlpjs-neo/builtin-duckling';
+import { Database } from '@nlpjs-neo/database';
+import { MongodbAdapter } from '@nlpjs-neo/mongodb-adapter';
+import { mount, getUrlFileName, ensureDir } from './utils.js';
 
 const defaultConfiguration = {
   settings: {
@@ -55,6 +56,17 @@ const defaultConfiguration = {
     },
   },
 };
+
+/**
+ * Imports a bot resource file at runtime. A module that only has a default
+ * export is unwrapped, so a file exporting a single action, validator or card
+ * behaves the same as one exporting a bag of them.
+ */
+async function importResource(fileName) {
+  const lib = await import(pathToFileURL(fileName).href);
+  const keys = Object.keys(lib);
+  return keys.length === 1 && keys[0] === 'default' ? lib.default : lib;
+}
 
 class FullBot {
   constructor(settings) {
@@ -115,8 +127,7 @@ class FullBot {
   async loadItems(name, fn) {
     const files = await this.getFiles(name);
     for (let i = 0; i < files.length; i += 1) {
-      // oxlint-disable-next-line
-      const lib = require(files[i]);
+      const lib = await importResource(files[i]);
       const keys = Object.keys(lib);
       for (let j = 0; j < keys.length; j += 1) {
         fn(this.bot, keys[j], lib[keys[j]]);
@@ -143,8 +154,7 @@ class FullBot {
   async loadCards() {
     const files = await this.getFiles('cards');
     for (let i = 0; i < files.length; i += 1) {
-      // oxlint-disable-next-line
-      const lib = require(files[i]);
+      const lib = await importResource(files[i]);
       if (Array.isArray(lib)) {
         for (let j = 0; j < lib.length; j += 1) {
           this.bot.registerCard(lib[j]);
@@ -229,4 +239,4 @@ class FullBot {
   }
 }
 
-module.exports = FullBot;
+export default FullBot;

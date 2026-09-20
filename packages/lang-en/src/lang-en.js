@@ -21,14 +21,14 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {
+import {
   TokenizerEn,
   StemmerEn,
   StopwordsEn,
   NormalizerEn,
   registerTrigrams,
-} = require('@nlpjs-neo/lang-en-min');
-const SentimentEn = require('./sentiment/sentiment_en');
+} from '@nlpjs-neo/lang-en-min';
+import SentimentEn from './sentiment/sentiment_en.js';
 
 class LangEn {
   register(container) {
@@ -41,4 +41,4 @@ class LangEn {
   }
 }
 
-module.exports = LangEn;
+export default LangEn;

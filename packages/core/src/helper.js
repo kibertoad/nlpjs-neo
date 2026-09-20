@@ -88,7 +88,7 @@ function loadEnvFromJson(preffix, json = {}) {
   }
 }
 
-module.exports = {
+export {
   hasUnicode,
   unicodeToArray,
   asciiToArray,

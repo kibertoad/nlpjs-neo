@@ -21,10 +21,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const afinn = require('./afinn_ar.json');
-const negations = require('./negations_ar.json');
+import afinn from './afinn_ar.json' with { type: 'json' };
+import negations from './negations_ar.json' with { type: 'json' };
 
-module.exports = {
+export default {
   afinn,
   pattern: undefined,
   senticon: undefined,

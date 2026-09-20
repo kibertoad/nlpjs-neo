@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { defaultContainer } = require('../../packages/core/src');
-const { logger } = require('../../packages/logger/src');
+import { defaultContainer } from '../../packages/core/src/index.js';
+import { logger } from '../../packages/logger/src/index.js';
 
 defaultContainer.use(logger);
 const mylogger = defaultContainer.get('logger');

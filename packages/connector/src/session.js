@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { uuid } = require('@nlpjs-neo/core');
+import { uuid } from '@nlpjs-neo/core';
 
 const localeDangle = '_localization';
 
@@ -142,4 +142,4 @@ class Session {
   }
 }
 
-module.exports = Session;
+export default Session;

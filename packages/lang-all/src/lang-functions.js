@@ -1,44 +1,44 @@
-const { Language } = require('@nlpjs-neo/language');
-const langAr = require('@nlpjs-neo/lang-ar');
-const langBr = require('@nlpjs-neo/lang-bn');
-const langCa = require('@nlpjs-neo/lang-ca');
-const langCs = require('@nlpjs-neo/lang-cs');
-const langDa = require('@nlpjs-neo/lang-da');
-const langDe = require('@nlpjs-neo/lang-de');
-const langEl = require('@nlpjs-neo/lang-el');
-const langEn = require('@nlpjs-neo/lang-en');
-const langEs = require('@nlpjs-neo/lang-es');
-const langEu = require('@nlpjs-neo/lang-eu');
-const langFa = require('@nlpjs-neo/lang-fa');
-const langFi = require('@nlpjs-neo/lang-fi');
-const langFr = require('@nlpjs-neo/lang-fr');
-const langGa = require('@nlpjs-neo/lang-ga');
-const langGl = require('@nlpjs-neo/lang-gl');
-const langHi = require('@nlpjs-neo/lang-hi');
-const langHu = require('@nlpjs-neo/lang-hu');
-const langHy = require('@nlpjs-neo/lang-hy');
-const langId = require('@nlpjs-neo/lang-id');
-const langIt = require('@nlpjs-neo/lang-it');
-const langJa = require('@nlpjs-neo/lang-ja');
-const langKo = require('@nlpjs-neo/lang-ko');
-const langLt = require('@nlpjs-neo/lang-lt');
-const langMs = require('@nlpjs-neo/lang-ms');
-const langNe = require('@nlpjs-neo/lang-ne');
-const langNl = require('@nlpjs-neo/lang-nl');
-const langNo = require('@nlpjs-neo/lang-no');
-const langPl = require('@nlpjs-neo/lang-pl');
-const langPt = require('@nlpjs-neo/lang-pt');
-const langRo = require('@nlpjs-neo/lang-ro');
-const langRu = require('@nlpjs-neo/lang-ru');
-const langSl = require('@nlpjs-neo/lang-sl');
-const langSr = require('@nlpjs-neo/lang-sr');
-const langSv = require('@nlpjs-neo/lang-sv');
-const langTa = require('@nlpjs-neo/lang-ta');
-const langTh = require('@nlpjs-neo/lang-th');
-const langTl = require('@nlpjs-neo/lang-tl');
-const langTr = require('@nlpjs-neo/lang-tr');
-const langUk = require('@nlpjs-neo/lang-uk');
-const langZh = require('@nlpjs-neo/lang-zh');
+import { Language } from '@nlpjs-neo/language';
+import * as langAr from '@nlpjs-neo/lang-ar';
+import * as langBr from '@nlpjs-neo/lang-bn';
+import * as langCa from '@nlpjs-neo/lang-ca';
+import * as langCs from '@nlpjs-neo/lang-cs';
+import * as langDa from '@nlpjs-neo/lang-da';
+import * as langDe from '@nlpjs-neo/lang-de';
+import * as langEl from '@nlpjs-neo/lang-el';
+import * as langEn from '@nlpjs-neo/lang-en';
+import * as langEs from '@nlpjs-neo/lang-es';
+import * as langEu from '@nlpjs-neo/lang-eu';
+import * as langFa from '@nlpjs-neo/lang-fa';
+import * as langFi from '@nlpjs-neo/lang-fi';
+import * as langFr from '@nlpjs-neo/lang-fr';
+import * as langGa from '@nlpjs-neo/lang-ga';
+import * as langGl from '@nlpjs-neo/lang-gl';
+import * as langHi from '@nlpjs-neo/lang-hi';
+import * as langHu from '@nlpjs-neo/lang-hu';
+import * as langHy from '@nlpjs-neo/lang-hy';
+import * as langId from '@nlpjs-neo/lang-id';
+import * as langIt from '@nlpjs-neo/lang-it';
+import * as langJa from '@nlpjs-neo/lang-ja';
+import * as langKo from '@nlpjs-neo/lang-ko';
+import * as langLt from '@nlpjs-neo/lang-lt';
+import * as langMs from '@nlpjs-neo/lang-ms';
+import * as langNe from '@nlpjs-neo/lang-ne';
+import * as langNl from '@nlpjs-neo/lang-nl';
+import * as langNo from '@nlpjs-neo/lang-no';
+import * as langPl from '@nlpjs-neo/lang-pl';
+import * as langPt from '@nlpjs-neo/lang-pt';
+import * as langRo from '@nlpjs-neo/lang-ro';
+import * as langRu from '@nlpjs-neo/lang-ru';
+import * as langSl from '@nlpjs-neo/lang-sl';
+import * as langSr from '@nlpjs-neo/lang-sr';
+import * as langSv from '@nlpjs-neo/lang-sv';
+import * as langTa from '@nlpjs-neo/lang-ta';
+import * as langTh from '@nlpjs-neo/lang-th';
+import * as langTl from '@nlpjs-neo/lang-tl';
+import * as langTr from '@nlpjs-neo/lang-tr';
+import * as langUk from '@nlpjs-neo/lang-uk';
+import * as langZh from '@nlpjs-neo/lang-zh';
 
 const langs = {
   ar: langAr,
@@ -216,7 +216,7 @@ function bow(sentence, voc) {
   return result;
 }
 
-module.exports = {
+export {
   langs,
   language,
   langDict,

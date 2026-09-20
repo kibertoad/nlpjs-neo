@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Container } = require('@nlpjs-neo/core');
-const { LangTl } = require('../src');
+import { Container } from '@nlpjs-neo/core';
+import { LangTl } from '../src/index.js';
 
 describe('Language Tagalog', () => {
   describe('Use plugin', () => {

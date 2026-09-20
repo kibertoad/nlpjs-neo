@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { NeuralNetwork } = require('@nlpjs-neo/neural');
-const Nlu = require('./nlu');
+import { NeuralNetwork } from '@nlpjs-neo/neural';
+import Nlu from './nlu.js';
 
 class NeuralNlu extends Nlu {
   async innerTrain(srcInput) {
@@ -73,4 +73,4 @@ class NeuralNlu extends Nlu {
   }
 }
 
-module.exports = NeuralNlu;
+export default NeuralNlu;

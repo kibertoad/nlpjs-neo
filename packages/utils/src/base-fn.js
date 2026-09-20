@@ -54,9 +54,4 @@ function lowerNormalize(text) {
   return text.toLowerCase();
 }
 
-module.exports = {
-  tokenize,
-  normalize,
-  wordPunctTokenize,
-  lowerNormalize,
-};
+export { tokenize, normalize, wordPunctTokenize, lowerNormalize };

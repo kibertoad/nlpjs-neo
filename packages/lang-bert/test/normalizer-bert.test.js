@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { NormalizerBert } = require('../src');
+import { NormalizerBert } from '../src/index.js';
 
 describe('Normalizer Bert', () => {
   describe('Constructor', () => {

@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Expression = require('./expression');
+import Expression from './expression.js';
 
 class ReturnCommand extends Expression {
   transpile() {
@@ -29,4 +29,4 @@ class ReturnCommand extends Expression {
   }
 }
 
-module.exports = ReturnCommand;
+export default ReturnCommand;

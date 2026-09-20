@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const mongodb = require('mongodb');
-const { Clonable } = require('@nlpjs-neo/core');
+import mongodb from 'mongodb';
+import { Clonable } from '@nlpjs-neo/core';
 
 const { MongoClient, ObjectId } = mongodb;
 const idField = '_id';
@@ -267,4 +267,4 @@ class MongodbAdapter extends Clonable {
   }
 }
 
-module.exports = MongodbAdapter;
+export default MongodbAdapter;

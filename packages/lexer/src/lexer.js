@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Token = require('./token');
+import Token from './token.js';
 
 class Lexer {
   constructor(settings = {}) {
@@ -343,4 +343,4 @@ Lexer.TokenType = {
   EndOfFile: 8,
 };
 
-module.exports = Lexer;
+export default Lexer;

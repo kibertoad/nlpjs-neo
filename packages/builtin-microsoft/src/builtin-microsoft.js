@@ -21,10 +21,12 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Clonable, defaultContainer } = require('@nlpjs-neo/core');
-const Recognizers = require('@microsoft/recognizers-text-suite');
-const BuiltinDictionary = require('./builtin-dictionary.json');
-const BuiltinInverse = require('./builtin-inverse.json');
+import { Clonable, defaultContainer } from '@nlpjs-neo/core';
+import Recognizers, {
+  recognizeNumber,
+} from '@microsoft/recognizers-text-suite';
+import BuiltinDictionary from './builtin-dictionary.json' with { type: 'json' };
+import BuiltinInverse from './builtin-inverse.json' with { type: 'json' };
 
 const cultures = {
   bn: 'bn-bd',
@@ -313,9 +315,7 @@ class BuiltinMicrosoft extends Clonable {
             ? Recognizers[`recognize${name}`](utterance, getCulture('en'))
             : Recognizers[`recognize${name}`](utterance, culture);
         if (name === 'Number' && locale !== 'en') {
-          entities.push(
-            ...Recognizers.recognizeNumber(utterance, getCulture('en'))
-          );
+          entities.push(...recognizeNumber(utterance, getCulture('en')));
         }
         for (let i = 0; i < entities.length; i += 1) {
           const entity = entities[i];
@@ -387,4 +387,4 @@ class BuiltinMicrosoft extends Clonable {
   }
 }
 
-module.exports = BuiltinMicrosoft;
+export default BuiltinMicrosoft;

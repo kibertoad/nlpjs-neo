@@ -21,26 +21,26 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const NGrams = require('./ngrams');
-const TfIdf = require('./tfidf');
-const MarkovChain = require('./markov');
-const NlpAnalyzer = require('./nlp-analyzer');
-const {
+import NGrams from './ngrams.js';
+import TfIdf from './tfidf.js';
+import MarkovChain from './markov.js';
+import NlpAnalyzer from './nlp-analyzer.js';
+import {
   cartesian,
   splitPattern,
   composeFromPattern,
   composeCorpus,
-} = require('./pattern');
-const ProgressBar = require('./progress-bar');
-const softMax = require('./softmax');
-const Downloader = require('./downloader');
-const { getAbsolutePath } = require('./fs-extra');
-const Lookup = require('./lookup');
-const CorpusLookup = require('./corpus-lookup');
-const Bench = require('./bench');
-const { gibberishScore, isGibberish } = require('./is-gibberish');
+} from './pattern.js';
+import ProgressBar from './progress-bar.js';
+import softMax from './softmax.js';
+import Downloader from './downloader.js';
+import { getAbsolutePath } from './fs-extra.js';
+import Lookup from './lookup.js';
+import CorpusLookup from './corpus-lookup.js';
+import Bench from './bench.js';
+import { gibberishScore, isGibberish } from './is-gibberish.js';
 
-module.exports = {
+export {
   NGrams,
   TfIdf,
   MarkovChain,

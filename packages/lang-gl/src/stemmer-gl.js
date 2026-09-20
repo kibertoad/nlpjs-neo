@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { BaseStemmer } = require('@nlpjs-neo/core');
+import { BaseStemmer } from '@nlpjs-neo/core';
 
 class StemmerGl extends BaseStemmer {
   constructor(container) {
@@ -354,4 +354,4 @@ StemmerGl.verbSuffixes = [
   ['issede', 3, ''],
 ];
 
-module.exports = StemmerGl;
+export default StemmerGl;

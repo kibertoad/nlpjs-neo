@@ -1,4 +1,4 @@
-const TokenizerFr = require('../src/tokenizer-fr');
+import TokenizerFr from '../src/tokenizer-fr.js';
 
 describe('Tokenizer French', () => {
   describe('Tokenize', () => {

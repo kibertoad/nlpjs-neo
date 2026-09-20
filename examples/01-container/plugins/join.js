@@ -36,4 +36,4 @@ class Join {
   }
 }
 
-module.exports = Join;
+export default Join;

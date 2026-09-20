@@ -21,10 +21,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { containerBootstrap } = require('../../packages/core/src');
-const { Nlp } = require('../../packages/nlp/src');
-// const { containerBootstrap } = require('@nlpjs-neo/core');
-// const { Nlp } = require('@nlpjs-neo/nlp');
+import { containerBootstrap } from '../../packages/core/src/index.js';
+import { Nlp } from '../../packages/nlp/src/index.js';
+// import { containerBootstrap } from '@nlpjs-neo/core';
+// import { Nlp } from '@nlpjs-neo/nlp';
 
 async function measureCorpus(corpus, plugins) {
   const container = await containerBootstrap();
@@ -72,4 +72,4 @@ async function measureCorpus(corpus, plugins) {
   console.log(`Precision with threshold: ${(goodThreshold * 100) / total}%`);
 }
 
-module.exports = measureCorpus;
+export default measureCorpus;

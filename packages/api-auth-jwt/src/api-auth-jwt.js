@@ -21,11 +21,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const passport = require('passport');
-const configurePassport = require('./configure-passport');
-const ensureAuthenticated = require('./ensure-authenticated');
-const mountUser = require('./user.router');
-const getSettings = require('./default-settings');
+import passport from 'passport';
+import configurePassport from './configure-passport.js';
+import ensureAuthenticated from './ensure-authenticated.js';
+import mountUser from './user.router.js';
+import getSettings from './default-settings.js';
 
 class ApiAuthJwt {
   register(container) {
@@ -46,4 +46,4 @@ class ApiAuthJwt {
   }
 }
 
-module.exports = ApiAuthJwt;
+export default ApiAuthJwt;

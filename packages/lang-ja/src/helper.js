@@ -566,7 +566,4 @@ const converters = {
   normalize: replacer(conversionTables.normalize),
 };
 
-module.exports = {
-  fixCompositeSymbols,
-  converters,
-};
+export { fixCompositeSymbols, converters };

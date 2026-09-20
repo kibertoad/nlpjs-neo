@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { BaseStemmer } = require('@nlpjs-neo/core');
+import { BaseStemmer } from '@nlpjs-neo/core';
 
 class StemmerBn extends BaseStemmer {
   constructor(container) {
@@ -166,4 +166,4 @@ StemmerBn.dict = {
   চেয়: 'চাওয়া',
 };
 
-module.exports = StemmerBn;
+export default StemmerBn;

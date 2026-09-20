@@ -21,8 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const NeuralNetwork = require('./neural-network');
+import NeuralNetwork from './neural-network.js';
 
-module.exports = {
-  NeuralNetwork,
-};
+export { NeuralNetwork };

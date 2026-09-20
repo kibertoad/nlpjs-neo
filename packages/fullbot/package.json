@@ -29,7 +29,12 @@
     }
   ],
   "license": "MIT",
-  "main": "src/index.js",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1"
   },

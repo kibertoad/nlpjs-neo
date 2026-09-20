@@ -20,7 +20,7 @@ The source code for this example is here: https://github.com/jesus-seijas-sp/nlp
 
 Add the corpus file to your folder, and then create this index.js:
 ```javascript
-const { dockStart } = require('@nlpjs-neo/basic');
+import { dockStart } from '@nlpjs-neo/basic';
 
 (async () => {
   const dock = await dockStart({ use: ['Basic', 'Qna'] });
@@ -58,7 +58,7 @@ Now we can remove code that is configuration related into a separate file. Add a
 And the new code will be:
 
 ```javascript
-const { dockStart } = require('@nlpjs-neo/basic');
+import { dockStart } from '@nlpjs-neo/basic';
 
 (async () => {
   const dock = await dockStart();
@@ -109,7 +109,7 @@ nlp.train
 Finally the index.js code should be:
 
 ```javascript
-const { dockStart } = require('@nlpjs-neo/basic');
+import { dockStart } from '@nlpjs-neo/basic';
 
 (async () => {
   await dockStart();

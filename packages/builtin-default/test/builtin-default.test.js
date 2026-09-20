@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { containerBootstrap } = require('@nlpjs-neo/core');
-const { BuiltinDefault } = require('../src');
+import { containerBootstrap } from '@nlpjs-neo/core';
+import { BuiltinDefault } from '../src/index.js';
 
 const container = containerBootstrap();
 const builtin = new BuiltinDefault({ container });

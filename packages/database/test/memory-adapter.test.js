@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Container } = require('@nlpjs-neo/core');
-const fs = require('./fs');
-const { MemorydbAdapter } = require('../src');
+import { Container } from '@nlpjs-neo/core';
+import fs from './fs.js';
+import { MemorydbAdapter } from '../src/index.js';
 
 describe('MemoryDB Adapter', () => {
   describe('Constructor', () => {

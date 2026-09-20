@@ -21,15 +21,15 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const fs = require('fs');
-const http = require('http');
-const https = require('https');
-const HttpsProxyAgent = require('https-proxy-agent');
-const path = require('path');
-const tar = require('tar');
-const url = require('url');
-const ProgressBar = require('./progress-bar');
-const { getAbsolutePath } = require('./fs-extra');
+import fs from 'fs';
+import http from 'http';
+import https from 'https';
+import HttpsProxyAgent from 'https-proxy-agent';
+import path from 'path';
+import tar from 'tar';
+import url from 'url';
+import ProgressBar from './progress-bar.js';
+import { getAbsolutePath } from './fs-extra.js';
 
 class Downloader {
   constructor(settings = {}) {
@@ -135,4 +135,4 @@ class Downloader {
   }
 }
 
-module.exports = Downloader;
+export default Downloader;

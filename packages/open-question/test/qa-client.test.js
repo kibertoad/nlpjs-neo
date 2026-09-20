@@ -21,11 +21,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const path = require('path');
-const { QAClient, BertTokenizer } = require('../src');
+import path from 'path';
+import { QAClient, BertTokenizer } from '../src/index.js';
 
 const modelsDir = path.join(
-  __filename,
+  import.meta.filename,
   '../.models/henryk/bert-base-multilingual-cased-finetuned-dutch-squad2'
 );
 

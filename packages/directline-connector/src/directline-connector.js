@@ -21,10 +21,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const fs = require('fs');
-const formidable = require('formidable');
-const { Connector } = require('@nlpjs-neo/connector');
-const DirectlineController = require('./directline-controller');
+import fs from 'fs';
+import formidable from 'formidable';
+import { Connector } from '@nlpjs-neo/connector';
+import DirectlineController from './directline-controller.js';
 
 class DirectlineConnector extends Connector {
   constructor(settings, container) {
@@ -289,4 +289,4 @@ class DirectlineConnector extends Connector {
   }
 }
 
-module.exports = DirectlineConnector;
+export default DirectlineConnector;

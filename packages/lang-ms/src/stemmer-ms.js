@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { StemmerId } = require('@nlpjs-neo/lang-id');
+import { StemmerId } from '@nlpjs-neo/lang-id';
 
 class StemmerMs extends StemmerId {
   constructor(container) {
@@ -30,4 +30,4 @@ class StemmerMs extends StemmerId {
   }
 }
 
-module.exports = StemmerMs;
+export default StemmerMs;

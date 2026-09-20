@@ -21,10 +21,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const senticon = require('./senticon_en.json');
-const negations = require('./negations_en.json');
+import senticon from './senticon_en.json' with { type: 'json' };
+import negations from './negations_en.json' with { type: 'json' };
 
-module.exports = {
+export default {
   senticon,
   negations,
   stemmed: true,

@@ -21,14 +21,14 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const LangTr = require('./lang-tr');
-const TokenizerTr = require('./tokenizer-tr');
-const StemmerTr = require('./stemmer-tr');
-const StopwordsTr = require('./stopwords-tr');
-const NormalizerTr = require('./normalizer-tr');
-const SentimentTr = require('./sentiment/sentiment_tr');
+import LangTr from './lang-tr.js';
+import TokenizerTr from './tokenizer-tr.js';
+import StemmerTr from './stemmer-tr.js';
+import StopwordsTr from './stopwords-tr.js';
+import NormalizerTr from './normalizer-tr.js';
+import SentimentTr from './sentiment/sentiment_tr.js';
 
-module.exports = {
+export {
   LangTr,
   StemmerTr,
   StopwordsTr,

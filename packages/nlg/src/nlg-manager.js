@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Clonable } = require('@nlpjs-neo/core');
+import { Clonable } from '@nlpjs-neo/core';
 
 class NlgManager extends Clonable {
   constructor(settings = {}, container) {
@@ -233,4 +233,4 @@ class NlgManager extends Clonable {
   }
 }
 
-module.exports = NlgManager;
+export default NlgManager;

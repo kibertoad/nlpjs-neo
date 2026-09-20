@@ -17,7 +17,7 @@ You can install via NPM:
 ## Example of use
 
 ```javascript
-const { removeEmojis } = require('@nlpjs-neo/emoji');
+import { removeEmojis } from '@nlpjs-neo/emoji';
 
 const actual = removeEmojis('I ❤️  ☕️! -  😯⭐️😍  ::: test : : 👍+');
 console.log(actual);

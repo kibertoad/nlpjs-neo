@@ -21,14 +21,14 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const LangFa = require('./lang-fa');
-const TokenizerFa = require('./tokenizer-fa');
-const StemmerFa = require('./stemmer-fa');
-const StopwordsFa = require('./stopwords-fa');
-const NormalizerFa = require('./normalizer-fa');
-const SentimentFa = require('./sentiment/sentiment_fa');
+import LangFa from './lang-fa.js';
+import TokenizerFa from './tokenizer-fa.js';
+import StemmerFa from './stemmer-fa.js';
+import StopwordsFa from './stopwords-fa.js';
+import NormalizerFa from './normalizer-fa.js';
+import SentimentFa from './sentiment/sentiment_fa.js';
 
-module.exports = {
+export {
   LangFa,
   StemmerFa,
   StopwordsFa,

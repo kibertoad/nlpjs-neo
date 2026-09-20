@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Language } = require('../../src/language');
+import { Language } from '../../src/language/index.js';
 
 describe('Language', () => {
   describe('constructor', () => {

@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { containerBootstrap } = require('../../packages/core-loader/src');
+import { containerBootstrap } from '../../packages/core-loader/src/index.js';
 
 async function main() {
   // We create a new container. This will load plugins from ./plugins and

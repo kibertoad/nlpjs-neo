@@ -318,4 +318,4 @@ class DefaultCompiler {
   }
 }
 
-module.exports = DefaultCompiler;
+export default DefaultCompiler;

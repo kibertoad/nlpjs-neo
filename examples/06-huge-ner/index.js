@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { dock } = require('../../packages/core-loader/src');
-const airports = require('./airports.json');
+import { dock } from '../../packages/core-loader/src/index.js';
+import airports from './airports.json' with { type: 'json' };
 
 (async () => {
   await dock.start();

@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const request = require('supertest');
-const { ExpressApiApp } = require('../src');
+import request from 'supertest';
+import { ExpressApiApp } from '../src/index.js';
 
 describe('ExpressApiApp', () => {
   describe('Constructor', () => {

@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { isJsonObject, getValidationMessage } = require('../src/helper');
+import { isJsonObject, getValidationMessage } from '../src/helper.js';
 
 describe('isJsonObject', () => {
   test('It should be able to detect objects', async () => {

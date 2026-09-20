@@ -21,11 +21,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Container } = require('@nlpjs-neo/core');
-const { Database } = require('@nlpjs-neo/database');
-const { ApiAuthJwt } = require('../src');
-const ApiServerMock = require('./api-server-mock');
-const ResMock = require('./res-mock');
+import { Container } from '@nlpjs-neo/core';
+import { Database } from '@nlpjs-neo/database';
+import { ApiAuthJwt } from '../src/index.js';
+import ApiServerMock from './api-server-mock.js';
+import ResMock from './res-mock.js';
 
 const unicorn = 'unicorn123';
 

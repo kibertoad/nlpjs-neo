@@ -15,7 +15,7 @@ _removeEmojis_ is a function in the package _@nlpjs-neo/emoji_, which you can in
 ## Example of use
 
 ```javascript
-const { removeEmojis } = require('@nlpjs-neo/emoji');
+import { removeEmojis } from '@nlpjs-neo/emoji';
 
 const actual = removeEmojis('I ❤️  ☕️! -  😯⭐️😍  ::: test : : 👍+');
 console.log(actual);

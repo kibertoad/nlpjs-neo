@@ -16,7 +16,7 @@ It allows you to manage scenarios where the main interface is the console. You c
 ## Example of use of the package
 
 ```javascript
-const { ConsoleConnector } = require('@nlpjs-neo/console-connector');
+import { ConsoleConnector } from '@nlpjs-neo/console-connector';
 
 const connector = new ConsoleConnector();
 connector.onHear = (self, text) => {
@@ -30,7 +30,7 @@ connector.say('Say something!');
 You must have a file _corpus.json_ in the source code folder:
 
 ```javascript
-const { dockStart } = require('@nlpjs-neo/basic');
+import { dockStart } from '@nlpjs-neo/basic';
 
 (async () => {
   const dockConfiguration = {

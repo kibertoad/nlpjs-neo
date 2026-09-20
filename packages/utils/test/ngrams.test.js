@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { NGrams } = require('../src');
+import { NGrams } from '../src/index.js';
 
 describe('NGrams', () => {
   describe('get ngrams', () => {

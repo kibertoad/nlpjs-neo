@@ -21,12 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const XTableUtils = require('./xtable-utils');
-const XTable = require('./xtable');
-const XDoc = require('./xdoc');
+import XTableUtils from './xtable-utils.js';
+import XTable from './xtable.js';
+import XDoc from './xdoc.js';
 
-module.exports = {
-  XTableUtils,
-  XTable,
-  XDoc,
-};
+export { XTableUtils, XTable, XDoc };

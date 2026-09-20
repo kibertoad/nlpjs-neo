@@ -1,5 +1,3 @@
-const BrainNLU = require('./brain-nlu');
+import BrainNLU from './brain-nlu.js';
 
-module.exports = {
-  BrainNLU,
-};
+export { BrainNLU };

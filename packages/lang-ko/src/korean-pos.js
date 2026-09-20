@@ -34,6 +34,4 @@ const KoreanPos = {
   Space: 25,
 };
 
-module.exports = {
-  KoreanPos,
-};
+export { KoreanPos };

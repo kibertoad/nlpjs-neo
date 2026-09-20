@@ -21,10 +21,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// const nlpjs = require('@nlpjs-neo/express-api-server');
-const nlpjs = require('../../../../packages/express-api-server');
+// import * as nlpjs from '@nlpjs-neo/express-api-server';
+import * as nlpjs from '../../../../packages/express-api-server/src/index.js';
 
-const ExpressApiApp = require('./express-api-app');
+import ExpressApiApp from './express-api-app.js';
 
 class ExpressApiServer extends nlpjs.ExpressApiServer {
   async start(input = {}) {
@@ -43,4 +43,4 @@ class ExpressApiServer extends nlpjs.ExpressApiServer {
   }
 }
 
-module.exports = ExpressApiServer;
+export default ExpressApiServer;

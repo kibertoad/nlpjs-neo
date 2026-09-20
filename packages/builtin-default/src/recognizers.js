@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {
+import {
   regexEmail,
   regexURL,
   regexIPv4,
@@ -32,7 +32,7 @@ const {
   regexHashtag,
   regexNumber,
   regexDate,
-} = require('./common-regex');
+} from './common-regex.js';
 
 function recognize(text, regex, entityName, typeName) {
   let match = regex.exec(text);
@@ -131,7 +131,23 @@ const recognizeDate = (text) => {
   return result;
 };
 
-module.exports = {
+const recognizers = {
+  recognize,
+  recognizeEmail,
+  recognizeURL,
+  recognizeIPv4,
+  recognizeIPv6,
+  recognizeHexColor,
+  recognizeTime,
+  recognizePhoneNumber,
+  recognizeIpAddress,
+  recognizeHashtag,
+  recognizeNumber,
+  recognizeDate,
+};
+
+export default recognizers;
+export {
   recognize,
   recognizeEmail,
   recognizeURL,

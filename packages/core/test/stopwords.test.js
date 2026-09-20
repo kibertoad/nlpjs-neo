@@ -21,10 +21,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Stopwords = require('../src/stopwords');
-const { containerBootstrap } = require('../src');
-const { defaultContainer } = require('../src/container');
-const { Container } = require('../src/container');
+import Stopwords from '../src/stopwords.js';
+import { containerBootstrap } from '../src/index.js';
+import { defaultContainer } from '../src/container.js';
+import { Container } from '../src/container.js';
 
 class MockedStopwords extends Stopwords {
   constructor(container, locale, words) {

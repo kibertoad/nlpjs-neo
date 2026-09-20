@@ -1,6 +1,6 @@
-const { NlpManager } = require('../../packages/node-nlp');
-const corpusEn = require('./corpus-en.json');
-const corpusEs = require('./corpus-es.json');
+import { NlpManager } from '../../packages/node-nlp/src/index.js';
+import corpusEn from './corpus-en.json' with { type: 'json' };
+import corpusEs from './corpus-es.json' with { type: 'json' };
 
 async function doTests(manager, corpus) {
   const { data } = corpus;

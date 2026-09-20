@@ -21,11 +21,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const path = require('path');
-const fsp = require('fs').promises;
-const { Connector } = require('@nlpjs-neo/connector');
+import path from 'path';
+import fsp from 'fs/promises';
+import { Connector } from '@nlpjs-neo/connector';
 
-const { isJsonObject, trimInput } = require('./helper');
+import { isJsonObject, trimInput } from './helper.js';
 
 class TestConnector extends Connector {
   initialize() {
@@ -163,4 +163,4 @@ class TestConnector extends Connector {
   }
 }
 
-module.exports = TestConnector;
+export default TestConnector;

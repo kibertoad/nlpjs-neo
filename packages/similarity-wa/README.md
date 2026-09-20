@@ -23,7 +23,7 @@
 ## How to use
 
 ```
-const { leven } = require('../src');
+import { leven } from '../src';
 leven('levenshtein', 'frankenstein')
 ```
 

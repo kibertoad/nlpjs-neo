@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { NlpUtil } = require('../../src/nlp');
+import { NlpUtil } from '../../src/nlp/index.js';
 
 describe('NLP Util', () => {
   describe('Get truncated locale', () => {

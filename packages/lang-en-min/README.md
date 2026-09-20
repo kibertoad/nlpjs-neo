@@ -31,9 +31,9 @@ You can install @nlpjs-neo/lang-en-min:
 ## Example of Usage
 
 ```javascript
-const { containerBootstrap } = require('@nlpjs-neo/core');
-const { Nlp } = require('@nlpjs-neo/nlp');
-const { LangEn } = require('@nlpjs-neo/lang-en-min');
+import { containerBootstrap } from '@nlpjs-neo/core';
+import { Nlp } from '@nlpjs-neo/nlp';
+import { LangEn } from '@nlpjs-neo/lang-en-min';
 
 (async () => {
   const container = await containerBootstrap();

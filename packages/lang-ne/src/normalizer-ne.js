@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Normalizer } = require('@nlpjs-neo/core');
+import { Normalizer } from '@nlpjs-neo/core';
 
 class NormalizerNe extends Normalizer {
   constructor(container) {
@@ -43,4 +43,4 @@ class NormalizerNe extends Normalizer {
   }
 }
 
-module.exports = NormalizerNe;
+export default NormalizerNe;

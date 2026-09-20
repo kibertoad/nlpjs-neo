@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const fs = require('fs');
-const path = require('path');
-const CosineSimilarity = require('../../similarity/src/cosine-similarity');
+import fs from 'fs';
+import path from 'path';
+import CosineSimilarity from '../../similarity/src/cosine-similarity.js';
 
 class CosineSimilarityWA {
   constructor(container) {
@@ -43,7 +43,7 @@ class CosineSimilarityWA {
 
     /* oxlint-disable */
     const source = fs.readFileSync(
-      path.resolve(__dirname, '../wa/cosine-similarity.wasm')
+      path.resolve(import.meta.dirname, '../wa/cosine-similarity.wasm')
     );
     const mod = new WebAssembly.Module(new Uint8Array(source));
     this.wa_object = new WebAssembly.Instance(mod, this.wa_importObject);
@@ -130,4 +130,4 @@ class CosineSimilarityWA {
   }
 }
 
-module.exports = CosineSimilarityWA;
+export default CosineSimilarityWA;

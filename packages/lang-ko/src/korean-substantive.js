@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { decomposeHangul, codaMap, composeHangul } = require('./hangul');
-const { initDicts, names } = require('./korean-dictionary');
+import { decomposeHangul, codaMap, composeHangul } from './hangul.js';
+import { initDicts, names } from './korean-dictionary.js';
 
 function isName(word) {
   initDicts();
@@ -88,8 +88,4 @@ function isKoreanNameVariation(word) {
   return isName(recovered) || isName(recovered.slice(0, -1));
 }
 
-module.exports = {
-  isName,
-  isKoreanNumber,
-  isKoreanNameVariation,
-};
+export { isName, isKoreanNumber, isKoreanNameVariation };

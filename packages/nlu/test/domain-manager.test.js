@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { DomainManager } = require('../src');
-const container = require('./bootstrap');
-const { addFoodDomain, addPersonalityDomain } = require('./domains');
+import { DomainManager } from '../src/index.js';
+import container from './bootstrap.js';
+import { addFoodDomain, addPersonalityDomain } from './domains.js';
 
 describe('Domain Manager', () => {
   describe('Constructor', () => {

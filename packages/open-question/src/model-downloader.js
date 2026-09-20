@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const path = require('path');
-const { Downloader, getAbsolutePath } = require('@nlpjs-neo/utils');
-const { DEFAULT_ASSETS_DIR } = require('./constants');
+import path from 'path';
+import { Downloader, getAbsolutePath } from '@nlpjs-neo/utils';
+import { DEFAULT_ASSETS_DIR } from './constants.js';
 
 class ModelDownloader {
   constructor(settings = {}) {
@@ -48,4 +48,4 @@ class ModelDownloader {
   }
 }
 
-module.exports = ModelDownloader;
+export default ModelDownloader;

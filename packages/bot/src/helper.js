@@ -61,9 +61,4 @@ const getValidationMessage = (validation) => {
   return message;
 };
 
-module.exports = {
-  isJsonObject,
-  tryParseJson,
-  trimInput,
-  getValidationMessage,
-};
+export { isJsonObject, tryParseJson, trimInput, getValidationMessage };

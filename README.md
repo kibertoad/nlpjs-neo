@@ -194,6 +194,21 @@ If you're looking to use NLP.js in your Node application, you can install via NP
     pnpm add node-nlp-neo
 ```
 
+### ESM only
+
+All packages are published as ES modules and require **Node.js 22.12 or later**. They have
+no CommonJS build, so `require('node-nlp-neo')` does not work; use `import` instead:
+
+```javascript
+import { NlpManager } from 'node-nlp-neo';
+```
+
+From a CommonJS file, load them with a dynamic import:
+
+```javascript
+const { NlpManager } = await import('node-nlp-neo');
+```
+
 ## React Native
 
 There is a version of NLP.js that works in React Native, so you can build chatbots that can be trained and executed on the mobile even without the internet. You can install it via NPM:
@@ -216,7 +231,7 @@ You can see a great example of use in the folder [`/examples/02-qna-classic`](ht
 You can start to build your NLP from scratch with a few lines:
 
 ```javascript
-const { NlpManager } = require('node-nlp-neo');
+import { NlpManager } from 'node-nlp-neo';
 
 const manager = new NlpManager({ languages: ['en'], forceNER: true });
 // Adds the utterances and intents for the NLP

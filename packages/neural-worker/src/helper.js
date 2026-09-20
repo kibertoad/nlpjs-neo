@@ -91,7 +91,7 @@ function getTypedArrayFn(table) {
   };
 }
 
-module.exports = {
+export {
   LookupTable,
   toArray,
   toHash,

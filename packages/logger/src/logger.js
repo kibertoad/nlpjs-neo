@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const pino = require('pino');
+import pino from 'pino';
 
 class Logger {
   constructor() {
@@ -63,4 +63,4 @@ class Logger {
 
 const logger = new Logger();
 
-module.exports = logger;
+export default logger;

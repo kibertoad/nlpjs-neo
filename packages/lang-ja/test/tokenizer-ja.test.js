@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { NormalizerJa, TokenizerJa } = require('../src');
+import { NormalizerJa, TokenizerJa } from '../src/index.js';
 
 describe('Tokenizer Japanse', () => {
   describe('Tokenize', () => {

@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const CorpusLookup = require('./corpus-lookup');
+import CorpusLookup from './corpus-lookup.js';
 
 const defaultSettings = {
   iterations: 20000,
@@ -263,4 +263,4 @@ class NeuralNetwork {
   }
 }
 
-module.exports = NeuralNetwork;
+export default NeuralNetwork;

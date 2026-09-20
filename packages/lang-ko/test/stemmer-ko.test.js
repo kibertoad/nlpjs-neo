@@ -1,4 +1,4 @@
-const { StemmerKo } = require('../src');
+import { StemmerKo } from '../src/index.js';
 
 const tests = [
   '귀하의 회사는 무엇을 개발합니까?',

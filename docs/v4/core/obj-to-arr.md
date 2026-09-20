@@ -7,7 +7,7 @@ This is a plugin to transform an hashmap object to an array of strings where eac
 You can use it directly without container system:
 
 ```javascript
-const { ObjToArr } = require('@nlpjs-neo/core');
+import { ObjToArr } from '@nlpjs-neo/core';
 
 const obj = { the: 1, water: 1, pot: 1 }
 const arr = ObjToArr.objToArr(obj);
@@ -20,7 +20,7 @@ Used with a container, the plugin is defined as input.tokens: string[] -> input.
 
 Example of use:
 ```javascript
-const { ObjToArr, Container } = require('@nlpjs-neo/core');
+import { ObjToArr, Container } from '@nlpjs-neo/core';
 
 const input = {
   tokens: { the: 1, water: 1, pot: 1 } 
@@ -36,7 +36,7 @@ console.log(obj); // { tokens: ['the', 'water', 'pot'] }
 The container bootstrap already includes this plugin, so you don't need to require the plugin nor register it into the container:
 
 ```javascript
-const { containerBootstrap } = require('@nlpjs-neo/core');
+import { containerBootstrap } from '@nlpjs-neo/core';
 
 const input = {
   tokens: { the: 1, water: 1, pot: 1 } 

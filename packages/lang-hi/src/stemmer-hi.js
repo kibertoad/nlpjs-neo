@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { BaseStemmer } = require('@nlpjs-neo/core');
+import { BaseStemmer } from '@nlpjs-neo/core';
 
 class StemmerHi extends BaseStemmer {
   constructor(container) {
@@ -113,4 +113,4 @@ StemmerHi.suffixes = [
   ['ाएंगी', 'ाएंगे', 'ाऊंगी', 'ाऊंगा', 'ाइयाँ', 'ाइयों', 'ाइयां'],
 ];
 
-module.exports = StemmerHi;
+export default StemmerHi;

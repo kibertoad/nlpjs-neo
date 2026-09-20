@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { JavascriptCompiler } = require('../src');
+import { JavascriptCompiler } from '../src/index.js';
 
 const container = {
   get() {

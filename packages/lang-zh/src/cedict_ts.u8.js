@@ -1,6 +1,6 @@
 /* oxlint-disable no-irregular-whitespace */
 
-module.exports = `# CC-CEDICT
+export default `# CC-CEDICT
 # Community maintained free Chinese-English dictionary.
 # 
 # Published by MDBG

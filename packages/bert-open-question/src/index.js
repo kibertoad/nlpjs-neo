@@ -21,8 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const BertOpenQuestion = require('./bert-open-question');
+import BertOpenQuestion from './bert-open-question.js';
 
-module.exports = {
-  BertOpenQuestion,
-};
+export { BertOpenQuestion };

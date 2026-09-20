@@ -1,4 +1,4 @@
-const {
+import {
   ConsoleConnector,
   Among,
   ArrToObj,
@@ -39,7 +39,7 @@ const {
   SentimentEn,
   logger,
   Nlp,
-} = require('../src');
+} from '../src/index.js';
 
 describe('Basic', () => {
   describe('Expose', () => {

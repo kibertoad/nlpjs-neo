@@ -21,11 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {
-  SentimentAnalyzer: SentimentAnalyzerBase,
-} = require('@nlpjs-neo/sentiment');
-const { LangAll } = require('@nlpjs-neo/lang-all');
-const { Nlu } = require('@nlpjs-neo/nlu');
+import { SentimentAnalyzer as SentimentAnalyzerBase } from '@nlpjs-neo/sentiment';
+import { LangAll } from '@nlpjs-neo/lang-all';
+import { Nlu } from '@nlpjs-neo/nlu';
 
 class SentimentAnalyzer extends SentimentAnalyzerBase {
   constructor(settings = {}, container) {
@@ -45,4 +43,4 @@ class SentimentAnalyzer extends SentimentAnalyzerBase {
   }
 }
 
-module.exports = SentimentAnalyzer;
+export default SentimentAnalyzer;

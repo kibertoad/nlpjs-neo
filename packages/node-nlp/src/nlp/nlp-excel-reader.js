@@ -1,4 +1,4 @@
-const { XDoc } = require('@nlpjs-neo/xtables');
+import { XDoc } from '@nlpjs-neo/xtables';
 
 class NlpExcelReader {
   constructor(manager) {
@@ -65,4 +65,4 @@ class NlpExcelReader {
   }
 }
 
-module.exports = NlpExcelReader;
+export default NlpExcelReader;

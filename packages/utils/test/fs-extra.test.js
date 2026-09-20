@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { getAbsolutePath } = require('../src/fs-extra');
+import { getAbsolutePath } from '../src/fs-extra.js';
 
 describe('FS extra', () => {
   describe('getAbsolutePath', () => {

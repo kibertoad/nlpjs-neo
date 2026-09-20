@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { defaultContainer } = require('./container');
-const Normalizer = require('./normalizer');
+import { defaultContainer } from './container.js';
+import Normalizer from './normalizer.js';
 
 class Tokenizer {
   constructor(container = defaultContainer, shouldNormalize = false) {
@@ -109,4 +109,4 @@ class Tokenizer {
   }
 }
 
-module.exports = Tokenizer;
+export default Tokenizer;

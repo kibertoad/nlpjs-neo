@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { compile } = require('@nlpjs-neo/evaluator');
+import { compile } from '@nlpjs-neo/evaluator';
 
 class Handlebars {
   static compile(str) {
@@ -29,6 +29,4 @@ class Handlebars {
   }
 }
 
-module.exports = {
-  Handlebars,
-};
+export { Handlebars };

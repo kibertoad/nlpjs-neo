@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Expression = require('./expression');
+import Expression from './expression.js';
 
 class BinaryExpression extends Expression {
   transpile() {
@@ -31,4 +31,4 @@ class BinaryExpression extends Expression {
   }
 }
 
-module.exports = BinaryExpression;
+export default BinaryExpression;

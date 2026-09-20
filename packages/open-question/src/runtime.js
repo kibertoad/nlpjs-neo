@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const tf = require('@tensorflow/tfjs-node');
-const { MODEL_DEFAULTS, ModelInput } = require('./constants');
-const RuntimeWorker = require('./runtime-worker');
+import tf from '@tensorflow/tfjs-node';
+import { MODEL_DEFAULTS, ModelInput } from './constants.js';
+import RuntimeWorker from './runtime-worker.js';
 
 class Runtime {
   constructor(settings) {
@@ -101,4 +101,4 @@ class Runtime {
   }
 }
 
-module.exports = Runtime;
+export default Runtime;

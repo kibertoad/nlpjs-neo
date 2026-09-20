@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Clonable } = require('@nlpjs-neo/core');
+import { Clonable } from '@nlpjs-neo/core';
 
 /**
  * Action Manager.
@@ -209,4 +209,4 @@ class ActionManager extends Clonable {
   }
 }
 
-module.exports = ActionManager;
+export default ActionManager;

@@ -21,18 +21,18 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const ArrToObj = require('./arr-to-obj');
-const { Container } = require('./container');
-const Normalizer = require('./normalizer');
-const ObjToArr = require('./obj-to-arr');
-const { loadEnvFromJson } = require('./helper');
-const Stemmer = require('./stemmer');
-const Stopwords = require('./stopwords');
-const Tokenizer = require('./tokenizer');
-const Timer = require('./timer');
-const logger = require('./logger');
-const MemoryStorage = require('./memory-storage');
-const fs = require('./mock-fs');
+import ArrToObj from './arr-to-obj.js';
+import { Container } from './container.js';
+import Normalizer from './normalizer.js';
+import ObjToArr from './obj-to-arr.js';
+import { loadEnvFromJson } from './helper.js';
+import Stemmer from './stemmer.js';
+import Stopwords from './stopwords.js';
+import Tokenizer from './tokenizer.js';
+import Timer from './timer.js';
+import logger from './logger.js';
+import MemoryStorage from './memory-storage.js';
+import fs from './mock-fs.js';
 
 function loadPipelinesStr(instance, pipelines) {
   instance.loadPipelinesFromString(pipelines);
@@ -137,4 +137,4 @@ function containerBootstrap(
   return instance;
 }
 
-module.exports = containerBootstrap;
+export default containerBootstrap;

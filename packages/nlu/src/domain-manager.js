@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Clonable, compareWildcars } = require('@nlpjs-neo/core');
+import { Clonable, compareWildcars } from '@nlpjs-neo/core';
 
 const defaultDomainName = 'master_domain';
 
@@ -434,4 +434,4 @@ class DomainManager extends Clonable {
   }
 }
 
-module.exports = DomainManager;
+export default DomainManager;

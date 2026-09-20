@@ -21,11 +21,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Clonable, defaultContainer } = require('@nlpjs-neo/core');
-const http = require('http');
-const https = require('https');
-const querystring = require('querystring');
-const url = require('url');
+import { Clonable, defaultContainer } from '@nlpjs-neo/core';
+import http from 'http';
+import https from 'https';
+import querystring from 'querystring';
+import url from 'url';
 
 const cultures = {
   bn: 'bn_BD',
@@ -270,4 +270,4 @@ class BuiltinDuckling extends Clonable {
   }
 }
 
-module.exports = BuiltinDuckling;
+export default BuiltinDuckling;

@@ -304,4 +304,4 @@ class SlotManager {
   }
 }
 
-module.exports = SlotManager;
+export default SlotManager;

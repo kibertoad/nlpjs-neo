@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { ActionManager } = require('../src');
+import { ActionManager } from '../src/index.js';
 
 describe('Action Manager', () => {
   describe('constructor', () => {

@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const container = require('./bootstrap');
-const Nlu = require('../src/nlu');
-const srccorpus = require('./corpus50.json');
+import container from './bootstrap.js';
+import Nlu from '../src/nlu.js';
+import srccorpus from './corpus50.json' with { type: 'json' };
 
 const corpus = [];
 for (let i = 0; i < srccorpus.data.length; i += 1) {

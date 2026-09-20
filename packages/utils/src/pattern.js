@@ -94,9 +94,4 @@ function composeCorpus(corpus) {
   return result;
 }
 
-module.exports = {
-  cartesian,
-  splitPattern,
-  composeFromPattern,
-  composeCorpus,
-};
+export { cartesian, splitPattern, composeFromPattern, composeCorpus };

@@ -21,8 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const FullBot = require('./fullbot');
+import FullBot from './fullbot.js';
 
-module.exports = {
-  FullBot,
-};
+export { FullBot };

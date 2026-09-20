@@ -21,11 +21,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { ConsoleConnector } = require('../../packages/console-connector/src');
-const { Nlp } = require('../../packages/nlp/src');
-const { LangEn } = require('../../packages/lang-en/src');
-const { fs } = require('../../packages/request/src');
-const trainnlp = require('./train-nlp');
+import { ConsoleConnector } from '../../packages/console-connector/src/index.js';
+import { Nlp } from '../../packages/nlp/src/index.js';
+import { LangEn } from '../../packages/lang-en/src/index.js';
+import { fs } from '../../packages/request/src/index.js';
+import trainnlp from './train-nlp.js';
 
 const nlp = new Nlp({ languages: ['en'], threshold: 0.5 });
 nlp.container.register('fs', fs);

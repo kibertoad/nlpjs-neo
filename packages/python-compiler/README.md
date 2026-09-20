@@ -5,7 +5,7 @@
 ## Usage
 
 ```javascript
-const neural = require('neural');
+import neural from 'neural';
 
 // TODO: DEMONSTRATE API
 ```

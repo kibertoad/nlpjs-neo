@@ -21,12 +21,12 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Clonable, defaultContainer } = require('@nlpjs-neo/core');
+import { Clonable, defaultContainer } from '@nlpjs-neo/core';
 
 // allow for using compromise with react
-const compromise = require('compromise');
-const compromiseNumbers = require('compromise-numbers');
-const compromiseDates = require('compromise-dates');
+import compromise from 'compromise';
+import compromiseNumbers from 'compromise-numbers';
+import compromiseDates from 'compromise-dates';
 
 const nlp =
   compromise && typeof compromise.default === 'function'
@@ -241,4 +241,4 @@ class BuiltinCompromise extends Clonable {
   }
 }
 
-module.exports = BuiltinCompromise;
+export default BuiltinCompromise;

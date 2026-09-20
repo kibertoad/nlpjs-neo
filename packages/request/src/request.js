@@ -21,12 +21,12 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const http = require('http');
-const https = require('https');
-const HttpsProxyAgent = require('https-proxy-agent');
-const HttpProxyAgent = require('http-proxy-agent');
-const querystring = require('querystring');
-const url = require('url');
+import http from 'http';
+import https from 'https';
+import HttpsProxyAgent from 'https-proxy-agent';
+import HttpProxyAgent from 'http-proxy-agent';
+import querystring from 'querystring';
+import url from 'url';
 
 function request(options) {
   if (typeof options === 'string') {
@@ -111,4 +111,4 @@ function request(options) {
   });
 }
 
-module.exports = request;
+export default request;

@@ -21,12 +21,12 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { uuid } = require('@nlpjs-neo/core');
-const bcrypt = require('bcryptjs');
-const passport = require('passport');
-const jwt = require('jsonwebtoken');
-const getSettings = require('./default-settings');
-const ensureAuthenticated = require('./ensure-authenticated');
+import { uuid } from '@nlpjs-neo/core';
+import bcrypt from 'bcryptjs';
+import passport from 'passport';
+import jwt from 'jsonwebtoken';
+import getSettings from './default-settings.js';
+import ensureAuthenticated from './ensure-authenticated.js';
 
 const refreshTokens = {};
 
@@ -134,4 +134,4 @@ function mountUser(router, container) {
   router.get('/testunprotected', testUnprotected.bind(container));
 }
 
-module.exports = mountUser;
+export default mountUser;

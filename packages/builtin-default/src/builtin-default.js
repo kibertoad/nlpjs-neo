@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Clonable, defaultContainer } = require('@nlpjs-neo/core');
-const Recognizers = require('./recognizers');
+import { Clonable, defaultContainer } from '@nlpjs-neo/core';
+import Recognizers from './recognizers.js';
 
 class BuiltinDefault extends Clonable {
   constructor(settings = {}, container = defaultContainer) {
@@ -123,4 +123,4 @@ class BuiltinDefault extends Clonable {
   }
 }
 
-module.exports = BuiltinDefault;
+export default BuiltinDefault;

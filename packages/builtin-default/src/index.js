@@ -21,10 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const BuiltinDefault = require('./builtin-default');
-const Recognizers = require('./recognizers');
+import BuiltinDefault from './builtin-default.js';
+import Recognizers from './recognizers.js';
 
-module.exports = {
-  BuiltinDefault,
-  Recognizers,
-};
+export { BuiltinDefault, Recognizers };

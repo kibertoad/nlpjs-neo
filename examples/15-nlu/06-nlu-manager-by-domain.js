@@ -21,14 +21,14 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { containerBootstrap } = require('../../packages/core/src');
-const { NluManager, NluNeural } = require('../../packages/nlu/src');
-const { LangEn } = require('../../packages/lang-en/src');
-const { LangEs } = require('../../packages/lang-es/src');
-// const { containerBootstrap } = require('@nlpjs-neo/core');
-// const { NluManager, NluNeural } = require('@nlpjs-neo/nlu');
-// const { LangEn } = require('@nlpjs-neo/lang-en');
-// const { LangEs } = require('@nlpjs-neo/lang-es');
+import { containerBootstrap } from '../../packages/core/src/index.js';
+import { NluManager, NluNeural } from '../../packages/nlu/src/index.js';
+import { LangEn } from '../../packages/lang-en/src/index.js';
+import { LangEs } from '../../packages/lang-es/src/index.js';
+// import { containerBootstrap } from '@nlpjs-neo/core';
+// import { NluManager, NluNeural } from '@nlpjs-neo/nlu';
+// import { LangEn } from '@nlpjs-neo/lang-en';
+// import { LangEs } from '@nlpjs-neo/lang-es';
 
 function addFoodDomainEn(manager) {
   manager.assignDomain('en', 'order.check', 'food');

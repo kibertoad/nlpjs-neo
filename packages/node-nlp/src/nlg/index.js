@@ -21,10 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { ActionManager } = require('@nlpjs-neo/nlg');
-const NlgManager = require('./nlg-manager');
+import { ActionManager } from '@nlpjs-neo/nlg';
+import NlgManager from './nlg-manager.js';
 
-module.exports = {
-  NlgManager,
-  ActionManager,
-};
+export { NlgManager, ActionManager };

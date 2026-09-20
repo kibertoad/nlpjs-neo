@@ -21,16 +21,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Ner = require('./ner');
-const ExtractorEnum = require('./extractor-enum');
-const ExtractorRegex = require('./extractor-regex');
-const ExtractorTrim = require('./extractor-trim');
-const ExtractorBuiltin = require('./extractor-builtin');
+import Ner from './ner.js';
+import ExtractorEnum from './extractor-enum.js';
+import ExtractorRegex from './extractor-regex.js';
+import ExtractorTrim from './extractor-trim.js';
+import ExtractorBuiltin from './extractor-builtin.js';
 
-module.exports = {
-  Ner,
-  ExtractorEnum,
-  ExtractorRegex,
-  ExtractorTrim,
-  ExtractorBuiltin,
-};
+export { Ner, ExtractorEnum, ExtractorRegex, ExtractorTrim, ExtractorBuiltin };

@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Connector } = require('@nlpjs-neo/connector');
-const { dialogflow } = require('actions-on-google');
+import { Connector } from '@nlpjs-neo/connector';
+import { dialogflow } from 'actions-on-google';
 
 class DialogflowConnector extends Connector {
   initialize() {
@@ -84,4 +84,4 @@ class DialogflowConnector extends Connector {
   }
 }
 
-module.exports = DialogflowConnector;
+export default DialogflowConnector;

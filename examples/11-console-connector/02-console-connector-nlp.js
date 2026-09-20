@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { dockStart } = require('../../packages/basic/src');
+import { dockStart } from '../../packages/basic/src/index.js';
 
 (async () => {
   const dockConfiguration = {

@@ -21,11 +21,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { BaseStemmer } = require('@nlpjs-neo/core');
-const { tokenize, stemWord } = require('./korean-tokenizer');
-const { initDicts, dictionary } = require('./korean-dictionary');
-const TokenizerKo = require('./tokenizer-ko');
-const NormalizerKo = require('./normalizer-ko');
+import { BaseStemmer } from '@nlpjs-neo/core';
+import { tokenize, stemWord } from './korean-tokenizer.js';
+import { initDicts, dictionary } from './korean-dictionary.js';
+import TokenizerKo from './tokenizer-ko.js';
+import NormalizerKo from './normalizer-ko.js';
 
 const preendings = [
   '하고있는',
@@ -206,4 +206,4 @@ class StemmerKo extends BaseStemmer {
   }
 }
 
-module.exports = StemmerKo;
+export default StemmerKo;

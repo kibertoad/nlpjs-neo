@@ -31,9 +31,9 @@ You can install @nlpjs-neo/lang-ca:
 ## Example of Usage
 
 ```javascript
-const { containerBootstrap } = require('@nlpjs-neo/core');
-const { Nlp } = require('@nlpjs-neo/nlp');
-const { LangCa } = require('@nlpjs-neo/lang-ca');
+import { containerBootstrap } from '@nlpjs-neo/core';
+import { Nlp } from '@nlpjs-neo/nlp';
+import { LangCa } from '@nlpjs-neo/lang-ca';
 
 (async () => {
   const container = await containerBootstrap();

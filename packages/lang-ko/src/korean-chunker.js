@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { KoreanPos } = require('./korean-pos');
-const { KoreanToken } = require('./korean-token');
-const ChunkMatch = require('./chunk-match');
+import { KoreanPos } from './korean-pos.js';
+import { KoreanToken } from './korean-token.js';
+import ChunkMatch from './chunk-match.js';
 
 const POS_PATTERNS = {
   [KoreanPos.Email]: /([A-Za-z0-9.\-_]+@[A-Za-z0-9.]+)/,
@@ -140,8 +140,4 @@ function getChunksByPos(input, pos) {
   return chunk(input).filter((x) => x.pos === pos);
 }
 
-module.exports = {
-  chunk,
-  getChunks,
-  getChunksByPos,
-};
+export { chunk, getChunks, getChunksByPos };

@@ -21,12 +21,12 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {
+import {
   dialogParse,
   trimBetween,
   getName,
   getDialogName,
-} = require('../src/dialog-parse');
+} from '../src/dialog-parse.js';
 
 describe('Dialog Parse', () => {
   describe('dialogParse', () => {

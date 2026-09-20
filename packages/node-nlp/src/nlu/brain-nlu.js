@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { containerBootstrap } = require('@nlpjs-neo/core-loader');
-const { LangAll } = require('@nlpjs-neo/lang-all');
-const { NluNeural } = require('@nlpjs-neo/nlu');
+import { containerBootstrap } from '@nlpjs-neo/core-loader';
+import { LangAll } from '@nlpjs-neo/lang-all';
+import { NluNeural } from '@nlpjs-neo/nlu';
 
 class BrainNLU {
   constructor(settings = {}) {
@@ -65,4 +65,4 @@ class BrainNLU {
   }
 }
 
-module.exports = BrainNLU;
+export default BrainNLU;

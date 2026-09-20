@@ -21,17 +21,17 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const fs = require('fs');
-const { BuiltinMicrosoft } = require('@nlpjs-neo/builtin-microsoft');
-const { BuiltinDuckling } = require('@nlpjs-neo/builtin-duckling');
-const { containerBootstrap } = require('@nlpjs-neo/core-loader');
-const { Language } = require('@nlpjs-neo/language');
-const { LangAll } = require('@nlpjs-neo/lang-all');
-const { Nlp } = require('@nlpjs-neo/nlp');
-const { Evaluator, Template } = require('@nlpjs-neo/evaluator');
-const { fs: requestfs } = require('@nlpjs-neo/request');
-const { SentimentManager } = require('../sentiment');
-const NlpExcelReader = require('./nlp-excel-reader');
+import fs from 'fs';
+import { BuiltinMicrosoft } from '@nlpjs-neo/builtin-microsoft';
+import { BuiltinDuckling } from '@nlpjs-neo/builtin-duckling';
+import { containerBootstrap } from '@nlpjs-neo/core-loader';
+import { Language } from '@nlpjs-neo/language';
+import { LangAll } from '@nlpjs-neo/lang-all';
+import { Nlp } from '@nlpjs-neo/nlp';
+import { Evaluator, Template } from '@nlpjs-neo/evaluator';
+import { fs as requestfs } from '@nlpjs-neo/request';
+import { SentimentManager } from '../sentiment/index.js';
+import NlpExcelReader from './nlp-excel-reader.js';
 
 class NlpManager {
   constructor(settings = {}) {
@@ -328,4 +328,4 @@ class NlpManager {
   }
 }
 
-module.exports = NlpManager;
+export default NlpManager;

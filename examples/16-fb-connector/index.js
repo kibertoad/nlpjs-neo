@@ -1,1 +1,3 @@
-require('../../packages/basic').dockStart();
+import { dockStart } from '../../packages/basic/src/index.js';
+
+dockStart();

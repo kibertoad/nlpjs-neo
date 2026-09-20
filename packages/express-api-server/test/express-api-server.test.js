@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { ExpressApiServer } = require('../src');
+import { ExpressApiServer } from '../src/index.js';
 
 describe('ExpressApiServer', () => {
   describe('Constructor', () => {

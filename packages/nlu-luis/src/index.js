@@ -21,8 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const NluLuis = require('./nlu-luis');
+import NluLuis from './nlu-luis.js';
 
-module.exports = {
-  NluLuis,
-};
+export { NluLuis };

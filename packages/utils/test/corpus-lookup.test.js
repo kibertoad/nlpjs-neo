@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { CorpusLookup } = require('../src');
+import { CorpusLookup } from '../src/index.js';
 
 const corpus = {
   data: [

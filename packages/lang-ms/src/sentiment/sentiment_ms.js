@@ -21,6 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const SentimentId = require('@nlpjs-neo/lang-id');
+import * as SentimentId from '@nlpjs-neo/lang-id';
 
-module.exports = SentimentId;
+export default SentimentId;

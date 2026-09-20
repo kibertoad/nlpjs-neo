@@ -1,6 +1,7 @@
 {
   "name": "17-ner-nlg",
   "version": "1.0.0",
+  "type": "module",
   "description": "Example of using NER",
   "main": "index.js",
   "scripts": {

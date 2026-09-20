@@ -21,10 +21,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const measureCorpus = require('../measure-corpus');
-// const { LangFr } = require('@nlpjs-neo/lang-fr');
-const { LangFr } = require('../../../packages/lang-fr/src');
-const corpus = require('../corpora/corpus-fr.json');
+import measureCorpus from '../measure-corpus.js';
+// import { LangFr } from '@nlpjs-neo/lang-fr';
+import { LangFr } from '../../../packages/lang-fr/src/index.js';
+import corpus from '../corpora/corpus-fr.json' with { type: 'json' };
 
 (async () => {
   await measureCorpus(corpus, [LangFr]);

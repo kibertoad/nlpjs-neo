@@ -1,5 +1,5 @@
-// const { dockStart } = require('@nlpjs-neo/basic');
-const { dockStart } = require('../../packages/basic');
+// import { dockStart } from '@nlpjs-neo/basic';
+import { dockStart } from '../../packages/basic/src/index.js';
 
 (async () => {
   const locale = 'en';

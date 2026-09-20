@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { decomposeHangul, composeHangul, hasCoda } = require('./hangul');
+import { decomposeHangul, composeHangul, hasCoda } from './hangul.js';
 
 const preEomis = [
   [...'게겠고구기긴길네다더던도든면자잖재져죠지진질'],
@@ -282,6 +282,4 @@ function conjugate(words, isAdjective) {
   return expandedMap;
 }
 
-module.exports = {
-  conjugate,
-};
+export { conjugate };

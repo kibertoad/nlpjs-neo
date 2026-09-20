@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { uuid } = require('@nlpjs-neo/core');
-const { Connector } = require('@nlpjs-neo/connector');
+import { uuid } from '@nlpjs-neo/core';
+import { Connector } from '@nlpjs-neo/connector';
 
 class RestConnector extends Connector {
   registerDefault() {
@@ -90,4 +90,4 @@ class RestConnector extends Connector {
   }
 }
 
-module.exports = RestConnector;
+export default RestConnector;

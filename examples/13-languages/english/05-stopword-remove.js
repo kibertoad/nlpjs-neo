@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { StopwordsEn } = require('../../../packages/lang-en/src');
-// const { StopwordsEn } = require('@nlpjs-neo/lang-en');
+import { StopwordsEn } from '../../../packages/lang-en/src/index.js';
+// import { StopwordsEn } from '@nlpjs-neo/lang-en';
 
 const stopwords = new StopwordsEn();
 console.log(stopwords.removeStopwords(['who', 'is', 'your', 'develop']));

@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const dictionary = require('./dictionary.json');
+import dictionary from './dictionary.json' with { type: 'json' };
 
 class TranslateZh {
   constructor() {
@@ -508,4 +508,4 @@ class TranslateZh {
   }
 }
 
-module.exports = TranslateZh;
+export default TranslateZh;

@@ -20,7 +20,7 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const { Tokenizer } = require('@nlpjs-neo/core');
+import { Tokenizer } from '@nlpjs-neo/core';
 
 class TokenizerDa extends Tokenizer {
   constructor(container, shouldNormalize) {
@@ -29,4 +29,4 @@ class TokenizerDa extends Tokenizer {
   }
 }
 
-module.exports = TokenizerDa;
+export default TokenizerDa;

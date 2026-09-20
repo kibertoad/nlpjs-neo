@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const SentimentAnalyzer = require('./sentiment-analyzer');
+import SentimentAnalyzer from './sentiment-analyzer.js';
 
 /**
  * Class for the sentiment anlysis manager, able to manage
@@ -77,4 +77,4 @@ class SentimentManager {
   }
 }
 
-module.exports = SentimentManager;
+export default SentimentManager;

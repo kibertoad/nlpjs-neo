@@ -21,14 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const leven = require('./leven');
-const similarity = require('./similarity');
-const CosineSimilarity = require('./cosine-similarity');
-const SpellCheck = require('./spell-check');
+import leven from './leven.js';
+import similarity from './similarity.js';
+import CosineSimilarity from './cosine-similarity.js';
+import SpellCheck from './spell-check.js';
 
-module.exports = {
-  leven,
-  CosineSimilarity,
-  similarity,
-  SpellCheck,
-};
+export { leven, CosineSimilarity, similarity, SpellCheck };

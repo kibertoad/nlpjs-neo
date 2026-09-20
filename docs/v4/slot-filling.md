@@ -81,7 +81,7 @@ You can specify the definition within the corpus file:
 The slot filling details in the corpus file can be provided as object allowing to also set the mandatory flag (if not provided in object form then mandatory is set to false). If you just use a string, the mandatory flag is set to true.
 
 ```javascript
-const { dockStart } = require('@nlpjs-neo/basic');
+import { dockStart } from '@nlpjs-neo/basic';
 
 (async () => {
     const dock = await dockStart({
@@ -392,7 +392,7 @@ So with a corpus of
 and code
 
 ```javascript
-const { dockStart } = require('@nlpjs-neo/basic');
+import { dockStart } from '@nlpjs-neo/basic';
 
 (async () => {
     const dock = await dockStart({

@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { containerBootstrap } = require('@nlpjs-neo/core');
-const { NluNeural } = require('../src');
+import { containerBootstrap } from '@nlpjs-neo/core';
+import { NluNeural } from '../src/index.js';
 
 class OtherNlu extends NluNeural {
   registerDefault() {
@@ -35,4 +35,4 @@ const container = containerBootstrap();
 container.use(NluNeural);
 container.use(OtherNlu);
 
-module.exports = container;
+export default container;

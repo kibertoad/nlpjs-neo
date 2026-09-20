@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { MongodbAdapter } = require('../src');
-const MongoClientMock = require('./mongodb-mock');
+import { MongodbAdapter } from '../src/index.js';
+import MongoClientMock from './mongodb-mock.js';
 
 describe('MemoryDB Adapter', () => {
   describe('Constructor', () => {

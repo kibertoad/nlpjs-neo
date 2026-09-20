@@ -17,7 +17,7 @@ See compromise documentation for details.
 
 ## Usage
 ```js
-const { BuiltinCompromise } = require('@nlpjs-neo/builtin-compromise');
+import { BuiltinCompromise } from '@nlpjs-neo/builtin-compromise';
 const container = await containerBootstrap();
 const builtin = new BuiltinCompromise({})
 // Set enable to restrict list of entity extractors

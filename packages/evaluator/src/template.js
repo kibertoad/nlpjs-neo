@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const compile = require('./compile');
+import compile from './compile.js';
 
 class Template {
   compile(str, context) {
@@ -29,4 +29,4 @@ class Template {
   }
 }
 
-module.exports = Template;
+export default Template;

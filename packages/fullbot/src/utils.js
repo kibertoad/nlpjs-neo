@@ -21,12 +21,12 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const fs = require('fs');
-const archiver = require('archiver');
-const rimraf = require('rimraf');
-const path = require('path');
-const decompress = require('decompress');
-const { Downloader } = require('@nlpjs-neo/utils');
+import fs from 'fs';
+import archiver from 'archiver';
+import rimraf from 'rimraf';
+import path from 'path';
+import decompress from 'decompress';
+import { Downloader } from '@nlpjs-neo/utils';
 
 function pad(n, l = 2) {
   let result = n.toString();
@@ -119,7 +119,7 @@ function getUrlFileName(url) {
   return url.slice(url.lastIndexOf('/') + 1);
 }
 
-module.exports = {
+export {
   pad,
   getDateStr,
   getTimeStr,

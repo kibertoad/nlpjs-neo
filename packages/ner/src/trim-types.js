@@ -33,7 +33,4 @@ const TrimType = {
 
 const TrimTypesList = Object.values(TrimType);
 
-module.exports = {
-  TrimType,
-  TrimTypesList,
-};
+export { TrimType, TrimTypesList };

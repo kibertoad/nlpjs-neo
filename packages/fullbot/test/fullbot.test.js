@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { FullBot } = require('../src');
+import { FullBot } from '../src/index.js';
 
 describe('FullBot', () => {
   describe('constructor', () => {

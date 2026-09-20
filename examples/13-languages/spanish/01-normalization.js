@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { NormalizerEs } = require('../../../packages/lang-es/src');
-// const { NormalizerEs } = require('@nlpjs-neo/lang-es');
+import { NormalizerEs } from '../../../packages/lang-es/src/index.js';
+// import { NormalizerEs } from '@nlpjs-neo/lang-es';
 
 const normalizer = new NormalizerEs();
 const input = 'Esto debería ser normalizado';

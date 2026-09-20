@@ -21,12 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const NlpUtil = require('./nlp-util');
-const NlpManager = require('./nlp-manager');
-const NlpExcelReader = require('./nlp-excel-reader');
+import NlpUtil from './nlp-util.js';
+import NlpManager from './nlp-manager.js';
+import NlpExcelReader from './nlp-excel-reader.js';
 
-module.exports = {
-  NlpUtil,
-  NlpManager,
-  NlpExcelReader,
-};
+export { NlpUtil, NlpManager, NlpExcelReader };

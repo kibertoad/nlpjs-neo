@@ -20,46 +20,46 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const { LangAr } = require('@nlpjs-neo/lang-ar');
-const { LangBn } = require('@nlpjs-neo/lang-bn');
-const { LangCa } = require('@nlpjs-neo/lang-ca');
-const { LangCs } = require('@nlpjs-neo/lang-cs');
-const { LangDa } = require('@nlpjs-neo/lang-da');
-const { LangDe } = require('@nlpjs-neo/lang-de');
-const { LangEl } = require('@nlpjs-neo/lang-el');
-const { LangEn } = require('@nlpjs-neo/lang-en');
-const { LangEs } = require('@nlpjs-neo/lang-es');
-const { LangEu } = require('@nlpjs-neo/lang-eu');
-const { LangFa } = require('@nlpjs-neo/lang-fa');
-const { LangFi } = require('@nlpjs-neo/lang-fi');
-const { LangFr } = require('@nlpjs-neo/lang-fr');
-const { LangGa } = require('@nlpjs-neo/lang-ga');
-const { LangGl } = require('@nlpjs-neo/lang-gl');
-const { LangHi } = require('@nlpjs-neo/lang-hi');
-const { LangHu } = require('@nlpjs-neo/lang-hu');
-const { LangHy } = require('@nlpjs-neo/lang-hy');
-const { LangId } = require('@nlpjs-neo/lang-id');
-const { LangIt } = require('@nlpjs-neo/lang-it');
-const { LangJa } = require('@nlpjs-neo/lang-ja');
-const { LangKo } = require('@nlpjs-neo/lang-ko');
-const { LangLt } = require('@nlpjs-neo/lang-lt');
-const { LangMs } = require('@nlpjs-neo/lang-ms');
-const { LangNe } = require('@nlpjs-neo/lang-ne');
-const { LangNl } = require('@nlpjs-neo/lang-nl');
-const { LangNo } = require('@nlpjs-neo/lang-no');
-const { LangPl } = require('@nlpjs-neo/lang-pl');
-const { LangPt } = require('@nlpjs-neo/lang-pt');
-const { LangRo } = require('@nlpjs-neo/lang-ro');
-const { LangRu } = require('@nlpjs-neo/lang-ru');
-const { LangSl } = require('@nlpjs-neo/lang-sl');
-const { LangSr } = require('@nlpjs-neo/lang-sr');
-const { LangSv } = require('@nlpjs-neo/lang-sv');
-const { LangTa } = require('@nlpjs-neo/lang-ta');
-const { LangTh } = require('@nlpjs-neo/lang-th');
-const { LangTl } = require('@nlpjs-neo/lang-tl');
-const { LangTr } = require('@nlpjs-neo/lang-tr');
-const { LangUk } = require('@nlpjs-neo/lang-uk');
-const { LangZh } = require('@nlpjs-neo/lang-zh');
+import { LangAr } from '@nlpjs-neo/lang-ar';
+import { LangBn } from '@nlpjs-neo/lang-bn';
+import { LangCa } from '@nlpjs-neo/lang-ca';
+import { LangCs } from '@nlpjs-neo/lang-cs';
+import { LangDa } from '@nlpjs-neo/lang-da';
+import { LangDe } from '@nlpjs-neo/lang-de';
+import { LangEl } from '@nlpjs-neo/lang-el';
+import { LangEn } from '@nlpjs-neo/lang-en';
+import { LangEs } from '@nlpjs-neo/lang-es';
+import { LangEu } from '@nlpjs-neo/lang-eu';
+import { LangFa } from '@nlpjs-neo/lang-fa';
+import { LangFi } from '@nlpjs-neo/lang-fi';
+import { LangFr } from '@nlpjs-neo/lang-fr';
+import { LangGa } from '@nlpjs-neo/lang-ga';
+import { LangGl } from '@nlpjs-neo/lang-gl';
+import { LangHi } from '@nlpjs-neo/lang-hi';
+import { LangHu } from '@nlpjs-neo/lang-hu';
+import { LangHy } from '@nlpjs-neo/lang-hy';
+import { LangId } from '@nlpjs-neo/lang-id';
+import { LangIt } from '@nlpjs-neo/lang-it';
+import { LangJa } from '@nlpjs-neo/lang-ja';
+import { LangKo } from '@nlpjs-neo/lang-ko';
+import { LangLt } from '@nlpjs-neo/lang-lt';
+import { LangMs } from '@nlpjs-neo/lang-ms';
+import { LangNe } from '@nlpjs-neo/lang-ne';
+import { LangNl } from '@nlpjs-neo/lang-nl';
+import { LangNo } from '@nlpjs-neo/lang-no';
+import { LangPl } from '@nlpjs-neo/lang-pl';
+import { LangPt } from '@nlpjs-neo/lang-pt';
+import { LangRo } from '@nlpjs-neo/lang-ro';
+import { LangRu } from '@nlpjs-neo/lang-ru';
+import { LangSl } from '@nlpjs-neo/lang-sl';
+import { LangSr } from '@nlpjs-neo/lang-sr';
+import { LangSv } from '@nlpjs-neo/lang-sv';
+import { LangTa } from '@nlpjs-neo/lang-ta';
+import { LangTh } from '@nlpjs-neo/lang-th';
+import { LangTl } from '@nlpjs-neo/lang-tl';
+import { LangTr } from '@nlpjs-neo/lang-tr';
+import { LangUk } from '@nlpjs-neo/lang-uk';
+import { LangZh } from '@nlpjs-neo/lang-zh';
 
 class LangAll {
   register(container) {
@@ -106,4 +106,4 @@ class LangAll {
   }
 }
 
-module.exports = LangAll;
+export default LangAll;

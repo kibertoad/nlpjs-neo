@@ -21,9 +21,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const fs = require('fs');
-const path = require('path');
-const {
+import fs from 'fs';
+import path from 'path';
+import { createRequire } from 'module';
+import {
   ArrToObj,
   Container,
   Normalizer,
@@ -34,15 +35,21 @@ const {
   Timer,
   logger,
   MemoryStorage,
-} = require('@nlpjs-neo/core');
-const { fs: requestfs, request } = require('@nlpjs-neo/request');
-const pluginInformation = require('./plugin-information.json');
-const {
+} from '@nlpjs-neo/core';
+import { fs as requestfs, request } from '@nlpjs-neo/request';
+import pluginInformation from './plugin-information.json' with { type: 'json' };
+import {
   listFilesAbsolute,
   getAbsolutePath,
   loadEnv,
   loadEnvFromJson,
-} = require('./helper');
+} from './helper.js';
+
+// Plugins and optional libraries are resolved by name at runtime, from a
+// synchronous entry point, so they are loaded through `createRequire` rather
+// than `import()`. Node resolves ESM through it as well (>= 22.12), returning a
+// module namespace, hence the `default` unwrapping below.
+const require = createRequire(import.meta.url);
 
 const defaultPathConfiguration = './conf.json';
 const defaultPathPipeline = './pipelines.md';
@@ -90,9 +97,8 @@ function loadPlugins(instance, fileName) {
         loadPlugins(instance, files[i]);
       }
     } else {
-      /* oxlint-disable-next-line */
       const plugin = require(fileName);
-      instance.use(plugin);
+      instance.use(plugin.default ?? plugin);
     }
   }
 }
@@ -218,11 +224,9 @@ function containerBootstrap(
           const info = infoArr[j];
           let lib;
           try {
-            /* oxlint-disable-next-line */
             lib = require(info.path);
           } catch {
             try {
-              /* oxlint-disable-next-line */
               lib = require(
                 getAbsolutePath(path.join('./node_modules', info.path))
               );
@@ -238,10 +242,8 @@ function containerBootstrap(
       } else {
         let lib;
         try {
-          /* oxlint-disable-next-line */
           lib = require(current.path);
         } catch {
-          /* oxlint-disable-next-line */
           lib = require(getAbsolutePath(current.path));
         }
         instance.use(lib[current.className], current.name, current.isSingleton);
@@ -276,4 +278,4 @@ function containerBootstrap(
   return instance;
 }
 
-module.exports = containerBootstrap;
+export default containerBootstrap;

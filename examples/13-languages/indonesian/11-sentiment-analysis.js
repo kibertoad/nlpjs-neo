@@ -21,12 +21,12 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Container } = require('../../../packages/core/src');
-const { SentimentAnalyzer } = require('../../../packages/sentiment/src');
-const { LangId } = require('../../../packages/lang-id/src');
-// const { Container } = require('@nlpjs-neo/core');
-// const { SentimentAnalyzer } = require('@nlpjs-neo/sentiment');
-// const { LangId } = require('@nlpjs-neo/lang-id');
+import { Container } from '../../../packages/core/src/index.js';
+import { SentimentAnalyzer } from '../../../packages/sentiment/src/index.js';
+import { LangId } from '../../../packages/lang-id/src/index.js';
+// import { Container } from '@nlpjs-neo/core';
+// import { SentimentAnalyzer } from '@nlpjs-neo/sentiment';
+// import { LangId } from '@nlpjs-neo/lang-id';
 
 (async () => {
   const container = new Container();

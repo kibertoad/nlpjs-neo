@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { SpellCheck: SpellCheckBase } = require('@nlpjs-neo/similarity');
+import { SpellCheck as SpellCheckBase } from '@nlpjs-neo/similarity';
 
 class SpellCheck extends SpellCheckBase {
   constructor(settings = {}) {
@@ -29,6 +29,4 @@ class SpellCheck extends SpellCheckBase {
   }
 }
 
-module.exports = {
-  SpellCheck,
-};
+export { SpellCheck };

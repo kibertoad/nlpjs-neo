@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const measureCorpus = require('../measure-corpus');
-const corpus = require('../corpora/corpus-he.json');
+import measureCorpus from '../measure-corpus.js';
+import corpus from '../corpora/corpus-he.json' with { type: 'json' };
 
 (async () => {
   await measureCorpus(corpus, []);

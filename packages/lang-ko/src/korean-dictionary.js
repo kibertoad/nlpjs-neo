@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const dict = require('./dict.json');
-const namesDict = require('./names-dict.json');
-const { conjugate } = require('./korean-conjugation');
+import dict from './dict.json' with { type: 'json' };
+import namesDict from './names-dict.json' with { type: 'json' };
+import { conjugate } from './korean-conjugation.js';
 
 const dictionary = {};
 const names = {};
@@ -68,8 +68,4 @@ function initDicts() {
   }
 }
 
-module.exports = {
-  initDicts,
-  dictionary,
-  names,
-};
+export { initDicts, dictionary, names };

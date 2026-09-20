@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const ConversationContext = require('./conversation-context');
+import ConversationContext from './conversation-context.js';
 
 /**
  * In memory conversation context manager.
@@ -66,4 +66,4 @@ class MemoryConversationContext extends ConversationContext {
   }
 }
 
-module.exports = MemoryConversationContext;
+export default MemoryConversationContext;

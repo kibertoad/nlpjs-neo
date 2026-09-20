@@ -21,11 +21,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const path = require('path');
-const { Model } = require('../src');
+import path from 'path';
+import { Model } from '../src/index.js';
 
 const modelName = 'henryk/bert-base-multilingual-cased-finetuned-dutch-squad2';
-const modelDir = path.join(__filename, '../.models');
+const modelDir = path.join(import.meta.filename, '../.models');
 
 describe('Model', () => {
   describe('constructor', () => {

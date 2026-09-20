@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Among, BaseStemmer } = require('@nlpjs-neo/core');
-const dictionary = require('./dictionary-es.json');
+import { Among, BaseStemmer } from '@nlpjs-neo/core';
+import dictionary from './dictionary-es.json' with { type: 'json' };
 
 /* oxlint-disable */
 class StemmerEs extends BaseStemmer {
@@ -1368,4 +1368,4 @@ StemmerEs.g_v = [
   17, 65, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 17, 4, 10,
 ];
 
-module.exports = StemmerEs;
+export default StemmerEs;

@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { XDoc } = require('../src');
-const book1 = require('./book1.json');
-const matrix1 = require('./matrix1.json');
+import { XDoc } from '../src/index.js';
+import book1 from './book1.json' with { type: 'json' };
+import matrix1 from './matrix1.json' with { type: 'json' };
 
 describe('XDoc', () => {
   describe('Constructor', () => {

@@ -35,4 +35,4 @@ class Among {
   }
 }
 
-module.exports = Among;
+export default Among;

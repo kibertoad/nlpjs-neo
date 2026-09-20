@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const fs = require('fs');
-const request = require('./request');
+import fs from 'fs';
+import request from './request.js';
 
 function isWeb(str) {
   return (
@@ -80,7 +80,7 @@ function readFileSync(fileName, encoding = 'utf8') {
   return fs.readFileSync(fileName, encoding);
 }
 
-module.exports = {
+export default {
   readFile,
   writeFile,
   existsSync,

@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const tf = require('@tensorflow/tfjs-node');
-const { parentPort } = require('worker_threads');
-const { ModelInput } = require('./constants');
+import tf from '@tensorflow/tfjs-node';
+import { parentPort } from 'worker_threads';
+import { ModelInput } from './constants.js';
 
 let loadPort;
 let inferencePort;

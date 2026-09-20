@@ -21,14 +21,14 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const LangGa = require('./lang-ga');
-const TokenizerGa = require('./tokenizer-ga');
-const StemmerGa = require('./stemmer-ga');
-const StopwordsGa = require('./stopwords-ga');
-const NormalizerGa = require('./normalizer-ga');
-const SentimentGa = require('./sentiment/sentiment_ga');
+import LangGa from './lang-ga.js';
+import TokenizerGa from './tokenizer-ga.js';
+import StemmerGa from './stemmer-ga.js';
+import StopwordsGa from './stopwords-ga.js';
+import NormalizerGa from './normalizer-ga.js';
+import SentimentGa from './sentiment/sentiment_ga.js';
 
-module.exports = {
+export {
   LangGa,
   StemmerGa,
   StopwordsGa,

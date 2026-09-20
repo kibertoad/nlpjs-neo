@@ -49,7 +49,7 @@ You can install it using NPM
 ## Example of use
 
 ```javascript
-const { Lexer } = require('@nlpjs-neo/lexer');
+import { Lexer } from '@nlpjs-neo/lexer';
 
 const script = `
 n = 0

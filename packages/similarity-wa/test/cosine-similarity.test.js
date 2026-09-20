@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const CosineSimilarityWA = require('../src/cosine-similarity');
+import CosineSimilarityWA from '../src/cosine-similarity.js';
 
 describe('Cosine similarity', () => {
   const cosineSimilarityTools = new CosineSimilarityWA();

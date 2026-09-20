@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { NeuralNetwork } = require('../../packages/neural/src');
-const corpus = require('./data/corpus.json');
+import { NeuralNetwork } from '../../packages/neural/src/index.js';
+import corpus from './data/corpus.json' with { type: 'json' };
 
 const net = new NeuralNetwork({
   learningRate: 0.01,

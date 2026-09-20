@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const path = require('path');
-const { ModelDownloader } = require('../src');
+import path from 'path';
+import { ModelDownloader } from '../src/index.js';
 
 describe('Model Downloader', () => {
   describe('constructor', () => {
@@ -38,7 +38,7 @@ describe('Model Downloader', () => {
     test('It should return the path of the model', async () => {
       const name = 'henryk/bert-base-multilingual-cased-finetuned-dutch-squad2';
       const downloader = new ModelDownloader({
-        dir: path.join(__filename, '../.models'),
+        dir: path.join(import.meta.filename, '../.models'),
       });
       const actual = await downloader.download(name);
       expect(

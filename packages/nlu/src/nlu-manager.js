@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Clonable } = require('@nlpjs-neo/core');
-const { Language } = require('@nlpjs-neo/language-min');
-const DomainManager = require('./domain-manager');
+import { Clonable } from '@nlpjs-neo/core';
+import { Language } from '@nlpjs-neo/language-min';
+import DomainManager from './domain-manager.js';
 
 class NluManager extends Clonable {
   constructor(settings = {}, container) {
@@ -366,4 +366,4 @@ class NluManager extends Clonable {
   }
 }
 
-module.exports = NluManager;
+export default NluManager;

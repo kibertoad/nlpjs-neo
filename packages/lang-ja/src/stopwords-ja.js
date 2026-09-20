@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Stopwords } = require('@nlpjs-neo/core');
+import { Stopwords } from '@nlpjs-neo/core';
 
 class StopwordsJa extends Stopwords {
   constructor(container, words) {
@@ -143,4 +143,4 @@ class StopwordsJa extends Stopwords {
   }
 }
 
-module.exports = StopwordsJa;
+export default StopwordsJa;

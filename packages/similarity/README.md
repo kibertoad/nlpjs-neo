@@ -37,7 +37,7 @@ You can install @nlpjs-neo/similarity:
 It's used to calculate the levenshtein distance between two texts:
 
 ```javascript
-const { leven } = require('@nlpjs-neo/similarity');
+import { leven } from '@nlpjs-neo/similarity';
 
 console.log(leven('potatoe', 'potatoe')); // expected: 0
 console.log(leven('distance', 'eistancd')); // expected: 2
@@ -49,7 +49,7 @@ console.log(leven('mikailovitch', 'Mikhaïlovitch')); // expected: 3
 It's used to calculate the levenshtein distance between two texts, but with an option to normalize both texts between calculation.
 
 ```javascript
-const { similarity } = require('@nlpjs-neo/similarity');
+import { similarity } from '@nlpjs-neo/similarity';
 
 function showDistances(word1, word2) {
   console.log(`"${word1}" vs "${word2}" :`);
@@ -71,8 +71,8 @@ It can do spell check based on a dictionary of words with frequency.
 It search for the most similar word based on levenshtein distance. When several words has the same levenshtein distance, the word with more frequency is chosen.
 
 ```javascript
-const { SpellCheck } = require('../../packages/similarity/src');
-// const { SpellCheck } = require('@nlpjs-neo/similarity');
+import { SpellCheck } from '../../packages/similarity/src';
+// import { SpellCheck } from '@nlpjs-neo/similarity';
 
 const spellCheck = new SpellCheck({
   features: {
@@ -88,9 +88,9 @@ console.log(actual);
 ## SpellCheck trained with words trained from a text
 
 ```javascript
-const fs = require('fs');
-const { SpellCheck } = require('@nlpjs-neo/similarity');
-const { NGrams } = require('@nlpjs-neo/utils');
+import fs from 'fs';
+import { SpellCheck } from '@nlpjs-neo/similarity';
+import { NGrams } from '@nlpjs-neo/utils';
 
 // File book.txt should contain the text that contains the words to be learnt. 
 // In the example we used Pride and Prejudice from Project Gutenberg 

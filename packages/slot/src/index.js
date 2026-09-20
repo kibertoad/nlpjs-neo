@@ -21,8 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const SlotManager = require('./slot-manager');
+import SlotManager from './slot-manager.js';
 
-module.exports = {
-  SlotManager,
-};
+export { SlotManager };

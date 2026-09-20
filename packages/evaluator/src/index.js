@@ -21,14 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Evaluator = require('./evaluator');
-const compile = require('./compile');
-const Template = require('./template');
-const JavascriptCompiler = require('./javascript-compiler');
+import Evaluator from './evaluator.js';
+import compile from './compile.js';
+import Template from './template.js';
+import JavascriptCompiler from './javascript-compiler.js';
 
-module.exports = {
-  Evaluator,
-  compile,
-  Template,
-  JavascriptCompiler,
-};
+export { Evaluator, compile, Template, JavascriptCompiler };

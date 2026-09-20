@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const TokenizerBert = require('./tokenizer-bert');
-const StemmerBert = require('./stemmer-bert');
-const NormalizerBert = require('./normalizer-bert');
+import TokenizerBert from './tokenizer-bert.js';
+import StemmerBert from './stemmer-bert.js';
+import NormalizerBert from './normalizer-bert.js';
 
 function registerBertForLanguage(container, locale) {
   const tokenizer = new TokenizerBert(container);
@@ -54,4 +54,4 @@ class LangBert {
   }
 }
 
-module.exports = LangBert;
+export default LangBert;

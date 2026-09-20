@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { TranslateZh } = require('../src');
+import { TranslateZh } from '../src/index.js';
 
 describe('Translate Chinese', () => {
   describe('Constructor', () => {

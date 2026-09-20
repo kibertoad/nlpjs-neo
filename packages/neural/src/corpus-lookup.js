@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Lookup = require('./lookup');
+import Lookup from './lookup.js';
 
 class CorpusLookup {
   constructor(features, intents) {
@@ -60,4 +60,4 @@ class CorpusLookup {
   }
 }
 
-module.exports = CorpusLookup;
+export default CorpusLookup;

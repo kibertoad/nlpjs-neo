@@ -21,12 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const configurePassport = require('./configure-passport');
-const ensureAuthenticated = require('./ensure-authenticated');
-const ApiAuthJwt = require('./api-auth-jwt');
+import configurePassport from './configure-passport.js';
+import ensureAuthenticated from './ensure-authenticated.js';
+import ApiAuthJwt from './api-auth-jwt.js';
 
-module.exports = {
-  configurePassport,
-  ensureAuthenticated,
-  ApiAuthJwt,
-};
+export { configurePassport, ensureAuthenticated, ApiAuthJwt };

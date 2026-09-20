@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { TokenizerId } = require('../../../packages/lang-id/src');
-// const { TokenizerId } = require('@nlpjs-neo/lang-id');
+import { TokenizerId } from '../../../packages/lang-id/src/index.js';
+// import { TokenizerId } from '@nlpjs-neo/lang-id';
 
 const tokenizer = new TokenizerId();
 const input = 'apa yang dikembangkan perusahaan Anda';

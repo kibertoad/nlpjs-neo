@@ -65,4 +65,4 @@ class Lookup {
   }
 }
 
-module.exports = Lookup;
+export default Lookup;

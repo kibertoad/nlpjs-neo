@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { SpellCheck } = require('../../packages/similarity-wa/src');
-// const { SpellCheck } = require('@nlpjs-neo/similarity-wa');
+import { SpellCheck } from '../../packages/similarity-wa/src/index.js';
+// import { SpellCheck } from '@nlpjs-neo/similarity-wa';
 
 const spellCheck = new SpellCheck({
   features: {

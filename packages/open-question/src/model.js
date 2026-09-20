@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const ModelDownloader = require('./model-downloader');
-const { ModelInput } = require('./constants');
-const Runtime = require('./runtime');
+import ModelDownloader from './model-downloader.js';
+import { ModelInput } from './constants.js';
+import Runtime from './runtime.js';
 
 class Model {
   constructor(name, dir, proxy) {
@@ -59,4 +59,4 @@ class Model {
   }
 }
 
-module.exports = Model;
+export default Model;

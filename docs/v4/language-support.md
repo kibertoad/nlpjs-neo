@@ -273,7 +273,7 @@ Languages not included in this list can be still supported, but without stemming
 This example uses three languages, where one of the languages is Klingon, to show that NLP will work even with language support, because it will use the tokenizer but not the stemmers.
 
 ```javascript
-const { NlpManager } = require('../packages/node-nlp/src');
+import { NlpManager } from '../packages/node-nlp/src';
 
 (async () => {
   const manager = new NlpManager({ languages: ['en', 'ko', 'kl'] });

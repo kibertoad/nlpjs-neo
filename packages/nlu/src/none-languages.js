@@ -58,4 +58,4 @@ const useNoneFeature = {
   zh: false,
 };
 
-module.exports = useNoneFeature;
+export default useNoneFeature;

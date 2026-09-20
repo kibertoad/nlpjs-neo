@@ -21,8 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { removeEmojis } = require('./emoji');
+import { removeEmojis } from './emoji.js';
 
-module.exports = {
-  removeEmojis,
-};
+export { removeEmojis };

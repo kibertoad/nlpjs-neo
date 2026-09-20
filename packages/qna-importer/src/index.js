@@ -21,8 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const QnaImporter = require('./qna-importer');
+import QnaImporter from './qna-importer.js';
 
-module.exports = {
-  QnaImporter,
-};
+export { QnaImporter };

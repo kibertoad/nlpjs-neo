@@ -21,13 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { BotFrameworkAdapter, ActivityTypes } = require('botbuilder');
-const MsbfConnector = require('./msbf-connector');
-const generateMsbfToken = require('./get-msbf-token');
+import { BotFrameworkAdapter, ActivityTypes } from 'botbuilder';
+import MsbfConnector from './msbf-connector.js';
+import generateMsbfToken from './get-msbf-token.js';
 
-module.exports = {
-  MsbfConnector,
-  generateMsbfToken,
-  BotFrameworkAdapter,
-  ActivityTypes,
-};
+export { MsbfConnector, generateMsbfToken, BotFrameworkAdapter, ActivityTypes };

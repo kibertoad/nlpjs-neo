@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Ner, ExtractorRegex } = require('../src');
+import { Ner, ExtractorRegex } from '../src/index.js';
 
 describe('Extractor Regex', () => {
   describe('Constructor', () => {

@@ -1,4 +1,4 @@
-const Timer = require('../src/timer');
+import Timer from '../src/timer.js';
 
 describe('Timer', () => {
   describe('Constructor', () => {

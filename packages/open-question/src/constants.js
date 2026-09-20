@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const path = require('path');
+import path from 'path';
 
 const DEFAULT_ASSETS_DIR = path.join(process.cwd(), './.models');
 
@@ -44,8 +44,4 @@ const MODEL_DEFAULTS = {
   signatureName: 'serving_default',
 };
 
-module.exports = {
-  DEFAULT_ASSETS_DIR,
-  ModelInput,
-  MODEL_DEFAULTS,
-};
+export { DEFAULT_ASSETS_DIR, ModelInput, MODEL_DEFAULTS };

@@ -21,8 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const RestConnector = require('./rest-connector');
+import RestConnector from './rest-connector.js';
 
-module.exports = {
-  RestConnector,
-};
+export { RestConnector };

@@ -21,8 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const SentimentAnalyzer = require('./sentiment-analyzer');
+import SentimentAnalyzer from './sentiment-analyzer.js';
 
-module.exports = {
-  SentimentAnalyzer,
-};
+export { SentimentAnalyzer };

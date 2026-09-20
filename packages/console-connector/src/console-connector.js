@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const readline = require('readline');
-const { Connector } = require('@nlpjs-neo/connector');
+import readline from 'readline';
+import { Connector } from '@nlpjs-neo/connector';
 
 class ConsoleConnector extends Connector {
   initialize() {
@@ -107,4 +107,4 @@ class ConsoleConnector extends Connector {
   }
 }
 
-module.exports = ConsoleConnector;
+export default ConsoleConnector;

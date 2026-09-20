@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const fs = require('fs');
-const { MultiBertWordPieceTokenizer } = require('../src');
+import fs from 'fs';
+import { MultiBertWordPieceTokenizer } from '../src/index.js';
 
 const fileNameEn = './packages/bert-tokenizer/dicts/vocab-en.txt';
 const fileNameMulti = './packages/bert-tokenizer/dicts/vocab-multi.txt';

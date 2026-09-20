@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { ContextManager } = require('../src');
+import { ContextManager } from '../src/index.js';
 
 const dataName = '_data';
 

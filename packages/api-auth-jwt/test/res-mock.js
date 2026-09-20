@@ -44,4 +44,4 @@ class ResMock {
   }
 }
 
-module.exports = ResMock;
+export default ResMock;

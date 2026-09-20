@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const ConstantExpression = require('./constant-expression');
+import ConstantExpression from './constant-expression.js';
 
 class VariableExpression extends ConstantExpression {
   getName() {
@@ -29,4 +29,4 @@ class VariableExpression extends ConstantExpression {
   }
 }
 
-module.exports = VariableExpression;
+export default VariableExpression;

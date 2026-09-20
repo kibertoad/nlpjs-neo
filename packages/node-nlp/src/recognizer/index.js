@@ -21,12 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Recognizer = require('./recognizer');
-const ConversationContext = require('./conversation-context');
-const MemoryConversationContext = require('./memory-conversation-context');
+import Recognizer from './recognizer.js';
+import ConversationContext from './conversation-context.js';
+import MemoryConversationContext from './memory-conversation-context.js';
 
-module.exports = {
-  Recognizer,
-  ConversationContext,
-  MemoryConversationContext,
-};
+export { Recognizer, ConversationContext, MemoryConversationContext };

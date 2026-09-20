@@ -1,6 +1,7 @@
 {
   "name": "nlpjs-fb-connector-example",
   "version": "0.1.0",
+  "type": "module",
   "description": "Example made to facilitate understanding on how to integrate Facebook with @nlp.js",
   "main": "index.js",
   "scripts": {

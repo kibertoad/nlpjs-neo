@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Lookup } = require('../src');
+import { Lookup } from '../src/index.js';
 
 const data = [
   { input: { a: 1, b: 2, c: 3 } },

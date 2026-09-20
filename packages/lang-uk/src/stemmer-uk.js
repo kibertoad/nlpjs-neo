@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { BaseStemmer } = require('@nlpjs-neo/core');
+import { BaseStemmer } from '@nlpjs-neo/core';
 
 class StemmerUk extends BaseStemmer {
   constructor(container) {
@@ -120,4 +120,4 @@ class StemmerUk extends BaseStemmer {
   }
 }
 
-module.exports = StemmerUk;
+export default StemmerUk;

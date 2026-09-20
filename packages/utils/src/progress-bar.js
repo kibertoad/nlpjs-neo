@@ -79,4 +79,4 @@ class ProgressBar {
   }
 }
 
-module.exports = ProgressBar;
+export default ProgressBar;

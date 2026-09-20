@@ -21,14 +21,14 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const LangHy = require('./lang-hy');
-const StemmerHy = require('./stemmer-hy');
-const TokenizerHy = require('./tokenizer-hy');
-const StopwordsHy = require('./stopwords-hy');
-const NormalizerHy = require('./normalizer-hy');
-const SentimentHy = require('./sentiment/sentiment_hy');
+import LangHy from './lang-hy.js';
+import StemmerHy from './stemmer-hy.js';
+import TokenizerHy from './tokenizer-hy.js';
+import StopwordsHy from './stopwords-hy.js';
+import NormalizerHy from './normalizer-hy.js';
+import SentimentHy from './sentiment/sentiment_hy.js';
 
-module.exports = {
+export {
   LangHy,
   StemmerHy,
   TokenizerHy,

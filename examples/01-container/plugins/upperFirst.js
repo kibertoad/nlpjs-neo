@@ -38,4 +38,4 @@ class UpperFirst {
   }
 }
 
-module.exports = UpperFirst;
+export default UpperFirst;

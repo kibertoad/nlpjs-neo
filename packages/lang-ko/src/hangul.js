@@ -133,9 +133,4 @@ function composeHangul(onset, vowel, coda = ' ') {
   );
 }
 
-module.exports = {
-  decomposeHangul,
-  hasCoda,
-  composeHangul,
-  codaMap,
-};
+export { decomposeHangul, hasCoda, composeHangul, codaMap };

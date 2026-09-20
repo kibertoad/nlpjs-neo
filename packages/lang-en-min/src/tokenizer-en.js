@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Tokenizer } = require('@nlpjs-neo/core');
+import { Tokenizer } from '@nlpjs-neo/core';
 
 class TokenizerEn extends Tokenizer {
   constructor(container, shouldNormalize) {
@@ -67,4 +67,4 @@ class TokenizerEn extends Tokenizer {
   }
 }
 
-module.exports = TokenizerEn;
+export default TokenizerEn;

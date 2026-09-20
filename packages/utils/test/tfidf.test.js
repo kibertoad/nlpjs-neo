@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { TfIdf } = require('../src');
+import { TfIdf } from '../src/index.js';
 
 describe('TF-IDF', () => {
   describe('tf', () => {

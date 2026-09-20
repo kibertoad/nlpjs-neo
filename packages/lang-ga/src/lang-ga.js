@@ -21,11 +21,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const TokenizerGa = require('./tokenizer-ga');
-const StemmerGa = require('./stemmer-ga');
-const StopwordsGa = require('./stopwords-ga');
-const NormalizerGa = require('./normalizer-ga');
-const SentimentGa = require('./sentiment/sentiment_ga');
+import TokenizerGa from './tokenizer-ga.js';
+import StemmerGa from './stemmer-ga.js';
+import StopwordsGa from './stopwords-ga.js';
+import NormalizerGa from './normalizer-ga.js';
+import SentimentGa from './sentiment/sentiment_ga.js';
 
 class LangGa {
   register(container) {
@@ -37,4 +37,4 @@ class LangGa {
   }
 }
 
-module.exports = LangGa;
+export default LangGa;

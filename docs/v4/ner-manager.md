@@ -204,7 +204,7 @@ Additionally to the entities you can define manually the framework can also pars
 The Builtin needs to added manually depending on what's wanted. As example for Facebook Duckling this can look like:
 
 ```javascript
-const { dockStart } = require('@nlpjs-neo/basic');
+import { dockStart } from '@nlpjs-neo/basic';
 
 (async () => {
     const dock = await dockStart({

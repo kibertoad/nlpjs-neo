@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { StopwordsBert } = require('../src');
+import { StopwordsBert } from '../src/index.js';
 
 describe('Stopwords Bert', () => {
   describe('Constructor', () => {

@@ -21,13 +21,13 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const fs = require('fs');
-const path = require('path');
-const { BaseStemmer } = require('@nlpjs-neo/core');
+import fs from 'fs';
+import path from 'path';
+import { BaseStemmer } from '@nlpjs-neo/core';
 
-const kuromoji = require('kuromoji');
-const hepburn = require('./hepburn.json');
-const keigo = require('./keigo.json');
+import kuromoji from 'kuromoji';
+import hepburn from './hepburn.json' with { type: 'json' };
+import keigo from './keigo.json' with { type: 'json' };
 
 /**
  * Class for a Japanese Stemmer
@@ -50,10 +50,13 @@ class StemmerJa extends BaseStemmer {
       if (StemmerJa.tokenizer) {
         resolve();
       } else {
-        let dicPath = path.join(__dirname, '../node_modules/kuromoji/dict');
+        let dicPath = path.join(
+          import.meta.dirname,
+          '../node_modules/kuromoji/dict'
+        );
         if (!fs.existsSync(dicPath)) {
           dicPath = path.join(
-            __dirname,
+            import.meta.dirname,
             '../../../../node_modules/kuromoji/dict'
           );
           if (!fs.existsSync(dicPath)) {
@@ -484,4 +487,4 @@ class StemmerJa extends BaseStemmer {
   }
 }
 
-module.exports = StemmerJa;
+export default StemmerJa;

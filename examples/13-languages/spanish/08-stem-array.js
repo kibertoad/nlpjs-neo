@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { StemmerEs } = require('../../../packages/lang-es/src');
-// const { StemmerEs } = require('@nlpjs-neo/lang-es');
+import { StemmerEs } from '../../../packages/lang-es/src/index.js';
+// import { StemmerEs } from '@nlpjs-neo/lang-es';
 
 const stemmer = new StemmerEs();
 const input = ['he', 'visto', 'a', 'un', 'programador'];

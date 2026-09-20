@@ -16,7 +16,7 @@ The methods implemented for logging are:
 ## Example of use
 
 ```javascript
-const { logger } = require('@nlpjs-neo/core');
+import { logger } from '@nlpjs-neo/core';
 
 logger.log('hello'); // hello
 ```
@@ -24,7 +24,7 @@ logger.log('hello'); // hello
 ## Example of use with container
 
 ```javascript
-const { Container } = require('@nlpjs-neo/core');
+import { Container } from '@nlpjs-neo/core';
 
 const container = new Container();
 const logger = container.get('logger');

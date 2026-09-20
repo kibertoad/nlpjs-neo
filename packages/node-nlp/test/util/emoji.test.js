@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { removeEmojis } = require('../../src');
+import { removeEmojis } from '../../src/index.js';
 
 describe('removeEmojis', () => {
   it('should parse emojis and replace them', () => {

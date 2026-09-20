@@ -30,4 +30,4 @@ function uuid() {
   return `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
 }
 
-module.exports = uuid;
+export default uuid;

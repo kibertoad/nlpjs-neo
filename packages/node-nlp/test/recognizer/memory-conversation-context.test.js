@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { MemoryConversationContext } = require('../../src');
+import { MemoryConversationContext } from '../../src/index.js';
 
 describe('MemoryConversation Context', () => {
   describe('Constructor', () => {

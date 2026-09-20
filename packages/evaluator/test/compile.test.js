@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { compile } = require('../src');
+import { compile } from '../src/index.js';
 
 describe('Compile', () => {
   describe('compile', () => {

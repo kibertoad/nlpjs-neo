@@ -21,8 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const ExpressApiServerless = require('./express-api-serverless');
+import ExpressApiServerless from './express-api-serverless.js';
 
-module.exports = {
-  ExpressApiServerless,
-};
+export { ExpressApiServerless };

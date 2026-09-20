@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Language } = require('../src');
-const fixtures = require('./fixtures.json');
+import { Language } from '../src/index.js';
+import fixtures from './fixtures.json' with { type: 'json' };
 
 describe('Language', () => {
   describe('constructor', () => {

@@ -21,10 +21,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Container, Timer } = require('../src');
-const Cloned = require('./assets/cloned');
-const Lower = require('./assets/lower');
-const Char = require('./assets/char');
+import { Container, Timer } from '../src/index.js';
+import Cloned from './assets/cloned.js';
+import Lower from './assets/lower.js';
+import Char from './assets/char.js';
 
 class Other {
   constructor() {

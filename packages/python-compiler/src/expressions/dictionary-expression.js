@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Expression = require('./expression');
+import Expression from './expression.js';
 
 class DictionaryExpression extends Expression {
   transpile() {
@@ -44,4 +44,4 @@ class DictionaryExpression extends Expression {
   }
 }
 
-module.exports = DictionaryExpression;
+export default DictionaryExpression;

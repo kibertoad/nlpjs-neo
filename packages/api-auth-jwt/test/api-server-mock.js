@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const RouterMock = require('./router-mock');
+import RouterMock from './router-mock.js';
 
 class ApiServerMock {
   constructor() {
@@ -44,4 +44,4 @@ class ApiServerMock {
   }
 }
 
-module.exports = ApiServerMock;
+export default ApiServerMock;

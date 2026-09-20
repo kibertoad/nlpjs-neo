@@ -21,17 +21,17 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {
+import {
   TokenizerEn,
   StemmerEn,
   StopwordsEn,
   NormalizerEn,
-} = require('@nlpjs-neo/lang-en-min');
+} from '@nlpjs-neo/lang-en-min';
 
-const LangEn = require('./lang-en');
-const SentimentEn = require('./sentiment/sentiment_en');
+import LangEn from './lang-en.js';
+import SentimentEn from './sentiment/sentiment_en.js';
 
-module.exports = {
+export {
   LangEn,
   StemmerEn,
   StopwordsEn,

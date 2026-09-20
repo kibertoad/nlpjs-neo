@@ -20,8 +20,8 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const { Tokenizer } = require('@nlpjs-neo/core');
-const JapaneseRules = require('./japanese-rules.json');
+import { Tokenizer } from '@nlpjs-neo/core';
+import JapaneseRules from './japanese-rules.json' with { type: 'json' };
 
 class TokenizerJa extends Tokenizer {
   constructor(container, shouldTokenize) {
@@ -157,4 +157,4 @@ class TokenizerJa extends Tokenizer {
   }
 }
 
-module.exports = TokenizerJa;
+export default TokenizerJa;

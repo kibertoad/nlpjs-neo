@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { BaseStemmer } = require('@nlpjs-neo/core');
+import { BaseStemmer } from '@nlpjs-neo/core';
 
 class StemmerFa extends BaseStemmer {
   constructor(container) {
@@ -34,4 +34,4 @@ class StemmerFa extends BaseStemmer {
   }
 }
 
-module.exports = StemmerFa;
+export default StemmerFa;

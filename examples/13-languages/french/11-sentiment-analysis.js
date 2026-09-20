@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Container } = require('../../../packages/core/src');
-const { SentimentAnalyzer } = require('../../../packages/sentiment/src');
-const { LangFr } = require('../../../packages/lang-fr/src');
+import { Container } from '../../../packages/core/src/index.js';
+import { SentimentAnalyzer } from '../../../packages/sentiment/src/index.js';
+import { LangFr } from '../../../packages/lang-fr/src/index.js';
 
 (async () => {
   const container = new Container();

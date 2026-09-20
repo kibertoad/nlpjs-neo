@@ -21,10 +21,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const { logger } = require('@nlpjs-neo/core');
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import { logger } from '@nlpjs-neo/core';
 
 class ExpressApiApp {
   constructor(settings, plugins, routers) {
@@ -57,7 +57,7 @@ class ExpressApiApp {
     }
     if (this.settings.serveBot) {
       const clientPath =
-        this.settings.clientPath || path.join(__dirname, './public');
+        this.settings.clientPath || path.join(import.meta.dirname, './public');
       logger.debug(`Serving bot client (path: ${clientPath}`);
       this.app.use(express.static(clientPath));
     }
@@ -70,4 +70,4 @@ class ExpressApiApp {
   }
 }
 
-module.exports = ExpressApiApp;
+export default ExpressApiApp;

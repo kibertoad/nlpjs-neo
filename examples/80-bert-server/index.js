@@ -21,10 +21,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { NlpManager } = require('../../packages/node-nlp');
-const { LangBert } = require('../../packages/lang-bert');
-const corpusEn = require('./corpus-en.json');
-const corpusEs = require('./corpus-es.json');
+import { NlpManager } from '../../packages/node-nlp/src/index.js';
+import { LangBert } from '../../packages/lang-bert/src/index.js';
+import corpusEn from './corpus-en.json' with { type: 'json' };
+import corpusEs from './corpus-es.json' with { type: 'json' };
 
 async function doTests(manager, corpus) {
   const { data } = corpus;

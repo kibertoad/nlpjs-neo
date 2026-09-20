@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { BaseStemmer } = require('@nlpjs-neo/core');
+import { BaseStemmer } from '@nlpjs-neo/core';
 
 class StemmerEl extends BaseStemmer {
   constructor(container) {
@@ -734,4 +734,4 @@ StemmerEl.protectedWords = {
   ωστοσο: 1,
 };
 
-module.exports = StemmerEl;
+export default StemmerEl;

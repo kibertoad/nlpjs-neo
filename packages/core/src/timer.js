@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { defaultContainer } = require('./container');
+import { defaultContainer } from './container.js';
 
 /**
  * Class for a simple timer
@@ -66,4 +66,4 @@ class Timer {
   }
 }
 
-module.exports = Timer;
+export default Timer;

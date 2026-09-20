@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const negations = require('./negations_zh.json');
+import negations from './negations_zh.json' with { type: 'json' };
 
-module.exports = {
+export default {
   afinn: undefined,
   pattern: undefined,
   senticon: undefined,

@@ -21,8 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const logger = require('./logger');
+import logger from './logger.js';
 
-module.exports = {
-  logger,
-};
+export { logger };

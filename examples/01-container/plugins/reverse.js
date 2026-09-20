@@ -36,4 +36,4 @@ class Reverse {
   }
 }
 
-module.exports = Reverse;
+export default Reverse;

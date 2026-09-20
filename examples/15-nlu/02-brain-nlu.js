@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { BrainNLU } = require('../../packages/node-nlp/src');
-// const { BrainNLU } = require('node-nlp');
-const corpus = require('./corpus50.json');
+import { BrainNLU } from '../../packages/node-nlp/src/index.js';
+// import { BrainNLU } from 'node-nlp';
+import corpus from './corpus50.json' with { type: 'json' };
 
 (async () => {
   const nlu = new BrainNLU({ language: 'en' });

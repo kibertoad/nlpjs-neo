@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { NormalizerPt, TokenizerPt, StemmerPt } = require('../src');
+import { NormalizerPt, TokenizerPt, StemmerPt } from '../src/index.js';
 
 const normalizer = new NormalizerPt();
 const tokenizer = new TokenizerPt();

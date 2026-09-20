@@ -21,10 +21,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { defaultContainer, Clonable } = require('@nlpjs-neo/core');
-const http = require('http');
-const https = require('https');
-const ExpressApiApp = require('./express-api-app');
+import { defaultContainer, Clonable } from '@nlpjs-neo/core';
+import http from 'http';
+import https from 'https';
+import ExpressApiApp from './express-api-app.js';
 
 class ExpressApiServer extends Clonable {
   constructor(settings = {}, container = undefined) {
@@ -113,4 +113,4 @@ class ExpressApiServer extends Clonable {
   }
 }
 
-module.exports = ExpressApiServer;
+export default ExpressApiServer;

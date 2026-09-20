@@ -734,4 +734,4 @@ function IndonesianStemmer() {
   };
 }
 
-module.exports = IndonesianStemmer;
+export default IndonesianStemmer;

@@ -21,12 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const Database = require('./database');
-const Collection = require('./collection');
-const MemorydbAdapter = require('./memory-adapter');
+import Database from './database.js';
+import Collection from './collection.js';
+import MemorydbAdapter from './memory-adapter.js';
 
-module.exports = {
-  Database,
-  Collection,
-  MemorydbAdapter,
-};
+export { Database, Collection, MemorydbAdapter };

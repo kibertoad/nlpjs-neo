@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const StemmerUk = require('../src/stemmer-uk');
+import StemmerUk from '../src/stemmer-uk.js';
 
 const stemmer = new StemmerUk();
 

@@ -41,7 +41,7 @@ I will put here a FAQ with the links to different interesting parts to documenta
 **- Ok, what about the NER?** You can use the NER directly from the NlpManager:
 
 ```js
-const { NlpManager } = require('node-nlp-neo');
+import { NlpManager } from 'node-nlp-neo';
 
 async function main() {
   const manager = new NlpManager({ languages: ['en'], forceNER: true });
@@ -104,8 +104,8 @@ With threshold set to 1, the exact match of entities is done by searching words 
 Here you have an example of how to use ngrams by char and by word:
 
 ```js
-const { NGrams } = require('@nlpjs-neo/utils');
-const fs = require('fs');
+import { NGrams } from '@nlpjs-neo/utils';
+import fs from 'fs';
 
 const gramsByChar = new NGrams();
 const gramsByWord = new NGrams({ byWord: true, startToken: '[START]', endToken: '[END]' });
@@ -128,8 +128,8 @@ console.log(freqs);
 **- I want a pattern corpus, I mean, to generate a full cartesian product corpus from sentences with different options** That is, from a sentence like "I [am having|have] a [problem|question|issue]" you want to generate all the possibilities: I am having a problem, I am having a question, I am having a issue, I have a problem, I have a question, I have a issue. Here you have an example code:
 
 ```js
-const { composeFromPattern, composeCorpus } = require('@nlpjs-neo/utils');
-const corpusPattern = require('./data/corpus-en-pattern.json');
+import { composeFromPattern, composeCorpus } from '@nlpjs-neo/utils';
+import corpusPattern from './data/corpus-en-pattern.json' with { type: 'json' };
 
 const input = 'I [am having|have] a [problem|question|issue] that I have to [solve|investigate]';
 const result = composeFromPattern(input);
@@ -171,7 +171,7 @@ To use with this example corpus:
 Use similarity function, the third parameter by default is "false", set it to "true" if you want both strings to be normalized.
 
 ```js
-const { similarity } = require('@nlpjs-neo/similarity');
+import { similarity } from '@nlpjs-neo/similarity';
 
 console.log(similarity('potatoe', 'potatoe'));
 console.log(similarity('potatoe', 'potatoes'));
@@ -186,7 +186,7 @@ console.log(similarity('potatoe', 'Postatoé', true));
 Use getBestSubstring from ExtractorEnum of ner
 
 ```js
-const { ExtractorEnum } = require('@nlpjs-neo/ner');
+import { ExtractorEnum } from '@nlpjs-neo/ner';
 
 const text = 'Morbi ainterd multricies neque varius condimentum. Donec volutpat turpis interdum metus ultricies vulputate. Duis ultricies rhoncus sapien, sit amet fermentum risus imperdiet vitae. Ut et lectus';
 const str = 'interdum ultricies';

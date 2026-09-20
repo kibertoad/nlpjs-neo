@@ -125,4 +125,4 @@ class CosineSimilarity {
   }
 }
 
-module.exports = CosineSimilarity;
+export default CosineSimilarity;

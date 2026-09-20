@@ -21,9 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Container } = require('@nlpjs-neo/core');
-const { NlgManager } = require('../src');
-const container = require('./bootstrap');
+import { Container } from '@nlpjs-neo/core';
+import { NlgManager } from '../src/index.js';
+import container from './bootstrap.js';
 
 class Evaluator {
   evaluate(a, b) {

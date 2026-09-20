@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { BrainNLU } = require('../../src');
+import { BrainNLU } from '../../src/index.js';
 
 describe('Brain NLU', () => {
   describe('constructor', () => {

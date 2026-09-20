@@ -21,8 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Nlu } = require('@nlpjs-neo/nlu');
-const { request } = require('@nlpjs-neo/request');
+import { Nlu } from '@nlpjs-neo/nlu';
+import { request } from '@nlpjs-neo/request';
 
 class NluLuis extends Nlu {
   innerTrain(srcInput) {
@@ -87,4 +87,4 @@ class NluLuis extends Nlu {
   }
 }
 
-module.exports = NluLuis;
+export default NluLuis;

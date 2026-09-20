@@ -21,10 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const NlgManager = require('./nlg-manager');
-const ActionManager = require('./action-manager');
+import NlgManager from './nlg-manager.js';
+import ActionManager from './action-manager.js';
 
-module.exports = {
-  NlgManager,
-  ActionManager,
-};
+export { NlgManager, ActionManager };

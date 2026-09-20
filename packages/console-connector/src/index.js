@@ -21,8 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const ConsoleConnector = require('./console-connector');
+import ConsoleConnector from './console-connector.js';
 
-module.exports = {
-  ConsoleConnector,
-};
+export { ConsoleConnector };

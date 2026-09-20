@@ -21,8 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const DirectlineConnector = require('./directline-connector');
+import DirectlineConnector from './directline-connector.js';
 
-module.exports = {
-  DirectlineConnector,
-};
+export { DirectlineConnector };

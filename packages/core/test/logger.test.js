@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const logger = require('../src/logger');
+import logger from '../src/logger.js';
 
 global.console = {
   debug: vi.fn(),

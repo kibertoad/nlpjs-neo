@@ -182,7 +182,7 @@ You can see a great example of use at the folder [`/examples/02-qna-classic`](ht
 You can start to build your NLP from scratch with few lines:
 
 ```javascript
-const { NlpManager } = require('node-nlp');
+import { NlpManager } from 'node-nlp';
 
 const manager = new NlpManager({ languages: ['en'], forceNER: true });
 // Adds the utterances and intents for the NLP

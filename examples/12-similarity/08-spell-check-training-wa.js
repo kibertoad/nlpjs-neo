@@ -21,11 +21,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const fs = require('fs');
-const { SpellCheck } = require('../../packages/similarity/src');
-// const { SpellCheck } = require('@nlpjs-neo/similarity');
-const { NGrams } = require('../../packages/utils/src');
-// const { NGrams } = require('@nlpjs-neo/utils');
+import fs from 'fs';
+import { SpellCheck } from '../../packages/similarity/src/index.js';
+// import { SpellCheck } from '@nlpjs-neo/similarity';
+import { NGrams } from '../../packages/utils/src/index.js';
+// import { NGrams } from '@nlpjs-neo/utils';
 
 const lines = fs.readFileSync('./data/book.txt', 'utf-8').split(/\r?\n/);
 const ngrams = new NGrams({ byWord: true });

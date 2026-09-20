@@ -21,10 +21,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const passport = require('passport');
-const { ExtractJwt, Strategy: JwtStrategy } = require('passport-jwt');
-const { Strategy: LocalStrategy } = require('passport-local');
-const bcrypt = require('bcryptjs');
+import passport from 'passport';
+import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
+import { Strategy as LocalStrategy } from 'passport-local';
+import bcrypt from 'bcryptjs';
 
 function getLocalStrategy(db, settings) {
   const localOptions = {
@@ -82,4 +82,4 @@ function configurePassport(db, settings) {
   passport.use(getJwtStrategy(db, settings));
 }
 
-module.exports = configurePassport;
+export default configurePassport;

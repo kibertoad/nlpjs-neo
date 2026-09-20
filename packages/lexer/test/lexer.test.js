@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { Lexer } = require('../src');
+import { Lexer } from '../src/index.js';
 
 describe('Lexer', () => {
   describe('Constructor', () => {
