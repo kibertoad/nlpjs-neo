@@ -19,7 +19,7 @@ describe('Language Chinese', () => {
 
   describe('Stemmer', () => {
     test('Removes Chinese punctuation before stemming', () => {
-      const stemmer = new StemmerZh();
+      const stemmer = new StemmerZh(new Container());
       expect(stemmer.clearText('a，b。c！d？')).toEqual('a b c d ');
     });
   });
