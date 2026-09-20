@@ -54,6 +54,6 @@
     "@nlpjs-neo/bert-tokenizer": "workspace:^",
     "@nlpjs-neo/core": "workspace:^",
     "@nlpjs-neo/utils": "workspace:^",
-    "@tensorflow/tfjs-node": "^3.0.0"
+    "@tensorflow/tfjs-node": "^4.22.0"
   }
 }
