@@ -362,6 +362,22 @@ describe('Container', () => {
         excludeChars: 'e',
       });
     });
+    test('Pipelines can use relative paths on the source object', async () => {
+      const instance = new Container();
+      const pipeline = instance.buildPipeline([
+        'set .value 7',
+        'inc .counter 2',
+        'dec .counter',
+        'delete .value',
+        'get .counter',
+      ]);
+      const source: any = { counter: 5 };
+
+      const actual = await instance.runPipeline(pipeline, {}, source);
+
+      expect(actual).toEqual(6);
+      expect(source).toEqual({ counter: 6 });
+    });
     test('Pipelines can inc variables by 1', async () => {
       const instance = new Container();
       instance.register('lower', Lower);
