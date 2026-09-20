@@ -57,7 +57,7 @@ class ConsoleConnector extends Connector {
           const session = this.createSession({
             channelId: 'console',
             text: line,
-            address: { conversation: { id: 'console000' } },
+            conversation: { id: 'console000' },
           });
           await bot.process(session);
         } else {

@@ -55,6 +55,24 @@ describe('Console Connector', () => {
       connector.close();
     });
 
+    test('It uses the console conversation id when processing with a bot', async () => {
+      const testContainer = containerBootstrap();
+      const process = vi
+        .fn<(...args: any[]) => Promise<void>>()
+        .mockResolvedValue(undefined);
+      testContainer.register('bot', { container: testContainer, process });
+      const connector = new ConsoleConnector({ container: testContainer });
+
+      await connector.hear('Hello world');
+
+      expect(process).toHaveBeenCalledWith(
+        expect.objectContaining({
+          conversation: { id: 'console000' },
+        })
+      );
+      connector.close();
+    });
+
     test('It logs a rejected line handler promise', async () => {
       const testContainer = containerBootstrap();
       const pipeline = {};
