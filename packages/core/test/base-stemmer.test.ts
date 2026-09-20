@@ -40,7 +40,9 @@ describe('BaseStemmer', () => {
           return { tokenize: () => ['the', 'cat'] };
         }
         if (name === 'stopwords-en') {
-          return { removeStopwords: (tokens) => tokens.filter((x) => x !== 'the') };
+          return {
+            removeStopwords: (tokens) => tokens.filter((x) => x !== 'the'),
+          };
         }
         return undefined;
       },
