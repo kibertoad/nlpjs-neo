@@ -21,13 +21,28 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import fs from 'fs';
-import path from 'path';
+import { createRequire } from 'node:module';
+import path from 'node:path';
 import { BaseStemmer } from '@nlpjs-neo/core';
 
-import kuromoji from 'kuromoji';
+import { TokenizerBuilder } from '@patdx/kuromoji';
+import NodeDictionaryLoader from '@patdx/kuromoji/node';
 import hepburn from './hepburn.json' with { type: 'json' };
 import keigo from './keigo.json' with { type: 'json' };
+
+/**
+ * Locate the IPADIC dictionary that ships inside `@patdx/kuromoji`.
+ *
+ * The package exports `.`, `./node` and `./browser` and nothing else, so
+ * neither the dictionary directory nor `package.json` can be resolved
+ * directly. Resolving the main entry (`<root>/build/index.mjs`) and walking up
+ * to `<root>/dict` is what is left, and it works under any package layout,
+ * where hard-coding `node_modules` paths does not.
+ */
+function resolveDictionaryPath() {
+  const entry = createRequire(import.meta.url).resolve('@patdx/kuromoji');
+  return path.join(path.dirname(entry), '..', 'dict');
+}
 
 /**
  * Class for a Japanese Stemmer
@@ -35,6 +50,7 @@ import keigo from './keigo.json' with { type: 'json' };
 class StemmerJa extends BaseStemmer {
   declare shiftToHiragana: any;
   declare static tokenizer: any;
+  declare static tokenizerPromise: Promise<void> | undefined;
 
   /**
    * Constructor of the class
@@ -46,36 +62,31 @@ class StemmerJa extends BaseStemmer {
   }
 
   /**
-   * Promise to initialize the class and get the tokenizer
+   * Promise to initialize the class and get the tokenizer.
+   *
+   * The dictionary is a few megabytes and the tokenizer is shared by every
+   * instance, so the promise is cached: concurrent callers wait on the one
+   * build rather than starting their own. A failed build is not cached, so a
+   * later call can retry.
    */
-  static classInit() {
-    return new Promise<void>((resolve, reject) => {
-      if (StemmerJa.tokenizer) {
-        resolve();
-      } else {
-        let dicPath = path.join(
-          import.meta.dirname,
-          '../node_modules/kuromoji/dict'
-        );
-        if (!fs.existsSync(dicPath)) {
-          dicPath = path.join(
-            import.meta.dirname,
-            '../../../../node_modules/kuromoji/dict'
-          );
-          if (!fs.existsSync(dicPath)) {
-            dicPath = './node_modules/kuromoji/dict';
-          }
-        }
-        kuromoji.builder({ dicPath }).build((err, tokenizer) => {
-          if (err) {
-            reject(err);
-          } else {
-            StemmerJa.tokenizer = tokenizer;
-            resolve();
-          }
+  static classInit(): Promise<void> {
+    if (StemmerJa.tokenizer) {
+      return Promise.resolve();
+    }
+    if (!StemmerJa.tokenizerPromise) {
+      StemmerJa.tokenizerPromise = new TokenizerBuilder({
+        loader: new NodeDictionaryLoader({ dic_path: resolveDictionaryPath() }),
+      })
+        .build()
+        .then((tokenizer) => {
+          StemmerJa.tokenizer = tokenizer;
+        })
+        .catch((err) => {
+          StemmerJa.tokenizerPromise = undefined;
+          throw err;
         });
-      }
-    });
+    }
+    return StemmerJa.tokenizerPromise;
   }
 
   init() {

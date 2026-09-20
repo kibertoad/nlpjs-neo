@@ -49,6 +49,6 @@
   "gitHead": "cc4249fa994c58d220e6f10a6c94fdad05df32fd",
   "dependencies": {
     "@nlpjs-neo/core": "workspace:^",
-    "kuromoji": "^0.1.2"
+    "@patdx/kuromoji": "^1.0.4"
   }
 }
