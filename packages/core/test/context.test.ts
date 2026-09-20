@@ -31,8 +31,6 @@ describe('Context', () => {
 
     await context.setContextValue('user1', 'name', 'Bob');
 
-    await expect(context.getContextValue('user1', 'name')).resolves.toBe(
-      'Bob'
-    );
+    await expect(context.getContextValue('user1', 'name')).resolves.toBe('Bob');
   });
 });
