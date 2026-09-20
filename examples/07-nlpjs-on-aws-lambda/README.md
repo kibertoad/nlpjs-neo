@@ -1,5 +1,11 @@
 # README
 
+> **Not updated for version 5.** This example still targets nlp.js v4: the code is
+> CommonJS, the `package.json` files depend on `node-nlp@^4.3.0`, and the SAM templates
+> ask for the `nodejs12.x` Lambda runtime, which AWS has retired. The v5 packages are ESM
+> only and need Node.js 22.12 or later, so the example needs a port before it runs again.
+> It is kept here for the deployment walkthrough, which is still broadly accurate.
+
 On this examples we can test to deploy an AWS Lambda function which will have a NLPjs engine and we will interact with it through HTTP requests to an endpoint.
 
 With the explanations we will reproduce the process to have the examples contained here.
@@ -163,7 +169,7 @@ The last command will start a DynamoDB locally and you can access to a managemen
 
 You will need to create the table inside your local DyanamoDB before you call the endpoint. The schema is defined inside the file **`schema.json`**. You must execute next command to do so:
 
-> Next command suposes that the _`aws`_ utility is available. Review the previous sections related to [setup](#SETUP-DEVELOPMENT-ENVIRONMENT) and [aws alias](#MAKING-THE-LIVE-EASY)
+> Next command suposes that the _`aws`_ utility is available. Review the previous sections related to [setup](#setup-development-environment) and [aws alias](#making-the-live-easy)
 
 - aws dynamodb create-table --endpoint-url `http://host.docker.internal:8000` --region eu-west-1 --cli-input-json file://schema.json
 

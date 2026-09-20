@@ -11,7 +11,7 @@ untrusted archives by default.
 
 ## What we use SheetJS for
 
-One call site, `packages/xtables/src/xdoc.js`:
+One call site, `packages/xtables/src/xdoc.ts`:
 
 ```js
 const wb = XLSX.readFile(filename);
@@ -23,7 +23,7 @@ text) of each cell. Nothing else of SheetJS is touched. The call is reached from
 
 - `XDoc.read(filename)` in `@nlpjs-neo/xtables`
 - `NlpExcelReader.load(filename)`, `NlpManager.loadExcel(fileName = 'model.xls')` and
-  `Recognizer.loadExcel(filename)` in `node-nlp`
+  `Recognizer.loadExcel(filename)` in `node-nlp-neo`
 
 ## What was checked
 

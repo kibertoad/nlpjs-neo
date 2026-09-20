@@ -1,11 +1,14 @@
-![NLPjs logo](../../screenshots/nlplogo.gif)
+![NLP.js Neo logo](https://raw.githubusercontent.com/kibertoad/nlpjs-neo/main/screenshots/nlplogo.gif)
 
 # @nlpjs-neo/lang-en-min
 
-[![](https://github.com/axa-group/nlp.js/actions/workflows/node.js.yml/badge.svg?branch=master)](https://github.com/axa-group/nlp.js/actions/workflows/node.js.yml)
-[![Coverage Status](https://coveralls.io/repos/github/axa-group/nlp.js/badge.svg?branch=master)](https://coveralls.io/github/axa-group/nlp.js?branch=master)
-[![NPM version](https://img.shields.io/npm/v/node-nlp.svg?style=flat)](https://www.npmjs.com/package/node-nlp)
-[![NPM downloads](https://img.shields.io/npm/dm/node-nlp.svg?style=flat)](https://www.npmjs.com/package/node-nlp)
+[![Node.js CI](https://github.com/kibertoad/nlpjs-neo/actions/workflows/node.js.yml/badge.svg?branch=main)](https://github.com/kibertoad/nlpjs-neo/actions/workflows/node.js.yml)
+[![NPM version](https://img.shields.io/npm/v/@nlpjs-neo/lang-en-min.svg?style=flat)](https://www.npmjs.com/package/@nlpjs-neo/lang-en-min)
+[![NPM downloads](https://img.shields.io/npm/dm/@nlpjs-neo/lang-en-min.svg?style=flat)](https://www.npmjs.com/package/@nlpjs-neo/lang-en-min)
+
+Part of [NLP.js Neo](https://github.com/kibertoad/nlpjs-neo), a refreshed and maintained fork of
+[axa-group/nlp.js](https://github.com/axa-group/nlp.js). The packages are ESM only, written
+in TypeScript, and require Node.js 22.12 or later.
 
 ## TABLE OF CONTENTS
 
@@ -14,10 +17,9 @@
 - [Installation](#installation)
 - [Example of use](#example-of-use)
 - [Contributing](#contributing)
-- [Contributors](#contributors)
 - [Code of Conduct](#code-of-conduct)
 - [Who is behind it](#who-is-behind-it)
-- [License](#license.md)
+- [License](#license)
   <!--te-->
 
 ## Installation
@@ -28,7 +30,7 @@ You can install @nlpjs-neo/lang-en-min:
     pnpm add @nlpjs-neo/lang-en-min
 ```
 
-## Example of Usage
+## Example of use
 
 ```javascript
 import { containerBootstrap } from '@nlpjs-neo/core';
@@ -65,43 +67,23 @@ import { LangEn } from '@nlpjs-neo/lang-en-min';
 
 ## Contributing
 
-You can read the guide of how to contribute at [Contributing](../../CONTRIBUTING.md).
-
-## Contributors
-
-[![Contributors](https://contributors-img.firebaseapp.com/image?repo=axa-group/nlp.js)](https://github.com/axa-group/nlp.js/graphs/contributors)
-
-Made with [contributors-img](https://contributors-img.firebaseapp.com).
+You can read the guide of how to contribute at [Contributing](https://github.com/kibertoad/nlpjs-neo/blob/main/CONTRIBUTING.md).
 
 ## Code of Conduct
 
-You can read the Code of Conduct at [Code of Conduct](../../CODE_OF_CONDUCT.md).
+You can read the Code of Conduct at [Code of Conduct](https://github.com/kibertoad/nlpjs-neo/blob/main/CODE_OF_CONDUCT.md).
 
-## Who is behind it`?`
+## Who is behind it
 
-This project is developed by AXA Group Operations Spain S.A.
-
-If you need to contact us, you can do it at the email opensource@axa.com
+NLP.js was created and developed by AXA Group Operations Spain S.A., with Jesus Seijas as
+its main author. nlpjs-neo is a maintained fork of that project, kept up by
+[Igor Savin](https://github.com/kibertoad) and the
+[contributors to the fork](https://github.com/kibertoad/nlpjs-neo/graphs/contributors).
 
 ## License
 
 Copyright (c) AXA Group Operations Spain S.A.
 
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
+Copyright (c) 2026 Igor Savin
 
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+Released under the [MIT License](./LICENSE.md).

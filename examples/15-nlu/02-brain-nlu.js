@@ -22,7 +22,7 @@
  */
 
 import { BrainNLU } from '../../packages/node-nlp/src/index.js';
-// import { BrainNLU } from 'node-nlp';
+// import { BrainNLU } from 'node-nlp-neo';
 import corpus from './corpus50.json' with { type: 'json' };
 
 (async () => {

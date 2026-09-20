@@ -3,13 +3,13 @@
 ## Reporting Issues
 
 Should you run into issues with the project, please don't hesitate to let us know by
-[filing an issue](https://github.com/axa-group/nlp.js/issues/new).
+[filing an issue](https://github.com/kibertoad/nlpjs-neo/issues/new).
 
 Pull requests containing only failing tests demonstrating an issue are also welcomed. Having these tests will help avoiding future regressions of this specific issue once it's fixed.
 
 ## Pull Requests
 
-We accept [pull requests](https://github.com/axa-group/nlp.js/pull/new/master)!
+We accept [pull requests](https://github.com/kibertoad/nlpjs-neo/compare)!
 
 Generally we like to see pull requests that:
 
