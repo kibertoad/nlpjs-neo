@@ -22,7 +22,7 @@
  */
 
 import fs from 'fs';
-import formidable from 'formidable';
+import { formidable } from 'formidable';
 import { Connector } from '@nlpjs-neo/connector';
 import DirectlineController from './directline-controller.js';
 
@@ -31,7 +31,7 @@ class DirectlineConnector extends Connector {
   declare onCreateConversation: any;
   declare onHear: any;
 
-  constructor(settings, container) {
+  constructor(settings: any = {}, container = undefined) {
     super(settings, container);
     if (this.settings.autoRemoveFiles === undefined) {
       this.settings.autoRemoveFiles = true;
@@ -128,31 +128,44 @@ class DirectlineConnector extends Connector {
           'debug',
           `POST /directline/conversations/:conversationId/upload`
         );
+        fs.mkdirSync(this.settings.uploadDir, { recursive: true });
         const form = formidable({
-          multiples: true,
           uploadDir: this.settings.uploadDir,
           keepExtensions: false,
           maxFileSize: this.settings.maxFileSize,
         });
-        form.parse(req, async (err, fields, files) => {
-          if (err) {
-            res.status(500).send('There was an error processing the message');
-          } else {
-            const activity = JSON.parse(
-              fs.readFileSync(files.activity.path, 'utf-8')
-            );
-            activity.file = files.file;
-            const result = await this.controller.addActivity(
-              req.params.conversationId,
-              activity
-            );
-            if (this.settings.autoRemoveFiles) {
-              fs.unlinkSync(files.activity.path);
-              fs.unlinkSync(files.file.path);
-            }
-            res.status(result.status).send(result.body);
+        let activityFile;
+        let uploadedFile;
+        try {
+          // formidable 3 collects every field into an array and resolves
+          // instead of taking a callback.
+          const [, files] = await form.parse(req);
+          [activityFile] = files.activity ?? [];
+          [uploadedFile] = files.file ?? [];
+          if (!activityFile) {
+            throw new Error('No activity was uploaded');
           }
-        });
+          const activity = JSON.parse(
+            fs.readFileSync(activityFile.filepath, 'utf-8')
+          );
+          activity.file = uploadedFile;
+          const result = await this.controller.addActivity(
+            req.params.conversationId,
+            activity
+          );
+          res.status(result.status).send(result.body);
+        } catch (err) {
+          this.log('error', `Upload failed: ${err}`);
+          res.status(500).send('There was an error processing the message');
+        } finally {
+          if (this.settings.autoRemoveFiles) {
+            for (const file of [activityFile, uploadedFile]) {
+              if (file) {
+                fs.rmSync(file.filepath, { force: true });
+              }
+            }
+          }
+        }
       }
     );
 
