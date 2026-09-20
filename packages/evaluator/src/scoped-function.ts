@@ -16,7 +16,6 @@ const HOST_GLOBAL_NAMES = [
   '__dirname',
   '__filename',
   'Function',
-  'eval',
   'console',
   'fetch',
   'setImmediate',
