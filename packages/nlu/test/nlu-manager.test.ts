@@ -54,6 +54,11 @@ describe('NLU Manager', () => {
       const language = manager.guessLanguage('what is?');
       expect(language).toEqual('en');
     });
+    test('Should return undefined input with one registered language', () => {
+      const manager = new NluManager({ container, locales: ['en'] });
+
+      expect(manager.guessLanguage(undefined)).toBeUndefined();
+    });
     test('Should guess the language of an utterance', () => {
       const manager = new NluManager({ container });
       manager.addLanguage(['en', 'es']);

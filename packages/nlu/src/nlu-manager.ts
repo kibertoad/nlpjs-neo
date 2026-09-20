@@ -97,26 +97,20 @@ class NluManager extends Clonable {
   guessLanguage(srcInput) {
     const input = srcInput;
     const isString = typeof input === 'string';
+    if (!input) {
+      return isString ? undefined : input;
+    }
     if (this.locales.length === 1) {
       if (isString) {
         return this.locales[0];
       }
       [input.locale] = this.locales;
       return input;
-    }
-    if (!input) {
-      return isString ? undefined : input;
     }
     if (!isString && input.locale) {
       return input;
     }
     const utterance = isString ? input : input.utterance;
-    if (this.locales.length === 1) {
-      if (isString) {
-        return this.locales[0];
-      }
-      [input.locale] = this.locales;
-    }
     const guess = this.guesser.guess(utterance, this.locales, 1);
     const locale = guess && guess.length > 0 ? guess[0].alpha2 : undefined;
     if (isString) {
