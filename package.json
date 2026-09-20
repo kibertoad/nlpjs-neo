@@ -47,7 +47,7 @@
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
     "@changesets/cli": "^3.0.3",
-    "@types/node": "^22.20.4",
+    "@types/node": "^26.5.1",
     "@vitest/coverage-v8": "^5.0.1",
     "oxfmt": "^0.68.0",
     "oxlint": "^1.83.0",
