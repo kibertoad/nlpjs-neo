@@ -22,6 +22,7 @@
  */
 
 import { Writable } from 'node:stream';
+import prettyStream from 'pino-pretty';
 import { Logger, logger } from '../src/index.js';
 
 interface Capture {
@@ -164,6 +165,30 @@ describe('logger', () => {
         'second',
         'third',
       ]);
+    });
+  });
+
+  describe('pretty printing', () => {
+    // The development branch of `createPinoLogger` sends records through
+    // `pino-pretty`. Asserting that it does not throw would not notice a
+    // formatter that stopped formatting, so read the formatted line back.
+    test('It should format a record for a human', async () => {
+      const lines: string[] = [];
+      const sink = new Writable({
+        write(chunk, _encoding, callback) {
+          lines.push(chunk.toString());
+          callback();
+        },
+      });
+      const instance = new Logger(
+        prettyStream({ colorize: false, destination: sink, sync: true })
+      );
+      instance.warn('the model is missing');
+      expect(lines).toHaveLength(1);
+      expect(lines[0]).toContain('WARN');
+      expect(lines[0]).toContain('the model is missing');
+      // The pretty output is a formatted line, not the raw JSON record.
+      expect(lines[0]).not.toContain('"level":40');
     });
   });
 
