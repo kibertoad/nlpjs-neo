@@ -21,6 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import logger from './logger.js';
+import logger, { Logger } from './logger.js';
 
-export { logger };
+export { Logger, logger };
