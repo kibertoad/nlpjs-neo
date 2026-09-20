@@ -316,7 +316,7 @@ describe('Container', () => {
     test('String pipelines ignore whitespace-only lines', async () => {
       const instance = new Container();
       instance.loadPipelinesFromString(
-        '## main\\nset input.value 1\\n  \\nget input.value'
+        '# Pipelines\\n## main\\nset input.value 1\\n  \\nget input.value'
       );
 
       const actual = await instance.runPipeline('main', {}, new Other());
