@@ -23,6 +23,7 @@
 
 import fs from 'node:fs';
 import http from 'node:http';
+import { ZipArchive } from 'archiver';
 import os from 'node:os';
 import path from 'node:path';
 import {
@@ -157,15 +158,32 @@ describe('FullBot utils', () => {
       expect(fs.existsSync(path.join(tgt, 'top.txt'))).toEqual(true);
     });
 
-    // `decompress` cannot tell a corrupt archive from an empty one: it
-    // resolves with an empty entry list instead of failing. Pinned so the
-    // change of behaviour is visible when the library is replaced.
-    test('restore should silently extract nothing for a file that is not a zip', async () => {
+    test('restore should reject for a file that is not a zip', async () => {
       const notAZip = path.join(workDir, 'not-a-zip.zip');
       fs.writeFileSync(notAZip, 'definitely not a zip archive');
       const tgt = path.join(workDir, 'tgt');
-      expect(await restore(notAZip, tgt)).toEqual([]);
+      await expect(restore(notAZip, tgt)).rejects.toThrow('Bad archive');
       expect(listFiles(tgt)).toEqual([]);
+    });
+
+    test('restore should not write outside the target folder', async () => {
+      const zipName = path.join(workDir, 'evil.zip');
+      const tgt = path.join(workDir, 'tgt');
+      await new Promise<void>((resolve, reject) => {
+        const output = fs.createWriteStream(zipName);
+        const archive = new ZipArchive();
+        output.on('close', () => resolve());
+        archive.on('error', reject);
+        archive.pipe(output);
+        archive.append('pwned', { name: '../../escaped.txt' });
+        archive.append('fine', { name: 'inside.txt' });
+        archive.finalize();
+      });
+      await restore(zipName, tgt).catch(() => undefined);
+      expect(fs.existsSync(path.join(workDir, 'escaped.txt'))).toEqual(false);
+      expect(fs.existsSync(path.resolve(workDir, '..', 'escaped.txt'))).toEqual(
+        false
+      );
     });
   });
 
@@ -240,6 +258,28 @@ describe('FullBot utils', () => {
       const previous = path.join(workDir, 'previous');
       await restore(path.join(backupFolder, backups[0]), previous);
       expect(fs.readFileSync(path.join(previous, 'top.txt'), 'utf8')).toEqual(
+        'the old content\n'
+      );
+    });
+
+    test('It should roll back to the backup when the archive is broken', async () => {
+      const dir = path.join(workDir, 'bot');
+      const backupFolder = path.join(workDir, 'bot-backups');
+      makeTree(dir);
+      fs.writeFileSync(path.join(dir, 'top.txt'), 'the old content\n');
+      zipBody = Buffer.from('definitely not a zip archive');
+
+      const actual = await mount({
+        url: `${baseUrl}/model.zip`,
+        fileName: 'model.zip',
+        dir,
+        tmpFolder: path.join(workDir, 'tmp'),
+        backupFolder,
+        showProgress: false,
+      });
+
+      expect(actual).toEqual(false);
+      expect(fs.readFileSync(path.join(dir, 'top.txt'), 'utf8')).toEqual(
         'the old content\n'
       );
     });

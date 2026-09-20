@@ -24,7 +24,7 @@
 import fs from 'fs';
 import { ZipArchive } from 'archiver';
 import path from 'path';
-import decompress from 'decompress';
+import StreamZip from 'node-stream-zip';
 import { Downloader } from '@nlpjs-neo/utils';
 
 function pad(n, l = 2) {
@@ -70,11 +70,14 @@ async function backup(srcFolder, tgtFolder) {
   return tgtName;
 }
 
-function restore(fileName, tgtFolder) {
-  return new Promise((resolve, reject) => {
-    ensureDir(tgtFolder);
-    decompress(fileName, tgtFolder).then(resolve).catch(reject);
-  });
+async function restore(fileName, tgtFolder) {
+  ensureDir(tgtFolder);
+  const zip = new StreamZip.async({ file: fileName });
+  try {
+    return await zip.extract(null, tgtFolder);
+  } finally {
+    await zip.close();
+  }
 }
 
 async function mount(options) {
