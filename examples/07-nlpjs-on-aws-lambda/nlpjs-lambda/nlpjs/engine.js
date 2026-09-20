@@ -1,43 +1,62 @@
-/* oxlint-disable no-console */
+import { existsSync } from 'node:fs';
 
-const fs = require('fs');
+import { NlpManager } from 'node-nlp-neo';
 
-// const { NlpManager } = require('node-nlp');
-const { NlpManager } = require('../../../../packages/node-nlp/src');
-
+const LANGUAGE = 'en';
 const DEFAULT_PHRASE = 'Hi';
 
-const MODEL_FILEPATH = '/tmp/model.nlp';
+// Lambda gives every execution environment its own writable /tmp, so a model
+// trained by one invocation is reused by the next one on the same container.
+const MODEL_PATH = '/tmp/model.nlp';
 
-const manager = new NlpManager({ languages: ['en'], autoSave: false, autoLoad: false });
+function addCorpus(manager) {
+  // Adds the utterances and intents for the NLP
+  manager.addDocument(LANGUAGE, 'goodbye for now', 'greetings.bye');
+  manager.addDocument(LANGUAGE, 'bye bye take care', 'greetings.bye');
+  manager.addDocument(LANGUAGE, 'okay see you later', 'greetings.bye');
+  manager.addDocument(LANGUAGE, 'bye for now', 'greetings.bye');
+  manager.addDocument(LANGUAGE, 'i must go', 'greetings.bye');
+  manager.addDocument(LANGUAGE, 'hello', 'greetings.hello');
+  manager.addDocument(LANGUAGE, DEFAULT_PHRASE, 'greetings.hello');
+  manager.addDocument(LANGUAGE, 'howdy', 'greetings.hello');
 
-if (fs.existsSync(MODEL_FILEPATH)) {
-    manager.load(MODEL_FILEPATH);
-} else {
-    // Adds the utterances and intents for the NLP
-    manager.addDocument('en', 'goodbye for now', 'greetings.bye');
-    manager.addDocument('en', 'bye bye take care', 'greetings.bye');
-    manager.addDocument('en', 'okay see you later', 'greetings.bye');
-    manager.addDocument('en', 'bye for now', 'greetings.bye');
-    manager.addDocument('en', 'i must go', 'greetings.bye');
-    manager.addDocument('en', 'hello', 'greetings.hello');
-    manager.addDocument('en', DEFAULT_PHRASE, 'greetings.hello');
-    manager.addDocument('en', 'howdy', 'greetings.hello');
-
-    // Train also the NLG
-    manager.addAnswer('en', 'greetings.bye', 'Till next time');
-    manager.addAnswer('en', 'greetings.bye', 'see you soon!');
-    manager.addAnswer('en', 'greetings.hello', 'Hey there!');
-    manager.addAnswer('en', 'greetings.hello', 'Greetings!');
-
-    // Train and save the model.
-    (async() => {
-        await manager.train();
-        manager.save(MODEL_FILEPATH);
-    })();
+  // Train also the NLG
+  manager.addAnswer(LANGUAGE, 'greetings.bye', 'Till next time');
+  manager.addAnswer(LANGUAGE, 'greetings.bye', 'see you soon!');
+  manager.addAnswer(LANGUAGE, 'greetings.hello', 'Hey there!');
+  manager.addAnswer(LANGUAGE, 'greetings.hello', 'Greetings!');
 }
 
-exports.engine = {
-    default_phrase: DEFAULT_PHRASE,
-    process: (phrase) => manager.process('en', phrase)
+async function buildManager() {
+  const manager = new NlpManager({
+    languages: [LANGUAGE],
+    autoSave: false,
+    autoLoad: false,
+  });
+
+  if (existsSync(MODEL_PATH)) {
+    console.info('LOADING THE MODEL FROM', MODEL_PATH);
+    manager.load(MODEL_PATH);
+    return manager;
+  }
+
+  console.info('TRAINING A NEW MODEL');
+  addCorpus(manager);
+  await manager.train();
+  manager.save(MODEL_PATH);
+  return manager;
+}
+
+// Kept as a promise rather than awaited at module scope: the first invocation
+// waits for the training, every later one on the same container gets the
+// already resolved promise.
+let managerPromise;
+
+export const engine = {
+  defaultPhrase: DEFAULT_PHRASE,
+  async process(phrase) {
+    managerPromise ??= buildManager();
+    const manager = await managerPromise;
+    return manager.process(LANGUAGE, phrase);
+  },
 };

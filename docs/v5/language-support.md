@@ -134,8 +134,8 @@ container.use(LangKo);
 ```
 
 From a `conf.json` the same plugin is named in the `use` list, for example
-`"use": ["Basic", "LangEn", "ConsoleConnector"]`. Not every language package is resolvable
-by name yet; when the name is not known by the loader, mount the class in code as above.
+`"use": ["Basic", "LangEn", "ConsoleConnector"]`. Every language package is resolvable by
+name, and `"LangAll"` mounts all of them at once.
 
 
 ## Sentiment Analysis

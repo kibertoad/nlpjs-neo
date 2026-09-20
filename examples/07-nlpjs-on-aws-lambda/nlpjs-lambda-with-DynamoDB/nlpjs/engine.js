@@ -1,137 +1,112 @@
-/* oxlint-disable func-names */
-/* oxlint-disable no-console */
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import {
+  DynamoDBDocumentClient,
+  GetCommand,
+  PutCommand,
+} from '@aws-sdk/lib-dynamodb';
 
-// oxlint-disable-next-line import/no-extraneous-dependencies
-const aws = require('aws-sdk');
+import { NlpManager } from 'node-nlp-neo';
 
-const NOT_PROD_ENV = process.env.AWS_SAM_LOCAL === 'true';
-
-const dynamoDB = NOT_PROD_ENV ? new aws.DynamoDB({ endpoint : 'http://host.docker.internal:8000/', region: 'eu-west-1' }) : new aws.DynamoDB();
-
-if (NOT_PROD_ENV) console.info('>>>>>>>>>>>>>>>>>>> DynamoDb:', dynamoDB);
-
-const documentClient = new aws.DynamoDB.DocumentClient();
-
-// const { NlpManager } = require('node-nlp');
-const { NlpManager } = require('../../../../packages/node-nlp/src');
-
-const DEFAULT_LANGUAGE = 'en';
-
+const LANGUAGE = 'en';
 const DEFAULT_PHRASE = 'Hi';
 
+// The table is created by the SAM template; the model is a single row in it, so
+// every container of the function shares one trained model.
 const { MODEL_TABLENAME } = process.env;
+const MODEL_KEY = 'themodel';
 
-const MODEL_TABLENAME_KEY = 'themodel'; // 'ec4b835b-3aae-42a8-92d0-751bd55151fa';
+// Under `sam local` the table lives in a DynamoDB container started next to the
+// function, which the deployed client would not find.
+const isLocal = process.env.AWS_SAM_LOCAL === 'true';
+const localOptions = {
+  endpoint: 'http://host.docker.internal:8000/',
+  region: 'eu-west-1',
+};
 
-const manager = new NlpManager({ languages: [DEFAULT_LANGUAGE], autoSave: false, autoLoad: false });
+const documentClient = DynamoDBDocumentClient.from(
+  new DynamoDBClient(isLocal ? localOptions : {})
+);
 
-let isModelDefined = false;
-function defineModel() {
-    if (isModelDefined) {
-        console.debug('MODEL ALREADY GENERATED');
-        return;
-    }
+function addCorpus(manager) {
+  // Adds the utterances and intents for the NLP
+  manager.addDocument(LANGUAGE, 'goodbye for now', 'greetings.bye');
+  manager.addDocument(LANGUAGE, 'bye bye take care', 'greetings.bye');
+  manager.addDocument(LANGUAGE, 'okay see you later', 'greetings.bye');
+  manager.addDocument(LANGUAGE, 'bye for now', 'greetings.bye');
+  manager.addDocument(LANGUAGE, 'i must go', 'greetings.bye');
+  manager.addDocument(LANGUAGE, 'hello', 'greetings.hello');
+  manager.addDocument(LANGUAGE, DEFAULT_PHRASE, 'greetings.hello');
+  manager.addDocument(LANGUAGE, 'howdy', 'greetings.hello');
 
-    console.debug("GENERATING THE MODEL");
-    // Adds the utterances and intents for the NLP
-    manager.addDocument(DEFAULT_LANGUAGE, 'goodbye for now', 'greetings.bye');
-    manager.addDocument(DEFAULT_LANGUAGE, 'bye bye take care', 'greetings.bye');
-    manager.addDocument(DEFAULT_LANGUAGE, 'okay see you later', 'greetings.bye');
-    manager.addDocument(DEFAULT_LANGUAGE, 'bye for now', 'greetings.bye');
-    manager.addDocument(DEFAULT_LANGUAGE, 'i must go', 'greetings.bye');
-    manager.addDocument(DEFAULT_LANGUAGE, 'hello', 'greetings.hello');
-    manager.addDocument(DEFAULT_LANGUAGE, DEFAULT_PHRASE, 'greetings.hello');
-    manager.addDocument(DEFAULT_LANGUAGE, 'howdy', 'greetings.hello');
-
-    // Train also the NLG
-    manager.addAnswer(DEFAULT_LANGUAGE, 'greetings.bye', 'Till next time');
-    manager.addAnswer(DEFAULT_LANGUAGE, 'greetings.bye', 'see you soon!');
-    manager.addAnswer(DEFAULT_LANGUAGE, 'greetings.hello', 'Hey there!');
-    manager.addAnswer(DEFAULT_LANGUAGE, 'greetings.hello', 'Greetings!');
-
-    isModelDefined = true;
-    console.debug('MODEL GENERATED');
+  // Train also the NLG
+  manager.addAnswer(LANGUAGE, 'greetings.bye', 'Till next time');
+  manager.addAnswer(LANGUAGE, 'greetings.bye', 'see you soon!');
+  manager.addAnswer(LANGUAGE, 'greetings.hello', 'Hey there!');
+  manager.addAnswer(LANGUAGE, 'greetings.hello', 'Greetings!');
 }
 
-let isModelTrained = false;
-function trainModel() {
-    if (isModelTrained) {
-        console.debug('MODEL ALREADY TRAINED');
-        return;
-    }
-    console.debug("TRAINING THE MODEL");
-    (async() => {
-        await manager.train();
-    })();
-    isModelTrained = true;
-    console.debug('MODEL TRAINED');
-}
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#describeTable-property
-// https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/dynamodb-examples.html
-
-function regenerateModel(afterTrainCallback) {
-    defineModel();
-    trainModel();
-    if (afterTrainCallback) {
-        afterTrainCallback();
-    }
+// A model that cannot be read or written is not fatal: it is cheap enough to
+// train again, the work just is not shared with the next container.
+async function readStoredModel() {
+  try {
+    const { Item } = await documentClient.send(
+      new GetCommand({
+        TableName: MODEL_TABLENAME,
+        Key: { id: MODEL_KEY },
+      })
+    );
+    return Item?.model;
+  } catch (err) {
+    console.warn('COULD NOT READ THE STORED MODEL:', err);
+    return undefined;
+  }
 }
 
-function checkModel() {
-    const params = {
-        TableName: MODEL_TABLENAME
-    };
-
-    try {
-        const description = dynamoDB.describeTable(params, function(errDesc, dataDesc) {
-            if (errDesc) {
-                console.error("THERE IS A BIG PROBLEM! SEEMS THAT THE TABLE WHICH MUST CONTAIN THE MODEL DOESN'T EXIST: ", errDesc);
-                regenerateModel(null);
-            }
-            if (dataDesc.Table.ItemCount === 0) {
-                regenerateModel(function() {
-                    params.Item = { 'id': MODEL_TABLENAME_KEY, 'model': manager.export() };
-                    console.debug('SAVING MODEL INTO DynamoDB TABLE: ', params);
-                    documentClient.put(params, function(errPut, dataPut) {
-                        if (errPut) {
-                            console.error('ERROR SAVING THE GENERATED MODEL: ', errPut);
-                        }
-                        if (dataPut) {
-                            console.debug('MODEL SAVED INTO DynamDB TABLE: ', dataPut);
-                        } else if (!errPut) {
-                            console.warning('WITHOUT RESPONSE FROM "put" OPERATION');
-                        }
-                    });
-                });
-            } else { // dataDesc.Table.ItemCount > 0
-                console.info(`THE TABLE WITH A MODEL ALREADY EXISTS. THERE IS ${dataDesc.Table.ItemCount} ITEMS`);
-                params.Key = { id: MODEL_TABLENAME_KEY };
-                documentClient.get(params, function(errGet, dataGet) {
-                    if (errGet) {
-                        console.error('CANNOT GET RECORDS FROM TABLE: ', errGet);
-                        regenerateModel(null);
-                    }
-                    if (dataGet) {
-                        console.debug('SETTING THE MODEL RETRIEVED: ', dataGet);
-                        manager.import(dataGet.Item.model);
-                    } else if (!errGet) {
-                        console.error('NO-RECORD RETRIEVED FROM TABLE');
-                        regenerateModel(null);
-                    }
-                });
-            }
-        });
-
-        console.debug('DESCRIPTION: ', description);
-    } catch(excp) {
-        console.error('PROBLEMS ON INITIALIZATION OF THE THE MODEL: ', excp);
-        regenerateModel(null);
-    }
+async function storeModel(model) {
+  try {
+    await documentClient.send(
+      new PutCommand({
+        TableName: MODEL_TABLENAME,
+        Item: { id: MODEL_KEY, model },
+      })
+    );
+    console.info('MODEL STORED IN', MODEL_TABLENAME);
+  } catch (err) {
+    console.warn('COULD NOT STORE THE TRAINED MODEL:', err);
+  }
 }
 
-checkModel();
+async function buildManager() {
+  const manager = new NlpManager({
+    languages: [LANGUAGE],
+    autoSave: false,
+    autoLoad: false,
+  });
 
-exports.engine = {
-    default_phrase: DEFAULT_PHRASE,
-    process: (phrase) => manager.process(DEFAULT_LANGUAGE, phrase)
+  const storedModel = await readStoredModel();
+  if (storedModel) {
+    console.info('LOADING THE MODEL FROM', MODEL_TABLENAME);
+    manager.import(storedModel);
+    return manager;
+  }
+
+  console.info('TRAINING A NEW MODEL');
+  addCorpus(manager);
+  await manager.train();
+  await storeModel(manager.export());
+  return manager;
+}
+
+// Kept as a promise rather than awaited at module scope: the first invocation
+// waits for the training, every later one on the same container gets the
+// already resolved promise.
+let managerPromise;
+
+export const engine = {
+  defaultPhrase: DEFAULT_PHRASE,
+  async process(phrase) {
+    managerPromise ??= buildManager();
+    const manager = await managerPromise;
+    return manager.process(LANGUAGE, phrase);
+  },
 };

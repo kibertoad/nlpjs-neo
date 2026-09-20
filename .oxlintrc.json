@@ -27,7 +27,6 @@
     "dist/**",
     "node_modules/**",
     "docs/v3/static/scripts/**",
-    "examples/07-nlpjs-on-aws-lambda/**",
     "**/*BAK*"
   ],
   "overrides": [

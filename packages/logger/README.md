@@ -105,8 +105,8 @@ You can read the Code of Conduct at [Code of Conduct](https://github.com/kiberto
 ## Who is behind it
 
 NLP.js was created and developed by AXA Group Operations Spain S.A., with Jesus Seijas as
-its main author. nlpjs-neo is a maintained fork of that project, kept up by
-[Igor Savin](https://github.com/kibertoad) and the
+its main author; AXA Group is no longer involved in maintaining it. nlpjs-neo is a fork of
+that project, currently maintained by [Igor Savin](https://github.com/kibertoad) and the
 [contributors to the fork](https://github.com/kibertoad/nlpjs-neo/graphs/contributors).
 
 ## License

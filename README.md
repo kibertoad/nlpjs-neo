@@ -366,9 +366,10 @@ You can read the Code of Conduct at [Code of Conduct](CODE_OF_CONDUCT.md).
 
 NLP.js was created and developed by AXA Group Operations Spain S.A., with
 Jesus Seijas as its main author, and a long list of
-[contributors](https://github.com/axa-group/nlp.js/graphs/contributors).
+[contributors](https://github.com/axa-group/nlp.js/graphs/contributors). AXA Group is no
+longer involved in maintaining the library.
 
-nlpjs-neo is a fork of that project, maintained by
+nlpjs-neo is a fork of that project, currently maintained by
 [Igor Savin](https://github.com/kibertoad) and the
 [contributors to the fork](https://github.com/kibertoad/nlpjs-neo/graphs/contributors). The
 fork keeps the original codebase and license and modernizes the tooling around it. Open

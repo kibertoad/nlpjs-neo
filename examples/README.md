@@ -14,13 +14,17 @@ it: every example has the published import next to the workspace one, commented 
 the relative import for `node-nlp-neo` or for the `@nlpjs-neo/*` package named in the
 example.
 
+[07-nlpjs-on-aws-lambda](./07-nlpjs-on-aws-lambda) is the exception: `sam build` only
+packages what sits under the function's own directory, so those two functions depend on the
+published `node-nlp-neo` and are deployed rather than run from a clone.
+
 | Example | What it shows |
 | ------- | ------------- |
 | [01-container](./01-container) | The IoC container: registering plugins, settings and pipelines by hand |
 | [02-qna-classic](./02-qna-classic) | `NlpManager` trained in code, saving the model to a file and loading it back |
 | [03-qna-pipelines](./03-qna-pipelines) | The same bot driven by `conf.json`, `corpus.json` and `pipelines.md` |
 | [06-huge-ner](./06-huge-ner) | NER over a large entity list (every airport), with the threshold set for dictionary matching |
-| [07-nlpjs-on-aws-lambda](./07-nlpjs-on-aws-lambda) | Deploying a bot as an AWS Lambda function — **not yet updated for version 5** |
+| [07-nlpjs-on-aws-lambda](./07-nlpjs-on-aws-lambda) | Deploying a bot as an AWS Lambda function, with the model in `/tmp` or in DynamoDB |
 | [08-neural-network](./08-neural-network) | `NeuralNetwork` on its own: training, export and import, logging, parameters |
 | [09-logger](./09-logger) | The default loggers and how to register your own |
 | [10-remove-emojis](./10-remove-emojis) | `removeEmojis` from `@nlpjs-neo/emoji` |

@@ -1,23 +1,28 @@
 {
   "name": "@nlpjs-neo/core-loader",
   "version": "6.0.0",
-  "description": "Core",
+  "description": "Container loader: builds a container from conf.json, pipelines and plugins",
   "author": {
-    "email": "opensource@axa.com",
-    "name": "Jesus Seijas"
+    "name": "Igor Savin",
+    "email": "kibertoad@gmail.com",
+    "url": "https://github.com/kibertoad"
   },
+  "contributors": [
+    {
+      "name": "Jesus Seijas",
+      "email": "opensource@axa.com",
+      "url": "https://github.com/axa-group/nlp.js"
+    }
+  ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/axa-group/nlp.js.git"
+    "url": "git+https://github.com/kibertoad/nlpjs-neo.git"
   },
   "bugs": {
-    "url": "https://github.com/axa-group/nlp.js/issues"
+    "url": "https://github.com/kibertoad/nlpjs-neo/issues"
   },
+  "homepage": "https://github.com/kibertoad/nlpjs-neo/tree/main/packages/core-loader#readme",
   "maintainers": [
-    {
-      "email": "opensource@axa.com",
-      "name": "Jesus Seijas"
-    },
     {
       "name": "Igor Savin",
       "email": "kibertoad@gmail.com",
