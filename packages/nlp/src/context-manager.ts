@@ -30,7 +30,7 @@ class ContextManager extends Clonable {
   registerDefault() {
     this.container.registerConfiguration('context-manager', {
       tableName: 'context',
-    });
+    }, false);
   }
 
   async getInputContextId(input) {
