@@ -39,7 +39,7 @@ describe('Stemmer Korean', () => {
       const root = '가다';
       initDicts();
       const forms = Object.keys(conjugate([root], false));
-      const form = forms.find((item) => dictionary[item]?.root === root);
+      const _form = forms.find((item) => dictionary[item]?.root === root);
 
       expect(
         Object.values(dictionary).some(
