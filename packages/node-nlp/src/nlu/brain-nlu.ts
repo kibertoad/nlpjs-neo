@@ -15,10 +15,10 @@ class BrainNLU {
     }
     this.container = this.settings.container;
     this.container.use(LangAll);
-    if (!this.settings.l)
-      this.nlu = new NluNeural({
-        locale: this.settings.locale || this.settings.language || 'en',
-      });
+    this.nlu = new NluNeural({
+      container: this.container,
+      locale: this.settings.locale || this.settings.language || 'en',
+    });
     this.corpus = [];
   }
 

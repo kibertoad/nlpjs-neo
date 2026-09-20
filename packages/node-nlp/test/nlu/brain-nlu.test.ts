@@ -1,3 +1,4 @@
+import { containerBootstrap } from '@nlpjs-neo/core-loader';
 import { BrainNLU } from '../../src/index.js';
 
 describe('Brain NLU', () => {
@@ -5,6 +6,17 @@ describe('Brain NLU', () => {
     test('Should create a new instance', () => {
       const nlu = new BrainNLU();
       expect(nlu).toBeDefined();
+    });
+    test('Should initialize the neural NLU when settings include l', () => {
+      const nlu = new BrainNLU({ l: true });
+
+      expect(nlu.nlu).toBeDefined();
+    });
+    test('Should pass its container to the neural NLU', () => {
+      const container = containerBootstrap();
+      const nlu = new BrainNLU({ container });
+
+      expect(nlu.nlu.container).toBe(container);
     });
   });
 
