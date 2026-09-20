@@ -1,7 +1,17 @@
 {
   "name": "@nlpjs-neo/neural",
   "version": "5.2.0",
-  "description": "Neural Network",
+  "description": "Neural network classifier that trains on utterances and classifies them into intents",
+  "keywords": [
+    "nlp",
+    "nlu",
+    "nlp.js",
+    "nlpjs-neo",
+    "neural network",
+    "classifier",
+    "machine learning",
+    "intent classification"
+  ],
   "author": {
     "name": "Igor Savin",
     "email": "kibertoad@gmail.com",
@@ -16,7 +26,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kibertoad/nlpjs-neo.git"
+    "url": "git+https://github.com/kibertoad/nlpjs-neo.git",
+    "directory": "packages/neural"
   },
   "bugs": {
     "url": "https://github.com/kibertoad/nlpjs-neo/issues"
@@ -41,12 +52,20 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "!dist/.tsbuildinfo",
+    "README.md",
+    "LICENSE.md",
+    "CHANGELOG.md"
   ],
   "engines": {
     "node": ">=22.12.0"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
+    "prepublishOnly": "pnpm run build",
     "test": "echo \"Error: run tests from root\" && exit 1",
     "build": "tsc --build tsconfig.json",
     "clean": "tsc --build tsconfig.json --clean"

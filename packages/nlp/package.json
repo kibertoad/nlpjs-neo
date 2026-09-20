@@ -1,7 +1,19 @@
 {
   "name": "@nlpjs-neo/nlp",
   "version": "5.1.1",
-  "description": "Natural Language Processing",
+  "description": "Natural Language Processing manager tying together language detection, NER, NLU, sentiment analysis and NLG",
+  "keywords": [
+    "nlp",
+    "nlu",
+    "nlp.js",
+    "nlpjs-neo",
+    "natural language processing",
+    "chatbot",
+    "bot",
+    "intent classification",
+    "entity extraction",
+    "sentiment analysis"
+  ],
   "author": {
     "name": "Igor Savin",
     "email": "kibertoad@gmail.com",
@@ -16,7 +28,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kibertoad/nlpjs-neo.git"
+    "url": "git+https://github.com/kibertoad/nlpjs-neo.git",
+    "directory": "packages/nlp"
   },
   "bugs": {
     "url": "https://github.com/kibertoad/nlpjs-neo/issues"
@@ -41,12 +54,20 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "!dist/.tsbuildinfo",
+    "README.md",
+    "LICENSE.md",
+    "CHANGELOG.md"
   ],
   "engines": {
     "node": ">=22.12.0"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
+    "prepublishOnly": "pnpm run build",
     "test": "echo \"Error: run tests from root\" && exit 1",
     "build": "tsc --build tsconfig.json",
     "clean": "tsc --build tsconfig.json --clean"

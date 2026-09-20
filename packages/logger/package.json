@@ -1,7 +1,15 @@
 {
   "name": "@nlpjs-neo/logger",
   "version": "5.2.1",
-  "description": "Logger",
+  "description": "Logger plugin for the NLP.js Neo container",
+  "keywords": [
+    "nlp",
+    "nlu",
+    "nlp.js",
+    "nlpjs-neo",
+    "logger",
+    "logging"
+  ],
   "author": {
     "name": "Igor Savin",
     "email": "kibertoad@gmail.com",
@@ -16,7 +24,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kibertoad/nlpjs-neo.git"
+    "url": "git+https://github.com/kibertoad/nlpjs-neo.git",
+    "directory": "packages/logger"
   },
   "bugs": {
     "url": "https://github.com/kibertoad/nlpjs-neo/issues"
@@ -41,12 +50,20 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "!dist/.tsbuildinfo",
+    "README.md",
+    "LICENSE.md",
+    "CHANGELOG.md"
   ],
   "engines": {
     "node": ">=22.12.0"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
+    "prepublishOnly": "pnpm run build",
     "test": "echo \"Error: run tests from root\" && exit 1",
     "build": "tsc --build tsconfig.json",
     "clean": "tsc --build tsconfig.json --clean"

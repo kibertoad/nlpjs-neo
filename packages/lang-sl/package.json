@@ -2,6 +2,19 @@
   "name": "@nlpjs-neo/lang-sl",
   "version": "5.1.1",
   "description": "Slovenian language support for NLP.js Neo",
+  "keywords": [
+    "nlp",
+    "nlu",
+    "nlp.js",
+    "nlpjs-neo",
+    "slovenian",
+    "sl",
+    "stemmer",
+    "tokenizer",
+    "stopwords",
+    "sentiment analysis",
+    "i18n"
+  ],
   "author": {
     "name": "Igor Savin",
     "email": "kibertoad@gmail.com",
@@ -16,7 +29,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kibertoad/nlpjs-neo.git"
+    "url": "git+https://github.com/kibertoad/nlpjs-neo.git",
+    "directory": "packages/lang-sl"
   },
   "bugs": {
     "url": "https://github.com/kibertoad/nlpjs-neo/issues"
@@ -41,12 +55,20 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "!dist/.tsbuildinfo",
+    "README.md",
+    "LICENSE.md",
+    "CHANGELOG.md"
   ],
   "engines": {
     "node": ">=22.12.0"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
+    "prepublishOnly": "pnpm run build",
     "test": "echo \"Error: run tests from root\" && exit 1",
     "build": "tsc --build tsconfig.json",
     "clean": "tsc --build tsconfig.json --clean"

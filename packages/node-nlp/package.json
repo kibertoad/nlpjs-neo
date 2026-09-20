@@ -2,6 +2,23 @@
   "name": "node-nlp-neo",
   "version": "6.0.0",
   "description": "Library for NLU (Natural Language Understanding) done in Node.js",
+  "keywords": [
+    "nlp",
+    "nlu",
+    "nlp.js",
+    "nlpjs-neo",
+    "natural language processing",
+    "natural language understanding",
+    "natural language generation",
+    "artificial intelligence",
+    "sentiment analysis",
+    "classifier",
+    "logistic regression",
+    "entity extraction",
+    "named entity recognition",
+    "chatbot",
+    "bot"
+  ],
   "author": {
     "name": "Igor Savin",
     "email": "kibertoad@gmail.com",
@@ -16,7 +33,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kibertoad/nlpjs-neo.git"
+    "url": "git+https://github.com/kibertoad/nlpjs-neo.git",
+    "directory": "packages/node-nlp"
   },
   "bugs": {
     "url": "https://github.com/kibertoad/nlpjs-neo/issues"
@@ -41,12 +59,20 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "!dist/.tsbuildinfo",
+    "README.md",
+    "LICENSE.md",
+    "CHANGELOG.md"
   ],
   "engines": {
     "node": ">=22.12.0"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
+    "prepublishOnly": "pnpm run build",
     "test": "echo \"Error: run tests from root\" && exit 1",
     "build": "tsc --build tsconfig.json",
     "clean": "tsc --build tsconfig.json --clean"
@@ -68,22 +94,5 @@
     "@nlpjs-neo/sentiment": "workspace:^",
     "@nlpjs-neo/similarity": "workspace:^",
     "@nlpjs-neo/xtables": "workspace:^"
-  },
-  "keywords": [
-    "natural language processing",
-    "artifical intelligence",
-    "natural language understanding",
-    "natural language generation",
-    "NLP",
-    "NLU",
-    "NLG",
-    "sentiment analysis",
-    "classifier",
-    "logistic regression",
-    "Natural",
-    "entity extraction",
-    "named entity recognition",
-    "chatbot",
-    "bot"
-  ]
+  }
 }
