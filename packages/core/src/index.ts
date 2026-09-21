@@ -6,6 +6,7 @@ import Clonable from './clonable.js';
 import { Container, defaultContainer } from './container.js';
 import Normalizer from './normalizer.js';
 import ObjToArr from './obj-to-arr.js';
+import SnowballStemmer from './snowball-stemmer.js';
 import Stemmer from './stemmer.js';
 import Stopwords from './stopwords.js';
 import Tokenizer from './tokenizer.js';
@@ -49,6 +50,7 @@ export {
   loadEnvFromJson,
   Normalizer,
   ObjToArr,
+  SnowballStemmer,
   Stemmer,
   Stopwords,
   Tokenizer,

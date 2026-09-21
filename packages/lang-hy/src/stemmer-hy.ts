@@ -1,421 +1,154 @@
-import { Among, BaseStemmer } from '@nlpjs-neo/core';
+import { Among, SnowballStemmer } from '@nlpjs-neo/core';
+import type { ContainerHolder } from '@nlpjs-neo/core';
 
-/* oxlint-disable */
-class StemmerHy extends BaseStemmer {
-  declare I_p2: number;
-  declare I_pV: number;
-  declare static a_0: Among<StemmerHy>[];
-  declare static a_1: Among<StemmerHy>[];
-  declare static a_2: Among<StemmerHy>[];
-  declare static a_3: Among<StemmerHy>[];
-  declare static g_v: number[];
-
-  constructor(container) {
+/**
+ * Stemmer written by tools/snowball from armenian.sbl of Snowball at commit 411550d. Do not edit it by hand:
+ * change the Snowball program and generate it again.
+ */
+class StemmerHy extends SnowballStemmer {
+  constructor(container?: ContainerHolder) {
     super(container);
     this.name = 'stemmer-hy';
-    this.I_p2 = 0;
     this.I_pV = 0;
+    this.I_p2 = 0;
   }
 
-  r_mark_regions() {
-    let v_1;
+  r_mark_regions(): boolean {
     this.I_pV = this.limit;
     this.I_p2 = this.limit;
-    v_1 = this.cursor;
-    lab0: do {
-      golab1: while (true) {
-        lab2: do {
-          if (!this.in_grouping(StemmerHy.g_v, 1377, 1413)) {
-            break lab2;
-          }
-          break golab1;
-        } while (false);
-        if (this.cursor >= this.limit) {
-          break lab0;
-        }
-        this.cursor++;
+    const v_1 = this.cursor;
+    lab0: {
+      if (!this.gopast_in_grouping(StemmerHy.g_v, 1377, 1413)) {
+        break lab0;
       }
       this.I_pV = this.cursor;
-      golab3: while (true) {
-        lab4: do {
-          if (!this.out_grouping(StemmerHy.g_v, 1377, 1413)) {
-            break lab4;
-          }
-          break golab3;
-        } while (false);
-        if (this.cursor >= this.limit) {
-          break lab0;
-        }
-        this.cursor++;
+      if (!this.gopast_out_grouping(StemmerHy.g_v, 1377, 1413)) {
+        break lab0;
       }
-      golab5: while (true) {
-        lab6: do {
-          if (!this.in_grouping(StemmerHy.g_v, 1377, 1413)) {
-            break lab6;
-          }
-          break golab5;
-        } while (false);
-        if (this.cursor >= this.limit) {
-          break lab0;
-        }
-        this.cursor++;
+      if (!this.gopast_in_grouping(StemmerHy.g_v, 1377, 1413)) {
+        break lab0;
       }
-      golab7: while (true) {
-        lab8: do {
-          if (!this.out_grouping(StemmerHy.g_v, 1377, 1413)) {
-            break lab8;
-          }
-          break golab7;
-        } while (false);
-        if (this.cursor >= this.limit) {
-          break lab0;
-        }
-        this.cursor++;
+      if (!this.gopast_out_grouping(StemmerHy.g_v, 1377, 1413)) {
+        break lab0;
       }
       this.I_p2 = this.cursor;
-    } while (false);
+    }
     this.cursor = v_1;
     return true;
   }
-  r_R2() {
-    if (!(this.I_p2 <= this.cursor)) {
-      return false;
-    }
-    return true;
-  }
-  r_adjective() {
-    let among_var;
-    this.ket = this.cursor;
-    among_var = this.find_among_b(StemmerHy.a_0);
+
+  r_adjective(): boolean {
+    const among_var = this.find_slice_b(StemmerHy.a_0);
     if (among_var === 0) {
       return false;
     }
-    this.bra = this.cursor;
     switch (among_var) {
-      case 0:
-        return false;
       case 1:
         this.slice_del();
         break;
     }
     return true;
   }
-  r_verb() {
-    let among_var;
-    this.ket = this.cursor;
-    among_var = this.find_among_b(StemmerHy.a_1);
+
+  r_verb(): boolean {
+    const among_var = this.find_slice_b(StemmerHy.a_1);
     if (among_var === 0) {
       return false;
     }
-    this.bra = this.cursor;
     switch (among_var) {
-      case 0:
-        return false;
       case 1:
         this.slice_del();
         break;
     }
     return true;
   }
-  r_noun() {
-    let among_var;
-    this.ket = this.cursor;
-    among_var = this.find_among_b(StemmerHy.a_2);
+
+  r_noun(): boolean {
+    const among_var = this.find_slice_b(StemmerHy.a_2);
     if (among_var === 0) {
       return false;
     }
-    this.bra = this.cursor;
     switch (among_var) {
-      case 0:
-        return false;
       case 1:
         this.slice_del();
         break;
     }
     return true;
   }
-  r_ending() {
-    let among_var;
-    this.ket = this.cursor;
-    among_var = this.find_among_b(StemmerHy.a_3);
+
+  r_ending(): boolean {
+    const among_var = this.find_slice_b(StemmerHy.a_3);
     if (among_var === 0) {
       return false;
     }
-    this.bra = this.cursor;
     if (!this.r_R2()) {
       return false;
     }
     switch (among_var) {
-      case 0:
-        return false;
       case 1:
         this.slice_del();
         break;
     }
     return true;
   }
-  innerStem() {
-    let v_1;
-    let v_2;
-    let v_3;
-    let v_4;
-    let v_5;
-    let v_6;
-    let v_7;
-    v_1 = this.cursor;
-    lab0: do {
-      if (!this.r_mark_regions()) {
-        break lab0;
-      }
-    } while (false);
-    this.cursor = v_1;
+
+  innerStem(): boolean {
+    this.r_mark_regions();
     this.limit_backward = this.cursor;
     this.cursor = this.limit;
-    v_2 = this.limit - this.cursor;
     if (this.cursor < this.I_pV) {
       return false;
     }
-    this.cursor = this.I_pV;
-    v_3 = this.limit_backward;
-    this.limit_backward = this.cursor;
-    this.cursor = this.limit - v_2;
-    v_4 = this.limit - this.cursor;
-    lab1: do {
-      if (!this.r_ending()) {
-        break lab1;
-      }
-    } while (false);
-    this.cursor = this.limit - v_4;
-    v_5 = this.limit - this.cursor;
-    lab2: do {
-      if (!this.r_verb()) {
-        break lab2;
-      }
-    } while (false);
-    this.cursor = this.limit - v_5;
-    v_6 = this.limit - this.cursor;
-    lab3: do {
-      if (!this.r_adjective()) {
-        break lab3;
-      }
-    } while (false);
-    this.cursor = this.limit - v_6;
-    v_7 = this.limit - this.cursor;
-    lab4: do {
-      if (!this.r_noun()) {
-        break lab4;
-      }
-    } while (false);
-    this.cursor = this.limit - v_7;
-    this.limit_backward = v_3;
+    const v_1 = this.limit_backward;
+    this.limit_backward = this.I_pV;
+    this.do_backward(this.r_ending);
+    this.do_backward(this.r_verb);
+    this.do_backward(this.r_adjective);
+    this.do_backward(this.r_noun);
+    this.limit_backward = v_1;
     this.cursor = this.limit_backward;
     return true;
   }
+
+  static g_v: number[] = [209, 4, 128, 0, 18];
+
+  static a_0 = Among.table<StemmerHy>(`
+    րորդ,-1,1 երորդ,0,1 ալի,-1,1 ակի,-1,1 որակ,-1,1 եղ,-1,1 ական,-1,1 արան,-1,1
+    են,-1,1 եկեն,8,1 երեն,8,1 որէն,-1,1 ին,-1,1 գին,12,1 ովին,12,1 լայն,-1,1
+    վուն,-1,1 պես,-1,1 իվ,-1,1 ատ,-1,1 ավետ,-1,1 կոտ,-1,1 բար,-1,1
+  `);
+
+  static a_1 = Among.table<StemmerHy>(`
+    ա,-1,1 ացա,0,1 եցա,0,1 վե,-1,1 ացրի,-1,1 ացի,-1,1 եցի,-1,1 վեցի,6,1 ալ,-1,1
+    ըալ,8,1 անալ,8,1 ենալ,8,1 ացնալ,8,1 ել,-1,1 ըել,13,1 նել,13,1 ցնել,15,1
+    եցնել,16,1 չել,13,1 վել,13,1 ացվել,19,1 եցվել,19,1 տել,13,1 ատել,22,1
+    ոտել,22,1 կոտել,24,1 ված,-1,1 ում,-1,1 վում,27,1 ան,-1,1 ցան,29,1 ացան,30,1
+    ացրին,-1,1 ացին,-1,1 եցին,-1,1 վեցին,34,1 ալիս,-1,1 ելիս,-1,1 ավ,-1,1
+    ացավ,38,1 եցավ,38,1 ալով,-1,1 ելով,-1,1 ար,-1,1 ացար,43,1 եցար,43,1
+    ացրիր,-1,1 ացիր,-1,1 եցիր,-1,1 վեցիր,48,1 աց,-1,1 եց,-1,1 ացրեց,51,1
+    ալուց,-1,1 ելուց,-1,1 ալու,-1,1 ելու,-1,1 աք,-1,1 ցաք,57,1 ացաք,58,1
+    ացրիք,-1,1 ացիք,-1,1 եցիք,-1,1 վեցիք,62,1 անք,-1,1 ցանք,64,1 ացանք,65,1
+    ացրինք,-1,1 ացինք,-1,1 եցինք,-1,1 վեցինք,69,1
+  `);
+
+  static a_2 = Among.table<StemmerHy>(`
+    որդ,-1,1 ույթ,-1,1 ուհի,-1,1 ցի,-1,1 իլ,-1,1 ակ,-1,1 յակ,5,1 անակ,5,1
+    իկ,-1,1 ուկ,-1,1 ան,-1,1 պան,10,1 ստան,10,1 արան,10,1 եղէն,-1,1 յուն,-1,1
+    ություն,15,1 ածո,-1,1 իչ,-1,1 ուս,-1,1 ուստ,-1,1 գար,-1,1 վոր,-1,1 ավոր,22,1
+    ոց,-1,1 անօց,-1,1 ու,-1,1 ք,-1,1 չեք,27,1 իք,27,1 ալիք,29,1 անիք,29,1
+    վածք,27,1 ույք,27,1 ենք,27,1 ոնք,27,1 ունք,27,1 մունք,36,1 իչք,27,1 արք,27,1
+  `);
+
+  static a_3 = Among.table<StemmerHy>(`
+    սա,-1,1 վա,-1,1 ամբ,-1,1 դ,-1,1 անդ,3,1 ությանդ,4,1 վանդ,4,1 ոջդ,3,1 երդ,3,1
+    ներդ,8,1 ուդ,3,1 ը,-1,1 անը,11,1 ությանը,12,1 վանը,12,1 ոջը,11,1 երը,11,1
+    ները,16,1 ի,-1,1 վի,18,1 երի,18,1 ների,20,1 անում,-1,1 երում,-1,1
+    ներում,23,1 ն,-1,1 ան,25,1 ության,26,1 վան,26,1 ին,25,1 երին,29,1 ներին,30,1
+    ությանն,25,1 երն,25,1 ներն,33,1 ուն,25,1 ոջ,-1,1 ությանս,-1,1 վանս,-1,1
+    ոջս,-1,1 ով,-1,1 անով,40,1 վով,40,1 երով,40,1 ներով,43,1 եր,-1,1 ներ,45,1
+    ց,-1,1 ից,47,1 վանից,48,1 ոջից,48,1 վից,48,1 երից,48,1 ներից,52,1 ցից,48,1
+    ոց,47,1 ուց,47,1
+  `);
 }
-
-StemmerHy.a_0 = [
-  new Among('\u0580\u0578\u0580\u0564', -1, 1),
-  new Among('\u0565\u0580\u0578\u0580\u0564', 0, 1),
-  new Among('\u0561\u056C\u056B', -1, 1),
-  new Among('\u0561\u056F\u056B', -1, 1),
-  new Among('\u0578\u0580\u0561\u056F', -1, 1),
-  new Among('\u0565\u0572', -1, 1),
-  new Among('\u0561\u056F\u0561\u0576', -1, 1),
-  new Among('\u0561\u0580\u0561\u0576', -1, 1),
-  new Among('\u0565\u0576', -1, 1),
-  new Among('\u0565\u056F\u0565\u0576', 8, 1),
-  new Among('\u0565\u0580\u0565\u0576', 8, 1),
-  new Among('\u0578\u0580\u0567\u0576', -1, 1),
-  new Among('\u056B\u0576', -1, 1),
-  new Among('\u0563\u056B\u0576', 12, 1),
-  new Among('\u0578\u057E\u056B\u0576', 12, 1),
-  new Among('\u056C\u0561\u0575\u0576', -1, 1),
-  new Among('\u057E\u0578\u0582\u0576', -1, 1),
-  new Among('\u057A\u0565\u057D', -1, 1),
-  new Among('\u056B\u057E', -1, 1),
-  new Among('\u0561\u057F', -1, 1),
-  new Among('\u0561\u057E\u0565\u057F', -1, 1),
-  new Among('\u056F\u0578\u057F', -1, 1),
-  new Among('\u0562\u0561\u0580', -1, 1),
-];
-
-StemmerHy.a_1 = [
-  new Among('\u0561', -1, 1),
-  new Among('\u0561\u0581\u0561', 0, 1),
-  new Among('\u0565\u0581\u0561', 0, 1),
-  new Among('\u057E\u0565', -1, 1),
-  new Among('\u0561\u0581\u0580\u056B', -1, 1),
-  new Among('\u0561\u0581\u056B', -1, 1),
-  new Among('\u0565\u0581\u056B', -1, 1),
-  new Among('\u057E\u0565\u0581\u056B', 6, 1),
-  new Among('\u0561\u056C', -1, 1),
-  new Among('\u0568\u0561\u056C', 8, 1),
-  new Among('\u0561\u0576\u0561\u056C', 8, 1),
-  new Among('\u0565\u0576\u0561\u056C', 8, 1),
-  new Among('\u0561\u0581\u0576\u0561\u056C', 8, 1),
-  new Among('\u0565\u056C', -1, 1),
-  new Among('\u0568\u0565\u056C', 13, 1),
-  new Among('\u0576\u0565\u056C', 13, 1),
-  new Among('\u0581\u0576\u0565\u056C', 15, 1),
-  new Among('\u0565\u0581\u0576\u0565\u056C', 16, 1),
-  new Among('\u0579\u0565\u056C', 13, 1),
-  new Among('\u057E\u0565\u056C', 13, 1),
-  new Among('\u0561\u0581\u057E\u0565\u056C', 19, 1),
-  new Among('\u0565\u0581\u057E\u0565\u056C', 19, 1),
-  new Among('\u057F\u0565\u056C', 13, 1),
-  new Among('\u0561\u057F\u0565\u056C', 22, 1),
-  new Among('\u0578\u057F\u0565\u056C', 22, 1),
-  new Among('\u056F\u0578\u057F\u0565\u056C', 24, 1),
-  new Among('\u057E\u0561\u056E', -1, 1),
-  new Among('\u0578\u0582\u0574', -1, 1),
-  new Among('\u057E\u0578\u0582\u0574', 27, 1),
-  new Among('\u0561\u0576', -1, 1),
-  new Among('\u0581\u0561\u0576', 29, 1),
-  new Among('\u0561\u0581\u0561\u0576', 30, 1),
-  new Among('\u0561\u0581\u0580\u056B\u0576', -1, 1),
-  new Among('\u0561\u0581\u056B\u0576', -1, 1),
-  new Among('\u0565\u0581\u056B\u0576', -1, 1),
-  new Among('\u057E\u0565\u0581\u056B\u0576', 34, 1),
-  new Among('\u0561\u056C\u056B\u057D', -1, 1),
-  new Among('\u0565\u056C\u056B\u057D', -1, 1),
-  new Among('\u0561\u057E', -1, 1),
-  new Among('\u0561\u0581\u0561\u057E', 38, 1),
-  new Among('\u0565\u0581\u0561\u057E', 38, 1),
-  new Among('\u0561\u056C\u0578\u057E', -1, 1),
-  new Among('\u0565\u056C\u0578\u057E', -1, 1),
-  new Among('\u0561\u0580', -1, 1),
-  new Among('\u0561\u0581\u0561\u0580', 43, 1),
-  new Among('\u0565\u0581\u0561\u0580', 43, 1),
-  new Among('\u0561\u0581\u0580\u056B\u0580', -1, 1),
-  new Among('\u0561\u0581\u056B\u0580', -1, 1),
-  new Among('\u0565\u0581\u056B\u0580', -1, 1),
-  new Among('\u057E\u0565\u0581\u056B\u0580', 48, 1),
-  new Among('\u0561\u0581', -1, 1),
-  new Among('\u0565\u0581', -1, 1),
-  new Among('\u0561\u0581\u0580\u0565\u0581', 51, 1),
-  new Among('\u0561\u056C\u0578\u0582\u0581', -1, 1),
-  new Among('\u0565\u056C\u0578\u0582\u0581', -1, 1),
-  new Among('\u0561\u056C\u0578\u0582', -1, 1),
-  new Among('\u0565\u056C\u0578\u0582', -1, 1),
-  new Among('\u0561\u0584', -1, 1),
-  new Among('\u0581\u0561\u0584', 57, 1),
-  new Among('\u0561\u0581\u0561\u0584', 58, 1),
-  new Among('\u0561\u0581\u0580\u056B\u0584', -1, 1),
-  new Among('\u0561\u0581\u056B\u0584', -1, 1),
-  new Among('\u0565\u0581\u056B\u0584', -1, 1),
-  new Among('\u057E\u0565\u0581\u056B\u0584', 62, 1),
-  new Among('\u0561\u0576\u0584', -1, 1),
-  new Among('\u0581\u0561\u0576\u0584', 64, 1),
-  new Among('\u0561\u0581\u0561\u0576\u0584', 65, 1),
-  new Among('\u0561\u0581\u0580\u056B\u0576\u0584', -1, 1),
-  new Among('\u0561\u0581\u056B\u0576\u0584', -1, 1),
-  new Among('\u0565\u0581\u056B\u0576\u0584', -1, 1),
-  new Among('\u057E\u0565\u0581\u056B\u0576\u0584', 69, 1),
-];
-
-StemmerHy.a_2 = [
-  new Among('\u0578\u0580\u0564', -1, 1),
-  new Among('\u0578\u0582\u0575\u0569', -1, 1),
-  new Among('\u0578\u0582\u0570\u056B', -1, 1),
-  new Among('\u0581\u056B', -1, 1),
-  new Among('\u056B\u056C', -1, 1),
-  new Among('\u0561\u056F', -1, 1),
-  new Among('\u0575\u0561\u056F', 5, 1),
-  new Among('\u0561\u0576\u0561\u056F', 5, 1),
-  new Among('\u056B\u056F', -1, 1),
-  new Among('\u0578\u0582\u056F', -1, 1),
-  new Among('\u0561\u0576', -1, 1),
-  new Among('\u057A\u0561\u0576', 10, 1),
-  new Among('\u057D\u057F\u0561\u0576', 10, 1),
-  new Among('\u0561\u0580\u0561\u0576', 10, 1),
-  new Among('\u0565\u0572\u0567\u0576', -1, 1),
-  new Among('\u0575\u0578\u0582\u0576', -1, 1),
-  new Among('\u0578\u0582\u0569\u0575\u0578\u0582\u0576', 15, 1),
-  new Among('\u0561\u056E\u0578', -1, 1),
-  new Among('\u056B\u0579', -1, 1),
-  new Among('\u0578\u0582\u057D', -1, 1),
-  new Among('\u0578\u0582\u057D\u057F', -1, 1),
-  new Among('\u0563\u0561\u0580', -1, 1),
-  new Among('\u057E\u0578\u0580', -1, 1),
-  new Among('\u0561\u057E\u0578\u0580', 22, 1),
-  new Among('\u0578\u0581', -1, 1),
-  new Among('\u0561\u0576\u0585\u0581', -1, 1),
-  new Among('\u0578\u0582', -1, 1),
-  new Among('\u0584', -1, 1),
-  new Among('\u0579\u0565\u0584', 27, 1),
-  new Among('\u056B\u0584', 27, 1),
-  new Among('\u0561\u056C\u056B\u0584', 29, 1),
-  new Among('\u0561\u0576\u056B\u0584', 29, 1),
-  new Among('\u057E\u0561\u056E\u0584', 27, 1),
-  new Among('\u0578\u0582\u0575\u0584', 27, 1),
-  new Among('\u0565\u0576\u0584', 27, 1),
-  new Among('\u0578\u0576\u0584', 27, 1),
-  new Among('\u0578\u0582\u0576\u0584', 27, 1),
-  new Among('\u0574\u0578\u0582\u0576\u0584', 36, 1),
-  new Among('\u056B\u0579\u0584', 27, 1),
-  new Among('\u0561\u0580\u0584', 27, 1),
-];
-
-StemmerHy.a_3 = [
-  new Among('\u057D\u0561', -1, 1),
-  new Among('\u057E\u0561', -1, 1),
-  new Among('\u0561\u0574\u0562', -1, 1),
-  new Among('\u0564', -1, 1),
-  new Among('\u0561\u0576\u0564', 3, 1),
-  new Among('\u0578\u0582\u0569\u0575\u0561\u0576\u0564', 4, 1),
-  new Among('\u057E\u0561\u0576\u0564', 4, 1),
-  new Among('\u0578\u057B\u0564', 3, 1),
-  new Among('\u0565\u0580\u0564', 3, 1),
-  new Among('\u0576\u0565\u0580\u0564', 8, 1),
-  new Among('\u0578\u0582\u0564', 3, 1),
-  new Among('\u0568', -1, 1),
-  new Among('\u0561\u0576\u0568', 11, 1),
-  new Among('\u0578\u0582\u0569\u0575\u0561\u0576\u0568', 12, 1),
-  new Among('\u057E\u0561\u0576\u0568', 12, 1),
-  new Among('\u0578\u057B\u0568', 11, 1),
-  new Among('\u0565\u0580\u0568', 11, 1),
-  new Among('\u0576\u0565\u0580\u0568', 16, 1),
-  new Among('\u056B', -1, 1),
-  new Among('\u057E\u056B', 18, 1),
-  new Among('\u0565\u0580\u056B', 18, 1),
-  new Among('\u0576\u0565\u0580\u056B', 20, 1),
-  new Among('\u0561\u0576\u0578\u0582\u0574', -1, 1),
-  new Among('\u0565\u0580\u0578\u0582\u0574', -1, 1),
-  new Among('\u0576\u0565\u0580\u0578\u0582\u0574', 23, 1),
-  new Among('\u0576', -1, 1),
-  new Among('\u0561\u0576', 25, 1),
-  new Among('\u0578\u0582\u0569\u0575\u0561\u0576', 26, 1),
-  new Among('\u057E\u0561\u0576', 26, 1),
-  new Among('\u056B\u0576', 25, 1),
-  new Among('\u0565\u0580\u056B\u0576', 29, 1),
-  new Among('\u0576\u0565\u0580\u056B\u0576', 30, 1),
-  new Among('\u0578\u0582\u0569\u0575\u0561\u0576\u0576', 25, 1),
-  new Among('\u0565\u0580\u0576', 25, 1),
-  new Among('\u0576\u0565\u0580\u0576', 33, 1),
-  new Among('\u0578\u0582\u0576', 25, 1),
-  new Among('\u0578\u057B', -1, 1),
-  new Among('\u0578\u0582\u0569\u0575\u0561\u0576\u057D', -1, 1),
-  new Among('\u057E\u0561\u0576\u057D', -1, 1),
-  new Among('\u0578\u057B\u057D', -1, 1),
-  new Among('\u0578\u057E', -1, 1),
-  new Among('\u0561\u0576\u0578\u057E', 40, 1),
-  new Among('\u057E\u0578\u057E', 40, 1),
-  new Among('\u0565\u0580\u0578\u057E', 40, 1),
-  new Among('\u0576\u0565\u0580\u0578\u057E', 43, 1),
-  new Among('\u0565\u0580', -1, 1),
-  new Among('\u0576\u0565\u0580', 45, 1),
-  new Among('\u0581', -1, 1),
-  new Among('\u056B\u0581', 47, 1),
-  new Among('\u057E\u0561\u0576\u056B\u0581', 48, 1),
-  new Among('\u0578\u057B\u056B\u0581', 48, 1),
-  new Among('\u057E\u056B\u0581', 48, 1),
-  new Among('\u0565\u0580\u056B\u0581', 48, 1),
-  new Among('\u0576\u0565\u0580\u056B\u0581', 52, 1),
-  new Among('\u0581\u056B\u0581', 48, 1),
-  new Among('\u0578\u0581', 47, 1),
-  new Among('\u0578\u0582\u0581', 47, 1),
-];
-
-StemmerHy.g_v = [209, 4, 128, 0, 18];
 
 export default StemmerHy;

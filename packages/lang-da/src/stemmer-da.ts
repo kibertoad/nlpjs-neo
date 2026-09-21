@@ -1,443 +1,190 @@
-import { Among, BaseStemmer } from '@nlpjs-neo/core';
+import { Among, SnowballStemmer } from '@nlpjs-neo/core';
+import type { ContainerHolder } from '@nlpjs-neo/core';
 
-/* oxlint-disable */
-class StemmerDa extends BaseStemmer {
-  declare I_p1: number;
-  declare I_x: number;
+/**
+ * Stemmer written by tools/snowball from danish.sbl of Snowball 2.2.0. Do not edit it by hand:
+ * change the Snowball program and generate it again.
+ */
+class StemmerDa extends SnowballStemmer {
   declare S_ch: string;
-  declare static a_0: Among<StemmerDa>[];
-  declare static a_1: Among<StemmerDa>[];
-  declare static a_2: Among<StemmerDa>[];
-  declare static g_s_ending: number[];
-  declare static g_v: number[];
+  declare I_x: number;
 
-  constructor(container) {
+  constructor(container?: ContainerHolder) {
     super(container);
     this.name = 'stemmer-da';
-    this.I_x = 0;
-    this.I_p1 = 0;
     this.S_ch = '';
+    this.I_p1 = 0;
+    this.I_x = 0;
   }
 
-  copy_from(other) {
-    this.I_x = other.I_x;
-    this.I_p1 = other.I_p1;
-    this.S_ch = other.S_ch;
-    super.copy_from(other);
-  }
-
-  r_mark_regions() {
-    let v_1;
-    let v_2;
-    // (, line 29
+  r_mark_regions(): boolean {
     this.I_p1 = this.limit;
-    // test, line 33
-    v_1 = this.cursor;
-    // (, line 33
-    // hop, line 33
-    {
-      const c = this.cursor + 3;
-      if (c < 0 || c > this.limit) {
-        return false;
-      }
-      this.cursor = c;
+    const v_1 = this.cursor;
+    if (this.cursor + 3 > this.limit) {
+      return false;
     }
-    // setmark x, line 33
+    this.cursor += 3;
     this.I_x = this.cursor;
     this.cursor = v_1;
-    // goto, line 34
-    golab0: while (true) {
-      v_2 = this.cursor;
-      let lab1 = true;
-      while (lab1 == true) {
-        lab1 = false;
-        if (!this.in_grouping(StemmerDa.g_v, 97, 248)) {
-          break;
-        }
-        this.cursor = v_2;
-        break golab0;
-      }
-      this.cursor = v_2;
-      if (this.cursor >= this.limit) {
-        return false;
-      }
-      this.cursor++;
+    if (!this.goto_in_grouping(StemmerDa.g_v, 97, 248)) {
+      return false;
     }
-    // gopast, line 34
-    golab2: while (true) {
-      let lab3 = true;
-      while (lab3 == true) {
-        lab3 = false;
-        if (!this.out_grouping(StemmerDa.g_v, 97, 248)) {
-          break;
-        }
-        break golab2;
-      }
-      if (this.cursor >= this.limit) {
-        return false;
-      }
-      this.cursor++;
+    if (!this.gopast_out_grouping(StemmerDa.g_v, 97, 248)) {
+      return false;
     }
-    // setmark p1, line 34
     this.I_p1 = this.cursor;
-    // try, line 35
-    let lab4 = true;
-    while (lab4 == true) {
-      lab4 = false;
-      // (, line 35
-      if (!(this.I_p1 < this.I_x)) {
-        break;
+    lab0: {
+      if (this.I_p1 >= this.I_x) {
+        break lab0;
       }
       this.I_p1 = this.I_x;
     }
     return true;
   }
 
-  r_main_suffix() {
-    let among_var;
-    let v_1;
-    let v_2;
-    // (, line 40
-    // setlimit, line 41
-    v_1 = this.limit - this.cursor;
-    // tomark, line 41
+  r_main_suffix(): boolean {
     if (this.cursor < this.I_p1) {
       return false;
     }
-    this.cursor = this.I_p1;
-    v_2 = this.limit_backward;
-    this.limit_backward = this.cursor;
-    this.cursor = this.limit - v_1;
-    // (, line 41
-    // [, line 41
-    this.ket = this.cursor;
-    // substring, line 41
-    among_var = this.find_among_b(StemmerDa.a_0, 32);
-    if (among_var == 0) {
-      this.limit_backward = v_2;
+    const v_1 = this.limit_backward;
+    this.limit_backward = this.I_p1;
+    const among_var = this.find_slice_b(StemmerDa.a_0);
+    if (among_var === 0) {
+      this.limit_backward = v_1;
       return false;
     }
-    // ], line 41
-    this.bra = this.cursor;
-    this.limit_backward = v_2;
+    this.limit_backward = v_1;
     switch (among_var) {
-      case 0:
-        return false;
       case 1:
-        // (, line 48
-        // delete, line 48
-        if (!this.slice_del()) {
-          return false;
-        }
+        this.slice_del();
         break;
       case 2:
-        // (, line 50
         if (!this.in_grouping_b(StemmerDa.g_s_ending, 97, 229)) {
           return false;
         }
-        // delete, line 50
-        if (!this.slice_del()) {
-          return false;
-        }
+        this.slice_del();
         break;
     }
     return true;
   }
 
-  r_consonant_pair() {
-    let v_1;
-    let v_2;
-    let v_3;
-    // (, line 54
-    // test, line 55
-    v_1 = this.limit - this.cursor;
-    // (, line 55
-    // setlimit, line 56
-    v_2 = this.limit - this.cursor;
-    // tomark, line 56
+  r_consonant_pair(): boolean {
+    const v_1 = this.limit - this.cursor;
     if (this.cursor < this.I_p1) {
       return false;
     }
-    this.cursor = this.I_p1;
-    v_3 = this.limit_backward;
-    this.limit_backward = this.cursor;
-    this.cursor = this.limit - v_2;
-    // (, line 56
-    // [, line 56
-    this.ket = this.cursor;
-    // substring, line 56
-    if (this.find_among_b(StemmerDa.a_1, 4) == 0) {
-      this.limit_backward = v_3;
+    const v_2 = this.limit_backward;
+    this.limit_backward = this.I_p1;
+    if (this.find_slice_b(StemmerDa.a_1) === 0) {
+      this.limit_backward = v_2;
       return false;
     }
-    // ], line 56
-    this.bra = this.cursor;
-    this.limit_backward = v_3;
+    this.limit_backward = v_2;
     this.cursor = this.limit - v_1;
-    // next, line 62
     if (this.cursor <= this.limit_backward) {
       return false;
     }
     this.cursor--;
-    // ], line 62
     this.bra = this.cursor;
-    // delete, line 62
-    if (!this.slice_del()) {
-      return false;
-    }
+    this.slice_del();
     return true;
   }
 
-  r_other_suffix() {
-    let among_var;
-    let v_1;
-    let v_2;
-    let v_3;
-    let v_4;
-    // (, line 65
-    // do, line 66
-    v_1 = this.limit - this.cursor;
-    let lab0 = true;
-    while (lab0 == true) {
-      lab0 = false;
-      // (, line 66
-      // [, line 66
+  r_other_suffix(): boolean {
+    const v_1 = this.limit - this.cursor;
+    lab0: {
       this.ket = this.cursor;
-      // literal, line 66
-      if (!this.eq_s_b(2, 'st')) {
-        break;
+      if (!this.eq_s_b('st')) {
+        break lab0;
       }
-      // ], line 66
       this.bra = this.cursor;
-      // literal, line 66
-      if (!this.eq_s_b(2, 'ig')) {
-        break;
+      if (!this.eq_s_b('ig')) {
+        break lab0;
       }
-      // delete, line 66
-      if (!this.slice_del()) {
-        return false;
-      }
+      this.slice_del();
     }
     this.cursor = this.limit - v_1;
-    // setlimit, line 67
-    v_2 = this.limit - this.cursor;
-    // tomark, line 67
     if (this.cursor < this.I_p1) {
       return false;
     }
-    this.cursor = this.I_p1;
-    v_3 = this.limit_backward;
-    this.limit_backward = this.cursor;
-    this.cursor = this.limit - v_2;
-    // (, line 67
-    // [, line 67
-    this.ket = this.cursor;
-    // substring, line 67
-    among_var = this.find_among_b(StemmerDa.a_2, 5);
-    if (among_var == 0) {
-      this.limit_backward = v_3;
-      return false;
-    }
-    // ], line 67
-    this.bra = this.cursor;
-    this.limit_backward = v_3;
-    switch (among_var) {
-      case 0:
-        return false;
-      case 1:
-        // (, line 70
-        // delete, line 70
-        if (!this.slice_del()) {
-          return false;
-        }
-        // do, line 70
-        v_4 = this.limit - this.cursor;
-        var lab1 = true;
-        while (lab1 == true) {
-          lab1 = false;
-          // call consonant_pair, line 70
-          if (!this.r_consonant_pair()) {
-            break;
-          }
-        }
-        this.cursor = this.limit - v_4;
-        break;
-      case 2:
-        // (, line 72
-        // <-, line 72
-        if (!this.slice_from('l\u00F8s')) {
-          return false;
-        }
-        break;
-    }
-    return true;
-  }
-
-  r_undouble() {
-    let v_1;
-    let v_2;
-    // (, line 75
-    // setlimit, line 76
-    v_1 = this.limit - this.cursor;
-    // tomark, line 76
-    if (this.cursor < this.I_p1) {
-      return false;
-    }
-    this.cursor = this.I_p1;
-    v_2 = this.limit_backward;
-    this.limit_backward = this.cursor;
-    this.cursor = this.limit - v_1;
-    // (, line 76
-    // [, line 76
-    this.ket = this.cursor;
-    if (!this.out_grouping_b(StemmerDa.g_v, 97, 248)) {
+    const v_2 = this.limit_backward;
+    this.limit_backward = this.I_p1;
+    const among_var = this.find_slice_b(StemmerDa.a_2);
+    if (among_var === 0) {
       this.limit_backward = v_2;
       return false;
     }
-    // ], line 76
-    this.bra = this.cursor;
-    // -> ch, line 76
-    this.S_ch = this.slice_to(this.S_ch);
-    if (this.S_ch == '') {
+    this.limit_backward = v_2;
+    switch (among_var) {
+      case 1:
+        this.slice_del();
+        this.do_backward(this.r_consonant_pair);
+        break;
+      case 2:
+        this.slice_from('l\u00F8s');
+        break;
+    }
+    return true;
+  }
+
+  r_undouble(): boolean {
+    if (this.cursor < this.I_p1) {
       return false;
     }
-    this.limit_backward = v_2;
-    // name ch, line 77
+    const v_1 = this.limit_backward;
+    this.limit_backward = this.I_p1;
+    this.ket = this.cursor;
+    if (!this.in_grouping_b(StemmerDa.g_c, 98, 122)) {
+      this.limit_backward = v_1;
+      return false;
+    }
+    this.bra = this.cursor;
+    this.S_ch = this.slice_to();
+    this.limit_backward = v_1;
     if (!this.eq_s_b(this.S_ch)) {
       return false;
     }
-    // delete, line 78
-    if (!this.slice_del()) {
-      return false;
-    }
+    this.slice_del();
     return true;
   }
 
-  innerStem() {
-    let v_1;
-    let v_2;
-    let v_3;
-    let v_4;
-    let v_5;
-    // (, line 82
-    // do, line 84
-    v_1 = this.cursor;
-    let lab0 = true;
-    while (lab0 == true) {
-      lab0 = false;
-      // call mark_regions, line 84
-      if (!this.r_mark_regions()) {
-        break;
-      }
-    }
-    this.cursor = v_1;
-    // backwards, line 85
+  innerStem(): boolean {
+    this.do_forward(this.r_mark_regions);
     this.limit_backward = this.cursor;
     this.cursor = this.limit;
-    // (, line 85
-    // do, line 86
-    v_2 = this.limit - this.cursor;
-    let lab1 = true;
-    while (lab1 == true) {
-      lab1 = false;
-      // call main_suffix, line 86
-      if (!this.r_main_suffix()) {
-        break;
-      }
-    }
-    this.cursor = this.limit - v_2;
-    // do, line 87
-    v_3 = this.limit - this.cursor;
-    let lab2 = true;
-    while (lab2 == true) {
-      lab2 = false;
-      // call consonant_pair, line 87
-      if (!this.r_consonant_pair()) {
-        break;
-      }
-    }
-    this.cursor = this.limit - v_3;
-    // do, line 88
-    v_4 = this.limit - this.cursor;
-    let lab3 = true;
-    while (lab3 == true) {
-      lab3 = false;
-      // call other_suffix, line 88
-      if (!this.r_other_suffix()) {
-        break;
-      }
-    }
-    this.cursor = this.limit - v_4;
-    // do, line 89
-    v_5 = this.limit - this.cursor;
-    let lab4 = true;
-    while (lab4 == true) {
-      lab4 = false;
-      // call undouble, line 89
-      if (!this.r_undouble()) {
-        break;
-      }
-    }
-    this.cursor = this.limit - v_5;
+    this.do_backward(this.r_main_suffix);
+    this.do_backward(this.r_consonant_pair);
+    this.do_backward(this.r_other_suffix);
+    this.do_backward(this.r_undouble);
     this.cursor = this.limit_backward;
     return true;
   }
+
+  static g_c: number[] = [119, 223, 119, 1];
+
+  static g_v: number[] = [
+    17, 65, 16, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 48, 0, 128,
+  ];
+
+  static g_s_ending: number[] = [
+    239, 254, 42, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16,
+  ];
+
+  static a_0 = Among.table<StemmerDa>(`
+    hed,-1,1 ethed,0,1 ered,-1,1 e,-1,1 erede,3,1 ende,3,1 erende,5,1 ene,3,1
+    erne,3,1 ere,3,1 en,-1,1 heden,10,1 eren,10,1 er,-1,1 heder,13,1 erer,13,1
+    s,-1,2 heds,16,1 es,16,1 endes,18,1 erendes,19,1 enes,18,1 ernes,18,1
+    eres,18,1 ens,16,1 hedens,24,1 erens,24,1 ers,16,1 ets,16,1 erets,28,1
+    et,-1,1 eret,30,1
+  `);
+
+  static a_1 = Among.table<StemmerDa>(`
+    gd,-1,-1 dt,-1,-1 gt,-1,-1 kt,-1,-1
+  `);
+
+  static a_2 = Among.table<StemmerDa>(`
+    ig,-1,1 lig,0,1 elig,1,1 els,-1,1 løst,-1,2
+  `);
 }
-
-StemmerDa.a_0 = [
-  new Among('hed', -1, 1),
-  new Among('ethed', 0, 1),
-  new Among('ered', -1, 1),
-  new Among('e', -1, 1),
-  new Among('erede', 3, 1),
-  new Among('ende', 3, 1),
-  new Among('erende', 5, 1),
-  new Among('ene', 3, 1),
-  new Among('erne', 3, 1),
-  new Among('ere', 3, 1),
-  new Among('en', -1, 1),
-  new Among('heden', 10, 1),
-  new Among('eren', 10, 1),
-  new Among('er', -1, 1),
-  new Among('heder', 13, 1),
-  new Among('erer', 13, 1),
-  new Among('s', -1, 2),
-  new Among('heds', 16, 1),
-  new Among('es', 16, 1),
-  new Among('endes', 18, 1),
-  new Among('erendes', 19, 1),
-  new Among('enes', 18, 1),
-  new Among('ernes', 18, 1),
-  new Among('eres', 18, 1),
-  new Among('ens', 16, 1),
-  new Among('hedens', 24, 1),
-  new Among('erens', 24, 1),
-  new Among('ers', 16, 1),
-  new Among('ets', 16, 1),
-  new Among('erets', 28, 1),
-  new Among('et', -1, 1),
-  new Among('eret', 30, 1),
-];
-
-StemmerDa.a_1 = [
-  new Among('gd', -1, -1),
-  new Among('dt', -1, -1),
-  new Among('gt', -1, -1),
-  new Among('kt', -1, -1),
-];
-
-StemmerDa.a_2 = [
-  new Among('ig', -1, 1),
-  new Among('lig', 0, 1),
-  new Among('elig', 1, 1),
-  new Among('els', -1, 1),
-  new Among('l\u00F8st', -1, 2),
-];
-
-StemmerDa.g_v = [17, 65, 16, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 48, 0, 128];
-
-StemmerDa.g_s_ending = [
-  239, 254, 42, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16,
-];
 
 export default StemmerDa;

@@ -41,6 +41,23 @@ class Among<TStemmer extends BaseStemmer = BaseStemmer> {
     this.method = method;
     this.instance = instance;
   }
+
+  /**
+   * A table of amongs written as text, which is how the generated stemmers
+   * keep the long ones: entries separated by white space, each of them
+   * `string,prefix,result` (the fields of the constructor).
+   */
+  static table<TStemmer extends BaseStemmer = BaseStemmer>(
+    spec: string
+  ): Among<TStemmer>[] {
+    return spec
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((entry) => {
+        const [s, sub, result] = entry.split(',');
+        return new Among<TStemmer>(s, Number(sub), Number(result));
+      });
+  }
 }
 
 export default Among;
