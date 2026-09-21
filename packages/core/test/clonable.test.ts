@@ -54,6 +54,17 @@ describe('Clonable', () => {
       expect(json.surname).toEqual(settings.surname);
     });
 
+    test('Does not remove a live settings container during export', () => {
+      const instance = new Cloned(settings);
+      const container = {};
+      instance.settings = { container };
+
+      const json = instance.toJSON();
+
+      expect(json.settings.container).toBeUndefined();
+      expect(instance.settings.container).toBe(container);
+    });
+
     test('Export to JSON functions can return no value', () => {
       const instance = new Cloned(settings);
       instance.jsonExport.values = instance.writeValues;

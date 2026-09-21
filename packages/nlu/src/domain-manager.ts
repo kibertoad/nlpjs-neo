@@ -393,7 +393,7 @@ class DomainManager extends Clonable {
 
   toJSON() {
     const result = {
-      settings: this.settings,
+      settings: { ...this.settings },
       stemDict: this.stemDict,
       intentDict: this.intentDict,
       sentences: this.sentences,

@@ -18,6 +18,14 @@ describe('NLU Manager', () => {
       expect(manager.locales).toEqual(['en', 'es']);
       expect(Object.keys(manager.domainManagers)).toEqual(['en', 'es']);
     });
+    test('Does not remove its container from settings during serialization', () => {
+      const manager = new NluManager({ container });
+
+      const json = manager.toJSON();
+
+      expect(json.settings.container).toBeUndefined();
+      expect(manager.settings.container).toBe(container);
+    });
   });
 
   describe('Add language', () => {
