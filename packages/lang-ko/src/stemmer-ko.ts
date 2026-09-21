@@ -133,10 +133,15 @@ class StemmerKo extends BaseStemmer {
     this.setCurrent(value && value.root ? value.root : token);
   }
 
-  async stem(text, input) {
+  async stem(text, srcInput?) {
     initDicts();
+    const input = srcInput || {};
     const inputText =
-      typeof text === 'string' ? text : input.utterance || input.text;
+      typeof text === 'string'
+        ? text
+        : Array.isArray(text)
+          ? text.join(' ')
+          : input.utterance || input.text || '';
     const newText = this.tokenizer
       .tokenize(this.normalizer.normalize(inputText))
       .join(' ');

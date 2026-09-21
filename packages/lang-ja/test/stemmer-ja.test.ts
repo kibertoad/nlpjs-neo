@@ -29,6 +29,18 @@ describe('Stemmer Japanese', () => {
     await stemmer.init();
   });
 
+  test('Stems token arrays without pipeline input', async () => {
+    await expect(stemmer.stem([])).resolves.toEqual([]);
+  });
+
+  test('Awaits tokens when run as a pipeline step', async () => {
+    const input = { locale: 'ja', text: '', tokens: [] };
+
+    await stemmer.run(input);
+
+    expect(input.tokens).toEqual([]);
+  });
+
   describe('Kana helpers', () => {
     test('It should convert katakana to hiragana', () => {
       expect(stemmer.toHiragana('コンニチハ')).toEqual('こんにちは');

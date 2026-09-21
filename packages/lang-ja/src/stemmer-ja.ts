@@ -364,9 +364,15 @@ class StemmerJa extends BaseStemmer {
     return true;
   }
 
-  async stem(text, input) {
+  async stem(text, srcInput?) {
     await this.init();
-    text = input.text;
+    const input = srcInput || {};
+    text =
+      typeof text === 'string'
+        ? text
+        : Array.isArray(text)
+          ? text.join(' ')
+          : input.text || input.utterance || '';
     let tokens;
     const normalizeFormality =
       input.normalizeFormality === undefined ? true : input.normalizeFormality;
@@ -394,11 +400,14 @@ class StemmerJa extends BaseStemmer {
     return tokens;
   }
 
-  run(srcInput) {
+  async run(srcInput) {
     const input = srcInput;
     const locale = input.locale || 'en';
     const stemmer = this.container.get(`stemmer-${locale}`) || this;
-    input.tokens = stemmer.stem(input.text || input.tokens.join(' '), input);
+    input.tokens = await stemmer.stem(
+      input.text || input.tokens.join(' '),
+      input
+    );
     return input;
   }
 

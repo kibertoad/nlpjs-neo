@@ -34,6 +34,12 @@ const tests = [
 ];
 
 describe('Stemmer Korean', () => {
+  test('Stems token arrays without pipeline input', async () => {
+    const stemmer = new StemmerKo();
+
+    await expect(stemmer.stem([])).resolves.toEqual([]);
+  });
+
   describe('dictionary', () => {
     it('Maps conjugated verbs to their full multi-character root', () => {
       const root = '가다';

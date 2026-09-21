@@ -177,11 +177,11 @@ function removeStopwords(tokens, locale = 'en') {
   return stopwords.removeStopwords(tokens);
 }
 
-function dict(sentences, locale = 'en', useStemmer = false) {
+async function dict(sentences, locale = 'en', useStemmer = false) {
   const freqs: any = {};
   for (let i = 0; i < sentences.length; i += 1) {
     const current = useStemmer
-      ? stem(sentences[i], locale)
+      ? await stem(sentences[i], locale)
       : tokenize(sentences[i], locale).map((x) => x.toLowerCase());
     for (let j = 0; j < current.length; j += 1) {
       freqs[current[j]] = (freqs[current[j]] || 0) + 1;
@@ -202,9 +202,9 @@ function dict(sentences, locale = 'en', useStemmer = false) {
   };
 }
 
-function bow(sentence, voc) {
+async function bow(sentence, voc) {
   const current = voc.useStemmer
-    ? stem(sentence, voc.locale)
+    ? await stem(sentence, voc.locale)
     : tokenize(sentence, voc.locale).map((x) => x.toLowerCase());
   const result = new Array(voc.length).fill(0);
   for (let i = 0; i < current.length; i += 1) {

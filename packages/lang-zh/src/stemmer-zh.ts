@@ -98,9 +98,14 @@ class StemmerZh {
       .filter((x) => x);
   }
 
-  async stem(text, input) {
+  async stem(text, srcInput?) {
+    const input = srcInput || {};
     const inputText =
-      typeof text === 'string' ? text : input.utterance || input.text;
+      typeof text === 'string'
+        ? text
+        : Array.isArray(text)
+          ? text.join(' ')
+          : input.utterance || input.text || '';
     return this.processText(inputText);
   }
 

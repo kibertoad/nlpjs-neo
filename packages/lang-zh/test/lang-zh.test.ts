@@ -18,6 +18,12 @@ describe('Language Chinese', () => {
   });
 
   describe('Stemmer', () => {
+    test('Stems token arrays without pipeline input', async () => {
+      const stemmer = new StemmerZh(new Container());
+
+      await expect(stemmer.stem([])).resolves.toEqual([]);
+    });
+
     test('Removes Chinese punctuation before stemming', () => {
       const stemmer = new StemmerZh(new Container());
       expect(stemmer.clearText('a，b。c！d？')).toEqual('a b c d ');
