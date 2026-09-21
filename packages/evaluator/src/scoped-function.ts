@@ -1,5 +1,4 @@
 import type { Node } from 'acorn';
-import { generate as unparse } from 'astring';
 
 const HOST_GLOBAL_NAMES = [
   'process',
@@ -25,6 +24,18 @@ const HOST_GLOBAL_NAMES = [
   'queueMicrotask',
 ];
 
+/**
+ * Source text of a node. `parse` puts the source on every node it produces, and
+ * the text is what the author wrote, so nothing is regenerated.
+ */
+function sourceOf(node: Node): string {
+  const { sourceFile } = node as Node & { sourceFile?: string };
+  if (sourceFile === undefined) {
+    throw new Error('The node was not produced by the evaluator parser');
+  }
+  return sourceFile.slice(node.start, node.end);
+}
+
 function createScopedFunction(
   node: Node,
   context: Record<string, unknown>,
@@ -43,7 +54,7 @@ function createScopedFunction(
   // oxlint-disable-next-line
   return Function(
     keys.concat(blockedNames).join(', '),
-    `"use strict"; return ${unparse(node)}`
+    `"use strict"; return ${sourceOf(node)}`
   ).apply(undefined, values.concat(blockedValues));
 }
 
