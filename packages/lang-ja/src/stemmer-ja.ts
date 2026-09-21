@@ -419,11 +419,14 @@ class StemmerJa extends BaseStemmer {
     return tokens;
   }
 
-  run(srcInput) {
+  async run(srcInput) {
     const input = srcInput;
     const locale = input.locale || 'en';
     const stemmer = this.container.get<StemmerJa>(`stemmer-${locale}`) || this;
-    input.tokens = stemmer.stem(input.text || input.tokens.join(' '), input);
+    input.tokens = await stemmer.stem(
+      input.text || input.tokens.join(' '),
+      input
+    );
     return input;
   }
 
