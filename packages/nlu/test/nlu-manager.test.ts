@@ -262,6 +262,17 @@ describe('NLU Manager', () => {
       addPersonalityDomainEs(manager);
       await manager.train();
     });
+    test('Locales in the settings do not restrict which ones are trained', async () => {
+      const manager = new NluManager({ container, locales: ['en', 'es'] });
+      addFoodDomainEn(manager);
+      addPersonalityDomainEn(manager);
+      addFoodDomainEs(manager);
+      addPersonalityDomainEs(manager);
+      await manager.train({ locales: ['en'] });
+      const actual = await manager.process('es', 'dime quién eres tú');
+      expect(actual.intent).toEqual('agent.acquaintance');
+      expect(actual.score).toBeGreaterThan(0.8);
+    });
   });
 
   describe('Fill Language', () => {
@@ -360,6 +371,21 @@ describe('NLU Manager', () => {
       expect(actual.classifications).toHaveLength(2);
       expect(actual.classifications[0].intent).toEqual('agent.acquaintance');
       expect(actual.classifications[0].score).toBeGreaterThan(0.8);
+    });
+  });
+
+  describe('Nlu answer', () => {
+    test('The whole answer of the classifier is kept under nluAnswer', async () => {
+      const manager = new NluManager({ container, locales: ['en'] });
+      addFoodDomainEn(manager);
+      addPersonalityDomainEn(manager);
+      await manager.train();
+      const actual = await manager.process('en', 'tell me who you are');
+      expect(Array.isArray(actual.nluAnswer)).toBeFalsy();
+      expect(actual.nluAnswer?.classifications).toEqual(actual.classifications);
+      expect(actual.nluAnswer?.classifications[0].intent).toEqual(
+        'agent.acquaintance'
+      );
     });
   });
 

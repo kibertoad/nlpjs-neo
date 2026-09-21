@@ -120,14 +120,17 @@ export interface NluInputBase extends PipelineInput {
   settings?: NluSettings;
   /** Answers of the classifier, as a map while scoring and a list after. */
   classifications?: Record<Intent, number> | Classification[];
-  /** Answer of a `NluManager`, before it is normalized into classifications. */
-  nluAnswer?: Classification[];
   /** Legacy name a few classifiers answer their classifications under. */
   intents?: Record<Intent, number>;
 }
 
 /** Object flowing through the classifier pipelines. */
 export interface NluInput extends NluInputBase {
+  /**
+   * Classifications a custom process pipeline may leave here instead of
+   * under `classifications`; the normalizer moves them over.
+   */
+  nluAnswer?: Classification[];
   corpus?: CorpusEntry[] | PreparedCorpusEntry[];
   explanation?: NeuralExplanation;
   /** Filled in by `innerTrain` with how the training run went. */
@@ -167,6 +170,13 @@ export interface NluManagerSettings extends NluSettings {
 /** Object flowing through the manager pipelines. */
 export interface NluManagerInput extends NluInputBase {
   settings?: NluManagerSettings;
+  /**
+   * Locales to train, when a caller drives the training pipeline itself.
+   * `train` never fills it in, so it trains every language that was added.
+   */
+  locales?: Locale | Locale[];
+  /** Whole answer of the classifier a domain manager consulted. */
+  nluAnswer?: NluResult;
   /** Locale reduced to its two letter form, filled in by `fillLanguage`. */
   localeIso2?: Locale;
   /** English name of the language, when it is known. */
@@ -232,6 +242,8 @@ export interface DomainClassification {
  */
 export interface DomainManagerInput extends NluInputBase {
   settings?: DomainManagerSettings;
+  /** Whole answer of the classifier of the domain that was consulted. */
+  nluAnswer?: NluResult;
   /** Corpus grouped by domain, as `generateCorpus` builds it. */
   corpus?: Record<Domain, CorpusEntry[]>;
   /** Stems of the utterance, filled in by `prepare`. */

@@ -235,9 +235,9 @@ class NluManager extends Clonable {
   }
 
   async innerTrain(settings: NluManagerInput): Promise<unknown[]> {
-    let locales =
-      (settings.settings ? settings.settings.locales : undefined) ||
-      this.locales;
+    // The locales of the input, not the ones of its settings: `train` never
+    // fills them in, so every language that was added is trained.
+    let locales: Locale | Locale[] = settings.locales || this.locales;
     if (!Array.isArray(locales)) {
       locales = [locales];
     }

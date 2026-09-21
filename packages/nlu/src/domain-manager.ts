@@ -397,8 +397,10 @@ class DomainManager extends Clonable {
       if (Array.isArray(nluAnswer)) {
         classifications = nluAnswer;
       } else {
+        // The whole answer is kept, not only its classifications: it is
+        // what the caller reads back as `nluAnswer`.
         classifications = (nluAnswer as NluResult).classifications;
-        input.nluAnswer = classifications;
+        input.nluAnswer = nluAnswer as NluResult;
       }
       let finalDomain: Domain;
       if (domainName === defaultDomainName) {
