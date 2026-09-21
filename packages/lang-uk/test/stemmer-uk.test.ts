@@ -2,6 +2,11 @@ import StemmerUk from '../src/stemmer-uk.js';
 
 const stemmer = new StemmerUk();
 
+test('Stems the Cyrillic -ость suffix', () => {
+  const actual = stemmer.stemWord('\u0440\u0430\u0434\u043e\u0441\u0442\u044c');
+  expect(actual).toEqual('\u0440\u0430\u0434');
+});
+
 describe('Stemmer Ukranian', () => {
   describe('It should stem', () => {
     test('розмовляючи', () => {
