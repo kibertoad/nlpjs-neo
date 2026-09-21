@@ -19,7 +19,7 @@ describe('Language Thai', () => {
 
   describe('Tokenizer', () => {
     test('Does not emit empty tokens for whitespace gaps', () => {
-      const tokenizer = new TokenizerTh(new Container());
+      const tokenizer = new TokenizerTh(new Container(), false);
 
       expect(tokenizer.tokenize('สวัสดี ครับ ผมชื่อจอห์น')).toEqual([
         'สวัสดี',
