@@ -54,23 +54,25 @@ class MemoryStorage extends Clonable implements Storage {
     return clone;
   }
 
-  write(changes: Record<string, StorageItem>): Promise<StorageItem> {
-    return new Promise((resolve, reject) => {
-      Object.keys(changes).forEach((key) => {
-        const newItem = changes[key];
-        const oldStr = this.settings.memory[key];
-        if (!oldStr || newItem.eTag === '*') {
-          return resolve(this.saveItem(key, newItem));
-        }
+  async write(changes: Record<string, StorageItem>): Promise<StorageItem> {
+    const keys = Object.keys(changes);
+    for (let i = 0; i < keys.length; i += 1) {
+      const key = keys[i];
+      const newItem = changes[key];
+      const oldStr = this.settings.memory[key];
+      if (oldStr && newItem.eTag !== '*') {
         const oldItem = JSON.parse(oldStr);
         if (newItem.eTag !== oldItem.eTag) {
-          return reject(
-            new Error(`Error writing "${key}" due to eTag conflict.`)
-          );
+          throw new Error(`Error writing "${key}" due to eTag conflict.`);
         }
-        return resolve(this.saveItem(key, newItem));
-      });
-    });
+      }
+    }
+    let result: StorageItem = {};
+    for (let i = 0; i < keys.length; i += 1) {
+      const key = keys[i];
+      result = this.saveItem(key, changes[key]);
+    }
+    return result;
   }
 
   delete(keys: string[]): Promise<void> {
