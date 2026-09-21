@@ -238,27 +238,12 @@ class StemmerJa extends BaseStemmer {
    * @param {String} srcStr Input string
    */
   toRomaji(srcStr) {
-    const reghatu = new RegExp(
-      /(ん|ン)(?=あ|い|う|え|お|ア|イ|ウ|エ|オ|ぁ|ぃ|ぅ|ぇ|ぉ|ァ|ィ|ゥ|ェ|ォ|や|ゆ|よ|ヤ|ユ|ヨ|ゃ|ゅ|ょ|ャ|ュ|ョ)/g
+    // A syllabic n before a vowel or a y-kana takes an apostrophe, so that
+    // `hon'ya` is not read as `honya`.
+    const str = srcStr.replace(
+      /(ん|ン)(?=あ|い|う|え|お|ア|イ|ウ|エ|オ|ぁ|ぃ|ぅ|ぇ|ぉ|ァ|ィ|ゥ|ェ|ォ|や|ゆ|よ|ヤ|ユ|ヨ|ゃ|ゅ|ょ|ャ|ュ|ョ)/g,
+      "$1'"
     );
-    const indices: number[] = [];
-    let str = srcStr;
-    let match = reghatu.exec(str);
-    while (match !== null) {
-      indices.push(match.index + 1);
-      match = reghatu.exec(str);
-    }
-    if (indices.length !== 0) {
-      let mstr = '';
-      for (let i = 0; i < indices.length; i += 1) {
-        mstr +=
-          i === 0
-            ? `${str.slice(0, indices[i])}`
-            : `${str.slice(indices[i - 1], indices[i])}`;
-      }
-      mstr += str.slice(indices[indices.length - 1]);
-      str = mstr;
-    }
     let pnt = 0;
     let result = '';
     while (pnt <= str.length) {
