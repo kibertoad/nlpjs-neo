@@ -1,5 +1,4 @@
 import { StemmerKo } from '../src/index.js';
-import { conjugate } from '../src/korean-conjugation.js';
 import type { DictionaryEntry } from '../src/korean-dictionary.js';
 import { dictionary, initDicts } from '../src/korean-dictionary.js';
 
@@ -37,10 +36,7 @@ const tests = [
 describe('Stemmer Korean', () => {
   describe('dictionary', () => {
     it('Maps conjugated verbs to their full multi-character root', () => {
-      const root = '가다';
       initDicts();
-      const forms = Object.keys(conjugate([root], false));
-      const _form = forms.find((item) => dictionary[item]?.root === root);
 
       expect(
         Object.values(dictionary).some(
