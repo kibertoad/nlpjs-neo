@@ -310,7 +310,7 @@ class NluManager extends Clonable {
 
   toJSON() {
     const result = {
-      settings: this.settings,
+      settings: { ...this.settings },
       locales: this.locales,
       languageNames: this.languageNames,
       domainManagers: {},

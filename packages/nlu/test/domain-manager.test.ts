@@ -12,6 +12,14 @@ describe('Domain Manager', () => {
       const manager = new DomainManager({ container });
       expect(manager).toBeDefined();
     });
+    test('Does not remove its container from settings during serialization', () => {
+      const manager = new DomainManager({ container });
+
+      const json = manager.toJSON();
+
+      expect(json.settings.container).toBeUndefined();
+      expect(manager.settings.container).toBe(container);
+    });
     test('A locale can be provided', () => {
       const manager = new DomainManager({ container, locale: 'es' });
       expect(manager.settings.locale).toEqual('es');
