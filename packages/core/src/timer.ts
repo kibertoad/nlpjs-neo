@@ -40,8 +40,8 @@ class Timer {
     return input;
   }
 
-  run(srcInput: PipelineInput): void {
-    this.start(srcInput);
+  run<T extends PipelineInput>(input: T): T {
+    return this.start(input);
   }
 }
 

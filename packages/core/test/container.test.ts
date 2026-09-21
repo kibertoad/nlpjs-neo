@@ -656,6 +656,16 @@ describe('Container', () => {
       expect(actual.elapsed).toBeDefined();
       expect(actual.text).toEqual('magdalna');
     });
+    test('A bare timer step preserves input for following steps', async () => {
+      const instance = new Container();
+      instance.use(Timer);
+      const pipeline = instance.buildPipeline(['timer', 'set input.value 1']);
+
+      const actual = await instance.runPipeline(pipeline, {});
+
+      expect(actual).toMatchObject({ value: 1 });
+      expect(actual.hrstart).toBeInstanceOf(Date);
+    });
     test('Pipelines can get parameters from input', async () => {
       const instance = new Container();
       instance.register('lower', Lower);
