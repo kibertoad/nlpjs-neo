@@ -29,5 +29,8 @@ describe('Stemmer', () => {
       const actual = stemmer.stem(tokens);
       expect(actual).toEqual(expected);
     });
+    test('Should stem two-character verb suffixes', () => {
+      expect(stemmer.stem(['piec', 'biec'])).toEqual(['pi', 'bi']);
+    });
   });
 });

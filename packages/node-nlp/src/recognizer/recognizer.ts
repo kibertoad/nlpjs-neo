@@ -41,6 +41,12 @@ class Recognizer {
         container: this.settings.container,
         ner: { threshold: this.settings.nerThreshold || 1 },
       });
+    // All three slots reach the settings through an index signature, so the
+    // shape of the action map is only known here.
+    this.actions = (this.settings.actions ||
+      this.settings.action ||
+      this.nlpManager.settings?.action ||
+      {}) as Record<string, RecognizerAction>;
     this.threshold = this.settings.threshold || 0.7;
     this.conversationContext =
       (this.settings.conversationContext as ConversationContext) ||
@@ -287,7 +293,7 @@ class Recognizer {
         const action = this.actions[name](this, context, ...(params || [])) as
           | Promise<unknown>
           | undefined;
-        if (action.then) {
+        if (action && action.then) {
           action.then(() => resolve());
         } else {
           return resolve();

@@ -1,5 +1,5 @@
 import container from './bootstrap.js';
-import type { CorpusEntry } from '../src/index.js';
+import type { CorpusEntry, FeatureSet } from '../src/index.js';
 import Nlu from '../src/nlu.js';
 import srccorpus from './corpus50.json' with { type: 'json' };
 
@@ -262,6 +262,18 @@ describe('NLU', () => {
         input: { nonefeature: 1 },
         output: { None: 1 },
       });
+    });
+    test('It uses a per-call None feature delta', () => {
+      const nlu = new Nlu({ locale: 'en' }, container);
+      nlu.numIntents = 1;
+      nlu.numFeatures = 1;
+
+      const actual = nlu.textToFeatures({
+        tokens: { zzz: 1, qqq: 1 },
+        settings: { useNoneFeature: true, nonedeltaValue: 0.5 },
+      });
+
+      expect((actual.tokens as FeatureSet).nonefeature).toEqual(1.1);
     });
   });
 

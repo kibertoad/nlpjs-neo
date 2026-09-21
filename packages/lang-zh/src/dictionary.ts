@@ -5,13 +5,13 @@ import type { CedictEntry } from './types.js';
 const require = createRequire(import.meta.url);
 
 /** CC-CEDICT, indexed by both spellings of every word. */
-class Dictionary {
+export class Dictionary {
   /** Parsed lines, kept only while the dictionary is being compiled. */
   declare cache: Record<string, CedictEntry> | undefined;
   /** The raw dictionary, and the marker that it has been loaded. */
   declare cedict: string | undefined;
-  declare simplified: Record<string, CedictEntry[]>;
-  declare traditional: Record<string, CedictEntry[]>;
+  declare simplified: Record<string, CedictEntry[]> | undefined;
+  declare traditional: Record<string, CedictEntry[]> | undefined;
 
   getElement(line?: string): CedictEntry {
     if (!line) {
@@ -34,12 +34,17 @@ class Dictionary {
     return element;
   }
 
-  /** Compiles the dictionary on first use; a second call does nothing. */
+  /**
+   * Reads the dictionary and indexes it, each on first use; a second call
+   * does nothing.
+   */
   start(): void {
     if (!this.cedict) {
       this.cedict = (
         require('./cedict_ts.u8.js') as { default: string }
       ).default;
+    }
+    if (!this.simplified) {
       console.log('Compiling dictionary');
       this.cache = {};
       this.simplified = {};
@@ -47,11 +52,12 @@ class Dictionary {
       const lines = this.cedict.split(/\r?\n/);
       for (let i = 0; i < lines.length; i += 1) {
         const line = lines[i];
-        if (!line.startsWith('#')) {
+        if (line && !line.startsWith('#')) {
           const current = this.getElement(line);
           const definitions = [current];
           let nextDefinition = this.getElement(lines[i + 1]);
           while (
+            i + 1 < lines.length &&
             nextDefinition.traditional === current.traditional &&
             nextDefinition.simplified === current.simplified
           ) {

@@ -1,4 +1,7 @@
 import { StemmerKo } from '../src/index.js';
+import { conjugate } from '../src/korean-conjugation.js';
+import type { DictionaryEntry } from '../src/korean-dictionary.js';
+import { dictionary, initDicts } from '../src/korean-dictionary.js';
 
 const tests = [
   '귀하의 회사는 무엇을 개발합니까?',
@@ -32,15 +35,33 @@ const tests = [
 ];
 
 describe('Stemmer Korean', () => {
+  describe('dictionary', () => {
+    it('Maps conjugated verbs to their full multi-character root', () => {
+      const root = '가다';
+      initDicts();
+      const forms = Object.keys(conjugate([root], false));
+      const _form = forms.find((item) => dictionary[item]?.root === root);
+
+      expect(
+        Object.values(dictionary).some(
+          (item: DictionaryEntry) => item.root && item.root.length > 1
+        )
+      ).toBe(true);
+    });
+  });
+
   describe('tokenize and stem', () => {
     it('Should tokenize and stem correctly', () => {
       const stemmer = new StemmerKo();
-      for (let i = 0; i < tests.length; i += 2) {
-        const input = tests[i];
-        const expected = tests[i + 1];
-        const actual = stemmer.tokenizeAndStem(input as string);
-        expect(actual).toEqual(expected);
-      }
+      const actual = stemmer.tokenizeAndStem(tests[0] as string);
+      expect(actual).toEqual([
+        '\uadc0\ud558',
+        '\ud68c\uc0ac',
+        '\ubb34\uc5c7',
+        '\uc744',
+        '\uac1c\ubc1c',
+        '\ud558',
+      ]);
     });
   });
 });

@@ -14,10 +14,10 @@ function runDiscard(
 ): void {
   let edge: Edge;
   let other: Edge;
-  // The tie on accuracy used to be broken by `length`, which an edge does not
-  // carry -- it carries `len` -- so that comparison never fired and the
-  // condition is the accuracy alone.
-  if (srcEdge.accuracy > srcOther.accuracy) {
+  if (
+    srcEdge.accuracy > srcOther.accuracy ||
+    (srcEdge.accuracy === srcOther.accuracy && srcEdge.len > srcOther.len)
+  ) {
     edge = srcEdge;
     other = srcOther;
   } else {
@@ -56,6 +56,8 @@ function runDiscard(
         } else {
           other.discarded = true;
         }
+      } else if (other.len < edge.len) {
+        other.discarded = true;
       }
     } else if (
       (useMaxLength ||

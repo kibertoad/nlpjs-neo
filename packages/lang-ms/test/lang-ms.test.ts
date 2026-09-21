@@ -1,5 +1,5 @@
 import { Container } from '@nlpjs-neo/core';
-import { LangMs } from '../src/index.js';
+import { LangMs, SentimentMs } from '../src/index.js';
 
 describe('Language Malay', () => {
   describe('Use plugin', () => {
@@ -14,6 +14,12 @@ describe('Language Malay', () => {
       expect(stopwords.constructor.name).toEqual('StopwordsMs');
       const normalizer = instance.get('normalizer-ms');
       expect(normalizer.constructor.name).toEqual('NormalizerMs');
+    });
+  });
+
+  describe('Sentiment', () => {
+    test('Exports Malay sentiment dictionaries', () => {
+      expect(SentimentMs.afinn).toBeDefined();
     });
   });
 });

@@ -1,5 +1,5 @@
 import { Container } from '@nlpjs-neo/core';
-import { LangZh } from '../src/index.js';
+import { LangZh, StemmerZh } from '../src/index.js';
 
 describe('Language Chinese', () => {
   describe('Use plugin', () => {
@@ -14,6 +14,13 @@ describe('Language Chinese', () => {
       expect(stopwords.constructor.name).toEqual('StopwordsZh');
       const normalizer = instance.get('normalizer-zh');
       expect(normalizer.constructor.name).toEqual('NormalizerZh');
+    });
+  });
+
+  describe('Stemmer', () => {
+    test('Removes Chinese punctuation before stemming', () => {
+      const stemmer = new StemmerZh(new Container());
+      expect(stemmer.clearText('a，b。c！d？')).toEqual('a b c d ');
     });
   });
 });
