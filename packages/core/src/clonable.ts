@@ -92,8 +92,8 @@ class Clonable {
           }
         } else if (typeof fn === 'boolean') {
           if (fn) {
-            result[key] =
-              key === 'settings' ? { ...this[key] } : this[key];
+            const value = this[key];
+            result[key] = key === 'settings' ? { ...value } : value;
             if (key === 'settings') {
               delete (result[key] as Settings).container;
             }
