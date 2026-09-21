@@ -1,4 +1,4 @@
-import { Container } from '@nlpjs-neo/core';
+import { Container, containerBootstrap } from '@nlpjs-neo/core';
 import { NlgManager } from '../src/index.js';
 import type { NlgInput } from '../src/index.js';
 import container from './bootstrap.js';
@@ -6,6 +6,14 @@ import container from './bootstrap.js';
 class Evaluator {
   evaluate(a, b) {
     return JSON.stringify(a) === JSON.stringify(b);
+  }
+}
+
+class JsonTemplate {
+  compile(obj: unknown, context: Record<string, string>) {
+    return JSON.parse(
+      JSON.stringify(obj).replace(/{{ ?name ?}}/g, context.name)
+    );
   }
 }
 
@@ -46,9 +54,47 @@ describe('NLG Manager', () => {
       const input = { answers: [{ answer: 'a' }, { answer: 'b' }] };
       const responses: Record<string, number> = {};
       for (let i = 0; i < 100; i += 1) {
-        responses[manager.chooseRandom(input).answer] = 1;
+        responses[manager.chooseRandom(input).answer as string] = 1;
       }
       expect(responses).toEqual({ a: 1, b: 1 });
+    });
+  });
+
+  describe('Structured answers', () => {
+    const card = { type: 'card', title: 'Hello {{ name }}' };
+    test('Choose Random should pick one of the structured answers', () => {
+      const manager = new NlgManager({ container });
+      const other = { type: 'card', title: 'Bye' };
+      const input = { answers: [{ answer: card }, { answer: other }] };
+      const seen = new Set<unknown>();
+      for (let i = 0; i < 100; i += 1) {
+        seen.add(manager.chooseRandom(input).answer);
+      }
+      expect(seen).toEqual(new Set([card, other]));
+    });
+    test('Should add a structured answer and not duplicate it', () => {
+      const manager = new NlgManager({ container });
+      manager.add('en', 'greet', card);
+      manager.add('en', 'greet', { ...card });
+      expect(manager.responses.en.greet).toHaveLength(1);
+      expect(manager.responses.en.greet[0].answer).toEqual(card);
+    });
+    test('Should remove a structured answer', () => {
+      const manager = new NlgManager({ container });
+      manager.add('en', 'greet', card);
+      manager.remove('en', 'greet', { ...card });
+      expect(manager.responses.en.greet).toHaveLength(0);
+    });
+    test('Render should apply the templates to the structured data only', () => {
+      const own = containerBootstrap();
+      own.register('Template', JsonTemplate, true);
+      const manager = new NlgManager({ container: own });
+      const rendered = manager.renderText({ answer: card }, { name: 'John' });
+      expect(rendered.answer).toEqual({ type: 'card', title: 'Hello John' });
+    });
+    test('Render should leave a text with alternatives to be resolved', () => {
+      const manager = new NlgManager({ container });
+      expect(manager.renderText('(a|a)')).toEqual('a');
     });
   });
 
@@ -220,7 +266,9 @@ describe('NLG Manager', () => {
       const manager = new NlgManager();
       manager.add('en', 'intent', '(Hi|Hello) user');
       const actual = await manager.run({ locale: 'en', intent: 'intent' });
-      expect(['Hi user', 'Hello user'].includes(actual.answer)).toBeTruthy();
+      expect(
+        ['Hi user', 'Hello user'].includes(actual.answer as string)
+      ).toBeTruthy();
     });
   });
 });

@@ -25,9 +25,19 @@ export interface AnswerOptions {
   [key: string]: unknown;
 }
 
+/**
+ * An answer that is data rather than text, such as a card or a list of
+ * buttons. It is handed back as declared, after its strings have gone through
+ * the templates, and it must not carry an `answer` key of its own.
+ */
+export type StructuredAnswer = Record<string, unknown>;
+
+/** What an answer says: text, or structured data. */
+export type AnswerPayload = string | StructuredAnswer;
+
 /** One answer of an intent, and the condition under which it is offered. */
 export interface Answer {
-  answer: string;
+  answer: AnswerPayload;
   /** A condition expression, or the options carrying one. */
   opts?: string | AnswerOptions;
 }
@@ -38,7 +48,7 @@ export interface Answer {
  * these rather than the input, so the base states both.
  */
 export interface LegacyAnswer {
-  response: string;
+  response: AnswerPayload;
   opts?: string | AnswerOptions;
 }
 
@@ -53,7 +63,7 @@ export interface NlgInput extends PipelineInput {
   /** Candidates while the pipeline runs. */
   answers?: Answer[];
   /** The answer that was chosen, once it has. */
-  answer?: string;
+  answer?: AnswerPayload;
   /** Actions the answer triggers, filled in by the action manager. */
   actions?: ActionReference[];
 }

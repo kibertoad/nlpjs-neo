@@ -20,6 +20,14 @@ const defaultCorpus = {
   ],
 };
 
+class JsonTemplate {
+  compile(obj: unknown, context: Record<string, string>) {
+    return JSON.parse(
+      JSON.stringify(obj).replace(/{{ ?name ?}}/g, context.name)
+    );
+  }
+}
+
 describe('NLP', () => {
   describe('Constructor', () => {
     test('It should create a new instance', () => {
@@ -1350,6 +1358,48 @@ describe('NLP', () => {
       ).toBeUndefined();
       expect(nlp.actionManager.actionsMap.handleWhatsDayIntent).toBeUndefined();
       expect(nlp.actionManager.actionsMap.fallbackAction).toBeUndefined();
+    });
+  });
+
+  describe('addCorpus with structured answers', () => {
+    const buttons = { type: 'buttons', options: ['yes', 'no'] };
+    test('A structured answer is registered as it stands', async () => {
+      const nlp = new Nlp();
+      await nlp.addCorpus({
+        name: 'Structured',
+        locale: 'en',
+        data: [
+          {
+            intent: 'greet',
+            utterances: ['hello'],
+            answers: [buttons, { answer: 'Hi', opts: 'a === 1' }],
+          },
+        ],
+      });
+      const answers = nlp.findAllAnswers('en', 'greet');
+      expect(answers).toEqual([
+        { answer: buttons, opts: undefined },
+        { answer: 'Hi', opts: 'a === 1' },
+      ]);
+    });
+    test('Processing an utterance answers the structured data', async () => {
+      const nlp = new Nlp({ languages: ['en'], autoSave: false });
+      nlp.container.register('Template', JsonTemplate, true);
+      await nlp.addCorpus({
+        name: 'Structured',
+        locale: 'en',
+        data: [
+          {
+            intent: 'greet',
+            utterances: ['hello', 'hi there'],
+            answers: [{ type: 'card', title: 'Hello {{ name }}' }],
+          },
+        ],
+      });
+      await nlp.train();
+      const result = await nlp.process('en', 'hello', { name: 'John' });
+      expect(result.intent).toEqual('greet');
+      expect(result.answer).toEqual({ type: 'card', title: 'Hello John' });
     });
   });
 

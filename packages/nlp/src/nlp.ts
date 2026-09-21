@@ -33,6 +33,7 @@ import type {
   ActionFunction,
   Answer,
   AnswerOptions,
+  AnswerPayload,
   NlgInput,
 } from '@nlpjs-neo/nlg';
 import { SentimentAnalyzer } from '@nlpjs-neo/sentiment';
@@ -516,7 +517,7 @@ class Nlp extends Clonable {
   addAnswer(
     locale: Locale,
     intent: Intent,
-    answer: string,
+    answer: AnswerPayload,
     opts?: string | AnswerOptions
   ): ReturnType<NlgManager['add']> {
     return this.nlgManager.add(locale, intent, answer, opts);
@@ -525,7 +526,7 @@ class Nlp extends Clonable {
   removeAnswer(
     locale: Locale,
     intent: Intent,
-    answer: string,
+    answer: AnswerPayload,
     opts?: string | AnswerOptions
   ): void {
     return this.nlgManager.remove(locale, intent, answer, opts);
@@ -680,8 +681,16 @@ class Nlp extends Clonable {
           const answer = answers[j];
           if (typeof answer === 'string') {
             this.addAnswer(locale, intent, answer);
+          } else if ('answer' in answer) {
+            const { opts } = answer as { opts?: string | AnswerOptions };
+            this.addAnswer(
+              locale,
+              intent,
+              answer.answer as AnswerPayload,
+              opts
+            );
           } else {
-            this.addAnswer(locale, intent, answer.answer, answer.opts);
+            this.addAnswer(locale, intent, answer);
           }
         }
       }
