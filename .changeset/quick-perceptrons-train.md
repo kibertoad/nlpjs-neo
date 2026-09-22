@@ -1,5 +1,5 @@
 ---
-'@nlpjs-neo/neural': minor
+'@nlpjs-neo/neural': major
 ---
 
 Train and run the neural network faster, with the same answers.
@@ -17,5 +17,9 @@ A feature named like a member of `Object` (`constructor`, `toString`) is now a
 feature like any other: the plain object that held the dictionary answered
 with the member, and the score of that utterance was `NaN`.
 
-`SparseVector.data` (the values by id) is gone: read `values[i]` for `keys[i]`.
-`Lookup#dict` is a `Map`.
+**Breaking.** `SparseVector` is exported, and `NeuralNetwork#runInput` takes
+one, so the shape is part of the API: `SparseVector.data` (the values by id) is
+gone, and `values[i]` holds the value of `keys[i]`. Code that built a vector by
+hand, or read one back, has to be updated; code that only trains and runs
+utterances does not. `Lookup#dict`, which the package does not export, is a
+`Map`.

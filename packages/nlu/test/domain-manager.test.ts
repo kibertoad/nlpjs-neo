@@ -1,7 +1,13 @@
+import { expectWellFormedClassifications } from '#test/classifications.js';
 import { DomainManager } from '../src/index.js';
 import type { DomainManagerInput } from '../src/index.js';
 import container from './bootstrap.js';
 import { addFoodDomain, addPersonalityDomain } from './domains.js';
+
+/** Every intent a trained manager knows, plus the `None` it falls back to. */
+function knownIntents(manager: DomainManager): string[] {
+  return [...Object.keys(manager.intentDict), 'None'];
+}
 
 describe('Domain Manager', () => {
   describe('Constructor', () => {
@@ -244,7 +250,12 @@ describe('Domain Manager', () => {
       const actual = await manager.process('who are you', {
         allowList: ['agent.age', 'agent.birthday'],
       });
-      expect(actual.classifications.length).toBeGreaterThan(0);
+      // Nothing the utterance matches is allowed, so every intent it could
+      // answer is zeroed and the best answer is worthless.
+      expectWellFormedClassifications(
+        actual.classifications,
+        knownIntents(manager)
+      );
       expect(
         actual.classifications.every(
           (classification) => classification.score === 0

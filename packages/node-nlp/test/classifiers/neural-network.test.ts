@@ -51,8 +51,8 @@ describe('Neural Network', () => {
       expect(net.settings.iterations).toEqual(20000);
       expect(net.settings.errorThresh).toEqual(0.00005);
       expect(net.settings.deltaErrorThresh).toEqual(0.00001);
-      // Without a learning rate the network derives it from the corpus it trains.
-      expect(net.settings.learningRate).toBeUndefined();
+      // `'auto'` derives the rate from the corpus that is trained.
+      expect(net.settings.learningRate).toEqual('auto');
       expect(net.settings.momentum).toEqual(0.9);
       expect(net.settings.alpha).toEqual(0.07);
     });

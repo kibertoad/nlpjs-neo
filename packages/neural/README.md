@@ -106,7 +106,7 @@ There are several options that you can customize:
 - _iterations_: maximum number of iterations (epochs) that the neural network can run. By default this is 20000.
 - _errorThresh_: minimum error threshold, if the loss is lower than this number, then the training ends. By default this is 0.00005.
 - _deltaErrorThresh_: minimum delta error threshold, this is, the difference between the current and the last errors. If the delta error threshold is lower than this number, then the training ends. By default this is 0.00001.
-- _learningRate_: learning rate for the neural network. By default it is computed from the size of the corpus, as 1 divided by the square root of the number of samples (0.06 for 250 utterances, 0.01 for 10,000), because a rate that suits a small corpus does not settle on a big one.
+- _learningRate_: learning rate for the neural network, either a number or `'auto'`. By default this is `'auto'`: the rate is computed from the size of the corpus, as 1 divided by the square root of the number of samples (0.06 for 250 utterances, 0.01 for 10,000), because a rate that suits a small corpus does not settle on a big one. The rate a training resolved is readable as `net.baseLearningRate`.
 - _momentum_: momentum for the gradient descent optimization. By default this is 0.9.
 - _alpha_: Multiplicator or alpha factor for the ReLu activation function. By default this is 0.07.
 - _log_: If is *false* then no log happens, if is *true* then there is log in console. Also a function can be provided, and will receive two parameters: the status and the elapsed time of the last epoch. By default this is false.

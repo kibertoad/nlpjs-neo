@@ -121,6 +121,28 @@ async function measure(
   };
 }
 
+/**
+ * Every answer of a run that moved against a baseline one, or a single line
+ * when the two runs do not answer the same utterances: a baseline taken on
+ * another corpus, or another split of it, is not comparable, and saying so
+ * beats reading a mismatch as thousands of moved answers.
+ */
+function compareAnswers(outcome: Outcome, before: Outcome): string[] {
+  if (before.answers.length !== outcome.answers.length) {
+    return [
+      `${outcome.locale}: the baseline answers ${before.answers.length} utterances and this run ${outcome.answers.length}, so they are not comparable`,
+    ];
+  }
+  return outcome.answers
+    .map(([intent, score], at) => {
+      const [was, wasScore] = before.answers[at];
+      return was !== intent || Math.abs(wasScore - score) > 1e-4
+        ? `${outcome.locale} ${at}: ${was} ${wasScore} -> ${intent} ${score}`
+        : '';
+    })
+    .filter(Boolean);
+}
+
 test.skipIf(!dir)('MASSIVE corpora', async () => {
   const outcomes: Outcome[] = [];
   for (const [locale, Lang] of languages) {
@@ -146,14 +168,7 @@ test.skipIf(!dir)('MASSIVE corpora', async () => {
       if (!before) {
         continue;
       }
-      const changed = outcome.answers
-        .map(([intent, score], at) => {
-          const [was, wasScore] = before.answers[at];
-          return was !== intent || Math.abs(wasScore - score) > 1e-4
-            ? `${outcome.locale} ${at}: ${was} ${wasScore} -> ${intent} ${score}`
-            : '';
-        })
-        .filter(Boolean);
+      const changed = compareAnswers(outcome, before);
       moved.push(...changed);
       console.log(
         `${outcome.locale}: train ${(outcome.trainMs / before.trainMs).toFixed(2)}x, run ${(outcome.perSecond / before.perSecond).toFixed(2)}x of the baseline, ${changed.length} answers moved`

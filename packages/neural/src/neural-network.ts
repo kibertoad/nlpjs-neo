@@ -16,19 +16,23 @@ import type {
 } from './types.js';
 
 /**
+ * The rate an `'auto'` setting resolves to for a corpus of this many samples.
+ *
  * The perceptrons learn one utterance at a time, so what one pass over the
- * corpus moves them grows with its size. Unless the settings give a
- * `learningRate`, it is this over the square root of the number of samples:
- * 0.06 for 250 utterances, 0.01 for 10,000. A fixed rate that suits a small
- * corpus never settles on a big one, and one that suits a big corpus needs
- * hundreds of passes on a small one.
+ * corpus moves them grows with its size: one over the square root of the
+ * number of samples is 0.06 for 250 utterances and 0.01 for 10,000. A fixed
+ * rate that suits a small corpus never settles on a big one, and one that
+ * suits a big corpus needs hundreds of passes on a small one.
  */
-const learningRateScale = 1;
+function autoLearningRate(numSamples: number): number {
+  return 1 / Math.sqrt(numSamples);
+}
 
 const defaultSettings: NeuralNetworkSettings = {
   iterations: 20000,
   errorThresh: 0.00005,
   deltaErrorThresh: 0.00001,
+  learningRate: 'auto',
   momentum: 0.9,
   alpha: 0.07,
   log: false,
@@ -37,8 +41,11 @@ const defaultSettings: NeuralNetworkSettings = {
 class NeuralNetwork {
   /** Learning rate of the current iteration, decayed over time. */
   declare decayLearningRate: number;
-  /** Learning rate of the current training, before it decays. */
-  declare baseLearningRate: number;
+  /**
+   * Rate the settings pin, or the one `train` derived from the corpus for an
+   * `'auto'` setting. It is `undefined` until a first training resolves it.
+   */
+  declare baseLearningRate: number | undefined;
   declare logFn: TrainLogger | undefined;
   declare lookup: CorpusLookup | undefined;
   declare numPerceptrons: number;
@@ -200,8 +207,11 @@ class NeuralNetwork {
       this.status = { error: Infinity, deltaError: Infinity, iterations: 0 };
     }
     this.verifyIsInitialized();
+    const { learningRate } = this.settings;
     this.baseLearningRate =
-      this.settings.learningRate ?? learningRateScale / Math.sqrt(data.length);
+      typeof learningRate === 'number'
+        ? learningRate
+        : autoLearningRate(data.length);
     const minError = this.settings.errorThresh;
     const minDelta = this.settings.deltaErrorThresh;
     while (

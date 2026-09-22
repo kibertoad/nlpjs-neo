@@ -1,5 +1,9 @@
 import { containerBootstrap } from '@nlpjs-neo/core-loader';
+import { expectWellFormedClassifications } from '#test/classifications.js';
 import { BrainNLU } from '../../src/index.js';
+
+/** Intents of the two corpora below, plus the `None` fallback. */
+const greetKeysIntents = ['greet', 'keys', 'None'];
 
 describe('Brain NLU', () => {
   describe('constructor', () => {
@@ -77,7 +81,7 @@ describe('Brain NLU', () => {
       nlu.add('Je ne me souviens pas où sont mes clés', 'keys');
       await nlu.train();
       const classification = await nlu.getClassifications('où sont mes clés');
-      expect(classification.length).toBeGreaterThan(0);
+      expectWellFormedClassifications(classification, greetKeysIntents);
       expect(classification[0].intent).toEqual('keys');
       expect(classification[0].score).toBeGreaterThan(0.7);
     });
@@ -93,7 +97,7 @@ describe('Brain NLU', () => {
       const classifications = await nlu.getClassifications(
         '私の鍵はどこにありますか'
       );
-      expect(classifications.length).toBeGreaterThan(0);
+      expectWellFormedClassifications(classifications, greetKeysIntents);
       expect(classifications[0].intent).toEqual('keys');
       expect(classifications[0].score).toBeGreaterThan(0.7);
     });

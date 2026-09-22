@@ -53,6 +53,14 @@ export type TrainResult = TrainStatus | Record<string, never>;
 /** Called after every iteration when logging is enabled. */
 export type TrainLogger = (status: TrainStatus, elapsed: number) => void;
 
+/**
+ * How far a wrong answer moves the weights: a fixed rate, or `'auto'` to
+ * derive one from the size of the corpus that is trained. `'auto'` is the
+ * default, so the setting always reads back as one of the two and never as
+ * `undefined`; the rate a training resolved is `NeuralNetwork#baseLearningRate`.
+ */
+export type LearningRate = number | 'auto';
+
 export interface NeuralNetworkSettings {
   /** Maximum number of iterations. */
   iterations?: number;
@@ -60,11 +68,8 @@ export interface NeuralNetworkSettings {
   errorThresh?: number;
   /** Stop once the error moves less than this between iterations. */
   deltaErrorThresh?: number;
-  /**
-   * How far a wrong answer moves the weights. When it is not set, it is
-   * computed from the size of the corpus that is trained.
-   */
-  learningRate?: number;
+  /** How far a wrong answer moves the weights; `'auto'` by default. */
+  learningRate?: LearningRate;
   momentum?: number;
   /** Leak of the activation function for negative sums. */
   alpha?: number;

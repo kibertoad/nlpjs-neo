@@ -1,5 +1,5 @@
 ---
-'@nlpjs-neo/neural': minor
+'@nlpjs-neo/neural': major
 ---
 
 Train the neural network with better defaults, which double its accuracy on
@@ -42,5 +42,11 @@ scores, the number of passes or how many intents come back with a score were
 rewritten to check what they mean instead: a sharper network gives a zero to
 intents it is sure about, so fewer come back.
 
-A `learningRate` in the settings is used as it is. Models exported with the old
-defaults keep working: their weights are what they were.
+**Breaking.** A network that is trained again answers differently, so a corpus
+scored against pinned numbers has to be rescored. Models exported with the old
+defaults keep working: their weights are what they were, and a `learningRate`
+in the settings is still used as it is.
+
+`learningRate` now reads `'auto'` when it is not pinned, which is what makes it
+derived, so the setting is one of a number and `'auto'` and never `undefined`.
+The rate a training resolved is `NeuralNetwork#baseLearningRate`.

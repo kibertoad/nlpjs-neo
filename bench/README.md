@@ -50,7 +50,9 @@ It prints the training time, the accuracy and the utterances answered per second
 memos of the prepare step emptied before every pass. `MASSIVE_OUT=file.json` saves the result,
 and `MASSIVE_BASELINE=file.json` on a later run compares against it: the times are printed as a
 ratio, and the test fails if the intent or the score (to 1e-4) of any utterance moved, so a
-speed-up cannot come from answering differently. `MASSIVE_LOCALES=en`, `MASSIVE_SECONDS=8` and
+speed-up cannot come from answering differently. A baseline taken on another corpus, or another
+split of one, answers a different number of utterances; the run says so and fails, rather than
+reading the mismatch as moved answers. `MASSIVE_LOCALES=en`, `MASSIVE_SECONDS=8` and
 `MASSIVE_PROFILE=file.cpuprofile` (a CPU profile of the passes) narrow or extend it.
 
 ## Comparing two runs

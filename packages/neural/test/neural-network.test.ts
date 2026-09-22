@@ -68,10 +68,12 @@ describe('Neural Network', () => {
   });
 
   describe('Learning rate', () => {
-    test('It is derived from the size of the corpus when it is not set', () => {
+    test('It is derived from the size of the corpus when it is `auto`', () => {
       const net = new NeuralNetwork();
+      expect(net.settings.learningRate).toEqual('auto');
+      expect(net.baseLearningRate).toBeUndefined();
       net.train(corpus);
-      expect(net.settings.learningRate).toBeUndefined();
+      expect(net.settings.learningRate).toEqual('auto');
       expect(net.baseLearningRate).toBeCloseTo(
         1 / Math.sqrt(corpus.length),
         10
@@ -92,8 +94,23 @@ describe('Neural Network', () => {
 
     test('A learning rate in the settings is used as it is', () => {
       const net = new NeuralNetwork({ learningRate: 0.01 });
+      expect(net.settings.learningRate).toEqual(0.01);
       net.train(corpus);
       expect(net.baseLearningRate).toEqual(0.01);
+    });
+
+    test('An `auto` rate is not exported, a pinned one is', () => {
+      const auto = new NeuralNetwork();
+      auto.train(corpus);
+      expect(auto.toJSON().settings).toEqual({});
+
+      const pinned = new NeuralNetwork({ learningRate: 0.01 });
+      pinned.train(corpus);
+      expect(pinned.toJSON().settings).toEqual({ learningRate: 0.01 });
+
+      const imported = new NeuralNetwork();
+      imported.fromJSON(pinned.toJSON());
+      expect(imported.settings.learningRate).toEqual(0.01);
     });
   });
 

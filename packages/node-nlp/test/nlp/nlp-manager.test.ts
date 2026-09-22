@@ -1,6 +1,13 @@
+import { expectWellFormedClassifications } from '#test/classifications.js';
 import { NlpManager } from '../../src/index.js';
 import type { ProcessTransformer } from '../../src/types.js';
 import corpus from './corpus-en.json' with { type: 'json' };
+
+/**
+ * Every intent the `addFrJp`, `addEn` and single-language corpora below train,
+ * plus the `None` the classifier falls back to.
+ */
+const greetKeysIntents = ['greet', 'keys', 'None'];
 
 function addEntities(manager) {
   manager.addNamedEntityText(
@@ -245,7 +252,7 @@ describe('NLP Manager', () => {
       addFrJp(manager);
       await manager.train();
       const result = await manager.classify('fr', 'où sont mes clés');
-      expect(result.classifications).not.toHaveLength(0);
+      expectWellFormedClassifications(result.classifications, greetKeysIntents);
       expect(result.intent).toEqual('keys');
       expect(result.score).toBeGreaterThan(0.7);
     });
@@ -256,7 +263,7 @@ describe('NLP Manager', () => {
       const result = await manager.classify('fr', 'où sont mes clés', {
         allowList: ['greet'],
       });
-      expect(result.classifications).not.toHaveLength(0);
+      expectWellFormedClassifications(result.classifications, greetKeysIntents);
       expect(result.intent).toEqual('keys');
       expect(result.score).toBeGreaterThan(0.7);
     });
@@ -265,7 +272,7 @@ describe('NLP Manager', () => {
       addFrJp(manager);
       await manager.train();
       const result = await manager.classify('fr', 'où sont mes clés');
-      expect(result.classifications).not.toHaveLength(0);
+      expectWellFormedClassifications(result.classifications, greetKeysIntents);
       expect(result.intent).toEqual('keys');
       expect(result.score).toBeGreaterThan(0.7);
     });
@@ -311,11 +318,11 @@ describe('NLP Manager', () => {
       addFrJp(manager);
       await manager.train('fr');
       let result = await manager.classify('où sont mes clés');
-      expect(result.classifications).not.toHaveLength(0);
+      expectWellFormedClassifications(result.classifications, greetKeysIntents);
       expect(result.intent).toEqual('keys');
       expect(result.score).toBeGreaterThan(0.7);
       result = await manager.classify('私の鍵はどこにありますか');
-      expect(result.classifications).not.toHaveLength(0);
+      expectWellFormedClassifications(result.classifications, greetKeysIntents);
       expect(result.intent).toEqual('keys');
       expect(result.score).toBeGreaterThan(0.7);
     });
@@ -324,11 +331,11 @@ describe('NLP Manager', () => {
       addFrJp(manager);
       await manager.train(['fr', 'ja', 'es']);
       let result = await manager.classify('où sont mes clés');
-      expect(result.classifications).not.toHaveLength(0);
+      expectWellFormedClassifications(result.classifications, greetKeysIntents);
       expect(result.intent).toEqual('keys');
       expect(result.score).toBeGreaterThan(0.7);
       result = await manager.classify('私の鍵はどこにありますか');
-      expect(result.classifications).not.toHaveLength(0);
+      expectWellFormedClassifications(result.classifications, greetKeysIntents);
       expect(result.intent).toEqual('keys');
       expect(result.score).toBeGreaterThan(0.7);
     });
@@ -419,7 +426,7 @@ describe('NLP Manager', () => {
       expect(result.localeIso2).toEqual('en');
       expect(result.utterance).toEqual('Where are my keys');
       expect(result.classifications).toBeDefined();
-      expect(result.classifications).not.toHaveLength(0);
+      expectWellFormedClassifications(result.classifications, greetKeysIntents);
       expect(result.intent).toEqual('keys');
       expect(result.score).toBeGreaterThan(0.7);
     });
@@ -434,7 +441,7 @@ describe('NLP Manager', () => {
       expect(result.localeIso2).toEqual('en');
       expect(result.utterance).toEqual('where are my keys');
       expect(result.classifications).toBeDefined();
-      expect(result.classifications).not.toHaveLength(0);
+      expectWellFormedClassifications(result.classifications, greetKeysIntents);
       expect(result.intent).toEqual('keys');
       expect(result.score).toBeGreaterThan(0.7);
     });
@@ -974,7 +981,7 @@ describe('NLP Manager', () => {
       expect(result.localeIso2).toEqual('th');
       expect(result.utterance).toEqual('ฉันไม่รู้ว่ากุญแจอยู่ที่ไหน');
       expect(result.classifications).toBeDefined();
-      expect(result.classifications).not.toHaveLength(0);
+      expectWellFormedClassifications(result.classifications, greetKeysIntents);
       expect(result.intent).toEqual('keys');
       expect(result.score).toBeGreaterThan(0.8);
     });
@@ -995,7 +1002,7 @@ describe('NLP Manager', () => {
       expect(result.localeIso2).toEqual('hi');
       expect(result.utterance).toEqual('मेरी चाबियाँ कहाँ हैं');
       expect(result.classifications).toBeDefined();
-      expect(result.classifications).not.toHaveLength(0);
+      expectWellFormedClassifications(result.classifications, greetKeysIntents);
       expect(result.intent).toEqual('keys');
       expect(result.score).toBeGreaterThan(0.8);
     });
