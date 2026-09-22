@@ -4,7 +4,7 @@ import Template from './template.js';
 import JavascriptCompiler from './javascript-compiler.js';
 
 export { Evaluator, compile, Template, JavascriptCompiler };
-export type { CompileOptions } from './compile.js';
+export type { CompileOptions, TextCompileOptions } from './compile.js';
 
 // The node kinds the walkers take, so a consumer can name one without
 // depending on `acorn` itself.

@@ -89,6 +89,48 @@ describe('Compile', () => {
       const answer = compile('a {{ o }} b')({ o: { x: 1 } });
       expect(answer).toEqual(`a ${JSON.stringify({ x: 1 }, null, 2)} b`);
     });
+    it('Should print the items of an array of objects as JSON', () => {
+      const answer = compile('a {{ list }} b')({ list: [{ x: 1 }, { x: 2 }] });
+      expect(answer).toEqual(
+        `a ${JSON.stringify({ x: 1 }, null, 2)},${JSON.stringify({ x: 2 }, null, 2)} b`
+      );
+    });
+    it('Should still print an array of values as its items', () => {
+      expect(compile('a {{ list }} b')({ list: [1, 2] })).toEqual('a 1,2 b');
+    });
+    it('Should print nothing for an empty item of an array', () => {
+      expect(compile('{{ list }}')({ list: [1, null, undefined, 2] })).toEqual(
+        '1,,,2'
+      );
+    });
+    it('Should print an object without a prototype as JSON', () => {
+      const bare = Object.create(null) as Record<string, unknown>;
+      bare.x = 1;
+      expect(compile('a {{ o }} b')({ o: bare })).toEqual(
+        `a ${JSON.stringify({ x: 1 }, null, 2)} b`
+      );
+    });
+    it('Should print a value that has a toString of its own through it', () => {
+      const date = new Date(Date.UTC(2020, 0, 1));
+      expect(compile('a {{ d }} b')({ d: date })).toEqual(`a ${date} b`);
+    });
+    it('Should print a nested array as its items, as String does', () => {
+      expect(compile('{{ list }}')({ list: [[1, 2], 3] })).toEqual('1,2,3');
+    });
+    it('Should print an array that holds itself without recursing forever', () => {
+      const circular: unknown[] = [1];
+      circular.push(circular);
+      expect(compile('{{ list }}')({ list: circular })).toEqual(
+        String(circular)
+      );
+    });
+    it('Should print circular data without throwing', () => {
+      const circular: Record<string, unknown> = { x: 1 };
+      circular.self = circular;
+      expect(compile('a {{ o }} b')({ o: circular })).toEqual(
+        'a [object Object] b'
+      );
+    });
     it('Should keep the placeholder of an expression without a value', () => {
       const answer = compile('a {{ missing }} b')({ missing: null });
       expect(answer).toEqual('a {{ missing }} b');
@@ -111,11 +153,20 @@ describe('Compile', () => {
       });
       expect(answer).toEqual('0:a@t 1:b@t ');
     });
+    it('Should repeat a section for each item of an expression', () => {
+      const answer = compile('{{#data.items}}{{ name }},{{/#}}')({
+        data: { items: [{ name: 'a' }, { name: 'b' }] },
+      });
+      expect(answer).toEqual('a,b,');
+    });
     it('Should treat a value that is not an array as a single item', () => {
       const answer = compile('{{#one}}{{ name }}{{/#}}')({
         one: { name: 'a' },
       });
       expect(answer).toEqual('a');
+    });
+    it('Should print the content of a section of a value that is true', () => {
+      expect(compile('a{{#flag}}x{{/#}}b')({ flag: true })).toEqual('axb');
     });
     it('Should nest sections', () => {
       const answer = compile('{{#rows}}[{{#cells}}{{ v }}{{/#}}]{{/#}}')({
@@ -129,6 +180,23 @@ describe('Compile', () => {
     it('Should give an empty string for a section of an empty array', () => {
       expect(compile('a{{#items}}x{{/#}}b')({ items: [] })).toEqual('ab');
     });
+    it('Should print nothing for a section the context has no value for', () => {
+      expect(compile('a{{#items}}[{{ name }}]{{/#}}b')({})).toEqual('ab');
+    });
+    it('Should print nothing for a section of a falsy value', () => {
+      expect(compile('a{{#value}}x{{/#}}b')({ value: null })).toEqual('ab');
+      expect(compile('a{{#value}}x{{/#}}b')({ value: false })).toEqual('ab');
+      expect(compile('a{{#value}}x{{/#}}b')({ value: 0 })).toEqual('ab');
+      expect(compile('a{{#value}}x{{/#}}b')({ value: '' })).toEqual('ab');
+    });
+    it('Should keep rendering a template the cache has already moved past', () => {
+      const template = 'first {{ n }}';
+      expect(compile(template)({ n: 1 })).toEqual('first 1');
+      for (let i = 0; i < 1200; i += 1) {
+        compile(`filler ${i} {{ n }}`)({ n: i });
+      }
+      expect(compile(template)({ n: 2 })).toEqual('first 2');
+    });
   });
 
   describe('_iterator_', () => {
@@ -141,8 +209,35 @@ describe('Compile', () => {
       });
       expect(answer).toEqual([{ label: 'a' }, { label: 'b' }, 'end']);
     });
+    it('Should repeat an array item for each item of an expression', () => {
+      const answer = compile([
+        { _iterator_: '#data.items', label: '{{ name }}' },
+      ])({ data: { items: [{ name: 'a' }, { name: 'b' }] } });
+      expect(answer).toEqual([{ label: 'a' }, { label: 'b' }]);
+    });
+    it('Should give the item the current value, its index and the parent', () => {
+      const answer = compile([
+        {
+          _iterator_: '#items',
+          label: '{{ _index_ }}:{{ _current_ }}@{{ _parent_.tag }}',
+        },
+      ])({ items: ['a', 'b'], tag: 't' });
+      expect(answer).toEqual([{ label: '0:a@t' }, { label: '1:b@t' }]);
+    });
+    it('Should treat a value that is not an array as a single item', () => {
+      const answer = compile([{ _iterator_: '#one', label: '{{ name }}' }])({
+        one: { name: 'a' },
+      });
+      expect(answer).toEqual([{ label: 'a' }]);
+    });
     it('Should give nothing when the context has no such array', () => {
       const answer = compile([{ _iterator_: '#items', label: 'x' }])({});
+      expect(answer).toEqual([]);
+    });
+    it('Should give nothing when the value of the iterator is falsy', () => {
+      const answer = compile([{ _iterator_: '#items', label: 'x' }])({
+        items: null,
+      });
       expect(answer).toEqual([]);
     });
   });
@@ -167,6 +262,14 @@ describe('Compile', () => {
       expect(compile('{{ missing }}', { native: true })({})).toBe(
         '{{ missing }}'
       );
+    });
+    it('Should not answer a string when it answers the value itself', () => {
+      // @ts-expect-error - a native result is not typed as the template it was given
+      const text: string = compile('{{ n }}', { native: true })({ n: 5 });
+      expect(text).toBeTypeOf('number');
+      // A template compiled without the option keeps the type it was given.
+      const kept: string = compile('{{ n }}')({ n: 5 });
+      expect(kept).toBeTypeOf('string');
     });
   });
 });
