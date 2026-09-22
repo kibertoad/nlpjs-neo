@@ -1401,6 +1401,39 @@ describe('NLP', () => {
       expect(result.intent).toEqual('greet');
       expect(result.answer).toEqual({ type: 'card', title: 'Hello John' });
     });
+    test('Mutating an answered structure does not rewrite the corpus', async () => {
+      const nlp = new Nlp({ languages: ['en'], autoSave: false });
+      nlp.addDocument('en', 'hello', 'greet');
+      nlp.addAnswer('en', 'greet', { type: 'card', title: 'Hello' });
+      await nlp.train();
+      const first = await nlp.process('en', 'hello');
+      (first.answer as Record<string, unknown>).title = 'Rewritten';
+      const second = await nlp.process('en', 'hello');
+      expect(second.answer).toEqual({ type: 'card', title: 'Hello' });
+    });
+    test('Two requests are answered with structures of their own', async () => {
+      const nlp = new Nlp({ languages: ['en'], autoSave: false });
+      nlp.addDocument('en', 'hello', 'greet');
+      nlp.addAnswer('en', 'greet', { type: 'card', title: 'Hello' });
+      await nlp.train();
+      const [first, second] = await Promise.all([
+        nlp.process('en', 'hello'),
+        nlp.process('en', 'hello'),
+      ]);
+      expect(first.answer).toEqual(second.answer);
+      expect(first.answer).not.toBe(second.answer);
+    });
+    test('A rendered template does not replace the answer that was taught', async () => {
+      const nlp = new Nlp({ languages: ['en'], autoSave: false });
+      nlp.container.register('Template', TemplateMock, true);
+      nlp.addDocument('en', 'hello', 'greet');
+      nlp.addAnswer('en', 'greet', 'Hello {{ name }}');
+      await nlp.train();
+      const john = await nlp.process('en', 'hello', { name: 'John' });
+      expect(john.answer).toEqual('Hello John');
+      const mary = await nlp.process('en', 'hello', { name: 'Mary' });
+      expect(mary.answer).toEqual('Hello Mary');
+    });
   });
 
   describe('addCorpora', () => {

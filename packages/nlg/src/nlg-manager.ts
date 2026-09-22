@@ -1,15 +1,17 @@
 import { Clonable } from '@nlpjs-neo/core';
 import type {
+  AnswerPayload,
   Container,
   ContainerHolder,
   Locale,
   RegisteredPipeline,
   Settings,
 } from '@nlpjs-neo/core';
+import cloneData from './clone-data.js';
+import deepEqual from './deep-equal.js';
 import type {
   Answer,
   AnswerOptions,
-  AnswerPayload,
   ConditionEvaluator,
   Intent,
   LegacyAnswer,
@@ -19,12 +21,23 @@ import type {
   TemplateCompiler,
 } from './types.js';
 
-/** Text answers are the same when equal, structured ones when they hold the same data. */
-function sameAnswer(a?: AnswerPayload, b?: AnswerPayload): boolean {
-  if (typeof a === 'object' && typeof b === 'object') {
-    return JSON.stringify(a) === JSON.stringify(b);
-  }
-  return a === b;
+/**
+ * Whether a value is an answer with its options around it, rather than the
+ * answer itself. A structured answer is data of the caller's own shape, so
+ * the only thing that can tell the two apart is the `answer` key the record
+ * carries and the payload is documented not to.
+ */
+function isAnswerRecord(value: Answer | AnswerPayload): value is Answer {
+  return typeof value === 'object' && value !== null && 'answer' in value;
+}
+
+/** One stored answer, copied whole so the corpus keeps its own. */
+function detachAnswer(answer: Answer): Answer {
+  return {
+    ...answer,
+    answer: cloneData(answer.answer),
+    opts: cloneData(answer.opts),
+  };
 }
 
 class NlgManager extends Clonable {
@@ -71,11 +84,12 @@ class NlgManager extends Clonable {
     ..._args: unknown[]
   ): NlgInput | LegacyAnswer[] {
     const input = srcInput;
-    if (this.responses[input.locale]) {
-      input.answers = this.responses[input.locale][input.intent] || [];
-    } else {
-      input.answers = [];
-    }
+    const stored = this.responses[input.locale]?.[input.intent];
+    // Reading the corpus is the one place answers leave it, so it is the one
+    // place they are detached: from here on the request owns its answers, and
+    // neither the stages that render them nor the caller that is handed them
+    // can reach what the intent was taught.
+    input.answers = stored ? stored.map(detachAnswer) : [];
     return input;
   }
 
@@ -123,8 +137,16 @@ class NlgManager extends Clonable {
 
   /**
    * Resolves the `(a|b)` alternatives of an answer and compiles whatever
-   * template it carries. Takes either an answer or its bare text, and gives
-   * back the same form.
+   * template it carries. Takes either an answer or its bare payload, and
+   * gives back the same form, which is also the form the template compiler
+   * is handed.
+   *
+   * Rendering answers a new value and never writes to the one it was given.
+   * What it renders is an answer the corpus was taught, and a rendered answer
+   * is what one request chose: alternatives resolved and a context filled in
+   * are not something the next request should inherit. Building the new value
+   * before the compiler sees it also keeps a compiler that renders by
+   * mutating from reaching anything but this request's copy.
    */
   renderText<T extends Answer | AnswerPayload>(
     srcText: T,
@@ -133,22 +155,28 @@ class NlgManager extends Clonable {
     if (!srcText) {
       return srcText;
     }
-    let text: AnswerPayload =
-      (srcText as Answer).answer || (srcText as AnswerPayload);
-    // Structured answers have no alternatives to resolve, only templates.
-    if (typeof text === 'string') {
-      text = this.resolveAlternatives(text);
-    }
-    if ((srcText as Answer).answer) {
-      (srcText as Answer).answer = text;
+    let rendered: T;
+    if (isAnswerRecord(srcText)) {
+      const record: Answer = srcText;
+      rendered = { ...record, answer: this.resolvePayload(record.answer) } as T;
     } else {
-      srcText = text as T;
+      rendered = this.resolvePayload(srcText) as T;
     }
     const template = this.container.get<TemplateCompiler>('Template');
     if (template && context) {
-      return template.compile(srcText, context);
+      return template.compile(rendered, context);
     }
-    return srcText;
+    return rendered;
+  }
+
+  /**
+   * Resolves the alternatives of an answer payload. A structured answer has
+   * none to resolve: only the templates inside it apply.
+   */
+  protected resolvePayload(payload: AnswerPayload): AnswerPayload {
+    return typeof payload === 'string'
+      ? this.resolveAlternatives(payload)
+      : payload;
   }
 
   /** Picks one of the options of every `(a|b)` of a text. */
@@ -199,8 +227,8 @@ class NlgManager extends Clonable {
     for (let i = 0; i < potential.length; i += 1) {
       const response = potential[i];
       if (
-        sameAnswer(response.answer, answer) &&
-        JSON.stringify(response.opts) === JSON.stringify(opts)
+        deepEqual(response.answer, answer) &&
+        deepEqual(response.opts, opts)
       ) {
         return i;
       }
@@ -224,7 +252,9 @@ class NlgManager extends Clonable {
     if (!this.responses[locale][intent]) {
       this.responses[locale][intent] = [];
     }
-    const obj = { answer, opts };
+    // A copy, so that mutating the objects that declared the answer cannot
+    // rewrite what the intent was taught.
+    const obj = { answer: cloneData(answer), opts: cloneData(opts) };
     this.responses[locale][intent].push(obj);
     return obj;
   }

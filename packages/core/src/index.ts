@@ -65,6 +65,7 @@ export type { AmongMethod } from './among.js';
 export type { Dock } from './dock.js';
 export type { JsonExportRules, JsonImportRules } from './clonable.js';
 export type {
+  AnswerPayload,
   ChildPipeline,
   ChildSettings,
   CompiledPipeline,
@@ -97,6 +98,7 @@ export type {
   StopwordsService,
   Storage,
   StorageItem,
+  StructuredAnswer,
   TerraformEntry,
   Token,
   TokenMap,

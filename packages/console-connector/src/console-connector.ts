@@ -7,7 +7,26 @@ import type {
   Message,
   Session,
 } from '@nlpjs-neo/connector';
-import type { Logger } from '@nlpjs-neo/core';
+import type { AnswerPayload, Logger } from '@nlpjs-neo/core';
+
+/**
+ * The console is a text channel, so a structured answer is written out as
+ * the data it is rather than as `[object Object]`. A payload that cannot be
+ * serialized still has to print something, so it falls back to coercion.
+ */
+function renderAnswer(answer: unknown): string {
+  if (answer === undefined || answer === null) {
+    return '';
+  }
+  if (typeof answer === 'string') {
+    return answer;
+  }
+  try {
+    return JSON.stringify(answer) ?? String(answer);
+  } catch {
+    return String(answer);
+  }
+}
 
 /** The classifier this falls back to when no bot and no pipeline is set up. */
 interface NlpService {
@@ -44,21 +63,22 @@ class ConsoleConnector extends Connector {
    */
   say(
     message: Message | string,
-    reference?: Session | { value?: string }
+    reference?: Session | { value?: AnswerPayload }
   ): void {
-    let text: string | undefined;
-    const value = (reference as { value?: string } | undefined)?.value;
+    let answer: AnswerPayload | undefined;
+    const value = (reference as { value?: AnswerPayload } | undefined)?.value;
     if (typeof reference === 'object' && value) {
-      text = value;
+      answer = value;
     } else if (typeof message === 'string') {
-      text = message;
+      answer = message;
     } else {
-      text =
+      answer =
         message.answer ||
         message.message ||
         message.text ||
         (reference as unknown as string);
     }
+    const text = renderAnswer(answer);
     const botName = this.settings.botName || 'bot';
     if (this.settings.debug && typeof message === 'object' && !reference) {
       const intent = message.intent || '';
