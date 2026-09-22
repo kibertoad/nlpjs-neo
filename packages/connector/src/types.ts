@@ -1,4 +1,4 @@
-import type { Container, Settings } from '@nlpjs-neo/core';
+import type { AnswerPayload, Container, Settings } from '@nlpjs-neo/core';
 import type Connector from './connector.js';
 import type Session from './session.js';
 
@@ -45,8 +45,12 @@ export interface Activity {
 /** An outbound message, as `Session.createMessage` builds it. */
 export interface Message extends Activity {
   suggestedActions?: { actions: SuggestedAction[] };
-  /** Text a classifier answered with, for the connectors that log it. */
-  answer?: string;
+  /**
+   * What a classifier answered with, for the connectors that deliver it. It
+   * is text unless the corpus declared structured data, so a connector that
+   * writes it into a text channel has to render it first.
+   */
+  answer?: AnswerPayload;
   message?: string;
   intent?: string;
   score?: number;

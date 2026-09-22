@@ -1,4 +1,5 @@
 import type {
+  AnswerPayload,
   Locale,
   PipelineInput,
   SerializedInstance,
@@ -25,15 +26,10 @@ export interface AnswerOptions {
   [key: string]: unknown;
 }
 
-/**
- * An answer that is data rather than text, such as a card or a list of
- * buttons. It is handed back as declared, after its strings have gone through
- * the templates, and it must not carry an `answer` key of its own.
- */
-export type StructuredAnswer = Record<string, unknown>;
-
-/** What an answer says: text, or structured data. */
-export type AnswerPayload = string | StructuredAnswer;
+// An answer payload is named by every layer it travels through, down to the
+// connectors, so it is declared in `core`. It is re-exported here because
+// this is where the answers that carry it are declared.
+export type { AnswerPayload, StructuredAnswer } from '@nlpjs-neo/core';
 
 /** One answer of an intent, and the condition under which it is offered. */
 export interface Answer {

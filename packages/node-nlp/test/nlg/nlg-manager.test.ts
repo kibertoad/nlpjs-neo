@@ -83,6 +83,29 @@ describe('NLG Manager', () => {
     });
   });
 
+  describe('Structured answers', () => {
+    const card = { type: 'card', title: 'Hello' };
+    test('Should add and find a structured answer', async () => {
+      const manager = new NlgManager();
+      manager.addAnswer('en', 'greet', card);
+      expect(manager.responses.en.greet).toHaveLength(1);
+      const found = await manager.findAnswer('en', 'greet');
+      expect(found?.response).toEqual(card);
+    });
+    test('Should remove a structured answer', () => {
+      const manager = new NlgManager();
+      manager.addAnswer('en', 'greet', card);
+      manager.removeAnswer('en', 'greet', { title: 'Hello', type: 'card' });
+      expect(manager.responses.en.greet).toHaveLength(0);
+    });
+    test('Should report a structured answer among all the answers', () => {
+      const manager = new NlgManager();
+      manager.addAnswer('en', 'greet', card);
+      const result = manager.findAllAnswers('en', 'greet', {});
+      expect(result).toEqual([{ response: card, opts: undefined }]);
+    });
+  });
+
   describe('Remove Answer', () => {
     test('I can remove an added response', () => {
       const manager = new NlgManager();

@@ -35,6 +35,34 @@ describe('Console Connector', () => {
       connector.say('Hello world');
       expect(console.log).toHaveBeenCalledWith('bot> Hello world');
     });
+    test('It should say a structured answer as the data it is', () => {
+      console.log = vi.fn<(...args: unknown[]) => void>();
+      const connector = new ConsoleConnector(
+        container as unknown as ConnectorSettings
+      );
+      connector.say({ answer: { type: 'buttons', options: ['yes', 'no'] } });
+      expect(console.log).toHaveBeenCalledWith(
+        'bot> {"type":"buttons","options":["yes","no"]}'
+      );
+    });
+    test('It should say a structured answer handed to it as a resolved value', () => {
+      console.log = vi.fn<(...args: unknown[]) => void>();
+      const connector = new ConsoleConnector(
+        container as unknown as ConnectorSettings
+      );
+      connector.say('ignored', { value: { type: 'card' } });
+      expect(console.log).toHaveBeenCalledWith('bot> {"type":"card"}');
+    });
+    test('It should say a structured answer that cannot be serialized', () => {
+      console.log = vi.fn<(...args: unknown[]) => void>();
+      const connector = new ConsoleConnector(
+        container as unknown as ConnectorSettings
+      );
+      const answer: Record<string, unknown> = { type: 'card' };
+      answer.self = answer;
+      expect(() => connector.say({ answer })).not.toThrow();
+      expect(console.log).toHaveBeenCalledWith('bot> [object Object]');
+    });
   });
 
   describe('Hear', () => {

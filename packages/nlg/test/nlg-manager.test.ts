@@ -96,6 +96,109 @@ describe('NLG Manager', () => {
       const manager = new NlgManager({ container });
       expect(manager.renderText('(a|a)')).toEqual('a');
     });
+    test('Should not duplicate an answer whose keys are in another order', () => {
+      const manager = new NlgManager({ container });
+      manager.add('en', 'greet', { type: 'card', title: 'Hello' });
+      manager.add('en', 'greet', { title: 'Hello', type: 'card' });
+      expect(manager.responses.en.greet).toHaveLength(1);
+    });
+    test('Should remove an answer whose keys are in another order', () => {
+      const manager = new NlgManager({ container });
+      manager.add('en', 'greet', { type: 'card', title: 'Hello' });
+      manager.remove('en', 'greet', { title: 'Hello', type: 'card' });
+      expect(manager.responses.en.greet).toHaveLength(0);
+    });
+    test('Should compare an answer that refers back to itself', () => {
+      const manager = new NlgManager({ container });
+      const stored: Record<string, unknown> = { type: 'card' };
+      stored.self = stored;
+      expect(() => manager.add('en', 'greet', stored)).not.toThrow();
+      const same: Record<string, unknown> = { type: 'card' };
+      same.self = same;
+      expect(manager.indexOfAnswer('en', 'greet', same)).toEqual(0);
+    });
+    test('Should not duplicate an answer whose options are in another order', () => {
+      const manager = new NlgManager({ container });
+      manager.add('en', 'greet', 'Hello', { condition: 'a === 1', tag: 'x' });
+      manager.add('en', 'greet', 'Hello', { tag: 'x', condition: 'a === 1' });
+      expect(manager.responses.en.greet).toHaveLength(1);
+    });
+  });
+
+  describe('Answer ownership', () => {
+    test('Should not let the object an answer was declared with rewrite it', () => {
+      const manager = new NlgManager({ container });
+      const declared = { type: 'card', title: 'Hello' };
+      manager.add('en', 'greet', declared);
+      declared.title = 'Rewritten';
+      expect(manager.responses.en.greet[0].answer).toEqual({
+        type: 'card',
+        title: 'Hello',
+      });
+    });
+    test('Should hand out answers the corpus does not share', () => {
+      const manager = new NlgManager({ container });
+      const card = { type: 'card', title: 'Hello' };
+      manager.add('en', 'greet', card);
+      const found = manager.findAllAnswers({
+        locale: 'en',
+        intent: 'greet',
+      }) as NlgInput;
+      expect(found.answers[0].answer).toEqual(card);
+      expect(found.answers[0]).not.toBe(manager.responses.en.greet[0]);
+      (found.answers[0].answer as Record<string, unknown>).title = 'Rewritten';
+      expect(manager.responses.en.greet[0].answer).toEqual(card);
+    });
+    test('Should not let the options an answer was declared with rewrite it', () => {
+      const manager = new NlgManager({ container });
+      const opts = { condition: 'a === 1', tag: 'x' };
+      manager.add('en', 'greet', 'Hello', opts);
+      opts.tag = 'rewritten';
+      const found = manager.findAllAnswers({
+        locale: 'en',
+        intent: 'greet',
+      }) as NlgInput;
+      expect(found.answers[0].opts).toEqual({ condition: 'a === 1', tag: 'x' });
+      (found.answers[0].opts as Record<string, unknown>).tag = 'rewritten too';
+      expect(manager.responses.en.greet[0].opts).toEqual({
+        condition: 'a === 1',
+        tag: 'x',
+      });
+    });
+    test('Should give each request its own copy of a structured answer', () => {
+      const manager = new NlgManager({ container });
+      manager.add('en', 'greet', { type: 'card' });
+      const first = manager.findAllAnswers({
+        locale: 'en',
+        intent: 'greet',
+      }) as NlgInput;
+      const second = manager.findAllAnswers({
+        locale: 'en',
+        intent: 'greet',
+      }) as NlgInput;
+      expect(first.answers[0].answer).not.toBe(second.answers[0].answer);
+    });
+    test('Render should answer a new value rather than write to the given one', () => {
+      const own = containerBootstrap();
+      own.register('Template', JsonTemplate, true);
+      const manager = new NlgManager({ container: own });
+      const source = { answer: { type: 'card', title: 'Hello {{ name }}' } };
+      const rendered = manager.renderText(source, { name: 'John' });
+      expect(rendered.answer).toEqual({ type: 'card', title: 'Hello John' });
+      expect(source.answer).toEqual({
+        type: 'card',
+        title: 'Hello {{ name }}',
+      });
+    });
+    test('Render should not resolve the alternatives of a stored answer once and for all', () => {
+      const manager = new NlgManager({ container });
+      manager.add('en', 'greet', '(Hi|Hello) user');
+      const found = manager.renderRandom(
+        manager.findAllAnswers({ locale: 'en', intent: 'greet' }) as NlgInput
+      );
+      expect(['Hi user', 'Hello user']).toContain(found.answers[0].answer);
+      expect(manager.responses.en.greet[0].answer).toEqual('(Hi|Hello) user');
+    });
   });
 
   describe('Add', () => {

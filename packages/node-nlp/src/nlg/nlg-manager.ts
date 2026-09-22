@@ -23,7 +23,7 @@ class NlgManager extends NlgManagerBase {
   addAnswer(
     locale: Locale,
     intent: string,
-    answer: string,
+    answer: AnswerPayload,
     opts?: string | AnswerOptions
   ): Answer {
     return this.add(locale, intent, answer, opts);
@@ -47,7 +47,7 @@ class NlgManager extends NlgManagerBase {
   removeAnswer(
     locale: Locale,
     intent: string,
-    answer: string,
+    answer: AnswerPayload,
     opts?: string | AnswerOptions
   ): void {
     return this.remove(locale, intent, answer, opts);

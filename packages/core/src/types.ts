@@ -24,6 +24,26 @@ export type TokenMap = Record<Token, number>;
  */
 export type Tokens = Token[] | TokenMap;
 
+/**
+ * An answer that is data rather than text, such as a card or a list of
+ * buttons. It is handed back as declared, once the strings inside it have
+ * gone through the templates, and it must not carry an `answer` key of its
+ * own: that key is what tells an answer apart from the record that wraps it.
+ *
+ * It has to survive `structuredClone` and a JSON round trip, because the
+ * corpus stores it detached from whoever declared it and persists it with
+ * the rest of the model.
+ */
+export type StructuredAnswer = Record<string, unknown>;
+
+/**
+ * What an answer says: text, or structured data. It lives here rather than
+ * in `nlg` because every layer an answer travels through, down to the
+ * connectors that deliver it, has to name it without depending on the
+ * generator that produced it.
+ */
+export type AnswerPayload = string | StructuredAnswer;
+
 /** Words marked as stopwords, used as a lookup set. */
 export type StopwordDictionary = Record<Token, boolean>;
 
