@@ -64,8 +64,17 @@ compile([{ _iterator_: '#items', label: '{{ name }}' }])({ items: [{ name: 'a' }
 compile('{{ n }}', { native: true })({ n: 5 }); // 5
 ```
 
-An object inside a longer string is printed as JSON, and an expression without a value is left
-as it was written.
+A section and an `_iterator_` take any expression, `{{#order.items}}` included, and repeat
+over it the same way: once per item of an array, once for a value that is not an array, and
+not at all for a value that is missing or falsy, which is what makes `{{#flag}} ... {{/#}}`
+read as a condition.
+
+An object inside a longer string is printed as JSON, an array as its items printed the same
+way, and an expression without a value is left as it was written.
+
+With `native: true` the value of the expression is only known while it runs, so the result is
+typed as `unknown`: name what you expect with `compile<Answer>(str, { native: true })`, or
+narrow it.
 
 ## Contributing
 
