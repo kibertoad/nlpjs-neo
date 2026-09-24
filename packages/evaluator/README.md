@@ -16,6 +16,7 @@ in TypeScript, and require Node.js 22.12 or later.
 
 - [Installation](#installation)
 - [Example of use](#example-of-use)
+- [Templates](#templates)
 - [Contributing](#contributing)
 - [Code of Conduct](#code-of-conduct)
 - [Who is behind it](#who-is-behind-it)
@@ -42,6 +43,38 @@ const answer = evaluator.evaluateAll(question, context);
 ```
 
 The value of the variable "`answer`" will be `[2]`.
+
+## Templates
+
+`compile` resolves the `{{ expression }}` parts of a string, or of every string inside an
+object or array.
+
+```javascript
+import { compile } from '@nlpjs-neo/evaluator';
+
+compile('Hello {{ name }}')({ name: 'Ana' }); // 'Hello Ana'
+
+// A section repeats for each item; it sees _current_, _index_ and _parent_.
+compile('{{#items}}{{ name }},{{/#}}')({ items: [{ name: 'a' }, { name: 'b' }] }); // 'a,b,'
+
+// An array item with `_iterator_` is repeated for each item of a context array.
+compile([{ _iterator_: '#items', label: '{{ name }}' }])({ items: [{ name: 'a' }] }); // [{ label: 'a' }]
+
+// A string that is exactly one expression can keep the type of its value.
+compile('{{ n }}', { native: true })({ n: 5 }); // 5
+```
+
+A section and an `_iterator_` take any expression, `{{#order.items}}` included, and repeat
+over it the same way: once per item of an array, once for a value that is not an array, and
+not at all for a value that is missing or falsy, which is what makes `{{#flag}} ... {{/#}}`
+read as a condition.
+
+An object inside a longer string is printed as JSON, an array as its items printed the same
+way, and an expression without a value is left as it was written.
+
+With `native: true` the value of the expression is only known while it runs, so the result is
+typed as `unknown`: name what you expect with `compile<Answer>(str, { native: true })`, or
+narrow it.
 
 ## Contributing
 
