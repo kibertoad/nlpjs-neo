@@ -67,6 +67,112 @@ describe('Neural Network', () => {
     });
   });
 
+  describe('Learning rate', () => {
+    test('It is derived from the size of the corpus when it is `auto`', () => {
+      const net = new NeuralNetwork();
+      expect(net.settings.learningRate).toEqual('auto');
+      expect(net.baseLearningRate).toBeUndefined();
+      net.train(corpus);
+      expect(net.settings.learningRate).toEqual('auto');
+      expect(net.baseLearningRate).toBeCloseTo(
+        1 / Math.sqrt(corpus.length),
+        10
+      );
+    });
+
+    test('A bigger corpus learns slower', () => {
+      const big = Array.from({ length: 4 }, () => corpus).flat();
+      const small = new NeuralNetwork();
+      small.train(corpus);
+      const large = new NeuralNetwork();
+      large.train(big);
+      expect(large.baseLearningRate).toBeCloseTo(
+        small.baseLearningRate / 2,
+        10
+      );
+    });
+
+    test('A learning rate in the settings is used as it is', () => {
+      const net = new NeuralNetwork({ learningRate: 0.01 });
+      expect(net.settings.learningRate).toEqual(0.01);
+      net.train(corpus);
+      expect(net.baseLearningRate).toEqual(0.01);
+    });
+
+    test('An `auto` rate is not exported, a pinned one is', () => {
+      const auto = new NeuralNetwork();
+      auto.train(corpus);
+      expect(auto.toJSON().settings).toEqual({});
+
+      const pinned = new NeuralNetwork({ learningRate: 0.01 });
+      pinned.train(corpus);
+      expect(pinned.toJSON().settings).toEqual({ learningRate: 0.01 });
+
+      const imported = new NeuralNetwork();
+      imported.fromJSON(pinned.toJSON());
+      expect(imported.settings.learningRate).toEqual(0.01);
+    });
+
+    test('A model exported before `learningRate` existed trains on `auto` once imported', () => {
+      // A model from a release before this one has no `learningRate` in its
+      // settings either: the old `toJSON` stripped it once it equalled the
+      // old default, 0.6, and 0.6 was the only default there was. That is the
+      // same shape `{}` an `auto` export has today (the test above), so it is
+      // what `fromJSON` sees; it cannot tell the two apart.
+      const legacy = new NeuralNetwork();
+      legacy.train(corpus);
+      const json = legacy.toJSON();
+      expect(json.settings.learningRate).toBeUndefined();
+
+      const imported = new NeuralNetwork();
+      imported.fromJSON(json);
+      expect(imported.settings.learningRate).toEqual('auto');
+
+      // Training the imported model resolves the rate from its corpus, same
+      // as a network that was never exported, not the 0.6 it trained with
+      // originally: a model kept training across the version bump learns at
+      // a different pace than it did before, even though its saved weights
+      // are unchanged and score exactly as they did.
+      imported.train(corpus);
+      expect(imported.baseLearningRate).toEqual(1 / Math.sqrt(corpus.length));
+      expect(imported.baseLearningRate).not.toEqual(0.6);
+    });
+  });
+
+  describe('Inputs', () => {
+    test('The known features of an input keep their values, in order', () => {
+      const net = new NeuralNetwork();
+      net.train(corpus);
+      const { inputLookup } = net.lookup;
+      const vector = net.lookup.transformInput({
+        unknown: 5,
+        when: 2,
+        birthday: 3,
+      });
+      expect(vector.keys).toEqual([
+        inputLookup.dict.get('when'),
+        inputLookup.dict.get('birthday'),
+      ]);
+      expect(vector.values).toEqual([2, 3]);
+    });
+
+    test('A feature named like a member of Object is just a feature', () => {
+      const net = new NeuralNetwork();
+      net.train(corpus);
+      // `run` answers one object it reuses, so it is copied before the next run.
+      const plain = { ...net.run({ when: 1, birthday: 1 }) };
+      const actual = net.run({
+        when: 1,
+        birthday: 1,
+        constructor: 1,
+        toString: 1,
+        valueOf: 1,
+      });
+      expect(actual).toEqual(plain);
+      expect(Number.isNaN(actual.birthday)).toBe(false);
+    });
+  });
+
   describe('Import and export', () => {
     test('Should export and import', () => {
       const net = new NeuralNetwork();
@@ -87,9 +193,9 @@ describe('Neural Network', () => {
       net.train(corpus);
       const explanation = net.explain({ when: 1, birthday: 1 }, 'birthday');
       expect(explanation.weights).toBeDefined();
-      expect(explanation.weights.when).toEqual(5.242532253265381);
-      expect(explanation.weights.birthday).toEqual(4.492748260498047);
-      expect(explanation.bias).toEqual(1.6587271811334132);
+      expect(explanation.weights.when).toEqual(7.89713716506958);
+      expect(explanation.weights.birthday).toEqual(6.401824951171875);
+      expect(explanation.bias).toEqual(-0.14768101345231271);
     });
   });
 });

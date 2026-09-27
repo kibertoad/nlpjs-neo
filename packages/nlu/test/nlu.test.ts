@@ -250,6 +250,52 @@ describe('NLU', () => {
     });
   });
 
+  describe('Convert to array', () => {
+    /** An NLU that knows three intents and nothing else. */
+    function withIntents(): Nlu {
+      const nlu = new Nlu({ locale: 'en' }, container);
+      nlu.intents = { greet: true, keys: true, None: true };
+      return nlu;
+    }
+
+    test('It lists every known intent when zeros are kept', () => {
+      const nlu = withIntents();
+      const result = nlu.convertToArray({
+        classifications: { greet: 0, keys: 0.75, None: 0.25 },
+        settings: { filterZeros: false },
+      });
+      expect(result.classifications).toEqual([
+        { intent: 'keys', score: 0.75 },
+        { intent: 'None', score: 0.25 },
+        { intent: 'greet', score: 0 },
+      ]);
+    });
+
+    test('It drops the intents scored zero by default', () => {
+      const nlu = withIntents();
+      const result = nlu.convertToArray({
+        classifications: { greet: 0, keys: 0.75, None: 0.25 },
+        settings: nlu.settings,
+      });
+      expect(nlu.settings.filterZeros).toBe(true);
+      expect(result.classifications).toEqual([
+        { intent: 'keys', score: 0.75 },
+        { intent: 'None', score: 0.25 },
+      ]);
+    });
+
+    // Why the length of an answer never tells a test anything: dropping every
+    // zero would leave nothing, so `None` takes its place.
+    test('It answers None when every intent was dropped', () => {
+      const nlu = withIntents();
+      const result = nlu.convertToArray({
+        classifications: { greet: 0, keys: 0, None: 0 },
+        settings: nlu.settings,
+      });
+      expect(result.classifications).toEqual([{ intent: 'None', score: 1 }]);
+    });
+  });
+
   describe('Add None Feature', () => {
     test('It should add a nonefeature input labeled as None', () => {
       const nlu = new Nlu({ locale: 'en', keepStopwords: false }, container);
