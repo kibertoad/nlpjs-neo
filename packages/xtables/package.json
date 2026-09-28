@@ -72,6 +72,6 @@
   },
   "gitHead": "cc4249fa994c58d220e6f10a6c94fdad05df32fd",
   "dependencies": {
-    "@office-kit/xlsx": "^0.21.0"
+    "@office-kit/xlsx": "^0.21.1"
   }
 }

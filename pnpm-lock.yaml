@@ -806,8 +806,8 @@ importers:
   packages/xtables:
     dependencies:
       '@office-kit/xlsx':
-        specifier: ^0.21.0
-        version: 0.21.0
+        specifier: ^0.21.1
+        version: 0.21.1
 
 packages:
 
@@ -980,8 +980,8 @@ packages:
   '@nodable/entities@3.0.0':
     resolution: {integrity: sha512-8L9xFeTYKhm49xfIypoe2W5wV1m/3Z58kT+7kR9A8OyFxcPduI4VmxaUMQyKYrRjUoLLSXv6EKKID5Tvj9cUVw==}
 
-  '@office-kit/xlsx@0.21.0':
-    resolution: {integrity: sha512-rOPJ6BxgkG7n3xAA7JzlCknjo39BDCqzG1VaVjcGdsQX47KTuL6wGd9B/CO8QkevTeHcogeeKonuHzS4CJAs/Q==}
+  '@office-kit/xlsx@0.21.1':
+    resolution: {integrity: sha512-IVTcF1nUo2DTWI006RVTtP7pJxXROZ6tRB14LMOp6vf3D3LGWx4t3YmiC+3Jmagh/BqXL2I5+COnbBuDuUE3zA==}
     engines: {node: '>=22.0.0'}
 
   '@oxc-project/types@0.149.0':
@@ -2475,7 +2475,7 @@ snapshots:
 
   '@nodable/entities@3.0.0': {}
 
-  '@office-kit/xlsx@0.21.0':
+  '@office-kit/xlsx@0.21.1':
     dependencies:
       fast-xml-parser: 5.11.1
       fflate: 0.8.3
