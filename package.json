@@ -50,13 +50,13 @@
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
     "@changesets/cli": "^3.0.3",
-    "@types/node": "^26.6.2",
-    "@vitest/coverage-v8": "^5.0.1",
+    "@types/node": "^26.6.3",
+    "@vitest/coverage-v8": "^5.0.2",
     "oxfmt": "^0.70.0",
     "oxlint": "^1.85.0",
     "publint": "^0.3.24",
     "typescript": "^7.0.2",
-    "vitest": "^5.0.1"
+    "vitest": "^5.0.2"
   },
   "packageManager": "pnpm@12.5.1",
   "engines": {
