@@ -4,6 +4,9 @@ import { defineConfig } from 'vitest/config';
 
 const packagesDir = fileURLToPath(new URL('./packages', import.meta.url));
 const benchDir = fileURLToPath(new URL('./bench', import.meta.url));
+const testSupportDir = fileURLToPath(
+  new URL('./test-support', import.meta.url)
+);
 
 // Resolve `@nlpjs-neo/*` to the TypeScript sources instead of the published
 // `dist/` output, so the test run does not depend on a prior build.
@@ -20,6 +23,9 @@ export default defineConfig({
       // Shared benchmark fixtures and helpers, so a benchmark does not have to
       // climb out of its package with a relative path.
       { find: /^#bench\/(.*)$/, replacement: `${benchDir}/$1` },
+      // Assertions shared by the tests of several packages, so a test does not
+      // have to reach into the test folder of another package.
+      { find: /^#test\/(.*)$/, replacement: `${testSupportDir}/$1` },
       ...workspaceAliases,
     ],
   },

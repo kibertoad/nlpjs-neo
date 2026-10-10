@@ -6,12 +6,12 @@ import type { CorpusEntry, SparseVector } from './types.js';
  */
 class Lookup {
   /** Position of every known term. */
-  declare dict: Record<string, number>;
+  declare dict: Map<string, number>;
   /** Known terms, by position. */
   declare items: string[];
 
   constructor(data?: CorpusEntry[], propName: 'input' | 'output' = 'input') {
-    this.dict = {};
+    this.dict = new Map();
     this.items = [];
     if (data) {
       this.buildFromData(data, propName);
@@ -19,8 +19,8 @@ class Lookup {
   }
 
   add(key: string): void {
-    if (this.dict[key] === undefined) {
-      this.dict[key] = this.items.length;
+    if (!this.dict.has(key)) {
+      this.dict.set(key, this.items.length);
       this.items.push(key);
     }
   }
@@ -39,17 +39,18 @@ class Lookup {
   prepare(item: Record<string, number>): SparseVector {
     const keys = Object.keys(item);
     const resultKeys: number[] = [];
-    const resultData: Record<number, number> = {};
+    const resultValues: number[] = [];
     for (let i = 0; i < keys.length; i += 1) {
       const key = keys[i];
-      if (this.dict[key] !== undefined) {
-        resultKeys.push(this.dict[key]);
-        resultData[this.dict[key]] = item[key];
+      const id = this.dict.get(key);
+      if (id !== undefined) {
+        resultKeys.push(id);
+        resultValues.push(item[key]);
       }
     }
     return {
       keys: resultKeys,
-      data: resultData,
+      values: resultValues,
     };
   }
 }

@@ -46,6 +46,10 @@ is needed first.
 pnpm test
 ```
 
+A test lives in its own package, in `packages/<package>/test/`. An assertion that several
+packages need lives in `test-support/` at the root and is imported as `#test/<file>.js`, the
+same way the benchmarks share their fixtures through `#bench/`.
+
 ## Running benchmarks
 
 The benchmarks cover the hot paths of the main packages: the per-utterance pipeline
