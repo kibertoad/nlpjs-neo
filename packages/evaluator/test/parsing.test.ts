@@ -101,6 +101,21 @@ describe('Parsing and code generation', () => {
         const result = await run('(function (a, b) { return (a + b) * 2; })');
         expect(result(1, 2)).toEqual(6);
       });
+
+      test('It should keep the function as it was written', async () => {
+        const result = await run(
+          "(function (a) { /* a comment */ return a + 'x' + `${a}`; })"
+        );
+        expect(result(1)).toEqual('1x1');
+        expect(result.toString()).toContain('/* a comment */');
+      });
+
+      test('It should take only the function out of a longer source', async () => {
+        const result = await run(
+          '[1, 2, 3].length + 1; (function (a) { return a; })'
+        );
+        expect(result(7)).toEqual(7);
+      });
     });
 
     // Before it generates the source, `walkFunction` walks the body once with
