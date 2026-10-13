@@ -10,7 +10,6 @@ import type {
   TokenizerService,
 } from './types.js';
 
-/* oxlint-disable */
 /**
  * Runtime the generated Snowball stemmers are compiled against: a cursor over
  * `current`, the grouping and among primitives their rules call, and the
@@ -89,34 +88,48 @@ class BaseStemmer {
 
   /** Tests one character against a grouping table: `true` when it is absent. */
   bc(s: number[], ch: number): boolean {
-    if ((s[ch >>> 3] & (0x1 << (ch & 0x7))) == 0) {
+    if ((s[ch >>> 3] & (0x1 << (ch & 0x7))) === 0) {
       return true;
     }
     return false;
   }
 
   in_grouping(s: number[], min: number, max: number): boolean {
-    if (this.cursor >= this.limit) return false;
+    if (this.cursor >= this.limit) {
+      return false;
+    }
     let ch = this.current.charCodeAt(this.cursor);
-    if (ch > max || ch < min) return false;
+    if (ch > max || ch < min) {
+      return false;
+    }
     ch -= min;
-    if (this.bc(s, ch)) return false;
+    if (this.bc(s, ch)) {
+      return false;
+    }
     this.cursor++;
     return true;
   }
 
   in_grouping_b(s: number[], min: number, max: number): boolean {
-    if (this.cursor <= this.limit_backward) return false;
+    if (this.cursor <= this.limit_backward) {
+      return false;
+    }
     let ch = this.current.charCodeAt(this.cursor - 1);
-    if (ch > max || ch < min) return false;
+    if (ch > max || ch < min) {
+      return false;
+    }
     ch -= min;
-    if (this.bc(s, ch)) return false;
+    if (this.bc(s, ch)) {
+      return false;
+    }
     this.cursor--;
     return true;
   }
 
   out_grouping(s: number[], min: number, max: number): boolean {
-    if (this.cursor >= this.limit) return false;
+    if (this.cursor >= this.limit) {
+      return false;
+    }
     let ch = this.current.charCodeAt(this.cursor);
     if (ch > max || ch < min) {
       this.cursor++;
@@ -131,7 +144,9 @@ class BaseStemmer {
   }
 
   out_grouping_b(s: number[], min: number, max: number): boolean {
-    if (this.cursor <= this.limit_backward) return false;
+    if (this.cursor <= this.limit_backward) {
+      return false;
+    }
     let ch = this.current.charCodeAt(this.cursor - 1);
     if (ch > max || ch < min) {
       this.cursor--;
@@ -145,6 +160,167 @@ class BaseStemmer {
     return false;
   }
 
+  /**
+   * `gopast in_grouping`: moves the cursor forward past the next character
+   * that is in the grouping. Answers `false`, with the cursor at the limit, when
+   * there is none.
+   */
+  gopast_in_grouping(s: number[], min: number, max: number): boolean {
+    for (;;) {
+      if (this.in_grouping(s, min, max)) {
+        return true;
+      }
+      if (this.cursor >= this.limit) {
+        return false;
+      }
+      this.cursor++;
+    }
+  }
+
+  /** `gopast out_grouping`: the same, for the next character that is not in the grouping. */
+  gopast_out_grouping(s: number[], min: number, max: number): boolean {
+    for (;;) {
+      if (this.out_grouping(s, min, max)) {
+        return true;
+      }
+      if (this.cursor >= this.limit) {
+        return false;
+      }
+      this.cursor++;
+    }
+  }
+
+  /** `backwards gopast in_grouping`: the same, moving backward. */
+  gopast_in_grouping_b(s: number[], min: number, max: number): boolean {
+    for (;;) {
+      if (this.in_grouping_b(s, min, max)) {
+        return true;
+      }
+      if (this.cursor <= this.limit_backward) {
+        return false;
+      }
+      this.cursor--;
+    }
+  }
+
+  /** `backwards gopast out_grouping`: the same, moving backward. */
+  gopast_out_grouping_b(s: number[], min: number, max: number): boolean {
+    for (;;) {
+      if (this.out_grouping_b(s, min, max)) {
+        return true;
+      }
+      if (this.cursor <= this.limit_backward) {
+        return false;
+      }
+      this.cursor--;
+    }
+  }
+
+  /**
+   * `goto in_grouping`: moves the cursor forward to the next character that is
+   * in the grouping, and stops before it. Answers `false`, with the cursor at
+   * the limit, when there is none.
+   */
+  goto_in_grouping(s: number[], min: number, max: number): boolean {
+    for (;;) {
+      const start = this.cursor;
+      if (this.in_grouping(s, min, max)) {
+        this.cursor = start;
+        return true;
+      }
+      this.cursor = start;
+      if (this.cursor >= this.limit) {
+        return false;
+      }
+      this.cursor++;
+    }
+  }
+
+  /** `goto out_grouping`: the same, for the next character that is not in the grouping. */
+  goto_out_grouping(s: number[], min: number, max: number): boolean {
+    for (;;) {
+      const start = this.cursor;
+      if (this.out_grouping(s, min, max)) {
+        this.cursor = start;
+        return true;
+      }
+      this.cursor = start;
+      if (this.cursor >= this.limit) {
+        return false;
+      }
+      this.cursor++;
+    }
+  }
+
+  /** `backwards goto in_grouping`: the same, moving backward. */
+  goto_in_grouping_b(s: number[], min: number, max: number): boolean {
+    for (;;) {
+      const fromEnd = this.limit - this.cursor;
+      if (this.in_grouping_b(s, min, max)) {
+        this.cursor = this.limit - fromEnd;
+        return true;
+      }
+      this.cursor = this.limit - fromEnd;
+      if (this.cursor <= this.limit_backward) {
+        return false;
+      }
+      this.cursor--;
+    }
+  }
+
+  /** `backwards goto out_grouping`: the same, moving backward. */
+  goto_out_grouping_b(s: number[], min: number, max: number): boolean {
+    for (;;) {
+      const fromEnd = this.limit - this.cursor;
+      if (this.out_grouping_b(s, min, max)) {
+        this.cursor = this.limit - fromEnd;
+        return true;
+      }
+      this.cursor = this.limit - fromEnd;
+      if (this.cursor <= this.limit_backward) {
+        return false;
+      }
+      this.cursor--;
+    }
+  }
+
+  /**
+   * `[substring]`, looking forward: marks where the among starts (`bra`) and
+   * where it ends (`ket`), and answers which string it found, 0 when none.
+   */
+  find_slice(v: Among[]): number {
+    this.bra = this.cursor;
+    const found = this.find_among(v);
+    if (found !== 0) {
+      this.ket = this.cursor;
+    }
+    return found;
+  }
+
+  /** `[substring]` in backwardmode: `ket` is where the match ends, `bra` where it starts. */
+  find_slice_b(v: Among[]): number {
+    this.ket = this.cursor;
+    const found = this.find_among_b(v);
+    if (found !== 0) {
+      this.bra = this.cursor;
+    }
+    return found;
+  }
+
+  /** `do <rule>`, looking forward: runs the rule and puts the cursor back, whatever it answers. */
+  do_forward(rule: () => unknown): void {
+    const start = this.cursor;
+    rule.call(this);
+    this.cursor = start;
+  }
+
+  /** `do <rule>` in backwardmode, where the cursor is kept as its distance from the limit. */
+  do_backward(rule: () => unknown): void {
+    const fromEnd = this.limit - this.cursor;
+    rule.call(this);
+    this.cursor = this.limit - fromEnd;
+  }
+
   eq_s(s_size: number | string, s?: string): boolean {
     if (typeof s_size === 'string') {
       s = s_size;
@@ -152,7 +328,7 @@ class BaseStemmer {
     }
     if (
       this.limit - this.cursor < s_size ||
-      this.current.slice(this.cursor, this.cursor + s_size) != s
+      this.current.slice(this.cursor, this.cursor + s_size) !== s
     ) {
       return false;
     }
@@ -167,7 +343,7 @@ class BaseStemmer {
     }
     if (
       this.cursor - this.limit_backward < s_size ||
-      this.current.slice(this.cursor - s_size, this.cursor) != s
+      this.current.slice(this.cursor - s_size, this.cursor) !== s
     ) {
       return false;
     }
@@ -187,19 +363,20 @@ class BaseStemmer {
 
     let first_key_inspected = false;
 
-    while (true) {
+    for (;;) {
       const k = i + ((j - i) >>> 1);
       let diff = 0;
       let common = common_i < common_j ? common_i : common_j; // smaller
-      var w = v[k];
-      var i2;
-      for (i2 = common; i2 < w.s_size; i2++) {
-        if (c + common == l) {
+      const w = v[k];
+      for (let i2 = common; i2 < w.s_size; i2++) {
+        if (c + common === l) {
           diff = -1;
           break;
         }
         diff = this.current.charCodeAt(c + common) - w.s.charCodeAt(i2);
-        if (diff != 0) break;
+        if (diff !== 0) {
+          break;
+        }
         common++;
       }
       if (diff < 0) {
@@ -210,25 +387,31 @@ class BaseStemmer {
         common_i = common;
       }
       if (j - i <= 1) {
-        if (i > 0) break; // v->s has been inspected
-        if (j == i) break; // only one item in v
+        if (i > 0) {
+          break;
+        } // v->s has been inspected
+        if (j === i) {
+          break;
+        } // only one item in v
 
         // - but now we need to go round once more to get
         // v->s inspected. This looks messy, but is actually
         // the optimal approach.
 
-        if (first_key_inspected) break;
+        if (first_key_inspected) {
+          break;
+        }
         first_key_inspected = true;
       }
     }
-    while (true) {
-      var w = v[i];
+    for (;;) {
+      const w = v[i];
       if (common_i >= w.s_size) {
         this.cursor = c + w.s_size;
-        if (w.method == null) {
+        if (w.method === undefined || w.method === null) {
           return w.result;
         }
-        const res = w.method(w.instance);
+        const res = w.method(this);
         this.cursor = c + w.s_size;
         if (res) {
           return w.result;
@@ -238,9 +421,10 @@ class BaseStemmer {
       // table that stores that prefix as a string (the Spanish `a_8`) is only
       // ever walked by its own tree based lookup, never by this search.
       i = w.substring_i as number;
-      if (i < 0) return 0;
+      if (i < 0) {
+        return 0;
+      }
     }
-    return -1; // not reachable
   }
 
   // find_among_b is for backwards processing. Same comments apply
@@ -256,19 +440,20 @@ class BaseStemmer {
 
     let first_key_inspected = false;
 
-    while (true) {
+    for (;;) {
       const k = i + ((j - i) >> 1);
       let diff = 0;
       let common = common_i < common_j ? common_i : common_j;
-      var w = v[k];
-      var i2;
-      for (i2 = w.s_size - 1 - common; i2 >= 0; i2--) {
-        if (c - common == lb) {
+      const w = v[k];
+      for (let i2 = w.s_size - 1 - common; i2 >= 0; i2--) {
+        if (c - common === lb) {
           diff = -1;
           break;
         }
         diff = this.current.charCodeAt(c - 1 - common) - w.s.charCodeAt(i2);
-        if (diff != 0) break;
+        if (diff !== 0) {
+          break;
+        }
         common++;
       }
       if (diff < 0) {
@@ -279,28 +464,39 @@ class BaseStemmer {
         common_i = common;
       }
       if (j - i <= 1) {
-        if (i > 0) break;
-        if (j == i) break;
-        if (first_key_inspected) break;
+        if (i > 0) {
+          break;
+        }
+        if (j === i) {
+          break;
+        }
+        if (first_key_inspected) {
+          break;
+        }
         first_key_inspected = true;
       }
     }
-    while (true) {
-      var w = v[i];
+    for (;;) {
+      const w = v[i];
       if (common_i >= w.s_size) {
         this.cursor = c - w.s_size;
-        if (w.method == null) return w.result;
+        if (w.method === undefined || w.method === null) {
+          return w.result;
+        }
         const res = w.method(this);
         this.cursor = c - w.s_size;
-        if (res) return w.result;
+        if (res) {
+          return w.result;
+        }
       }
       // `substring_i` is the index of the longest proper prefix. The one
       // table that stores that prefix as a string (the Spanish `a_8`) is only
       // ever walked by its own tree based lookup, never by this search.
       i = w.substring_i as number;
-      if (i < 0) return 0;
+      if (i < 0) {
+        return 0;
+      }
     }
-    return -1; // not reachable
   }
 
   /* to replace chars between c_bra and c_ket in this.current by the
@@ -310,8 +506,11 @@ class BaseStemmer {
     const adjustment = s.length - (c_ket - c_bra);
     this.current = this.current.slice(0, c_bra) + s + this.current.slice(c_ket);
     this.limit += adjustment;
-    if (this.cursor >= c_ket) this.cursor += adjustment;
-    else if (this.cursor > c_bra) this.cursor = c_bra;
+    if (this.cursor >= c_ket) {
+      this.cursor += adjustment;
+    } else if (this.cursor > c_bra) {
+      this.cursor = c_bra;
+    }
     return adjustment;
   }
 
@@ -341,12 +540,16 @@ class BaseStemmer {
 
   insert(c_bra: number, c_ket: number, s: string): void {
     const adjustment = this.replace_s(c_bra, c_ket, s);
-    if (c_bra <= this.bra) this.bra += adjustment;
-    if (c_bra <= this.ket) this.ket += adjustment;
+    if (c_bra <= this.bra) {
+      this.bra += adjustment;
+    }
+    if (c_bra <= this.ket) {
+      this.ket += adjustment;
+    }
   }
 
   /* Copy the slice into the supplied StringBuffer */
-  slice_to(s?: string): string {
+  slice_to(_s?: string): string {
     let result = '';
     if (this.slice_check()) {
       result = this.current.slice(this.bra, this.ket);
@@ -356,7 +559,7 @@ class BaseStemmer {
 
   stemWord(word: Token): Token {
     let result = this.cache[`.${word}`];
-    if (result == null) {
+    if (result === undefined || result === null) {
       if (this.dictionary.before.hasOwnProperty(word)) {
         result = this.dictionary.before[word];
       } else {
@@ -392,7 +595,7 @@ class BaseStemmer {
    */
   stem(
     tokens: Token | Token[] | undefined,
-    input?: PipelineInput
+    _input?: PipelineInput
   ): Token | Token[] | Promise<Token[]> | undefined {
     if (tokens === undefined || tokens === null) {
       return tokens;

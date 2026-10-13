@@ -70,7 +70,9 @@ for (const { name, failures } of failed.sort((a, b) =>
   a.name.localeCompare(b.name)
 )) {
   console.error(`\n✖ ${name}`);
-  for (const failure of failures) console.error(failure);
+  for (const failure of failures) {
+    console.error(failure);
+  }
 }
 
 if (failed.length > 0) {

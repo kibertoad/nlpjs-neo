@@ -14,3 +14,7 @@ dist
 
 # Benchmark baselines written by `bench(name, { writeResult })`
 /bench/results
+
+# Stemmers the tests of tools/snowball generate
+tools/snowball/test/.generated
+tools/snowball/.cache

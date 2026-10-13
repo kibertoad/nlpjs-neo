@@ -26,7 +26,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    include: ['packages/*/test/**/*.test.ts'],
+    include: ['packages/*/test/**/*.test.ts', 'tools/*/test/**/*.test.ts'],
     // Several tests assert on formatted dates, so pin the timezone.
     env: {
       TZ: 'Europe/London',

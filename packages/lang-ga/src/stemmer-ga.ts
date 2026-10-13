@@ -1,209 +1,91 @@
-import { Among, BaseStemmer } from '@nlpjs-neo/core';
+import { Among, SnowballStemmer } from '@nlpjs-neo/core';
+import type { ContainerHolder } from '@nlpjs-neo/core';
 
-/* oxlint-disable */
-class StemmerGa extends BaseStemmer {
-  declare I_p1: number;
-  declare I_p2: number;
-  declare I_pV: number;
-  declare static a_0: Among<StemmerGa>[];
-  declare static a_1: Among<StemmerGa>[];
-  declare static a_2: Among<StemmerGa>[];
-  declare static a_3: Among<StemmerGa>[];
-  declare static g_v: number[];
-
-  constructor(container) {
+/**
+ * Stemmer written by tools/snowball from irish.sbl of Snowball at commit 411550d. Do not edit it by hand:
+ * change the Snowball program and generate it again.
+ */
+class StemmerGa extends SnowballStemmer {
+  constructor(container?: ContainerHolder) {
     super(container);
     this.name = 'stemmer-ga';
+    this.I_pV = 0;
     this.I_p1 = 0;
     this.I_p2 = 0;
-    this.I_pV = 0;
   }
 
-  r_mark_regions() {
-    let v_1;
-    let v_3;
+  r_mark_regions(): boolean {
     this.I_pV = this.limit;
     this.I_p1 = this.limit;
     this.I_p2 = this.limit;
-    v_1 = this.cursor;
-    lab0: do {
-      golab1: while (true) {
-        lab2: do {
-          if (!this.in_grouping(StemmerGa.g_v, 97, 250)) {
-            break lab2;
-          }
-          break golab1;
-        } while (false);
-        if (this.cursor >= this.limit) {
-          break lab0;
-        }
-        this.cursor++;
+    const v_1 = this.cursor;
+    lab0: {
+      if (!this.gopast_in_grouping(StemmerGa.g_v, 97, 250)) {
+        break lab0;
       }
       this.I_pV = this.cursor;
-    } while (false);
-    this.cursor = v_1;
-    v_3 = this.cursor;
-    lab3: do {
-      golab4: while (true) {
-        lab5: do {
-          if (!this.in_grouping(StemmerGa.g_v, 97, 250)) {
-            break lab5;
-          }
-          break golab4;
-        } while (false);
-        if (this.cursor >= this.limit) {
-          break lab3;
-        }
-        this.cursor++;
-      }
-      golab6: while (true) {
-        lab7: do {
-          if (!this.out_grouping(StemmerGa.g_v, 97, 250)) {
-            break lab7;
-          }
-          break golab6;
-        } while (false);
-        if (this.cursor >= this.limit) {
-          break lab3;
-        }
-        this.cursor++;
+      if (!this.gopast_out_grouping(StemmerGa.g_v, 97, 250)) {
+        break lab0;
       }
       this.I_p1 = this.cursor;
-      golab8: while (true) {
-        lab9: do {
-          if (!this.in_grouping(StemmerGa.g_v, 97, 250)) {
-            break lab9;
-          }
-          break golab8;
-        } while (false);
-        if (this.cursor >= this.limit) {
-          break lab3;
-        }
-        this.cursor++;
+      if (!this.gopast_in_grouping(StemmerGa.g_v, 97, 250)) {
+        break lab0;
       }
-      golab10: while (true) {
-        lab11: do {
-          if (!this.out_grouping(StemmerGa.g_v, 97, 250)) {
-            break lab11;
-          }
-          break golab10;
-        } while (false);
-        if (this.cursor >= this.limit) {
-          break lab3;
-        }
-        this.cursor++;
+      if (!this.gopast_out_grouping(StemmerGa.g_v, 97, 250)) {
+        break lab0;
       }
       this.I_p2 = this.cursor;
-    } while (false);
-    this.cursor = v_3;
+    }
+    this.cursor = v_1;
     return true;
   }
-  r_initial_morph() {
-    let among_var;
-    this.bra = this.cursor;
-    among_var = this.find_among(StemmerGa.a_0);
+
+  r_initial_morph(): boolean {
+    const among_var = this.find_slice(StemmerGa.a_0);
     if (among_var === 0) {
       return false;
     }
-    this.ket = this.cursor;
     switch (among_var) {
-      case 0:
-        return false;
       case 1:
         this.slice_del();
         break;
       case 2:
-        this.slice_del();
+        this.slice_from('f');
         break;
       case 3:
-        this.slice_from('f');
+        this.slice_from('s');
         break;
       case 4:
-        this.slice_del();
+        this.slice_from('b');
         break;
       case 5:
-        this.slice_from('s');
+        this.slice_from('c');
         break;
       case 6:
-        this.slice_from('b');
+        this.slice_from('d');
         break;
       case 7:
-        this.slice_from('c');
+        this.slice_from('g');
         break;
       case 8:
-        this.slice_from('d');
+        this.slice_from('p');
         break;
       case 9:
-        this.slice_from('f');
+        this.slice_from('t');
         break;
       case 10:
-        this.slice_from('g');
-        break;
-      case 11:
-        this.slice_from('p');
-        break;
-      case 12:
-        this.slice_from('s');
-        break;
-      case 13:
-        this.slice_from('t');
-        break;
-      case 14:
-        this.slice_from('b');
-        break;
-      case 15:
-        this.slice_from('c');
-        break;
-      case 16:
-        this.slice_from('d');
-        break;
-      case 17:
-        this.slice_from('f');
-        break;
-      case 18:
-        this.slice_from('g');
-        break;
-      case 19:
         this.slice_from('m');
         break;
-      case 20:
-        this.slice_from('p');
-        break;
-      case 21:
-        this.slice_from('t');
-        break;
     }
     return true;
   }
-  r_RV() {
-    if (!(this.I_pV <= this.cursor)) {
-      return false;
-    }
-    return true;
-  }
-  r_R1() {
-    if (!(this.I_p1 <= this.cursor)) {
-      return false;
-    }
-    return true;
-  }
-  r_R2() {
-    if (!(this.I_p2 <= this.cursor)) {
-      return false;
-    }
-    return true;
-  }
-  r_noun_sfx() {
-    let among_var;
-    this.ket = this.cursor;
-    among_var = this.find_among_b(StemmerGa.a_1);
+
+  r_noun_sfx(): boolean {
+    const among_var = this.find_slice_b(StemmerGa.a_1);
     if (among_var === 0) {
       return false;
     }
-    this.bra = this.cursor;
     switch (among_var) {
-      case 0:
-        return false;
       case 1:
         if (!this.r_R1()) {
           return false;
@@ -219,17 +101,13 @@ class StemmerGa extends BaseStemmer {
     }
     return true;
   }
-  r_deriv() {
-    let among_var;
-    this.ket = this.cursor;
-    among_var = this.find_among_b(StemmerGa.a_2);
+
+  r_deriv(): boolean {
+    const among_var = this.find_slice_b(StemmerGa.a_2);
     if (among_var === 0) {
       return false;
     }
-    this.bra = this.cursor;
     switch (among_var) {
-      case 0:
-        return false;
       case 1:
         if (!this.r_R2()) {
           return false;
@@ -254,17 +132,13 @@ class StemmerGa extends BaseStemmer {
     }
     return true;
   }
-  r_verb_sfx() {
-    let among_var;
-    this.ket = this.cursor;
-    among_var = this.find_among_b(StemmerGa.a_3);
+
+  r_verb_sfx(): boolean {
+    const among_var = this.find_slice_b(StemmerGa.a_3);
     if (among_var === 0) {
       return false;
     }
-    this.bra = this.cursor;
     switch (among_var) {
-      case 0:
-        return false;
       case 1:
         if (!this.r_RV()) {
           return false;
@@ -280,145 +154,47 @@ class StemmerGa extends BaseStemmer {
     }
     return true;
   }
-  innerStem() {
-    let v_1;
-    let v_2;
-    let v_3;
-    let v_4;
-    let v_5;
-    v_1 = this.cursor;
-    lab0: do {
-      if (!this.r_initial_morph()) {
-        break lab0;
-      }
-    } while (false);
-    this.cursor = v_1;
-    v_2 = this.cursor;
-    lab1: do {
-      if (!this.r_mark_regions()) {
-        break lab1;
-      }
-    } while (false);
-    this.cursor = v_2;
+
+  innerStem(): boolean {
+    this.do_forward(this.r_initial_morph);
+    this.r_mark_regions();
     this.limit_backward = this.cursor;
     this.cursor = this.limit;
-    v_3 = this.limit - this.cursor;
-    lab2: do {
-      if (!this.r_noun_sfx()) {
-        break lab2;
-      }
-    } while (false);
-    this.cursor = this.limit - v_3;
-    v_4 = this.limit - this.cursor;
-    lab3: do {
-      if (!this.r_deriv()) {
-        break lab3;
-      }
-    } while (false);
-    this.cursor = this.limit - v_4;
-    v_5 = this.limit - this.cursor;
-    lab4: do {
-      if (!this.r_verb_sfx()) {
-        break lab4;
-      }
-    } while (false);
-    this.cursor = this.limit - v_5;
+    this.do_backward(this.r_noun_sfx);
+    this.do_backward(this.r_deriv);
+    this.do_backward(this.r_verb_sfx);
     this.cursor = this.limit_backward;
     return true;
   }
+
+  static g_v: number[] = [
+    17, 65, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 17, 4, 2,
+  ];
+
+  static a_0 = Among.table<StemmerGa>(`
+    b',-1,1 bh,-1,4 bhf,1,2 bp,-1,8 ch,-1,5 d',-1,1 d'fh,5,2 dh,-1,6 dt,-1,9
+    fh,-1,2 gc,-1,5 gh,-1,7 h-,-1,1 m',-1,1 mb,-1,4 mh,-1,10 n-,-1,1 nd,-1,6
+    ng,-1,7 ph,-1,8 sh,-1,3 t-,-1,1 th,-1,9 ts,-1,3
+  `);
+
+  static a_1 = Among.table<StemmerGa>(`
+    íochta,-1,1 aíochta,0,1 ire,-1,2 aire,2,2 abh,-1,1 eabh,4,1 ibh,-1,1
+    aibh,6,1 amh,-1,1 eamh,8,1 imh,-1,1 aimh,10,1 íocht,-1,1 aíocht,12,1
+    irí,-1,2 airí,14,2
+  `);
+
+  static a_2 = Among.table<StemmerGa>(`
+    óideacha,-1,6 patacha,-1,5 achta,-1,1 arcachta,2,2 eachta,2,1
+    grafaíochta,-1,4 paite,-1,5 ach,-1,1 each,7,1 óideach,8,6 gineach,8,3
+    patach,7,5 grafaíoch,-1,4 pataigh,-1,5 óidigh,-1,6 achtúil,-1,1
+    eachtúil,15,1 gineas,-1,3 ginis,-1,3 acht,-1,1 arcacht,19,2 eacht,19,1
+    grafaíocht,-1,4 arcachtaí,-1,2 grafaíochtaí,-1,4
+  `);
+
+  static a_3 = Among.table<StemmerGa>(`
+    imid,-1,1 aimid,0,1 ímid,-1,1 aímid,2,1 adh,-1,2 eadh,4,2 faidh,-1,1
+    fidh,-1,1 áil,-1,2 ain,-1,2 tear,-1,2 tar,-1,2
+  `);
 }
-
-StemmerGa.a_0 = [
-  new Among("b'", -1, 4),
-  new Among('bh', -1, 14),
-  new Among('bhf', 1, 9),
-  new Among('bp', -1, 11),
-  new Among('ch', -1, 15),
-  new Among("d'", -1, 2),
-  new Among("d'fh", 5, 3),
-  new Among('dh', -1, 16),
-  new Among('dt', -1, 13),
-  new Among('fh', -1, 17),
-  new Among('gc', -1, 7),
-  new Among('gh', -1, 18),
-  new Among('h-', -1, 1),
-  new Among("m'", -1, 4),
-  new Among('mb', -1, 6),
-  new Among('mh', -1, 19),
-  new Among('n-', -1, 1),
-  new Among('nd', -1, 8),
-  new Among('ng', -1, 10),
-  new Among('ph', -1, 20),
-  new Among('sh', -1, 5),
-  new Among('t-', -1, 1),
-  new Among('th', -1, 21),
-  new Among('ts', -1, 12),
-];
-
-StemmerGa.a_1 = [
-  new Among('\u00EDochta', -1, 1),
-  new Among('a\u00EDochta', 0, 1),
-  new Among('ire', -1, 2),
-  new Among('aire', 2, 2),
-  new Among('abh', -1, 1),
-  new Among('eabh', 4, 1),
-  new Among('ibh', -1, 1),
-  new Among('aibh', 6, 1),
-  new Among('amh', -1, 1),
-  new Among('eamh', 8, 1),
-  new Among('imh', -1, 1),
-  new Among('aimh', 10, 1),
-  new Among('\u00EDocht', -1, 1),
-  new Among('a\u00EDocht', 12, 1),
-  new Among('ir\u00ED', -1, 2),
-  new Among('air\u00ED', 14, 2),
-];
-
-StemmerGa.a_2 = [
-  new Among('\u00F3ideacha', -1, 6),
-  new Among('patacha', -1, 5),
-  new Among('achta', -1, 1),
-  new Among('arcachta', 2, 2),
-  new Among('eachta', 2, 1),
-  new Among('grafa\u00EDochta', -1, 4),
-  new Among('paite', -1, 5),
-  new Among('ach', -1, 1),
-  new Among('each', 7, 1),
-  new Among('\u00F3ideach', 8, 6),
-  new Among('gineach', 8, 3),
-  new Among('patach', 7, 5),
-  new Among('grafa\u00EDoch', -1, 4),
-  new Among('pataigh', -1, 5),
-  new Among('\u00F3idigh', -1, 6),
-  new Among('acht\u00FAil', -1, 1),
-  new Among('eacht\u00FAil', 15, 1),
-  new Among('gineas', -1, 3),
-  new Among('ginis', -1, 3),
-  new Among('acht', -1, 1),
-  new Among('arcacht', 19, 2),
-  new Among('eacht', 19, 1),
-  new Among('grafa\u00EDocht', -1, 4),
-  new Among('arcachta\u00ED', -1, 2),
-  new Among('grafa\u00EDochta\u00ED', -1, 4),
-];
-
-StemmerGa.a_3 = [
-  new Among('imid', -1, 1),
-  new Among('aimid', 0, 1),
-  new Among('\u00EDmid', -1, 1),
-  new Among('a\u00EDmid', 2, 1),
-  new Among('adh', -1, 2),
-  new Among('eadh', 4, 2),
-  new Among('faidh', -1, 1),
-  new Among('fidh', -1, 1),
-  new Among('\u00E1il', -1, 2),
-  new Among('ain', -1, 2),
-  new Among('tear', -1, 2),
-  new Among('tar', -1, 2),
-];
-
-StemmerGa.g_v = [
-  17, 65, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 17, 4, 2,
-];
 
 export default StemmerGa;

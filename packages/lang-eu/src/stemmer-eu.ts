@@ -1,104 +1,68 @@
-import { Among, BaseStemmer } from '@nlpjs-neo/core';
+import { Among, SnowballStemmer } from '@nlpjs-neo/core';
+import type { ContainerHolder } from '@nlpjs-neo/core';
 
-/* oxlint-disable */
-class StemmerEu extends BaseStemmer {
-  declare I_p1: number;
-  declare I_p2: number;
-  declare I_pV: number;
-  declare static a_0: Among<StemmerEu>[];
-  declare static a_1: Among<StemmerEu>[];
-  declare static a_2: Among<StemmerEu>[];
-  declare static g_v: number[];
-
-  constructor(container) {
+/**
+ * Stemmer written by tools/snowball from basque.sbl of Snowball at commit 411550d. Do not edit it by hand:
+ * change the Snowball program and generate it again.
+ */
+class StemmerEu extends SnowballStemmer {
+  constructor(container?: ContainerHolder) {
     super(container);
     this.name = 'stemmer-eu';
+    this.I_pV = 0;
     this.I_p1 = 0;
     this.I_p2 = 0;
-    this.I_pV = 0;
   }
 
-  r_mark_regions() {
-    let v_1;
-    let v_2;
-    let v_3;
-    let v_6;
-    let v_8;
+  r_mark_regions(): boolean {
     this.I_pV = this.limit;
     this.I_p1 = this.limit;
     this.I_p2 = this.limit;
-    v_1 = this.cursor;
-    lab0: do {
-      lab1: do {
-        v_2 = this.cursor;
-        lab2: do {
+    const v_1 = this.cursor;
+    lab0: {
+      lab1: {
+        const v_2 = this.cursor;
+        lab2: {
           if (!this.in_grouping(StemmerEu.g_v, 97, 117)) {
             break lab2;
           }
-          lab3: do {
-            v_3 = this.cursor;
-            lab4: do {
+          lab3: {
+            const v_3 = this.cursor;
+            lab4: {
               if (!this.out_grouping(StemmerEu.g_v, 97, 117)) {
                 break lab4;
               }
-              golab5: while (true) {
-                lab6: do {
-                  if (!this.in_grouping(StemmerEu.g_v, 97, 117)) {
-                    break lab6;
-                  }
-                  break golab5;
-                } while (false);
-                if (this.cursor >= this.limit) {
-                  break lab4;
-                }
-                this.cursor++;
+              if (!this.gopast_in_grouping(StemmerEu.g_v, 97, 117)) {
+                break lab4;
               }
               break lab3;
-            } while (false);
+            }
             this.cursor = v_3;
             if (!this.in_grouping(StemmerEu.g_v, 97, 117)) {
               break lab2;
             }
-            golab7: while (true) {
-              lab8: do {
-                if (!this.out_grouping(StemmerEu.g_v, 97, 117)) {
-                  break lab8;
-                }
-                break golab7;
-              } while (false);
-              if (this.cursor >= this.limit) {
-                break lab2;
-              }
-              this.cursor++;
+            if (!this.gopast_out_grouping(StemmerEu.g_v, 97, 117)) {
+              break lab2;
             }
-          } while (false);
+          }
           break lab1;
-        } while (false);
+        }
         this.cursor = v_2;
         if (!this.out_grouping(StemmerEu.g_v, 97, 117)) {
           break lab0;
         }
-        lab9: do {
-          v_6 = this.cursor;
-          lab10: do {
+        lab5: {
+          const v_4 = this.cursor;
+          lab6: {
             if (!this.out_grouping(StemmerEu.g_v, 97, 117)) {
-              break lab10;
+              break lab6;
             }
-            golab11: while (true) {
-              lab12: do {
-                if (!this.in_grouping(StemmerEu.g_v, 97, 117)) {
-                  break lab12;
-                }
-                break golab11;
-              } while (false);
-              if (this.cursor >= this.limit) {
-                break lab10;
-              }
-              this.cursor++;
+            if (!this.gopast_in_grouping(StemmerEu.g_v, 97, 117)) {
+              break lab6;
             }
-            break lab9;
-          } while (false);
-          this.cursor = v_6;
+            break lab5;
+          }
+          this.cursor = v_4;
           if (!this.in_grouping(StemmerEu.g_v, 97, 117)) {
             break lab0;
           }
@@ -106,96 +70,38 @@ class StemmerEu extends BaseStemmer {
             break lab0;
           }
           this.cursor++;
-        } while (false);
-      } while (false);
-      this.I_pV = this.cursor;
-    } while (false);
-    this.cursor = v_1;
-    v_8 = this.cursor;
-    lab13: do {
-      golab14: while (true) {
-        lab15: do {
-          if (!this.in_grouping(StemmerEu.g_v, 97, 117)) {
-            break lab15;
-          }
-          break golab14;
-        } while (false);
-        if (this.cursor >= this.limit) {
-          break lab13;
         }
-        this.cursor++;
       }
-      golab16: while (true) {
-        lab17: do {
-          if (!this.out_grouping(StemmerEu.g_v, 97, 117)) {
-            break lab17;
-          }
-          break golab16;
-        } while (false);
-        if (this.cursor >= this.limit) {
-          break lab13;
-        }
-        this.cursor++;
+      this.I_pV = this.cursor;
+    }
+    this.cursor = v_1;
+    const v_5 = this.cursor;
+    lab7: {
+      if (!this.gopast_in_grouping(StemmerEu.g_v, 97, 117)) {
+        break lab7;
+      }
+      if (!this.gopast_out_grouping(StemmerEu.g_v, 97, 117)) {
+        break lab7;
       }
       this.I_p1 = this.cursor;
-      golab18: while (true) {
-        lab19: do {
-          if (!this.in_grouping(StemmerEu.g_v, 97, 117)) {
-            break lab19;
-          }
-          break golab18;
-        } while (false);
-        if (this.cursor >= this.limit) {
-          break lab13;
-        }
-        this.cursor++;
+      if (!this.gopast_in_grouping(StemmerEu.g_v, 97, 117)) {
+        break lab7;
       }
-      golab20: while (true) {
-        lab21: do {
-          if (!this.out_grouping(StemmerEu.g_v, 97, 117)) {
-            break lab21;
-          }
-          break golab20;
-        } while (false);
-        if (this.cursor >= this.limit) {
-          break lab13;
-        }
-        this.cursor++;
+      if (!this.gopast_out_grouping(StemmerEu.g_v, 97, 117)) {
+        break lab7;
       }
       this.I_p2 = this.cursor;
-    } while (false);
-    this.cursor = v_8;
-    return true;
-  }
-  r_RV() {
-    if (!(this.I_pV <= this.cursor)) {
-      return false;
     }
+    this.cursor = v_5;
     return true;
   }
-  r_R2() {
-    if (!(this.I_p2 <= this.cursor)) {
-      return false;
-    }
-    return true;
-  }
-  r_R1() {
-    if (!(this.I_p1 <= this.cursor)) {
-      return false;
-    }
-    return true;
-  }
-  r_aditzak() {
-    let among_var;
-    this.ket = this.cursor;
-    among_var = this.find_among_b(StemmerEu.a_0);
+
+  r_aditzak(): boolean {
+    const among_var = this.find_slice_b(StemmerEu.a_0);
     if (among_var === 0) {
       return false;
     }
-    this.bra = this.cursor;
     switch (among_var) {
-      case 0:
-        return false;
       case 1:
         if (!this.r_RV()) {
           return false;
@@ -208,29 +114,16 @@ class StemmerEu extends BaseStemmer {
         }
         this.slice_del();
         break;
-      case 3:
-        this.slice_from('atseden');
-        break;
-      case 4:
-        this.slice_from('arabera');
-        break;
-      case 5:
-        this.slice_from('baditu');
-        break;
     }
     return true;
   }
-  r_izenak() {
-    let among_var;
-    this.ket = this.cursor;
-    among_var = this.find_among_b(StemmerEu.a_1);
+
+  r_izenak(): boolean {
+    const among_var = this.find_slice_b(StemmerEu.a_1);
     if (among_var === 0) {
       return false;
     }
-    this.bra = this.cursor;
     switch (among_var) {
-      case 0:
-        return false;
       case 1:
         if (!this.r_RV()) {
           return false;
@@ -258,32 +151,16 @@ class StemmerEu extends BaseStemmer {
       case 6:
         this.slice_from('minutu');
         break;
-      case 7:
-        this.slice_from('zehar');
-        break;
-      case 8:
-        this.slice_from('geldi');
-        break;
-      case 9:
-        this.slice_from('igaro');
-        break;
-      case 10:
-        this.slice_from('aurka');
-        break;
     }
     return true;
   }
-  r_adjetiboak() {
-    let among_var;
-    this.ket = this.cursor;
-    among_var = this.find_among_b(StemmerEu.a_2);
+
+  r_adjetiboak(): boolean {
+    const among_var = this.find_slice_b(StemmerEu.a_2);
     if (among_var === 0) {
       return false;
     }
-    this.bra = this.cursor;
     switch (among_var) {
-      case 0:
-        return false;
       case 1:
         if (!this.r_RV()) {
           return false;
@@ -296,486 +173,110 @@ class StemmerEu extends BaseStemmer {
     }
     return true;
   }
-  innerStem() {
-    let v_1;
-    let v_2;
-    let v_3;
-    let v_4;
-    v_1 = this.cursor;
-    lab0: do {
-      if (!this.r_mark_regions()) {
-        break lab0;
-      }
-    } while (false);
-    this.cursor = v_1;
+
+  innerStem(): boolean {
+    this.r_mark_regions();
     this.limit_backward = this.cursor;
     this.cursor = this.limit;
-    replab1: while (true) {
-      v_2 = this.limit - this.cursor;
-      lab2: do {
+    for (;;) {
+      const v_1 = this.limit - this.cursor;
+      lab0: {
         if (!this.r_aditzak()) {
-          break lab2;
+          break lab0;
         }
-        continue replab1;
-      } while (false);
-      this.cursor = this.limit - v_2;
-      break replab1;
-    }
-    replab3: while (true) {
-      v_3 = this.limit - this.cursor;
-      lab4: do {
-        if (!this.r_izenak()) {
-          break lab4;
-        }
-        continue replab3;
-      } while (false);
-      this.cursor = this.limit - v_3;
-      break replab3;
-    }
-    v_4 = this.limit - this.cursor;
-    lab5: do {
-      if (!this.r_adjetiboak()) {
-        break lab5;
+        continue;
       }
-    } while (false);
-    this.cursor = this.limit - v_4;
+      this.cursor = this.limit - v_1;
+      break;
+    }
+    for (;;) {
+      const v_2 = this.limit - this.cursor;
+      lab1: {
+        if (!this.r_izenak()) {
+          break lab1;
+        }
+        continue;
+      }
+      this.cursor = this.limit - v_2;
+      break;
+    }
+    this.do_backward(this.r_adjetiboak);
     this.cursor = this.limit_backward;
     return true;
   }
+
+  static g_v: number[] = [17, 65, 16];
+
+  static a_0 = Among.table<StemmerEu>(`
+    idea,-1,1 bidea,0,1 kidea,0,1 pidea,0,1 kundea,-1,1 galea,-1,1 tailea,-1,1
+    tzailea,-1,1 gunea,-1,1 kunea,-1,1 tzaga,-1,1 gaia,-1,1 aldia,-1,1
+    taldia,12,1 karia,-1,1 garria,-1,2 karria,-1,1 ka,-1,1 tzaka,17,1 la,-1,1
+    mena,-1,1 pena,-1,1 kina,-1,1 ezina,-1,1 tezina,23,1 kuna,-1,1 tuna,-1,1
+    kizuna,-1,1 era,-1,1 bera,28,1 arabera,29,-1 kera,28,1 pera,28,1 orra,-1,1
+    korra,33,1 dura,-1,1 gura,-1,1 kura,-1,1 tura,-1,1 eta,-1,1 keta,39,1
+    gailua,-1,1 eza,-1,1 erreza,42,1 tza,-1,2 gaitza,44,1 kaitza,44,1
+    kuntza,44,1 ide,-1,1 bide,48,1 kide,48,1 pide,48,1 kunde,-1,1 tzake,-1,1
+    tzeke,-1,1 le,-1,1 gale,55,1 taile,55,1 tzaile,55,1 gune,-1,1 kune,-1,1
+    tze,-1,1 atze,61,1 gai,-1,1 aldi,-1,1 taldi,64,1 ki,-1,1 ari,-1,1 kari,67,1
+    lari,67,1 tari,67,1 etari,70,1 garri,-1,2 karri,-1,1 arazi,-1,1 tarazi,74,1
+    an,-1,1 ean,76,1 rean,77,1 kan,76,1 etan,76,1 atseden,-1,-1 men,-1,1
+    pen,-1,1 kin,-1,1 rekin,84,1 ezin,-1,1 tezin,86,1 tun,-1,1 kizun,-1,1
+    go,-1,1 ago,90,1 tio,-1,1 dako,-1,1 or,-1,1 kor,94,1 tzat,-1,1 du,-1,1
+    gailu,-1,1 tu,-1,1 atu,99,1 aldatu,100,1 tatu,100,1 baditu,99,-1 ez,-1,1
+    errez,104,1 tzez,104,1 gaitz,-1,1 kaitz,-1,1
+  `);
+
+  static a_1 = Among.table<StemmerEu>(`
+    ada,-1,1 kada,0,1 anda,-1,1 denda,-1,1 gabea,-1,1 kabea,-1,1 aldea,-1,1
+    kaldea,6,1 taldea,6,1 ordea,-1,1 zalea,-1,1 tzalea,10,1 gilea,-1,1 emea,-1,1
+    kumea,-1,1 nea,-1,1 enea,15,1 zionea,15,1 unea,15,1 gunea,18,1 pea,-1,1
+    aurrea,-1,1 tea,-1,1 kotea,22,1 artea,22,1 ostea,22,1 etxea,-1,1 ga,-1,1
+    anga,27,1 gaia,-1,1 aldia,-1,1 taldia,30,1 handia,-1,1 mendia,-1,1 geia,-1,1
+    egia,-1,1 degia,35,1 tegia,35,1 nahia,-1,1 ohia,-1,1 kia,-1,1 tokia,40,1
+    oia,-1,1 koia,42,1 aria,-1,1 karia,44,1 laria,44,1 taria,44,1 eria,-1,1
+    keria,48,1 teria,48,1 garria,-1,2 larria,-1,1 kirria,-1,1 duria,-1,1
+    asia,-1,1 tia,-1,1 ezia,-1,1 bizia,-1,1 ontzia,-1,1 ka,-1,1 joka,60,3
+    aurka,60,-1 ska,60,1 xka,60,1 zka,60,1 gibela,-1,1 gela,-1,1 kaila,-1,1
+    skila,-1,1 tila,-1,1 ola,-1,1 na,-1,1 kana,72,1 ena,72,1 garrena,74,1
+    gerrena,74,1 urrena,74,1 zaina,72,1 tzaina,78,1 kina,72,1 mina,72,1
+    garna,72,1 una,72,1 duna,83,1 asuna,83,1 tasuna,85,1 ondoa,-1,1 kondoa,87,1
+    ngoa,-1,1 zioa,-1,1 koa,-1,1 takoa,91,1 zkoa,91,1 noa,-1,1 zinoa,94,1
+    aroa,-1,1 taroa,96,1 zaroa,96,1 eroa,-1,1 oroa,-1,1 osoa,-1,1 toa,-1,1
+    ttoa,102,1 ztoa,102,1 txoa,-1,1 tzoa,-1,1 ñoa,-1,1 ra,-1,1 ara,108,1
+    dara,109,1 liara,109,1 tiara,109,1 tara,109,1 etara,113,1 tzara,109,1
+    bera,108,1 kera,108,1 pera,108,1 ora,108,2 tzarra,108,1 korra,108,1
+    tra,108,1 sa,-1,1 osa,123,1 ta,-1,1 eta,125,1 keta,126,1 sta,125,1 dua,-1,1
+    mendua,129,1 ordua,129,1 lekua,-1,1 burua,-1,1 durua,-1,1 tsua,-1,1 tua,-1,1
+    mentua,136,1 estua,136,1 txua,-1,1 zua,-1,1 tzua,140,1 za,-1,1 eza,142,1
+    eroza,142,1 tza,142,2 koitza,145,1 antza,145,1 gintza,145,1 kintza,145,1
+    kuntza,145,1 gabe,-1,1 kabe,-1,1 kide,-1,1 alde,-1,1 kalde,154,1 talde,154,1
+    orde,-1,1 ge,-1,1 zale,-1,1 tzale,159,1 gile,-1,1 eme,-1,1 kume,-1,1 ne,-1,1
+    zione,164,1 une,164,1 gune,166,1 pe,-1,1 aurre,-1,1 te,-1,1 kote,170,1
+    arte,170,1 oste,170,1 etxe,-1,1 gai,-1,1 di,-1,1 aldi,176,1 taldi,177,1
+    geldi,176,-1 handi,176,1 mendi,176,1 gei,-1,1 egi,-1,1 degi,183,1 tegi,183,1
+    nahi,-1,1 ohi,-1,1 ki,-1,1 toki,188,1 oi,-1,1 goi,190,1 koi,190,1 ari,-1,1
+    kari,193,1 lari,193,1 tari,193,1 garri,-1,2 larri,-1,1 kirri,-1,1 duri,-1,1
+    asi,-1,1 ti,-1,1 ontzi,-1,1 ñi,-1,1 ak,-1,1 ek,-1,1 tarik,-1,1 gibel,-1,1
+    ail,-1,1 kail,209,1 kan,-1,1 tan,-1,1 etan,212,1 en,-1,4 ren,214,2
+    garren,215,1 gerren,215,1 urren,215,1 ten,214,4 tzen,214,4 zain,-1,1
+    tzain,221,1 kin,-1,1 min,-1,1 dun,-1,1 asun,-1,1 tasun,226,1 aizun,-1,1
+    ondo,-1,1 kondo,229,1 go,-1,1 ngo,231,1 zio,-1,1 ko,-1,1 trako,234,5
+    tako,234,1 etako,236,1 eko,234,1 tariko,234,1 sko,234,1 tuko,234,1
+    minutuko,241,6 zko,234,1 no,-1,1 zino,244,1 ro,-1,1 aro,246,1 igaro,247,-1
+    taro,247,1 zaro,247,1 ero,246,1 giro,246,1 oro,246,1 oso,-1,1 to,-1,1
+    tto,255,1 zto,255,1 txo,-1,1 tzo,-1,1 gintzo,259,1 ño,-1,1 zp,-1,1 ar,-1,1
+    dar,263,1 behar,263,1 zehar,263,-1 liar,263,1 tiar,263,1 tar,263,1
+    tzar,263,1 or,-1,2 kor,271,1 os,-1,1 ket,-1,1 du,-1,1 mendu,275,1 ordu,275,1
+    leku,-1,1 buru,-1,2 duru,-1,1 tsu,-1,1 tu,-1,1 tatu,282,4 mentu,282,1
+    estu,282,1 txu,-1,1 zu,-1,1 tzu,287,1 gintzu,288,1 z,-1,1 ez,290,1
+    eroz,290,1 tz,290,1 koitz,293,1
+  `);
+
+  static a_2 = Among.table<StemmerEu>(`
+    zlea,-1,2 keria,-1,1 la,-1,1 era,-1,1 dade,-1,1 tade,-1,1 date,-1,1
+    tate,-1,1 gi,-1,1 ki,-1,1 ik,-1,1 lanik,10,1 rik,10,1 larik,12,1 ztik,10,1
+    go,-1,1 ro,-1,1 ero,16,1 to,-1,1
+  `);
 }
-
-StemmerEu.a_0 = [
-  new Among('idea', -1, 1),
-  new Among('bidea', 0, 1),
-  new Among('kidea', 0, 1),
-  new Among('pidea', 0, 1),
-  new Among('kundea', -1, 1),
-  new Among('galea', -1, 1),
-  new Among('tailea', -1, 1),
-  new Among('tzailea', -1, 1),
-  new Among('gunea', -1, 1),
-  new Among('kunea', -1, 1),
-  new Among('tzaga', -1, 1),
-  new Among('gaia', -1, 1),
-  new Among('aldia', -1, 1),
-  new Among('taldia', 12, 1),
-  new Among('karia', -1, 1),
-  new Among('garria', -1, 2),
-  new Among('karria', -1, 1),
-  new Among('ka', -1, 1),
-  new Among('tzaka', 17, 1),
-  new Among('la', -1, 1),
-  new Among('mena', -1, 1),
-  new Among('pena', -1, 1),
-  new Among('kina', -1, 1),
-  new Among('ezina', -1, 1),
-  new Among('tezina', 23, 1),
-  new Among('kuna', -1, 1),
-  new Among('tuna', -1, 1),
-  new Among('kizuna', -1, 1),
-  new Among('era', -1, 1),
-  new Among('bera', 28, 1),
-  new Among('arabera', 29, 4),
-  new Among('kera', 28, 1),
-  new Among('pera', 28, 1),
-  new Among('orra', -1, 1),
-  new Among('korra', 33, 1),
-  new Among('dura', -1, 1),
-  new Among('gura', -1, 1),
-  new Among('kura', -1, 1),
-  new Among('tura', -1, 1),
-  new Among('eta', -1, 1),
-  new Among('keta', 39, 1),
-  new Among('gailua', -1, 1),
-  new Among('eza', -1, 1),
-  new Among('erreza', 42, 1),
-  new Among('tza', -1, 2),
-  new Among('gaitza', 44, 1),
-  new Among('kaitza', 44, 1),
-  new Among('kuntza', 44, 1),
-  new Among('ide', -1, 1),
-  new Among('bide', 48, 1),
-  new Among('kide', 48, 1),
-  new Among('pide', 48, 1),
-  new Among('kunde', -1, 1),
-  new Among('tzake', -1, 1),
-  new Among('tzeke', -1, 1),
-  new Among('le', -1, 1),
-  new Among('gale', 55, 1),
-  new Among('taile', 55, 1),
-  new Among('tzaile', 55, 1),
-  new Among('gune', -1, 1),
-  new Among('kune', -1, 1),
-  new Among('tze', -1, 1),
-  new Among('atze', 61, 1),
-  new Among('gai', -1, 1),
-  new Among('aldi', -1, 1),
-  new Among('taldi', 64, 1),
-  new Among('ki', -1, 1),
-  new Among('ari', -1, 1),
-  new Among('kari', 67, 1),
-  new Among('lari', 67, 1),
-  new Among('tari', 67, 1),
-  new Among('etari', 70, 1),
-  new Among('garri', -1, 2),
-  new Among('karri', -1, 1),
-  new Among('arazi', -1, 1),
-  new Among('tarazi', 74, 1),
-  new Among('an', -1, 1),
-  new Among('ean', 76, 1),
-  new Among('rean', 77, 1),
-  new Among('kan', 76, 1),
-  new Among('etan', 76, 1),
-  new Among('atseden', -1, 3),
-  new Among('men', -1, 1),
-  new Among('pen', -1, 1),
-  new Among('kin', -1, 1),
-  new Among('rekin', 84, 1),
-  new Among('ezin', -1, 1),
-  new Among('tezin', 86, 1),
-  new Among('tun', -1, 1),
-  new Among('kizun', -1, 1),
-  new Among('go', -1, 1),
-  new Among('ago', 90, 1),
-  new Among('tio', -1, 1),
-  new Among('dako', -1, 1),
-  new Among('or', -1, 1),
-  new Among('kor', 94, 1),
-  new Among('tzat', -1, 1),
-  new Among('du', -1, 1),
-  new Among('gailu', -1, 1),
-  new Among('tu', -1, 1),
-  new Among('atu', 99, 1),
-  new Among('aldatu', 100, 1),
-  new Among('tatu', 100, 1),
-  new Among('baditu', 99, 5),
-  new Among('ez', -1, 1),
-  new Among('errez', 104, 1),
-  new Among('tzez', 104, 1),
-  new Among('gaitz', -1, 1),
-  new Among('kaitz', -1, 1),
-];
-
-StemmerEu.a_1 = [
-  new Among('ada', -1, 1),
-  new Among('kada', 0, 1),
-  new Among('anda', -1, 1),
-  new Among('denda', -1, 1),
-  new Among('gabea', -1, 1),
-  new Among('kabea', -1, 1),
-  new Among('aldea', -1, 1),
-  new Among('kaldea', 6, 1),
-  new Among('taldea', 6, 1),
-  new Among('ordea', -1, 1),
-  new Among('zalea', -1, 1),
-  new Among('tzalea', 10, 1),
-  new Among('gilea', -1, 1),
-  new Among('emea', -1, 1),
-  new Among('kumea', -1, 1),
-  new Among('nea', -1, 1),
-  new Among('enea', 15, 1),
-  new Among('zionea', 15, 1),
-  new Among('unea', 15, 1),
-  new Among('gunea', 18, 1),
-  new Among('pea', -1, 1),
-  new Among('aurrea', -1, 1),
-  new Among('tea', -1, 1),
-  new Among('kotea', 22, 1),
-  new Among('artea', 22, 1),
-  new Among('ostea', 22, 1),
-  new Among('etxea', -1, 1),
-  new Among('ga', -1, 1),
-  new Among('anga', 27, 1),
-  new Among('gaia', -1, 1),
-  new Among('aldia', -1, 1),
-  new Among('taldia', 30, 1),
-  new Among('handia', -1, 1),
-  new Among('mendia', -1, 1),
-  new Among('geia', -1, 1),
-  new Among('egia', -1, 1),
-  new Among('degia', 35, 1),
-  new Among('tegia', 35, 1),
-  new Among('nahia', -1, 1),
-  new Among('ohia', -1, 1),
-  new Among('kia', -1, 1),
-  new Among('tokia', 40, 1),
-  new Among('oia', -1, 1),
-  new Among('koia', 42, 1),
-  new Among('aria', -1, 1),
-  new Among('karia', 44, 1),
-  new Among('laria', 44, 1),
-  new Among('taria', 44, 1),
-  new Among('eria', -1, 1),
-  new Among('keria', 48, 1),
-  new Among('teria', 48, 1),
-  new Among('garria', -1, 2),
-  new Among('larria', -1, 1),
-  new Among('kirria', -1, 1),
-  new Among('duria', -1, 1),
-  new Among('asia', -1, 1),
-  new Among('tia', -1, 1),
-  new Among('ezia', -1, 1),
-  new Among('bizia', -1, 1),
-  new Among('ontzia', -1, 1),
-  new Among('ka', -1, 1),
-  new Among('joka', 60, 3),
-  new Among('aurka', 60, 10),
-  new Among('ska', 60, 1),
-  new Among('xka', 60, 1),
-  new Among('zka', 60, 1),
-  new Among('gibela', -1, 1),
-  new Among('gela', -1, 1),
-  new Among('kaila', -1, 1),
-  new Among('skila', -1, 1),
-  new Among('tila', -1, 1),
-  new Among('ola', -1, 1),
-  new Among('na', -1, 1),
-  new Among('kana', 72, 1),
-  new Among('ena', 72, 1),
-  new Among('garrena', 74, 1),
-  new Among('gerrena', 74, 1),
-  new Among('urrena', 74, 1),
-  new Among('zaina', 72, 1),
-  new Among('tzaina', 78, 1),
-  new Among('kina', 72, 1),
-  new Among('mina', 72, 1),
-  new Among('garna', 72, 1),
-  new Among('una', 72, 1),
-  new Among('duna', 83, 1),
-  new Among('asuna', 83, 1),
-  new Among('tasuna', 85, 1),
-  new Among('ondoa', -1, 1),
-  new Among('kondoa', 87, 1),
-  new Among('ngoa', -1, 1),
-  new Among('zioa', -1, 1),
-  new Among('koa', -1, 1),
-  new Among('takoa', 91, 1),
-  new Among('zkoa', 91, 1),
-  new Among('noa', -1, 1),
-  new Among('zinoa', 94, 1),
-  new Among('aroa', -1, 1),
-  new Among('taroa', 96, 1),
-  new Among('zaroa', 96, 1),
-  new Among('eroa', -1, 1),
-  new Among('oroa', -1, 1),
-  new Among('osoa', -1, 1),
-  new Among('toa', -1, 1),
-  new Among('ttoa', 102, 1),
-  new Among('ztoa', 102, 1),
-  new Among('txoa', -1, 1),
-  new Among('tzoa', -1, 1),
-  new Among('\u00F1oa', -1, 1),
-  new Among('ra', -1, 1),
-  new Among('ara', 108, 1),
-  new Among('dara', 109, 1),
-  new Among('liara', 109, 1),
-  new Among('tiara', 109, 1),
-  new Among('tara', 109, 1),
-  new Among('etara', 113, 1),
-  new Among('tzara', 109, 1),
-  new Among('bera', 108, 1),
-  new Among('kera', 108, 1),
-  new Among('pera', 108, 1),
-  new Among('ora', 108, 2),
-  new Among('tzarra', 108, 1),
-  new Among('korra', 108, 1),
-  new Among('tra', 108, 1),
-  new Among('sa', -1, 1),
-  new Among('osa', 123, 1),
-  new Among('ta', -1, 1),
-  new Among('eta', 125, 1),
-  new Among('keta', 126, 1),
-  new Among('sta', 125, 1),
-  new Among('dua', -1, 1),
-  new Among('mendua', 129, 1),
-  new Among('ordua', 129, 1),
-  new Among('lekua', -1, 1),
-  new Among('burua', -1, 1),
-  new Among('durua', -1, 1),
-  new Among('tsua', -1, 1),
-  new Among('tua', -1, 1),
-  new Among('mentua', 136, 1),
-  new Among('estua', 136, 1),
-  new Among('txua', -1, 1),
-  new Among('zua', -1, 1),
-  new Among('tzua', 140, 1),
-  new Among('za', -1, 1),
-  new Among('eza', 142, 1),
-  new Among('eroza', 142, 1),
-  new Among('tza', 142, 2),
-  new Among('koitza', 145, 1),
-  new Among('antza', 145, 1),
-  new Among('gintza', 145, 1),
-  new Among('kintza', 145, 1),
-  new Among('kuntza', 145, 1),
-  new Among('gabe', -1, 1),
-  new Among('kabe', -1, 1),
-  new Among('kide', -1, 1),
-  new Among('alde', -1, 1),
-  new Among('kalde', 154, 1),
-  new Among('talde', 154, 1),
-  new Among('orde', -1, 1),
-  new Among('ge', -1, 1),
-  new Among('zale', -1, 1),
-  new Among('tzale', 159, 1),
-  new Among('gile', -1, 1),
-  new Among('eme', -1, 1),
-  new Among('kume', -1, 1),
-  new Among('ne', -1, 1),
-  new Among('zione', 164, 1),
-  new Among('une', 164, 1),
-  new Among('gune', 166, 1),
-  new Among('pe', -1, 1),
-  new Among('aurre', -1, 1),
-  new Among('te', -1, 1),
-  new Among('kote', 170, 1),
-  new Among('arte', 170, 1),
-  new Among('oste', 170, 1),
-  new Among('etxe', -1, 1),
-  new Among('gai', -1, 1),
-  new Among('di', -1, 1),
-  new Among('aldi', 176, 1),
-  new Among('taldi', 177, 1),
-  new Among('geldi', 176, 8),
-  new Among('handi', 176, 1),
-  new Among('mendi', 176, 1),
-  new Among('gei', -1, 1),
-  new Among('egi', -1, 1),
-  new Among('degi', 183, 1),
-  new Among('tegi', 183, 1),
-  new Among('nahi', -1, 1),
-  new Among('ohi', -1, 1),
-  new Among('ki', -1, 1),
-  new Among('toki', 188, 1),
-  new Among('oi', -1, 1),
-  new Among('goi', 190, 1),
-  new Among('koi', 190, 1),
-  new Among('ari', -1, 1),
-  new Among('kari', 193, 1),
-  new Among('lari', 193, 1),
-  new Among('tari', 193, 1),
-  new Among('garri', -1, 2),
-  new Among('larri', -1, 1),
-  new Among('kirri', -1, 1),
-  new Among('duri', -1, 1),
-  new Among('asi', -1, 1),
-  new Among('ti', -1, 1),
-  new Among('ontzi', -1, 1),
-  new Among('\u00F1i', -1, 1),
-  new Among('ak', -1, 1),
-  new Among('ek', -1, 1),
-  new Among('tarik', -1, 1),
-  new Among('gibel', -1, 1),
-  new Among('ail', -1, 1),
-  new Among('kail', 209, 1),
-  new Among('kan', -1, 1),
-  new Among('tan', -1, 1),
-  new Among('etan', 212, 1),
-  new Among('en', -1, 4),
-  new Among('ren', 214, 2),
-  new Among('garren', 215, 1),
-  new Among('gerren', 215, 1),
-  new Among('urren', 215, 1),
-  new Among('ten', 214, 4),
-  new Among('tzen', 214, 4),
-  new Among('zain', -1, 1),
-  new Among('tzain', 221, 1),
-  new Among('kin', -1, 1),
-  new Among('min', -1, 1),
-  new Among('dun', -1, 1),
-  new Among('asun', -1, 1),
-  new Among('tasun', 226, 1),
-  new Among('aizun', -1, 1),
-  new Among('ondo', -1, 1),
-  new Among('kondo', 229, 1),
-  new Among('go', -1, 1),
-  new Among('ngo', 231, 1),
-  new Among('zio', -1, 1),
-  new Among('ko', -1, 1),
-  new Among('trako', 234, 5),
-  new Among('tako', 234, 1),
-  new Among('etako', 236, 1),
-  new Among('eko', 234, 1),
-  new Among('tariko', 234, 1),
-  new Among('sko', 234, 1),
-  new Among('tuko', 234, 1),
-  new Among('minutuko', 241, 6),
-  new Among('zko', 234, 1),
-  new Among('no', -1, 1),
-  new Among('zino', 244, 1),
-  new Among('ro', -1, 1),
-  new Among('aro', 246, 1),
-  new Among('igaro', 247, 9),
-  new Among('taro', 247, 1),
-  new Among('zaro', 247, 1),
-  new Among('ero', 246, 1),
-  new Among('giro', 246, 1),
-  new Among('oro', 246, 1),
-  new Among('oso', -1, 1),
-  new Among('to', -1, 1),
-  new Among('tto', 255, 1),
-  new Among('zto', 255, 1),
-  new Among('txo', -1, 1),
-  new Among('tzo', -1, 1),
-  new Among('gintzo', 259, 1),
-  new Among('\u00F1o', -1, 1),
-  new Among('zp', -1, 1),
-  new Among('ar', -1, 1),
-  new Among('dar', 263, 1),
-  new Among('behar', 263, 1),
-  new Among('zehar', 263, 7),
-  new Among('liar', 263, 1),
-  new Among('tiar', 263, 1),
-  new Among('tar', 263, 1),
-  new Among('tzar', 263, 1),
-  new Among('or', -1, 2),
-  new Among('kor', 271, 1),
-  new Among('os', -1, 1),
-  new Among('ket', -1, 1),
-  new Among('du', -1, 1),
-  new Among('mendu', 275, 1),
-  new Among('ordu', 275, 1),
-  new Among('leku', -1, 1),
-  new Among('buru', -1, 2),
-  new Among('duru', -1, 1),
-  new Among('tsu', -1, 1),
-  new Among('tu', -1, 1),
-  new Among('tatu', 282, 4),
-  new Among('mentu', 282, 1),
-  new Among('estu', 282, 1),
-  new Among('txu', -1, 1),
-  new Among('zu', -1, 1),
-  new Among('tzu', 287, 1),
-  new Among('gintzu', 288, 1),
-  new Among('z', -1, 1),
-  new Among('ez', 290, 1),
-  new Among('eroz', 290, 1),
-  new Among('tz', 290, 1),
-  new Among('koitz', 293, 1),
-];
-
-StemmerEu.a_2 = [
-  new Among('zlea', -1, 2),
-  new Among('keria', -1, 1),
-  new Among('la', -1, 1),
-  new Among('era', -1, 1),
-  new Among('dade', -1, 1),
-  new Among('tade', -1, 1),
-  new Among('date', -1, 1),
-  new Among('tate', -1, 1),
-  new Among('gi', -1, 1),
-  new Among('ki', -1, 1),
-  new Among('ik', -1, 1),
-  new Among('lanik', 10, 1),
-  new Among('rik', 10, 1),
-  new Among('larik', 12, 1),
-  new Among('ztik', 10, 1),
-  new Among('go', -1, 1),
-  new Among('ro', -1, 1),
-  new Among('ero', 16, 1),
-  new Among('to', -1, 1),
-];
-
-StemmerEu.g_v = [17, 65, 16];
 
 export default StemmerEu;

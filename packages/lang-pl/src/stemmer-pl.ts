@@ -1,8 +1,16 @@
 import { BaseStemmer } from '@nlpjs-neo/core';
+import type { ContainerHolder } from '@nlpjs-neo/core';
 
-/* oxlint-disable */
+/**
+ * The Polish stemmer: a port of `pl_stemmer` by Błażej Kubiński
+ * (https://github.com/Tutanchamon/pl_stemmer, MIT license), a simple stemmer
+ * for Polish based on Porter's algorithm. It takes off, in turn, the endings
+ * of nouns, diminutives, adjectives, verbs, adverbs and plurals. The rules
+ * that end in `ą` are not here, because the normalizer has taken the accents
+ * off by the time a word is stemmed.
+ */
 class StemmerPl extends BaseStemmer {
-  constructor(container?) {
+  constructor(container?: ContainerHolder) {
     super(container);
     this.name = 'stemmer-pl';
   }
@@ -76,7 +84,7 @@ class StemmerPl extends BaseStemmer {
       return word.slice(0, -4);
     }
     if (word.length > 5) {
-      let slice = word.slice(-3);
+      const slice = word.slice(-3);
       if (['owy', 'owa', 'owe', 'ych', 'ego'].includes(slice)) {
         return word.slice(0, -3);
       }
@@ -158,7 +166,7 @@ class StemmerPl extends BaseStemmer {
     return word;
   }
 
-  innerStem() {
+  innerStem(): void {
     let current = this.getCurrent();
     current = this.stemNoun(current);
     current = this.stemDiminutive(current);

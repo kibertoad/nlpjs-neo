@@ -114,16 +114,26 @@ const formatOps = (hz) =>
 const formatTime = (ms) =>
   ms < 1 ? `${(ms * 1000).toFixed(2)}µs` : `${ms.toFixed(3)}ms`;
 const formatChange = (row) => {
-  if (row.status === 'added') return 'new';
-  if (row.status === 'removed') return 'gone';
+  if (row.status === 'added') {
+    return 'new';
+  }
+  if (row.status === 'removed') {
+    return 'gone';
+  }
   const sign = row.change > 0 ? '+' : '';
   // The change is measured on latency, so a positive number is slower.
   return `${sign}${row.change.toFixed(1)}%`;
 };
 const marker = (row) => {
-  if (row.status === 'regressed') return '🔴';
-  if (row.status === 'added' || row.status === 'removed') return '•';
-  if (row.change < -threshold) return '🟢';
+  if (row.status === 'regressed') {
+    return '🔴';
+  }
+  if (row.status === 'added' || row.status === 'removed') {
+    return '•';
+  }
+  if (row.change < -threshold) {
+    return '🟢';
+  }
   return '⚪';
 };
 

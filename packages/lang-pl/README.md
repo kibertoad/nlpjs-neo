@@ -66,6 +66,18 @@ directly only when you assemble the container yourself.
 See [Language support](https://github.com/kibertoad/nlpjs-neo/blob/main/docs/v5/language-support.md) for what each locale
 supports.
 
+## Credits
+
+The stemmer is a port of [pl_stemmer](https://github.com/Tutanchamon/pl_stemmer) by Błażej
+Kubiński, a simple stemmer for Polish based on Porter's algorithm.
+
+> MIT License. Copyright (c) 2017 Błażej Kubiński. Permission is hereby granted, free of charge, to
+> any person obtaining a copy of this software and associated documentation files, to deal in the
+> Software without restriction, including without limitation the rights to use, copy, modify, merge,
+> publish, distribute, sublicense, and/or sell copies of the Software, subject to the inclusion of
+> this copyright notice and this permission notice in all copies or substantial portions of the
+> Software. The Software is provided "as is", without warranty of any kind.
+
 ## Contributing
 
 You can read the guide of how to contribute at [Contributing](https://github.com/kibertoad/nlpjs-neo/blob/main/CONTRIBUTING.md).

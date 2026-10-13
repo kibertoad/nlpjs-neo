@@ -708,9 +708,13 @@ class Nlp extends Clonable {
       }
       if (actions) {
         actions.forEach((action: ActionDefinition) => {
-          if (!action) return;
+          if (!action) {
+            return;
+          }
           if (typeof action === 'object') {
-            if (!action.name) return;
+            if (!action.name) {
+              return;
+            }
             this.addAction(intent, action.name, action.parameters || []);
           } else {
             this.addAction(intent, action, []);

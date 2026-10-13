@@ -18,6 +18,12 @@
     "perf": "warn"
   },
   "rules": {
+    // The generated Snowball stemmers used to sit behind a blanket disable
+    // and are now held to these, so they stay in the code style of the rest.
+    "eqeqeq": "error",
+    "no-var": "error",
+    "prefer-const": "error",
+    "curly": "error",
     "no-await-in-loop": "off",
     "no-misleading-character-class": "off",
     "vitest/expect-expect": "off",

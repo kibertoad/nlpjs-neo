@@ -1,110 +1,66 @@
-import { Among, BaseStemmer } from '@nlpjs-neo/core';
+import { Among, SnowballStemmer } from '@nlpjs-neo/core';
+import type { ContainerHolder } from '@nlpjs-neo/core';
 
-/* oxlint-disable */
-class StemmerRo extends BaseStemmer {
+/**
+ * Stemmer written by tools/snowball from romanian.sbl of Snowball 2.2.0. Do not edit it by hand:
+ * change the Snowball program and generate it again.
+ */
+class StemmerRo extends SnowballStemmer {
   declare B_standard_suffix_removed: boolean;
-  declare I_p1: number;
-  declare I_p2: number;
-  declare I_pV: number;
-  declare static a_0: Among<StemmerRo>[];
-  declare static a_1: Among<StemmerRo>[];
-  declare static a_2: Among<StemmerRo>[];
-  declare static a_3: Among<StemmerRo>[];
-  declare static a_4: Among<StemmerRo>[];
-  declare static a_5: Among<StemmerRo>[];
-  declare static g_v: number[];
-  declare static methodObject: StemmerRo;
 
-  constructor(container?) {
+  constructor(container?: ContainerHolder) {
     super(container);
     this.name = 'stemmer-ro';
-    this.B_standard_suffix_removed = false;
-    this.I_p2 = 0;
-    this.I_p1 = 0;
     this.I_pV = 0;
+    this.I_p1 = 0;
+    this.I_p2 = 0;
+    this.B_standard_suffix_removed = false;
   }
 
-  copy_from(other) {
-    this.B_standard_suffix_removed = other.B_standard_suffix_removed;
-    this.I_p2 = other.I_p2;
-    this.I_p1 = other.I_p1;
-    this.I_pV = other.I_pV;
-    super.copy_from(other);
-  }
-
-  r_prelude() {
-    let v_1;
-    let v_2;
-    let v_3;
-    // (, line 31
-    // repeat, line 32
-    replab0: while (true) {
-      v_1 = this.cursor;
-      let lab1 = true;
-      lab1: while (lab1 == true) {
-        lab1 = false;
-        // goto, line 32
-        golab2: while (true) {
-          v_2 = this.cursor;
-          let lab3 = true;
-          lab3: while (lab3 == true) {
-            lab3 = false;
-            // (, line 32
+  r_prelude(): boolean {
+    for (;;) {
+      const v_1 = this.cursor;
+      lab0: {
+        lab1: for (;;) {
+          const v_2 = this.cursor;
+          lab2: {
             if (!this.in_grouping(StemmerRo.g_v, 97, 259)) {
-              break;
+              break lab2;
             }
-            // [, line 33
             this.bra = this.cursor;
-            // or, line 33
-            let lab4 = true;
-            lab4: while (lab4 == true) {
-              lab4 = false;
-              v_3 = this.cursor;
-              let lab5 = true;
-              while (lab5 == true) {
-                lab5 = false;
-                // (, line 33
-                // literal, line 33
-                if (!this.eq_s(1, 'u')) {
-                  break;
+            lab3: {
+              const v_3 = this.cursor;
+              lab4: {
+                if (!this.eq_s('u')) {
+                  break lab4;
                 }
-                // ], line 33
                 this.ket = this.cursor;
                 if (!this.in_grouping(StemmerRo.g_v, 97, 259)) {
-                  break;
+                  break lab4;
                 }
-                // <-, line 33
-                if (!this.slice_from('U')) {
-                  return false;
-                }
-                break lab4;
+                this.slice_from('U');
+                break lab3;
               }
               this.cursor = v_3;
-              // (, line 34
-              // literal, line 34
-              if (!this.eq_s(1, 'i')) {
-                break lab3;
+              if (!this.eq_s('i')) {
+                break lab2;
               }
-              // ], line 34
               this.ket = this.cursor;
               if (!this.in_grouping(StemmerRo.g_v, 97, 259)) {
-                break lab3;
+                break lab2;
               }
-              // <-, line 34
-              if (!this.slice_from('I')) {
-                return false;
-              }
+              this.slice_from('I');
             }
             this.cursor = v_2;
-            break golab2;
+            break lab1;
           }
           this.cursor = v_2;
           if (this.cursor >= this.limit) {
-            break lab1;
+            break lab0;
           }
           this.cursor++;
         }
-        continue replab0;
+        continue;
       }
       this.cursor = v_1;
       break;
@@ -112,257 +68,108 @@ class StemmerRo extends BaseStemmer {
     return true;
   }
 
-  r_mark_regions() {
-    let v_1;
-    let v_2;
-    let v_3;
-    let v_6;
-    let v_8;
-    // (, line 38
+  r_mark_regions(): boolean {
     this.I_pV = this.limit;
     this.I_p1 = this.limit;
     this.I_p2 = this.limit;
-    // do, line 44
-    v_1 = this.cursor;
-    let lab0 = true;
-    lab0: while (lab0 == true) {
-      lab0 = false;
-      // (, line 44
-      // or, line 46
-      let lab1 = true;
-      lab1: while (lab1 == true) {
-        lab1 = false;
-        v_2 = this.cursor;
-        let lab2 = true;
-        lab2: while (lab2 == true) {
-          lab2 = false;
-          // (, line 45
+    const v_1 = this.cursor;
+    lab0: {
+      lab1: {
+        const v_2 = this.cursor;
+        lab2: {
           if (!this.in_grouping(StemmerRo.g_v, 97, 259)) {
-            break;
+            break lab2;
           }
-          // or, line 45
-          let lab3 = true;
-          lab3: while (lab3 == true) {
-            lab3 = false;
-            v_3 = this.cursor;
-            let lab4 = true;
-            lab4: while (lab4 == true) {
-              lab4 = false;
-              // (, line 45
+          lab3: {
+            const v_3 = this.cursor;
+            lab4: {
               if (!this.out_grouping(StemmerRo.g_v, 97, 259)) {
-                break;
+                break lab4;
               }
-              // gopast, line 45
-              golab5: while (true) {
-                let lab6 = true;
-                while (lab6 == true) {
-                  lab6 = false;
-                  if (!this.in_grouping(StemmerRo.g_v, 97, 259)) {
-                    break;
-                  }
-                  break golab5;
-                }
-                if (this.cursor >= this.limit) {
-                  break lab4;
-                }
-                this.cursor++;
+              if (!this.gopast_in_grouping(StemmerRo.g_v, 97, 259)) {
+                break lab4;
               }
               break lab3;
             }
             this.cursor = v_3;
-            // (, line 45
             if (!this.in_grouping(StemmerRo.g_v, 97, 259)) {
               break lab2;
             }
-            // gopast, line 45
-            golab7: while (true) {
-              let lab8 = true;
-              while (lab8 == true) {
-                lab8 = false;
-                if (!this.out_grouping(StemmerRo.g_v, 97, 259)) {
-                  break;
-                }
-                break golab7;
-              }
-              if (this.cursor >= this.limit) {
-                break lab2;
-              }
-              this.cursor++;
+            if (!this.gopast_out_grouping(StemmerRo.g_v, 97, 259)) {
+              break lab2;
             }
           }
           break lab1;
         }
         this.cursor = v_2;
-        // (, line 47
         if (!this.out_grouping(StemmerRo.g_v, 97, 259)) {
           break lab0;
         }
-        // or, line 47
-        let lab9 = true;
-        lab9: while (lab9 == true) {
-          lab9 = false;
-          v_6 = this.cursor;
-          let lab10 = true;
-          lab10: while (lab10 == true) {
-            lab10 = false;
-            // (, line 47
+        lab5: {
+          const v_4 = this.cursor;
+          lab6: {
             if (!this.out_grouping(StemmerRo.g_v, 97, 259)) {
-              break;
+              break lab6;
             }
-            // gopast, line 47
-            golab11: while (true) {
-              let lab12 = true;
-              while (lab12 == true) {
-                lab12 = false;
-                if (!this.in_grouping(StemmerRo.g_v, 97, 259)) {
-                  break;
-                }
-                break golab11;
-              }
-              if (this.cursor >= this.limit) {
-                break lab10;
-              }
-              this.cursor++;
+            if (!this.gopast_in_grouping(StemmerRo.g_v, 97, 259)) {
+              break lab6;
             }
-            break lab9;
+            break lab5;
           }
-          this.cursor = v_6;
-          // (, line 47
+          this.cursor = v_4;
           if (!this.in_grouping(StemmerRo.g_v, 97, 259)) {
             break lab0;
           }
-          // next, line 47
           if (this.cursor >= this.limit) {
             break lab0;
           }
           this.cursor++;
         }
       }
-      // setmark pV, line 48
       this.I_pV = this.cursor;
     }
     this.cursor = v_1;
-    // do, line 50
-    v_8 = this.cursor;
-    let lab13 = true;
-    lab13: while (lab13 == true) {
-      lab13 = false;
-      // (, line 50
-      // gopast, line 51
-      golab14: while (true) {
-        let lab15 = true;
-        while (lab15 == true) {
-          lab15 = false;
-          if (!this.in_grouping(StemmerRo.g_v, 97, 259)) {
-            break;
-          }
-          break golab14;
-        }
-        if (this.cursor >= this.limit) {
-          break lab13;
-        }
-        this.cursor++;
+    const v_5 = this.cursor;
+    lab7: {
+      if (!this.gopast_in_grouping(StemmerRo.g_v, 97, 259)) {
+        break lab7;
       }
-      // gopast, line 51
-      golab16: while (true) {
-        let lab17 = true;
-        while (lab17 == true) {
-          lab17 = false;
-          if (!this.out_grouping(StemmerRo.g_v, 97, 259)) {
-            break;
-          }
-          break golab16;
-        }
-        if (this.cursor >= this.limit) {
-          break lab13;
-        }
-        this.cursor++;
+      if (!this.gopast_out_grouping(StemmerRo.g_v, 97, 259)) {
+        break lab7;
       }
-      // setmark p1, line 51
       this.I_p1 = this.cursor;
-      // gopast, line 52
-      golab18: while (true) {
-        let lab19 = true;
-        while (lab19 == true) {
-          lab19 = false;
-          if (!this.in_grouping(StemmerRo.g_v, 97, 259)) {
-            break;
-          }
-          break golab18;
-        }
-        if (this.cursor >= this.limit) {
-          break lab13;
-        }
-        this.cursor++;
+      if (!this.gopast_in_grouping(StemmerRo.g_v, 97, 259)) {
+        break lab7;
       }
-      // gopast, line 52
-      golab20: while (true) {
-        let lab21 = true;
-        while (lab21 == true) {
-          lab21 = false;
-          if (!this.out_grouping(StemmerRo.g_v, 97, 259)) {
-            break;
-          }
-          break golab20;
-        }
-        if (this.cursor >= this.limit) {
-          break lab13;
-        }
-        this.cursor++;
+      if (!this.gopast_out_grouping(StemmerRo.g_v, 97, 259)) {
+        break lab7;
       }
-      // setmark p2, line 52
       this.I_p2 = this.cursor;
     }
-    this.cursor = v_8;
+    this.cursor = v_5;
     return true;
   }
 
-  r_postlude() {
-    let among_var;
-    let v_1;
-    // repeat, line 56
-    replab0: while (true) {
-      v_1 = this.cursor;
-      let lab1 = true;
-      lab1: while (lab1 == true) {
-        lab1 = false;
-        // (, line 56
-        // [, line 58
-        this.bra = this.cursor;
-        // substring, line 58
-        among_var = this.find_among(StemmerRo.a_0, 3);
-        if (among_var == 0) {
-          break;
-        }
-        // ], line 58
-        this.ket = this.cursor;
+  r_postlude(): boolean {
+    for (;;) {
+      const v_1 = this.cursor;
+      lab0: {
+        const among_var = this.find_slice(StemmerRo.a_0);
         switch (among_var) {
-          case 0:
-            break lab1;
           case 1:
-            // (, line 59
-            // <-, line 59
-            if (!this.slice_from('i')) {
-              return false;
-            }
+            this.slice_from('i');
             break;
           case 2:
-            // (, line 60
-            // <-, line 60
-            if (!this.slice_from('u')) {
-              return false;
-            }
+            this.slice_from('u');
             break;
           case 3:
-            // (, line 61
-            // next, line 61
             if (this.cursor >= this.limit) {
-              break lab1;
+              break lab0;
             }
             this.cursor++;
             break;
         }
-        continue replab0;
+        continue;
       }
       this.cursor = v_1;
       break;
@@ -370,716 +177,238 @@ class StemmerRo extends BaseStemmer {
     return true;
   }
 
-  r_RV() {
-    if (!(this.I_pV <= this.cursor)) {
+  r_step_0(): boolean {
+    const among_var = this.find_slice_b(StemmerRo.a_1);
+    if (among_var === 0) {
       return false;
     }
-    return true;
-  }
-
-  r_R1() {
-    if (!(this.I_p1 <= this.cursor)) {
-      return false;
-    }
-    return true;
-  }
-
-  r_R2() {
-    if (!(this.I_p2 <= this.cursor)) {
-      return false;
-    }
-    return true;
-  }
-
-  r_step_0() {
-    let among_var;
-    let v_1;
-    // (, line 72
-    // [, line 73
-    this.ket = this.cursor;
-    // substring, line 73
-    among_var = this.find_among_b(StemmerRo.a_1, 16);
-    if (among_var == 0) {
-      return false;
-    }
-    // ], line 73
-    this.bra = this.cursor;
-    // call R1, line 73
     if (!this.r_R1()) {
       return false;
     }
     switch (among_var) {
-      case 0:
-        return false;
       case 1:
-        // (, line 75
-        // delete, line 75
-        if (!this.slice_del()) {
-          return false;
-        }
+        this.slice_del();
         break;
       case 2:
-        // (, line 77
-        // <-, line 77
-        if (!this.slice_from('a')) {
-          return false;
-        }
+        this.slice_from('a');
         break;
       case 3:
-        // (, line 79
-        // <-, line 79
-        if (!this.slice_from('e')) {
-          return false;
-        }
+        this.slice_from('e');
         break;
       case 4:
-        // (, line 81
-        // <-, line 81
-        if (!this.slice_from('i')) {
-          return false;
-        }
+        this.slice_from('i');
         break;
       case 5:
-        // (, line 83
-        // not, line 83
-        {
-          v_1 = this.limit - this.cursor;
-          let lab0 = true;
-          while (lab0 == true) {
-            lab0 = false;
-            // literal, line 83
-            if (!this.eq_s_b(2, 'ab')) {
-              break;
-            }
-            return false;
-          }
-          this.cursor = this.limit - v_1;
-        }
-        // <-, line 83
-        if (!this.slice_from('i')) {
+        if (this.eq_s_b('ab')) {
           return false;
         }
+        this.slice_from('i');
         break;
       case 6:
-        // (, line 85
-        // <-, line 85
-        if (!this.slice_from('at')) {
-          return false;
-        }
+        this.slice_from('at');
         break;
       case 7:
-        // (, line 87
-        // <-, line 87
-        if (!this.slice_from('a\u0163i')) {
-          return false;
-        }
+        this.slice_from('a\u0163i');
         break;
     }
     return true;
   }
 
-  r_combo_suffix() {
-    let among_var;
-    let v_1;
-    // test, line 91
-    v_1 = this.limit - this.cursor;
-    // (, line 91
-    // [, line 92
-    this.ket = this.cursor;
-    // substring, line 92
-    among_var = this.find_among_b(StemmerRo.a_2, 46);
-    if (among_var == 0) {
+  r_combo_suffix(): boolean {
+    const v_1 = this.limit - this.cursor;
+    const among_var = this.find_slice_b(StemmerRo.a_2);
+    if (among_var === 0) {
       return false;
     }
-    // ], line 92
-    this.bra = this.cursor;
-    // call R1, line 92
     if (!this.r_R1()) {
       return false;
     }
-    // (, line 92
     switch (among_var) {
-      case 0:
-        return false;
       case 1:
-        // (, line 100
-        // <-, line 101
-        if (!this.slice_from('abil')) {
-          return false;
-        }
+        this.slice_from('abil');
         break;
       case 2:
-        // (, line 103
-        // <-, line 104
-        if (!this.slice_from('ibil')) {
-          return false;
-        }
+        this.slice_from('ibil');
         break;
       case 3:
-        // (, line 106
-        // <-, line 107
-        if (!this.slice_from('iv')) {
-          return false;
-        }
+        this.slice_from('iv');
         break;
       case 4:
-        // (, line 112
-        // <-, line 113
-        if (!this.slice_from('ic')) {
-          return false;
-        }
+        this.slice_from('ic');
         break;
       case 5:
-        // (, line 117
-        // <-, line 118
-        if (!this.slice_from('at')) {
-          return false;
-        }
+        this.slice_from('at');
         break;
       case 6:
-        // (, line 121
-        // <-, line 122
-        if (!this.slice_from('it')) {
-          return false;
-        }
+        this.slice_from('it');
         break;
     }
-    // set standard_suffix_removed, line 125
     this.B_standard_suffix_removed = true;
     this.cursor = this.limit - v_1;
     return true;
   }
 
-  r_standard_suffix() {
-    let among_var;
-    let v_1;
-    // (, line 129
-    // unset standard_suffix_removed, line 130
+  r_standard_suffix(): boolean {
     this.B_standard_suffix_removed = false;
-    // repeat, line 131
-    replab0: while (true) {
-      v_1 = this.limit - this.cursor;
-      let lab1 = true;
-      while (lab1 == true) {
-        lab1 = false;
-        // call combo_suffix, line 131
+    for (;;) {
+      const v_1 = this.limit - this.cursor;
+      lab0: {
         if (!this.r_combo_suffix()) {
-          break;
+          break lab0;
         }
-        continue replab0;
+        continue;
       }
       this.cursor = this.limit - v_1;
       break;
     }
-    // [, line 132
-    this.ket = this.cursor;
-    // substring, line 132
-    among_var = this.find_among_b(StemmerRo.a_3, 62);
-    if (among_var == 0) {
+    const among_var = this.find_slice_b(StemmerRo.a_3);
+    if (among_var === 0) {
       return false;
     }
-    // ], line 132
-    this.bra = this.cursor;
-    // call R2, line 132
     if (!this.r_R2()) {
       return false;
     }
-    // (, line 132
     switch (among_var) {
-      case 0:
-        return false;
       case 1:
-        // (, line 148
-        // delete, line 149
-        if (!this.slice_del()) {
-          return false;
-        }
+        this.slice_del();
         break;
       case 2:
-        // (, line 151
-        // literal, line 152
-        if (!this.eq_s_b(1, '\u0163')) {
+        if (!this.eq_s_b('\u0163')) {
           return false;
         }
-        // ], line 152
         this.bra = this.cursor;
-        // <-, line 152
-        if (!this.slice_from('t')) {
-          return false;
-        }
+        this.slice_from('t');
         break;
       case 3:
-        // (, line 155
-        // <-, line 156
-        if (!this.slice_from('ist')) {
-          return false;
-        }
+        this.slice_from('ist');
         break;
     }
-    // set standard_suffix_removed, line 160
     this.B_standard_suffix_removed = true;
     return true;
   }
 
-  r_verb_suffix() {
-    let among_var;
-    let v_1;
-    let v_2;
-    let v_3;
-    // setlimit, line 164
-    v_1 = this.limit - this.cursor;
-    // tomark, line 164
+  r_verb_suffix(): boolean {
     if (this.cursor < this.I_pV) {
       return false;
     }
-    this.cursor = this.I_pV;
-    v_2 = this.limit_backward;
-    this.limit_backward = this.cursor;
-    this.cursor = this.limit - v_1;
-    // (, line 164
-    // [, line 165
-    this.ket = this.cursor;
-    // substring, line 165
-    among_var = this.find_among_b(StemmerRo.a_4, 94);
-    if (among_var == 0) {
-      this.limit_backward = v_2;
+    const v_1 = this.limit_backward;
+    this.limit_backward = this.I_pV;
+    const among_var = this.find_slice_b(StemmerRo.a_4);
+    if (among_var === 0) {
+      this.limit_backward = v_1;
       return false;
     }
-    // ], line 165
-    this.bra = this.cursor;
     switch (among_var) {
-      case 0:
-        this.limit_backward = v_2;
-        return false;
       case 1:
-        // (, line 200
-        // or, line 200
-        var lab0 = true;
-        lab0: while (lab0 == true) {
-          lab0 = false;
-          v_3 = this.limit - this.cursor;
-          let lab1 = true;
-          while (lab1 == true) {
-            lab1 = false;
-            if (!this.out_grouping_b(StemmerRo.g_v, 97, 259)) {
-              break;
-            }
-            break lab0;
-          }
-          this.cursor = this.limit - v_3;
-          // literal, line 200
-          if (!this.eq_s_b(1, 'u')) {
-            this.limit_backward = v_2;
-            return false;
-          }
-        }
-        // delete, line 200
-        if (!this.slice_del()) {
+        if (!this.out_grouping_b(StemmerRo.g_v, 97, 259) && !this.eq_s_b('u')) {
+          this.limit_backward = v_1;
           return false;
         }
+        this.slice_del();
         break;
       case 2:
-        // (, line 214
-        // delete, line 214
-        if (!this.slice_del()) {
-          return false;
-        }
+        this.slice_del();
         break;
     }
-    this.limit_backward = v_2;
+    this.limit_backward = v_1;
     return true;
   }
 
-  r_vowel_suffix() {
-    let among_var;
-    // (, line 218
-    // [, line 219
-    this.ket = this.cursor;
-    // substring, line 219
-    among_var = this.find_among_b(StemmerRo.a_5, 5);
-    if (among_var == 0) {
+  r_vowel_suffix(): boolean {
+    const among_var = this.find_slice_b(StemmerRo.a_5);
+    if (among_var === 0) {
       return false;
     }
-    // ], line 219
-    this.bra = this.cursor;
-    // call RV, line 219
     if (!this.r_RV()) {
       return false;
     }
     switch (among_var) {
-      case 0:
-        return false;
       case 1:
-        // (, line 220
-        // delete, line 220
-        if (!this.slice_del()) {
-          return false;
-        }
+        this.slice_del();
         break;
     }
     return true;
   }
 
-  innerStem() {
-    let v_1;
-    let v_2;
-    let v_3;
-    let v_4;
-    let v_5;
-    let v_6;
-    let v_7;
-    let v_8;
-    // (, line 225
-    // do, line 226
-    v_1 = this.cursor;
-    let lab0 = true;
-    while (lab0 == true) {
-      lab0 = false;
-      // call prelude, line 226
-      if (!this.r_prelude()) {
-        break;
-      }
-    }
-    this.cursor = v_1;
-    // do, line 227
-    v_2 = this.cursor;
-    let lab1 = true;
-    while (lab1 == true) {
-      lab1 = false;
-      // call mark_regions, line 227
-      if (!this.r_mark_regions()) {
-        break;
-      }
-    }
-    this.cursor = v_2;
-    // backwards, line 228
+  innerStem(): boolean {
+    this.do_forward(this.r_prelude);
+    this.r_mark_regions();
     this.limit_backward = this.cursor;
     this.cursor = this.limit;
-    // (, line 228
-    // do, line 229
-    v_3 = this.limit - this.cursor;
-    let lab2 = true;
-    while (lab2 == true) {
-      lab2 = false;
-      // call step_0, line 229
-      if (!this.r_step_0()) {
-        break;
-      }
-    }
-    this.cursor = this.limit - v_3;
-    // do, line 230
-    v_4 = this.limit - this.cursor;
-    let lab3 = true;
-    while (lab3 == true) {
-      lab3 = false;
-      // call standard_suffix, line 230
-      if (!this.r_standard_suffix()) {
-        break;
+    this.do_backward(this.r_step_0);
+    this.do_backward(this.r_standard_suffix);
+    const v_4 = this.limit - this.cursor;
+    lab0: {
+      if (!this.B_standard_suffix_removed) {
+        if (!this.r_verb_suffix()) {
+          break lab0;
+        }
       }
     }
     this.cursor = this.limit - v_4;
-    // do, line 231
-    v_5 = this.limit - this.cursor;
-    let lab4 = true;
-    lab4: while (lab4 == true) {
-      lab4 = false;
-      // (, line 231
-      // or, line 231
-      let lab5 = true;
-      lab5: while (lab5 == true) {
-        lab5 = false;
-        v_6 = this.limit - this.cursor;
-        let lab6 = true;
-        while (lab6 == true) {
-          lab6 = false;
-          // Boolean test standard_suffix_removed, line 231
-          if (!this.B_standard_suffix_removed) {
-            break;
-          }
-          break lab5;
-        }
-        this.cursor = this.limit - v_6;
-        // call verb_suffix, line 231
-        if (!this.r_verb_suffix()) {
-          break lab4;
-        }
-      }
-    }
-    this.cursor = this.limit - v_5;
-    // do, line 232
-    v_7 = this.limit - this.cursor;
-    let lab7 = true;
-    while (lab7 == true) {
-      lab7 = false;
-      // call vowel_suffix, line 232
-      if (!this.r_vowel_suffix()) {
-        break;
-      }
-    }
-    this.cursor = this.limit - v_7;
-    this.cursor = this.limit_backward; // do, line 234
-    v_8 = this.cursor;
-    let lab8 = true;
-    while (lab8 == true) {
-      lab8 = false;
-      // call postlude, line 234
-      if (!this.r_postlude()) {
-        break;
-      }
-    }
-    this.cursor = v_8;
+    this.do_backward(this.r_vowel_suffix);
+    this.cursor = this.limit_backward;
+    this.do_forward(this.r_postlude);
     return true;
   }
+
+  static g_v: number[] = [
+    17, 65, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 32, 0, 0, 4,
+  ];
+
+  static a_0: Among<StemmerRo>[] = [
+    new Among('', -1, 3),
+    new Among('I', 0, 1),
+    new Among('U', 0, 2),
+  ];
+
+  static a_1 = Among.table<StemmerRo>(`
+    ea,-1,3 aţia,-1,7 aua,-1,2 iua,-1,4 aţie,-1,7 ele,-1,3 ile,-1,5 iile,6,4
+    iei,-1,4 atei,-1,6 ii,-1,4 ului,-1,1 ul,-1,1 elor,-1,3 ilor,-1,4 iilor,14,4
+  `);
+
+  static a_2 = Among.table<StemmerRo>(`
+    icala,-1,4 iciva,-1,4 ativa,-1,5 itiva,-1,6 icale,-1,4 aţiune,-1,5
+    iţiune,-1,6 atoare,-1,5 itoare,-1,6 ătoare,-1,5 icitate,-1,4 abilitate,-1,1
+    ibilitate,-1,2 ivitate,-1,3 icive,-1,4 ative,-1,5 itive,-1,6 icali,-1,4
+    atori,-1,5 icatori,18,4 itori,-1,6 ători,-1,5 icitati,-1,4 abilitati,-1,1
+    ivitati,-1,3 icivi,-1,4 ativi,-1,5 itivi,-1,6 icităi,-1,4 abilităi,-1,1
+    ivităi,-1,3 icităţi,-1,4 abilităţi,-1,1 ivităţi,-1,3 ical,-1,4 ator,-1,5
+    icator,35,4 itor,-1,6 ător,-1,5 iciv,-1,4 ativ,-1,5 itiv,-1,6 icală,-1,4
+    icivă,-1,4 ativă,-1,5 itivă,-1,6
+  `);
+
+  static a_3 = Among.table<StemmerRo>(`
+    ica,-1,1 abila,-1,1 ibila,-1,1 oasa,-1,1 ata,-1,1 ita,-1,1 anta,-1,1
+    ista,-1,3 uta,-1,1 iva,-1,1 ic,-1,1 ice,-1,1 abile,-1,1 ibile,-1,1 isme,-1,3
+    iune,-1,2 oase,-1,1 ate,-1,1 itate,17,1 ite,-1,1 ante,-1,1 iste,-1,3
+    ute,-1,1 ive,-1,1 ici,-1,1 abili,-1,1 ibili,-1,1 iuni,-1,2 atori,-1,1
+    osi,-1,1 ati,-1,1 itati,30,1 iti,-1,1 anti,-1,1 isti,-1,3 uti,-1,1 işti,-1,3
+    ivi,-1,1 ităi,-1,1 oşi,-1,1 ităţi,-1,1 abil,-1,1 ibil,-1,1 ism,-1,3
+    ator,-1,1 os,-1,1 at,-1,1 it,-1,1 ant,-1,1 ist,-1,3 ut,-1,1 iv,-1,1 ică,-1,1
+    abilă,-1,1 ibilă,-1,1 oasă,-1,1 ată,-1,1 ită,-1,1 antă,-1,1 istă,-1,3
+    ută,-1,1 ivă,-1,1
+  `);
+
+  static a_4 = Among.table<StemmerRo>(`
+    ea,-1,1 ia,-1,1 esc,-1,1 ăsc,-1,1 ind,-1,1 ând,-1,1 are,-1,1 ere,-1,1
+    ire,-1,1 âre,-1,1 se,-1,2 ase,10,1 sese,10,2 ise,10,1 use,10,1 âse,10,1
+    eşte,-1,1 ăşte,-1,1 eze,-1,1 ai,-1,1 eai,19,1 iai,19,1 sei,-1,2 eşti,-1,1
+    ăşti,-1,1 ui,-1,1 ezi,-1,1 âi,-1,1 aşi,-1,1 seşi,-1,2 aseşi,29,1 seseşi,29,2
+    iseşi,29,1 useşi,29,1 âseşi,29,1 işi,-1,1 uşi,-1,1 âşi,-1,1 aţi,-1,2
+    eaţi,38,1 iaţi,38,1 eţi,-1,2 iţi,-1,2 âţi,-1,2 arăţi,-1,1 serăţi,-1,2
+    aserăţi,45,1 seserăţi,45,2 iserăţi,45,1 userăţi,45,1 âserăţi,45,1 irăţi,-1,1
+    urăţi,-1,1 ârăţi,-1,1 am,-1,1 eam,54,1 iam,54,1 em,-1,2 asem,57,1 sesem,57,2
+    isem,57,1 usem,57,1 âsem,57,1 im,-1,2 âm,-1,2 ăm,-1,2 arăm,65,1 serăm,65,2
+    aserăm,67,1 seserăm,67,2 iserăm,67,1 userăm,67,1 âserăm,67,1 irăm,65,1
+    urăm,65,1 ârăm,65,1 au,-1,1 eau,76,1 iau,76,1 indu,-1,1 ându,-1,1 ez,-1,1
+    ească,-1,1 ară,-1,1 seră,-1,2 aseră,84,1 seseră,84,2 iseră,84,1 useră,84,1
+    âseră,84,1 iră,-1,1 ură,-1,1 âră,-1,1 ează,-1,1
+  `);
+
+  static a_5 = Among.table<StemmerRo>(`
+    a,-1,1 e,-1,1 ie,1,1 i,-1,1 ă,-1,1
+  `);
 }
-
-StemmerRo.methodObject = new StemmerRo();
-
-StemmerRo.a_0 = [
-  new Among('', -1, 3),
-  new Among('I', 0, 1),
-  new Among('U', 0, 2),
-];
-
-StemmerRo.a_1 = [
-  new Among('ea', -1, 3),
-  new Among('a\u0163ia', -1, 7),
-  new Among('aua', -1, 2),
-  new Among('iua', -1, 4),
-  new Among('a\u0163ie', -1, 7),
-  new Among('ele', -1, 3),
-  new Among('ile', -1, 5),
-  new Among('iile', 6, 4),
-  new Among('iei', -1, 4),
-  new Among('atei', -1, 6),
-  new Among('ii', -1, 4),
-  new Among('ului', -1, 1),
-  new Among('ul', -1, 1),
-  new Among('elor', -1, 3),
-  new Among('ilor', -1, 4),
-  new Among('iilor', 14, 4),
-];
-
-StemmerRo.a_2 = [
-  new Among('icala', -1, 4),
-  new Among('iciva', -1, 4),
-  new Among('ativa', -1, 5),
-  new Among('itiva', -1, 6),
-  new Among('icale', -1, 4),
-  new Among('a\u0163iune', -1, 5),
-  new Among('i\u0163iune', -1, 6),
-  new Among('atoare', -1, 5),
-  new Among('itoare', -1, 6),
-  new Among('\u0103toare', -1, 5),
-  new Among('icitate', -1, 4),
-  new Among('abilitate', -1, 1),
-  new Among('ibilitate', -1, 2),
-  new Among('ivitate', -1, 3),
-  new Among('icive', -1, 4),
-  new Among('ative', -1, 5),
-  new Among('itive', -1, 6),
-  new Among('icali', -1, 4),
-  new Among('atori', -1, 5),
-  new Among('icatori', 18, 4),
-  new Among('itori', -1, 6),
-  new Among('\u0103tori', -1, 5),
-  new Among('icitati', -1, 4),
-  new Among('abilitati', -1, 1),
-  new Among('ivitati', -1, 3),
-  new Among('icivi', -1, 4),
-  new Among('ativi', -1, 5),
-  new Among('itivi', -1, 6),
-  new Among('icit\u0103i', -1, 4),
-  new Among('abilit\u0103i', -1, 1),
-  new Among('ivit\u0103i', -1, 3),
-  new Among('icit\u0103\u0163i', -1, 4),
-  new Among('abilit\u0103\u0163i', -1, 1),
-  new Among('ivit\u0103\u0163i', -1, 3),
-  new Among('ical', -1, 4),
-  new Among('ator', -1, 5),
-  new Among('icator', 35, 4),
-  new Among('itor', -1, 6),
-  new Among('\u0103tor', -1, 5),
-  new Among('iciv', -1, 4),
-  new Among('ativ', -1, 5),
-  new Among('itiv', -1, 6),
-  new Among('ical\u0103', -1, 4),
-  new Among('iciv\u0103', -1, 4),
-  new Among('ativ\u0103', -1, 5),
-  new Among('itiv\u0103', -1, 6),
-];
-
-StemmerRo.a_3 = [
-  new Among('ica', -1, 1),
-  new Among('abila', -1, 1),
-  new Among('ibila', -1, 1),
-  new Among('oasa', -1, 1),
-  new Among('ata', -1, 1),
-  new Among('ita', -1, 1),
-  new Among('anta', -1, 1),
-  new Among('ista', -1, 3),
-  new Among('uta', -1, 1),
-  new Among('iva', -1, 1),
-  new Among('ic', -1, 1),
-  new Among('ice', -1, 1),
-  new Among('abile', -1, 1),
-  new Among('ibile', -1, 1),
-  new Among('isme', -1, 3),
-  new Among('iune', -1, 2),
-  new Among('oase', -1, 1),
-  new Among('ate', -1, 1),
-  new Among('itate', 17, 1),
-  new Among('ite', -1, 1),
-  new Among('ante', -1, 1),
-  new Among('iste', -1, 3),
-  new Among('ute', -1, 1),
-  new Among('ive', -1, 1),
-  new Among('ici', -1, 1),
-  new Among('abili', -1, 1),
-  new Among('ibili', -1, 1),
-  new Among('iuni', -1, 2),
-  new Among('atori', -1, 1),
-  new Among('osi', -1, 1),
-  new Among('ati', -1, 1),
-  new Among('itati', 30, 1),
-  new Among('iti', -1, 1),
-  new Among('anti', -1, 1),
-  new Among('isti', -1, 3),
-  new Among('uti', -1, 1),
-  new Among('i\u015Fti', -1, 3),
-  new Among('ivi', -1, 1),
-  new Among('it\u0103i', -1, 1),
-  new Among('o\u015Fi', -1, 1),
-  new Among('it\u0103\u0163i', -1, 1),
-  new Among('abil', -1, 1),
-  new Among('ibil', -1, 1),
-  new Among('ism', -1, 3),
-  new Among('ator', -1, 1),
-  new Among('os', -1, 1),
-  new Among('at', -1, 1),
-  new Among('it', -1, 1),
-  new Among('ant', -1, 1),
-  new Among('ist', -1, 3),
-  new Among('ut', -1, 1),
-  new Among('iv', -1, 1),
-  new Among('ic\u0103', -1, 1),
-  new Among('abil\u0103', -1, 1),
-  new Among('ibil\u0103', -1, 1),
-  new Among('oas\u0103', -1, 1),
-  new Among('at\u0103', -1, 1),
-  new Among('it\u0103', -1, 1),
-  new Among('ant\u0103', -1, 1),
-  new Among('ist\u0103', -1, 3),
-  new Among('ut\u0103', -1, 1),
-  new Among('iv\u0103', -1, 1),
-];
-
-StemmerRo.a_4 = [
-  new Among('ea', -1, 1),
-  new Among('ia', -1, 1),
-  new Among('esc', -1, 1),
-  new Among('\u0103sc', -1, 1),
-  new Among('ind', -1, 1),
-  new Among('\u00E2nd', -1, 1),
-  new Among('are', -1, 1),
-  new Among('ere', -1, 1),
-  new Among('ire', -1, 1),
-  new Among('\u00E2re', -1, 1),
-  new Among('se', -1, 2),
-  new Among('ase', 10, 1),
-  new Among('sese', 10, 2),
-  new Among('ise', 10, 1),
-  new Among('use', 10, 1),
-  new Among('\u00E2se', 10, 1),
-  new Among('e\u015Fte', -1, 1),
-  new Among('\u0103\u015Fte', -1, 1),
-  new Among('eze', -1, 1),
-  new Among('ai', -1, 1),
-  new Among('eai', 19, 1),
-  new Among('iai', 19, 1),
-  new Among('sei', -1, 2),
-  new Among('e\u015Fti', -1, 1),
-  new Among('\u0103\u015Fti', -1, 1),
-  new Among('ui', -1, 1),
-  new Among('ezi', -1, 1),
-  new Among('\u00E2i', -1, 1),
-  new Among('a\u015Fi', -1, 1),
-  new Among('se\u015Fi', -1, 2),
-  new Among('ase\u015Fi', 29, 1),
-  new Among('sese\u015Fi', 29, 2),
-  new Among('ise\u015Fi', 29, 1),
-  new Among('use\u015Fi', 29, 1),
-  new Among('\u00E2se\u015Fi', 29, 1),
-  new Among('i\u015Fi', -1, 1),
-  new Among('u\u015Fi', -1, 1),
-  new Among('\u00E2\u015Fi', -1, 1),
-  new Among('a\u0163i', -1, 2),
-  new Among('ea\u0163i', 38, 1),
-  new Among('ia\u0163i', 38, 1),
-  new Among('e\u0163i', -1, 2),
-  new Among('i\u0163i', -1, 2),
-  new Among('\u00E2\u0163i', -1, 2),
-  new Among('ar\u0103\u0163i', -1, 1),
-  new Among('ser\u0103\u0163i', -1, 2),
-  new Among('aser\u0103\u0163i', 45, 1),
-  new Among('seser\u0103\u0163i', 45, 2),
-  new Among('iser\u0103\u0163i', 45, 1),
-  new Among('user\u0103\u0163i', 45, 1),
-  new Among('\u00E2ser\u0103\u0163i', 45, 1),
-  new Among('ir\u0103\u0163i', -1, 1),
-  new Among('ur\u0103\u0163i', -1, 1),
-  new Among('\u00E2r\u0103\u0163i', -1, 1),
-  new Among('am', -1, 1),
-  new Among('eam', 54, 1),
-  new Among('iam', 54, 1),
-  new Among('em', -1, 2),
-  new Among('asem', 57, 1),
-  new Among('sesem', 57, 2),
-  new Among('isem', 57, 1),
-  new Among('usem', 57, 1),
-  new Among('\u00E2sem', 57, 1),
-  new Among('im', -1, 2),
-  new Among('\u00E2m', -1, 2),
-  new Among('\u0103m', -1, 2),
-  new Among('ar\u0103m', 65, 1),
-  new Among('ser\u0103m', 65, 2),
-  new Among('aser\u0103m', 67, 1),
-  new Among('seser\u0103m', 67, 2),
-  new Among('iser\u0103m', 67, 1),
-  new Among('user\u0103m', 67, 1),
-  new Among('\u00E2ser\u0103m', 67, 1),
-  new Among('ir\u0103m', 65, 1),
-  new Among('ur\u0103m', 65, 1),
-  new Among('\u00E2r\u0103m', 65, 1),
-  new Among('au', -1, 1),
-  new Among('eau', 76, 1),
-  new Among('iau', 76, 1),
-  new Among('indu', -1, 1),
-  new Among('\u00E2ndu', -1, 1),
-  new Among('ez', -1, 1),
-  new Among('easc\u0103', -1, 1),
-  new Among('ar\u0103', -1, 1),
-  new Among('ser\u0103', -1, 2),
-  new Among('aser\u0103', 84, 1),
-  new Among('seser\u0103', 84, 2),
-  new Among('iser\u0103', 84, 1),
-  new Among('user\u0103', 84, 1),
-  new Among('\u00E2ser\u0103', 84, 1),
-  new Among('ir\u0103', -1, 1),
-  new Among('ur\u0103', -1, 1),
-  new Among('\u00E2r\u0103', -1, 1),
-  new Among('eaz\u0103', -1, 1),
-];
-
-StemmerRo.a_5 = [
-  new Among('a', -1, 1),
-  new Among('e', -1, 1),
-  new Among('ie', 1, 1),
-  new Among('i', -1, 1),
-  new Among('\u0103', -1, 1),
-];
-
-StemmerRo.g_v = [
-  17, 65, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 32, 0, 0, 4,
-];
 
 export default StemmerRo;

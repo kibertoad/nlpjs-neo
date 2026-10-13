@@ -70,4 +70,49 @@ describe('Stemmer', () => {
       expect(actual).toEqual(expected);
     });
   });
+  describe('What is ours on top of Snowball', () => {
+    test.each([
+      ['lavarme', 'lav'],
+      ['sentarse', 'sent'],
+      ['darte', 'dar'],
+    ])('It should take the pronoun off the infinitive %s', (word, stem) => {
+      expect(stemmer.stemWord(word)).toEqual(stem);
+    });
+
+    test.each([
+      ['abierta', 'abrir'],
+      ['abierto', 'abrir'],
+    ])('It should answer %s from the dictionary', (word, stem) => {
+      expect(stemmer.stemWord(word)).toEqual(stem);
+    });
+
+    test.each([
+      ['comieren', 'com'],
+      ['vivieres', 'viv'],
+      ['cantares', 'cant'],
+    ])(
+      'It should take off the ending of the subjunctive in %s',
+      (word, stem) => {
+        expect(stemmer.stemWord(word)).toEqual(stem);
+      }
+    );
+
+    test.each([
+      ['luz', 'luc'],
+      ['luces', 'luc'],
+      ['paz', 'pac'],
+    ])('It should write a final z as c in %s', (word, stem) => {
+      expect(stemmer.stemWord(word)).toEqual(stem);
+    });
+  });
+
+  describe('The endings of Snowball', () => {
+    test.each([
+      ['alabanza', 'alab'],
+      ['administrativa', 'administr'],
+      ['ciudades', 'ciudad'],
+    ])('It should take the ending off %s', (word, stem) => {
+      expect(stemmer.stemWord(word)).toEqual(stem);
+    });
+  });
 });

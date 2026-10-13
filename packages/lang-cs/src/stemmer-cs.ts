@@ -1,100 +1,48 @@
-import { Among, BaseStemmer } from '@nlpjs-neo/core';
+import { Among, SnowballStemmer } from '@nlpjs-neo/core';
+import type { ContainerHolder } from '@nlpjs-neo/core';
 
-/* oxlint-disable */
-class StemmerCs extends BaseStemmer {
-  declare I_p1: number;
-  declare I_pV: number;
-  declare static a_0: Among<StemmerCs>[];
-  declare static a_1: Among<StemmerCs>[];
-  declare static a_2: Among<StemmerCs>[];
-  declare static a_3: Among<StemmerCs>[];
-  declare static a_4: Among<StemmerCs>[];
-  declare static a_5: Among<StemmerCs>[];
-  declare static a_6: Among<StemmerCs>[];
-  declare static a_7: Among<StemmerCs>[];
-  declare static g_v: number[];
-
-  constructor(container) {
+/**
+ * Stemmer written by tools/snowball from czech-do.sbl of Jim O'Regan (2012), for the stemmer of Ljiljana Dolamic. Do not edit it by hand:
+ * change the Snowball program and generate it again.
+ */
+class StemmerCs extends SnowballStemmer {
+  constructor(container?: ContainerHolder) {
     super(container);
     this.name = 'stemmer-cs';
-    this.I_p1 = 0;
     this.I_pV = 0;
+    this.I_p1 = 0;
   }
 
-  r_mark_regions() {
-    let v_1;
+  r_mark_regions(): boolean {
     this.I_pV = this.limit;
     this.I_p1 = this.limit;
-    v_1 = this.cursor;
-    lab0: do {
-      golab1: while (true) {
-        lab2: do {
-          if (!this.out_grouping(StemmerCs.g_v, 97, 367)) {
-            break lab2;
-          }
-          break golab1;
-        } while (false);
-        if (this.cursor >= this.limit) {
-          break lab0;
-        }
-        this.cursor++;
+    const v_1 = this.cursor;
+    lab0: {
+      if (!this.gopast_out_grouping(StemmerCs.g_v, 97, 367)) {
+        break lab0;
       }
       this.I_pV = this.cursor;
-      golab3: while (true) {
-        lab4: do {
-          if (!this.out_grouping(StemmerCs.g_v, 97, 367)) {
-            break lab4;
-          }
-          break golab3;
-        } while (false);
-        if (this.cursor >= this.limit) {
-          break lab0;
-        }
-        this.cursor++;
+      if (!this.gopast_out_grouping(StemmerCs.g_v, 97, 367)) {
+        break lab0;
       }
-      golab5: while (true) {
-        lab6: do {
-          if (!this.in_grouping(StemmerCs.g_v, 97, 367)) {
-            break lab6;
-          }
-          break golab5;
-        } while (false);
-        if (this.cursor >= this.limit) {
-          break lab0;
-        }
-        this.cursor++;
+      if (!this.gopast_in_grouping(StemmerCs.g_v, 97, 367)) {
+        break lab0;
       }
       this.I_p1 = this.cursor;
-    } while (false);
+    }
     this.cursor = v_1;
     return true;
   }
-  r_RV() {
-    if (!(this.I_pV <= this.cursor)) {
-      return false;
-    }
-    return true;
-  }
-  r_R1() {
-    if (!(this.I_p1 <= this.cursor)) {
-      return false;
-    }
-    return true;
-  }
-  r_palatalise() {
-    let among_var;
-    this.ket = this.cursor;
-    among_var = this.find_among_b(StemmerCs.a_0);
+
+  r_palatalise(): boolean {
+    const among_var = this.find_slice_b(StemmerCs.a_0);
     if (among_var === 0) {
       return false;
     }
-    this.bra = this.cursor;
     if (!this.r_RV()) {
       return false;
     }
     switch (among_var) {
-      case 0:
-        return false;
       case 1:
         this.slice_from('k');
         break;
@@ -110,90 +58,78 @@ class StemmerCs extends BaseStemmer {
     }
     return true;
   }
-  r_do_possessive() {
-    let among_var;
-    let v_1;
-    this.ket = this.cursor;
-    among_var = this.find_among_b(StemmerCs.a_1);
+
+  r_do_possessive(): boolean {
+    const among_var = this.find_slice_b(StemmerCs.a_1);
     if (among_var === 0) {
       return false;
     }
-    this.bra = this.cursor;
     if (!this.r_RV()) {
       return false;
     }
     switch (among_var) {
-      case 0:
-        return false;
       case 1:
         this.slice_del();
         break;
-      case 2:
+      case 2: {
         this.slice_del();
-        v_1 = this.limit - this.cursor;
-        lab0: do {
+        const v_1 = this.limit - this.cursor;
+        lab0: {
           if (!this.r_palatalise()) {
             this.cursor = this.limit - v_1;
             break lab0;
           }
-        } while (false);
+        }
         break;
+      }
     }
     return true;
   }
-  r_do_case() {
-    let among_var;
-    let v_1;
-    let v_2;
-    this.ket = this.cursor;
-    among_var = this.find_among_b(StemmerCs.a_2);
+
+  r_do_case(): boolean {
+    const among_var = this.find_slice_b(StemmerCs.a_2);
     if (among_var === 0) {
       return false;
     }
-    this.bra = this.cursor;
     switch (among_var) {
-      case 0:
-        return false;
       case 1:
         this.slice_del();
         break;
-      case 2:
+      case 2: {
         this.slice_del();
-        v_1 = this.limit - this.cursor;
-        lab0: do {
+        const v_1 = this.limit - this.cursor;
+        lab0: {
           if (!this.r_palatalise()) {
             this.cursor = this.limit - v_1;
             break lab0;
           }
-        } while (false);
+        }
         break;
-      case 3:
+      }
+      case 3: {
         this.slice_from('e');
-        v_2 = this.limit - this.cursor;
-        lab1: do {
+        const v_2 = this.limit - this.cursor;
+        lab1: {
           if (!this.r_palatalise()) {
             this.cursor = this.limit - v_2;
             break lab1;
           }
-        } while (false);
+        }
         break;
+      }
     }
     return true;
   }
-  r_do_derivational() {
-    let among_var;
-    this.ket = this.cursor;
-    among_var = this.find_among_b(StemmerCs.a_3);
+
+  r_do_derivational(): boolean {
+    const among_var = this.find_slice_b(StemmerCs.a_3);
     if (among_var === 0) {
       return false;
     }
-    this.bra = this.cursor;
     if (!this.r_R1()) {
       return false;
     }
     switch (among_var) {
-      case 0:
-        return false;
       case 1:
         this.slice_del();
         break;
@@ -230,34 +166,26 @@ class StemmerCs extends BaseStemmer {
     }
     return true;
   }
-  r_do_deriv_single() {
-    let among_var;
-    this.ket = this.cursor;
-    among_var = this.find_among_b(StemmerCs.a_4);
+
+  r_do_deriv_single(): boolean {
+    const among_var = this.find_slice_b(StemmerCs.a_4);
     if (among_var === 0) {
       return false;
     }
-    this.bra = this.cursor;
     switch (among_var) {
-      case 0:
-        return false;
       case 1:
         this.slice_del();
         break;
     }
     return true;
   }
-  r_do_augmentative() {
-    let among_var;
-    this.ket = this.cursor;
-    among_var = this.find_among_b(StemmerCs.a_5);
+
+  r_do_augmentative(): boolean {
+    const among_var = this.find_slice_b(StemmerCs.a_5);
     if (among_var === 0) {
       return false;
     }
-    this.bra = this.cursor;
     switch (among_var) {
-      case 0:
-        return false;
       case 1:
         this.slice_del();
         break;
@@ -270,17 +198,13 @@ class StemmerCs extends BaseStemmer {
     }
     return true;
   }
-  r_do_diminutive() {
-    let among_var;
-    this.ket = this.cursor;
-    among_var = this.find_among_b(StemmerCs.a_6);
+
+  r_do_diminutive(): boolean {
+    const among_var = this.find_slice_b(StemmerCs.a_6);
     if (among_var === 0) {
       return false;
     }
-    this.bra = this.cursor;
     switch (among_var) {
-      case 0:
-        return false;
       case 1:
         this.slice_del();
         break;
@@ -323,17 +247,13 @@ class StemmerCs extends BaseStemmer {
     }
     return true;
   }
-  r_do_comparative() {
-    let among_var;
-    this.ket = this.cursor;
-    among_var = this.find_among_b(StemmerCs.a_7);
+
+  r_do_comparative(): boolean {
+    const among_var = this.find_slice_b(StemmerCs.a_7);
     if (among_var === 0) {
       return false;
     }
-    this.bra = this.cursor;
     switch (among_var) {
-      case 0:
-        return false;
       case 1:
         this.slice_from('\u011B');
         if (!this.r_palatalise()) {
@@ -349,59 +269,30 @@ class StemmerCs extends BaseStemmer {
     }
     return true;
   }
-  r_do_aggressive() {
-    let v_1;
-    let v_2;
-    let v_3;
-    let v_4;
-    v_1 = this.limit - this.cursor;
-    lab0: do {
-      if (!this.r_do_comparative()) {
+
+  r_do_aggressive(): boolean {
+    this.do_backward(this.r_do_comparative);
+    this.do_backward(this.r_do_diminutive);
+    this.do_backward(this.r_do_augmentative);
+    lab0: {
+      const v_4 = this.limit - this.cursor;
+      lab1: {
+        if (!this.r_do_derivational()) {
+          break lab1;
+        }
         break lab0;
       }
-    } while (false);
-    this.cursor = this.limit - v_1;
-    v_2 = this.limit - this.cursor;
-    lab1: do {
-      if (!this.r_do_diminutive()) {
-        break lab1;
-      }
-    } while (false);
-    this.cursor = this.limit - v_2;
-    v_3 = this.limit - this.cursor;
-    lab2: do {
-      if (!this.r_do_augmentative()) {
-        break lab2;
-      }
-    } while (false);
-    this.cursor = this.limit - v_3;
-    lab3: do {
-      v_4 = this.limit - this.cursor;
-      lab4: do {
-        if (!this.r_do_derivational()) {
-          break lab4;
-        }
-        break lab3;
-      } while (false);
       this.cursor = this.limit - v_4;
-      if (!this.r_do_deriv_single()) {
-        return false;
-      }
-    } while (false);
+      return this.r_do_deriv_single();
+    }
     return true;
   }
-  innerStem() {
+
+  innerStem(): boolean {
     if (this.current.length <= 4) {
-      return true;
+      return false;
     }
-    let v_1;
-    v_1 = this.cursor;
-    lab0: do {
-      if (!this.r_mark_regions()) {
-        break lab0;
-      }
-    } while (false);
-    this.cursor = v_1;
+    this.r_mark_regions();
     this.limit_backward = this.cursor;
     this.cursor = this.limit;
     if (!this.r_do_case()) {
@@ -416,222 +307,61 @@ class StemmerCs extends BaseStemmer {
     this.cursor = this.limit_backward;
     return true;
   }
+
+  static g_v: number[] = [
+    17, 65, 16, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 17, 4, 18, 0, 0, 0, 4,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 64,
+  ];
+
+  static a_0 = Among.table<StemmerCs>(`
+    ce,-1,1 ze,-1,2 že,-1,2 ci,-1,1 čti,-1,3 šti,-1,4 zi,-1,2 či,-1,1 ži,-1,2
+    čté,-1,3 šté,-1,4 č,-1,1 čtě,-1,3 ště,-1,4
+  `);
+
+  static a_1 = Among.table<StemmerCs>(`
+    in,-1,2 ov,-1,1 ův,-1,1
+  `);
+
+  static a_2 = Among.table<StemmerCs>(`
+    a,-1,1 ama,0,1 ata,0,1 e,-1,2 ěte,3,2 ech,-1,2 atech,5,1 ich,-1,2 ách,-1,1
+    ích,-1,2 ých,-1,1 i,-1,2 mi,11,1 ami,12,1 emi,12,2 ími,12,2 ými,12,1
+    ěmi,12,2 ěti,11,2 ovi,11,1 em,-1,3 ětem,20,1 ám,-1,1 ém,-1,2 ím,-1,2 ým,-1,1
+    atům,-1,1 o,-1,1 iho,27,2 ého,27,2 ího,27,2 es,-1,2 os,-1,1 us,-1,1 at,-1,1
+    u,-1,1 imu,35,2 ému,35,2 ou,35,1 y,-1,1 aty,39,1 á,-1,1 é,-1,1 ové,42,1
+    í,-1,2 ý,-1,1 ě,-1,2 ů,-1,1
+  `);
+
+  static a_3 = Among.table<StemmerCs>(`
+    ob,-1,1 itb,-1,2 ec,-1,3 inec,2,2 obinec,3,1 ovec,2,1 ic,-1,2 enic,6,3
+    och,-1,1 ásek,-1,1 nk,-1,1 isk,-1,2 ovisk,11,1 tk,-1,1 vk,-1,1 ník,-1,1
+    ovník,15,1 ovík,-1,1 čk,-1,1 išk,-1,2 ušk,-1,1 dl,-1,1 itel,-1,2 ul,-1,1
+    an,-1,1 čan,24,1 en,-1,3 in,-1,2 štin,27,1 ovin,27,1 teln,-1,1 árn,-1,1
+    írn,-1,6 oun,-1,1 loun,33,1 ovn,-1,1 yn,-1,1 kyn,36,1 án,-1,1 ián,38,2
+    ín,-1,6 čn,-1,1 ěn,-1,5 as,-1,1 it,-1,2 ot,-1,1 ist,-1,2 ost,-1,1 nost,47,1
+    out,-1,1 ovišt,-1,1 iv,-1,2 ov,-1,1 tv,-1,1 ctv,53,1 stv,53,1 ovstv,55,1
+    ovtv,53,1 ač,-1,1 áč,-1,1 oň,-1,1 ář,-1,1 kář,61,1 ionář,61,2 éř,-1,4
+    néř,64,1 íř,-1,6 ouš,-1,1
+  `);
+
+  static a_4 = Among.table<StemmerCs>(`
+    c,-1,1 k,-1,1 l,-1,1 n,-1,1 t,-1,1 č,-1,1
+  `);
+
+  static a_5 = Among.table<StemmerCs>(`
+    isk,-1,2 ák,-1,1 izn,-1,2 ajzn,-1,1
+  `);
+
+  static a_6 = Among.table<StemmerCs>(`
+    k,-1,1 ak,0,7 ek,0,2 anek,2,1 enek,2,2 inek,2,4 onek,2,1 unek,2,1 ánek,2,1
+    aček,2,1 eček,2,2 iček,2,4 oček,2,1 uček,2,1 áček,2,1 éček,2,3 íček,2,5
+    oušek,2,1 ik,0,4 ank,0,1 enk,0,1 ink,0,1 onk,0,1 unk,0,1 ánk,0,1 énk,0,1
+    ínk,0,1 ok,0,8 átk,0,1 uk,0,9 ák,0,6 ék,0,3 ík,0,5 ačk,0,1 ečk,0,1 ičk,0,1
+    očk,0,1 učk,0,1 áčk,0,1 éčk,0,1 íčk,0,1 ušk,0,1
+  `);
+
+  static a_7 = Among.table<StemmerCs>(`
+    ejš,-1,2 ějš,-1,1
+  `);
 }
-
-StemmerCs.a_0 = [
-  new Among('ce', -1, 1),
-  new Among('ze', -1, 2),
-  new Among('\u017Ee', -1, 2),
-  new Among('ci', -1, 1),
-  new Among('\u010Dti', -1, 3),
-  new Among('\u0161ti', -1, 4),
-  new Among('zi', -1, 2),
-  new Among('\u010Di', -1, 1),
-  new Among('\u017Ei', -1, 2),
-  new Among('\u010Dt\u00E9', -1, 3),
-  new Among('\u0161t\u00E9', -1, 4),
-  new Among('\u010D', -1, 1),
-  new Among('\u010Dt\u011B', -1, 3),
-  new Among('\u0161t\u011B', -1, 4),
-];
-
-StemmerCs.a_1 = [
-  new Among('in', -1, 2),
-  new Among('ov', -1, 1),
-  new Among('\u016Fv', -1, 1),
-];
-
-StemmerCs.a_2 = [
-  new Among('a', -1, 1),
-  new Among('ama', 0, 1),
-  new Among('ata', 0, 1),
-  new Among('e', -1, 2),
-  new Among('\u011Bte', 3, 2),
-  new Among('ech', -1, 2),
-  new Among('atech', 5, 1),
-  new Among('ich', -1, 2),
-  new Among('\u00E1ch', -1, 1),
-  new Among('\u00EDch', -1, 2),
-  new Among('\u00FDch', -1, 1),
-  new Among('i', -1, 2),
-  new Among('mi', 11, 1),
-  new Among('ami', 12, 1),
-  new Among('emi', 12, 2),
-  new Among('\u00EDmi', 12, 2),
-  new Among('\u00FDmi', 12, 1),
-  new Among('\u011Bmi', 12, 2),
-  new Among('\u011Bti', 11, 2),
-  new Among('ovi', 11, 1),
-  new Among('em', -1, 3),
-  new Among('\u011Btem', 20, 1),
-  new Among('\u00E1m', -1, 1),
-  new Among('\u00E9m', -1, 2),
-  new Among('\u00EDm', -1, 2),
-  new Among('\u00FDm', -1, 1),
-  new Among('at\u016Fm', -1, 1),
-  new Among('o', -1, 1),
-  new Among('iho', 27, 2),
-  new Among('\u00E9ho', 27, 2),
-  new Among('\u00EDho', 27, 2),
-  new Among('es', -1, 2),
-  new Among('os', -1, 1),
-  new Among('us', -1, 1),
-  new Among('at', -1, 1),
-  new Among('u', -1, 1),
-  new Among('imu', 35, 2),
-  new Among('\u00E9mu', 35, 2),
-  new Among('ou', 35, 1),
-  new Among('y', -1, 1),
-  new Among('aty', 39, 1),
-  new Among('\u00E1', -1, 1),
-  new Among('\u00E9', -1, 1),
-  new Among('ov\u00E9', 42, 1),
-  new Among('\u00ED', -1, 2),
-  new Among('\u00FD', -1, 1),
-  new Among('\u011B', -1, 2),
-  new Among('\u016F', -1, 1),
-];
-
-StemmerCs.a_3 = [
-  new Among('ob', -1, 1),
-  new Among('itb', -1, 2),
-  new Among('ec', -1, 3),
-  new Among('inec', 2, 2),
-  new Among('obinec', 3, 1),
-  new Among('ovec', 2, 1),
-  new Among('ic', -1, 2),
-  new Among('enic', 6, 3),
-  new Among('och', -1, 1),
-  new Among('\u00E1sek', -1, 1),
-  new Among('nk', -1, 1),
-  new Among('isk', -1, 2),
-  new Among('ovisk', 11, 1),
-  new Among('tk', -1, 1),
-  new Among('vk', -1, 1),
-  new Among('n\u00EDk', -1, 1),
-  new Among('ovn\u00EDk', 15, 1),
-  new Among('ov\u00EDk', -1, 1),
-  new Among('\u010Dk', -1, 1),
-  new Among('i\u0161k', -1, 2),
-  new Among('u\u0161k', -1, 1),
-  new Among('dl', -1, 1),
-  new Among('itel', -1, 2),
-  new Among('ul', -1, 1),
-  new Among('an', -1, 1),
-  new Among('\u010Dan', 24, 1),
-  new Among('en', -1, 3),
-  new Among('in', -1, 2),
-  new Among('\u0161tin', 27, 1),
-  new Among('ovin', 27, 1),
-  new Among('teln', -1, 1),
-  new Among('\u00E1rn', -1, 1),
-  new Among('\u00EDrn', -1, 6),
-  new Among('oun', -1, 1),
-  new Among('loun', 33, 1),
-  new Among('ovn', -1, 1),
-  new Among('yn', -1, 1),
-  new Among('kyn', 36, 1),
-  new Among('\u00E1n', -1, 1),
-  new Among('i\u00E1n', 38, 2),
-  new Among('\u00EDn', -1, 6),
-  new Among('\u010Dn', -1, 1),
-  new Among('\u011Bn', -1, 5),
-  new Among('as', -1, 1),
-  new Among('it', -1, 2),
-  new Among('ot', -1, 1),
-  new Among('ist', -1, 2),
-  new Among('ost', -1, 1),
-  new Among('nost', 47, 1),
-  new Among('out', -1, 1),
-  new Among('ovi\u0161t', -1, 1),
-  new Among('iv', -1, 2),
-  new Among('ov', -1, 1),
-  new Among('tv', -1, 1),
-  new Among('ctv', 53, 1),
-  new Among('stv', 53, 1),
-  new Among('ovstv', 55, 1),
-  new Among('ovtv', 53, 1),
-  new Among('a\u010D', -1, 1),
-  new Among('\u00E1\u010D', -1, 1),
-  new Among('o\u0148', -1, 1),
-  new Among('\u00E1\u0159', -1, 1),
-  new Among('k\u00E1\u0159', 61, 1),
-  new Among('ion\u00E1\u0159', 61, 2),
-  new Among('\u00E9\u0159', -1, 4),
-  new Among('n\u00E9\u0159', 64, 1),
-  new Among('\u00ED\u0159', -1, 6),
-  new Among('ou\u0161', -1, 1),
-];
-
-StemmerCs.a_4 = [
-  new Among('c', -1, 1),
-  new Among('k', -1, 1),
-  new Among('l', -1, 1),
-  new Among('n', -1, 1),
-  new Among('t', -1, 1),
-  new Among('\u010D', -1, 1),
-];
-
-StemmerCs.a_5 = [
-  new Among('isk', -1, 2),
-  new Among('\u00E1k', -1, 1),
-  new Among('izn', -1, 2),
-  new Among('ajzn', -1, 1),
-];
-
-StemmerCs.a_6 = [
-  new Among('k', -1, 1),
-  new Among('ak', 0, 7),
-  new Among('ek', 0, 2),
-  new Among('anek', 2, 1),
-  new Among('enek', 2, 2),
-  new Among('inek', 2, 4),
-  new Among('onek', 2, 1),
-  new Among('unek', 2, 1),
-  new Among('\u00E1nek', 2, 1),
-  new Among('a\u010Dek', 2, 1),
-  new Among('e\u010Dek', 2, 2),
-  new Among('i\u010Dek', 2, 4),
-  new Among('o\u010Dek', 2, 1),
-  new Among('u\u010Dek', 2, 1),
-  new Among('\u00E1\u010Dek', 2, 1),
-  new Among('\u00E9\u010Dek', 2, 3),
-  new Among('\u00ED\u010Dek', 2, 5),
-  new Among('ou\u0161ek', 2, 1),
-  new Among('ik', 0, 4),
-  new Among('ank', 0, 1),
-  new Among('enk', 0, 1),
-  new Among('ink', 0, 1),
-  new Among('onk', 0, 1),
-  new Among('unk', 0, 1),
-  new Among('\u00E1nk', 0, 1),
-  new Among('\u00E9nk', 0, 1),
-  new Among('\u00EDnk', 0, 1),
-  new Among('ok', 0, 8),
-  new Among('\u00E1tk', 0, 1),
-  new Among('uk', 0, 9),
-  new Among('\u00E1k', 0, 6),
-  new Among('\u00E9k', 0, 3),
-  new Among('\u00EDk', 0, 5),
-  new Among('a\u010Dk', 0, 1),
-  new Among('e\u010Dk', 0, 1),
-  new Among('i\u010Dk', 0, 1),
-  new Among('o\u010Dk', 0, 1),
-  new Among('u\u010Dk', 0, 1),
-  new Among('\u00E1\u010Dk', 0, 1),
-  new Among('\u00E9\u010Dk', 0, 1),
-  new Among('\u00ED\u010Dk', 0, 1),
-  new Among('u\u0161k', 0, 1),
-];
-
-StemmerCs.a_7 = [
-  new Among('ej\u0161', -1, 2),
-  new Among('\u011Bj\u0161', -1, 1),
-];
-
-StemmerCs.g_v = [
-  17, 65, 16, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 17, 4, 18, 0, 0, 0, 4,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 64,
-];
 
 export default StemmerCs;

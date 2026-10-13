@@ -71,6 +71,13 @@ directly only when you assemble the container yourself.
 See [Language support](https://github.com/kibertoad/nlpjs-neo/blob/main/docs/v5/language-support.md) for what each locale
 supports.
 
+## Credits
+
+The stemmer is the Czech stemmer of Ljiljana Dolamic and Jacques Savoy (the aggressive one),
+in the [Snowball](https://snowballstem.org/) program that Jim O'Regan sent to the Snowball project
+in March 2012, and is released under the BSD license. It is generated from
+`tools/snowball/algorithms/czech.sbl`.
+
 ## Contributing
 
 You can read the guide of how to contribute at [Contributing](https://github.com/kibertoad/nlpjs-neo/blob/main/CONTRIBUTING.md).
