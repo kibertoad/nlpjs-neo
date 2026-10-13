@@ -62,6 +62,14 @@ describe('Parsing and code generation', () => {
       test('It should parse a computed member access', async () => {
         expect(await run('a["b"]', { a: { b: 42 } })).toEqual(42);
       });
+      test('It should read a computed member by the value of its key', async () => {
+        expect(await run('a[k]', { a: { k: 1, z: 2 }, k: 'z' })).toEqual(2);
+      });
+      test('It should write a computed member by the value of its key', async () => {
+        const context: EvaluationContext = { a: { k: 1 }, k: 'z' };
+        await run('a[k] = 2', context);
+        expect(context.a).toEqual({ k: 1, z: 2 });
+      });
     });
 
     describe('several statements', () => {

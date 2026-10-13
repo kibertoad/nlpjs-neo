@@ -228,6 +228,7 @@ class Evaluator {
       return undefined;
     }
     if (
+      !node.computed &&
       node.property.type === 'Identifier' &&
       node.object.type !== 'ObjectExpression'
     ) {
@@ -497,7 +498,7 @@ class Evaluator {
     if (obj === this.failResult || typeof obj === 'function') {
       return this.failResult;
     }
-    if (node.property.type === 'Identifier') {
+    if (!node.computed && node.property.type === 'Identifier') {
       obj[node.property.name] = value;
       return value;
     }
