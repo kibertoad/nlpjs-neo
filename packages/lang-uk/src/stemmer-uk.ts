@@ -54,7 +54,7 @@ class StemmerUk extends BaseStemmer {
 
   step3(word) {
     if (
-      /[^аеиоуюяіїє][аеиоуюяіїє]+[^аеиоуюяіїє]+[аеиоуюяіїє].*oсть/g.exec(word)
+      /[^аеиоуюяіїє][аеиоуюяіїє]+[^аеиоуюяіїє]+[аеиоуюяіїє].*ость/g.exec(word)
     ) {
       word = this.replace(word, /ость$/);
     }
