@@ -62,11 +62,13 @@ import { StopwordsJa } from '@nlpjs-neo/lang-ja';
 | `StemmerJa` | reduces a token to its stem |
 | `StopwordsJa` | removes the words that carry no meaning for the classification |
 | `TokenizerJa` | splits a text into tokens |
-| `NormalizerJa` | lowercases the text and strips accents |
+| `NormalizerJa` | normalizes the width, kana and compatibility forms of the text |
 | `SentimentJa` | the sentiment dictionary of the language |
 
 `node-nlp-neo` and `@nlpjs-neo/lang-all` already include this package, so install it
 directly only when you assemble the container yourself.
+
+The components are described in the [documentation of the package](https://github.com/kibertoad/nlpjs-neo/blob/main/packages/lang-ja/docs/index.md).
 
 See [Language support](https://github.com/kibertoad/nlpjs-neo/blob/main/docs/v5/language-support.md) for what each locale
 supports.
