@@ -255,4 +255,10 @@ describe('Stemmer Japanese', () => {
       ]);
     });
   });
+  describe('Run', () => {
+    test('It should put the stemmed tokens in the input, not a promise', async () => {
+      const input = await stemmer.run({ text: '寿司を食べます', locale: 'ja' });
+      expect(input.tokens).toEqual(['スシ', 'タベル']);
+    });
+  });
 });
