@@ -63,8 +63,10 @@ describe('Stemmer Japanese', () => {
     test('It should transliterate kana', () => {
       expect(stemmer.toRomaji('コンニチハ')).toEqual('konnichiha');
     });
-    test('It should keep a syllabic n before a vowel or a y-kana separate', () => {
-      expect(stemmer.toRomaji('ホンヤ')).toEqual('honya');
+    test('It should separate a syllabic n from a vowel or a y-kana that follows', () => {
+      expect(stemmer.toRomaji('ホンヤ')).toEqual("hon'ya");
+      expect(stemmer.toRomaji('ホンアン')).toEqual("hon'an");
+      expect(stemmer.toRomaji('ほんいん')).toEqual("hon'in");
     });
   });
 
