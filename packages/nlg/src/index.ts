@@ -10,6 +10,7 @@ export type {
   ActionsByIntent,
   Answer,
   AnswerOptions,
+  AnswerPayload,
   BoundAction,
   ConditionEvaluator,
   Intent,
@@ -17,5 +18,6 @@ export type {
   NlgInput,
   NlgManagerJson,
   ResponsesByLocale,
+  StructuredAnswer,
   TemplateCompiler,
 } from './types.js';

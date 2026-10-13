@@ -1,3 +1,4 @@
+import type { AnswerPayload } from '@nlpjs-neo/nlg';
 import type { NlpResult } from '@nlpjs-neo/nlp';
 import { NlpManager } from '../nlp/index.js';
 import MemoryConversationContext from './memory-conversation-context.js';
@@ -336,10 +337,10 @@ class Recognizer {
   /**
    * When an answer is received over the threshold, decide what to do with this answer.
    * @param {Object} session Microsoft bot framework session.
-   * @param {string} answer Answer given by the NLP.
+   * @param {string|object} answer Answer given by the NLP.
    */
-  processAnswer(session: BotSession, answer: string): unknown {
-    if (answer[0] === '/') {
+  processAnswer(session: BotSession, answer: AnswerPayload): unknown {
+    if (typeof answer === 'string' && answer[0] === '/') {
       return session.beginDialog(answer);
     }
     return session.send(answer);

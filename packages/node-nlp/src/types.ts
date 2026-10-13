@@ -1,3 +1,4 @@
+import type { AnswerPayload } from '@nlpjs-neo/nlg';
 import type { Settings } from '@nlpjs-neo/core-loader';
 import type { NlpResult, NlpSettings } from '@nlpjs-neo/nlp';
 import type { SentimentResult } from '@nlpjs-neo/sentiment';
@@ -77,7 +78,7 @@ export interface BotSession {
   };
   dialogStack?(): string[];
   beginDialog?(name: string): unknown;
-  send?(answer: string): unknown;
+  send?(answer: AnswerPayload): unknown;
   routeToActiveDialog?(): unknown;
   [key: string]: unknown;
 }
