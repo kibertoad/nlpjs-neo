@@ -70,7 +70,7 @@
   },
   "gitHead": "cc4249fa994c58d220e6f10a6c94fdad05df32fd",
   "dependencies": {
-    "pino": "^10.3.1",
+    "pino": "^10.4.0",
     "pino-pretty": "^13.1.3"
   }
 }
