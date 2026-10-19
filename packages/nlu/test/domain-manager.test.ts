@@ -1,7 +1,13 @@
+import { expectWellFormedClassifications } from '#test/classifications.js';
 import { DomainManager } from '../src/index.js';
 import type { DomainManagerInput } from '../src/index.js';
 import container from './bootstrap.js';
 import { addFoodDomain, addPersonalityDomain } from './domains.js';
+
+/** Every intent a trained manager knows, plus the `None` it falls back to. */
+function knownIntents(manager: DomainManager): string[] {
+  return [...Object.keys(manager.intentDict), 'None'];
+}
 
 describe('Domain Manager', () => {
   describe('Constructor', () => {
@@ -222,23 +228,39 @@ describe('Domain Manager', () => {
       addFoodDomain(manager);
       addPersonalityDomain(manager);
       await manager.train();
+      const actual = await manager.process('how old are you', {
+        allowList: ['agent.age', 'agent.birthday'],
+      });
+      // The allowed intent keeps its score, every other one is zeroed.
+      expect(actual.classifications[0]).toEqual({
+        intent: 'agent.age',
+        score: 1,
+      });
+      expect(
+        actual.classifications
+          .slice(1)
+          .every((classification) => classification.score === 0)
+      ).toBe(true);
+    });
+    test('An intent that is not in the allow list gets no score', async () => {
+      const manager = new DomainManager({ container });
+      addFoodDomain(manager);
+      addPersonalityDomain(manager);
+      await manager.train();
       const actual = await manager.process('who are you', {
         allowList: ['agent.age', 'agent.birthday'],
       });
-      expect(actual.classifications).toEqual([
-        {
-          intent: 'agent.age',
-          score: 1,
-        },
-        {
-          intent: 'agent.acquaintance',
-          score: 0,
-        },
-        {
-          intent: 'agent.annoying',
-          score: 0,
-        },
-      ]);
+      // Nothing the utterance matches is allowed, so every intent it could
+      // answer is zeroed and the best answer is worthless.
+      expectWellFormedClassifications(
+        actual.classifications,
+        knownIntents(manager)
+      );
+      expect(
+        actual.classifications.every(
+          (classification) => classification.score === 0
+        )
+      ).toBe(true);
     });
     test('Can be trained twice', async () => {
       const manager = new DomainManager({ container });

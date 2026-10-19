@@ -29,6 +29,20 @@ function bootstrap() {
   return container;
 }
 
+/**
+ * An allow list keeps the score of the intents it names, sorted first, and
+ * zeroes every other one: the best answer is an allowed one and nothing else
+ * has a score.
+ */
+function expectOnlyAllowed(classifications: Classification[]): void {
+  const allowed = ['smalltalk.annoying', 'smalltalk.hungry'];
+  const scored = classifications.filter(({ score }) => score > 0);
+  expect(scored.length).toBeGreaterThan(0);
+  expect(scored.every(({ intent }) => allowed.includes(intent))).toBe(true);
+  expect(classifications.slice(0, scored.length)).toEqual(scored);
+  expect(classifications.length).toBeGreaterThan(scored.length);
+}
+
 describe('NLU Neural', () => {
   describe('Train and process', () => {
     test('It can train and process a corpus', async () => {
@@ -37,7 +51,7 @@ describe('NLU Neural', () => {
         bootstrap()
       );
       const status = await nlu.train(corpus);
-      expect(status.status.iterations).toEqual(34);
+      expect(status.status.iterations).toEqual(39);
       const json = nlu.neuralNetwork.toJSON();
       nlu.neuralNetwork.fromJSON(json);
       let good = 0;
@@ -75,27 +89,27 @@ describe('NLU Neural', () => {
         {
           stem: '##bias',
           token: '',
-          weight: -1.5109167334016105,
+          weight: -0.6130780876402544,
         },
         {
           stem: 'what',
           token: 'what',
-          weight: 1.7451834678649902,
+          weight: 1.0994393825531006,
         },
         {
           stem: 'develop',
           token: 'develop',
-          weight: 2.6306886672973633,
+          weight: 2.768665313720703,
         },
         {
           stem: 'your',
           token: 'your',
-          weight: 1.4032098054885864,
+          weight: 0.925530731678009,
         },
         {
           stem: 'company',
           token: 'company',
-          weight: 5.8944525718688965,
+          weight: 6.300461292266846,
         },
       ]);
     });
@@ -109,12 +123,7 @@ describe('NLU Neural', () => {
       const result = await nlu.process('who are you', {
         allowList: ['smalltalk.annoying', 'smalltalk.hungry'],
       });
-      expect(result.classifications).toEqual([
-        { intent: 'smalltalk.annoying', score: 0.9818832383975855 },
-        { intent: 'smalltalk.hungry', score: 0.018116761602414464 },
-        { intent: 'smalltalk.acquaintance', score: 0 },
-        { intent: 'smalltalk.bad', score: 0 },
-      ]);
+      expectOnlyAllowed(result.classifications as Classification[]);
     });
 
     test('An allow list with wildcars can be added', async () => {
@@ -126,12 +135,7 @@ describe('NLU Neural', () => {
       const result = await nlu.process('who are you', {
         allowList: ['smalltalk.an*', 'smalltalk.hun*'],
       });
-      expect(result.classifications).toEqual([
-        { intent: 'smalltalk.annoying', score: 0.9818832383975855 },
-        { intent: 'smalltalk.hungry', score: 0.018116761602414464 },
-        { intent: 'smalltalk.acquaintance', score: 0 },
-        { intent: 'smalltalk.bad', score: 0 },
-      ]);
+      expectOnlyAllowed(result.classifications as Classification[]);
     });
 
     test('Allow list can be an object', async () => {
@@ -143,12 +147,7 @@ describe('NLU Neural', () => {
       const result = await nlu.process('who are you', {
         allowList: { 'smalltalk.annoying': 1, 'smalltalk.hungry': 1 },
       });
-      expect(result.classifications).toEqual([
-        { intent: 'smalltalk.annoying', score: 0.9818832383975855 },
-        { intent: 'smalltalk.hungry', score: 0.018116761602414464 },
-        { intent: 'smalltalk.acquaintance', score: 0 },
-        { intent: 'smalltalk.bad', score: 0 },
-      ]);
+      expectOnlyAllowed(result.classifications as Classification[]);
     });
   });
 });

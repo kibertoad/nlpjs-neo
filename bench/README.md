@@ -32,6 +32,29 @@ local `const` at the top of the file to keep that out of the measurement. A warn
 `src/` module instead means the measured code crosses module boundaries internally, which is
 inherent to running the sources and applies equally to every run.
 
+## A big corpus
+
+The corpora of the benchmarks above have 51 intents and a few hundred utterances, too small to
+show what training and classifying cost on a real bot. `bench/massive/massive.test.ts` measures
+the whole `NluManager` on the [Amazon MASSIVE](https://github.com/alexa/massive) dataset (60
+intents, 11,514 training and 2,974 test utterances per language, English and Spanish). It is not
+part of `pnpm bench`, and the dataset is not in the repository: convert the `train` and `test`
+partitions of `en-US.jsonl` and `es-ES.jsonl` to `corpus-en.json` and `corpus-es.json`
+(`{ "data": [{ "intent", "utterances", "tests" }] }`) in a folder of your own, and run:
+
+```shell
+MASSIVE_DIR=/path/to/corpora pnpm bench:massive
+```
+
+It prints the training time, the accuracy and the utterances answered per second, with the
+memos of the prepare step emptied before every pass. `MASSIVE_OUT=file.json` saves the result,
+and `MASSIVE_BASELINE=file.json` on a later run compares against it: the times are printed as a
+ratio, and the test fails if the intent or the score (to 1e-4) of any utterance moved, so a
+speed-up cannot come from answering differently. A baseline taken on another corpus, or another
+split of one, answers a different number of utterances; the run says so and fails, rather than
+reading the mismatch as moved answers. `MASSIVE_LOCALES=en`, `MASSIVE_SECONDS=8` and
+`MASSIVE_PROFILE=file.cpuprofile` (a CPU profile of the passes) narrow or extend it.
+
 ## Comparing two runs
 
 `pnpm bench:compare` diffs two JSON reports, matching benchmarks by file, test and task name:
