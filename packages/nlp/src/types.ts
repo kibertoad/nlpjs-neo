@@ -22,6 +22,8 @@ import type {
   ActionManagerJson,
   Answer,
   AnswerOptions,
+  AnswerPayload,
+  StructuredAnswer,
   NlgManagerJson,
 } from '@nlpjs-neo/nlg';
 import type { SlotFillState, SlotsByIntent } from '@nlpjs-neo/slot';
@@ -100,10 +102,14 @@ export interface EntityDefinition {
   trim?: TrimEntityDefinition[];
 }
 
-/** An answer as a corpus declares it. */
+/**
+ * An answer as a corpus declares it: text, text with the options that gate
+ * it, or structured data that is answered as it stands.
+ */
 export type AnswerDefinition =
   | string
-  | { answer: string; opts?: string | AnswerOptions };
+  | { answer: AnswerPayload; opts?: string | AnswerOptions }
+  | StructuredAnswer;
 
 /** A slot as a corpus declares it: a question, or a question and whether it is required. */
 export type SlotDefinition = string | { question: string; mandatory?: boolean };
@@ -217,7 +223,7 @@ export interface NlpResult {
   intent?: Intent;
   domain?: Domain;
   score?: number;
-  answer?: string;
+  answer?: AnswerPayload;
   answers?: Answer[];
   /** Edges while extraction runs, organized entities once it is done. */
   entities?: (Edge | StructuredEntity)[];

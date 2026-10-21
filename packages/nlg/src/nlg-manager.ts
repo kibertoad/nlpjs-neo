@@ -9,6 +9,7 @@ import type {
 import type {
   Answer,
   AnswerOptions,
+  AnswerPayload,
   ConditionEvaluator,
   Intent,
   LegacyAnswer,
@@ -17,6 +18,14 @@ import type {
   ResponsesByLocale,
   TemplateCompiler,
 } from './types.js';
+
+/** Text answers are the same when equal, structured ones when they hold the same data. */
+function sameAnswer(a?: AnswerPayload, b?: AnswerPayload): boolean {
+  if (typeof a === 'object' && typeof b === 'object') {
+    return JSON.stringify(a) === JSON.stringify(b);
+  }
+  return a === b;
+}
 
 class NlgManager extends Clonable {
   declare pipelineFind: RegisteredPipeline | undefined;
@@ -117,14 +126,34 @@ class NlgManager extends Clonable {
    * template it carries. Takes either an answer or its bare text, and gives
    * back the same form.
    */
-  renderText<T extends Answer | string>(
+  renderText<T extends Answer | AnswerPayload>(
     srcText: T,
     context?: Record<string, unknown>
   ): T {
     if (!srcText) {
       return srcText;
     }
-    let text: string = (srcText as Answer).answer || (srcText as string);
+    let text: AnswerPayload =
+      (srcText as Answer).answer || (srcText as AnswerPayload);
+    // Structured answers have no alternatives to resolve, only templates.
+    if (typeof text === 'string') {
+      text = this.resolveAlternatives(text);
+    }
+    if ((srcText as Answer).answer) {
+      (srcText as Answer).answer = text;
+    } else {
+      srcText = text as T;
+    }
+    const template = this.container.get<TemplateCompiler>('Template');
+    if (template && context) {
+      return template.compile(srcText, context);
+    }
+    return srcText;
+  }
+
+  /** Picks one of the options of every `(a|b)` of a text. */
+  protected resolveAlternatives(srcText: string): string {
+    let text = srcText;
     let matchFound;
     do {
       const match = /\((?:[^()]+)\|(?:[^()]+)\)/g.exec(text);
@@ -142,16 +171,7 @@ class NlgManager extends Clonable {
         matchFound = false;
       }
     } while (matchFound);
-    if ((srcText as Answer).answer) {
-      (srcText as Answer).answer = text;
-    } else {
-      srcText = text as T;
-    }
-    const template = this.container.get<TemplateCompiler>('Template');
-    if (template && context) {
-      return template.compile(srcText, context);
-    }
-    return srcText;
+    return text;
   }
 
   renderRandom(srcInput: NlgInput): NlgInput {
@@ -166,7 +186,7 @@ class NlgManager extends Clonable {
   indexOfAnswer(
     locale: Locale,
     intent: Intent,
-    answer?: string,
+    answer?: AnswerPayload,
     opts?: string | AnswerOptions
   ): number {
     if (!this.responses[locale]) {
@@ -179,7 +199,7 @@ class NlgManager extends Clonable {
     for (let i = 0; i < potential.length; i += 1) {
       const response = potential[i];
       if (
-        response.answer === answer &&
+        sameAnswer(response.answer, answer) &&
         JSON.stringify(response.opts) === JSON.stringify(opts)
       ) {
         return i;
@@ -191,7 +211,7 @@ class NlgManager extends Clonable {
   add(
     locale: Locale,
     intent: Intent,
-    answer?: string,
+    answer?: AnswerPayload,
     opts?: string | AnswerOptions
   ): Answer {
     const index = this.indexOfAnswer(locale, intent, answer, opts);
@@ -212,7 +232,7 @@ class NlgManager extends Clonable {
   remove(
     locale: Locale,
     intent: Intent,
-    answer?: string,
+    answer?: AnswerPayload,
     opts?: string | AnswerOptions
   ): void {
     const index = this.indexOfAnswer(locale, intent, answer, opts);

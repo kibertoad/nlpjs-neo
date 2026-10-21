@@ -2,6 +2,7 @@ import { NlgManager as NlgManagerBase } from '@nlpjs-neo/nlg';
 import type {
   Answer,
   AnswerOptions,
+  AnswerPayload,
   LegacyAnswer,
   NlgInput,
 } from '@nlpjs-neo/nlg';
@@ -33,7 +34,7 @@ class NlgManager extends NlgManagerBase {
     intent: string,
     context?: Record<string, unknown>,
     settings?: Settings
-  ): Promise<{ response: string } | undefined> {
+  ): Promise<{ response: AnswerPayload } | undefined> {
     const answer = await this.find(locale, intent, context, settings);
     if (!answer.answer) {
       return undefined;
