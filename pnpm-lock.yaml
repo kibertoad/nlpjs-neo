@@ -806,8 +806,8 @@ importers:
   packages/xtables:
     dependencies:
       '@office-kit/xlsx':
-        specifier: ^0.25.0
-        version: 0.25.0
+        specifier: ^0.26.0
+        version: 0.26.0
 
 packages:
 
@@ -977,8 +977,8 @@ packages:
     resolution: {integrity: sha512-HikLoRUgSzM4OKP3JVBzUUp3Q7L4wgI17p/3rERF01HVmopcujY3i6wgx8PenCwbenyTNxjr1AwSDSVuFlYedQ==}
     engines: {node: '>=10.3.0'}
 
-  '@office-kit/xlsx@0.25.0':
-    resolution: {integrity: sha512-htMr30WuX1P0oYrhsBONxRy77Md+3bNh5QAY1ql7R5cavIeKQCcFaukf632EYS2ipg6PLk2Gx/LEXbcQ+T2iDA==}
+  '@office-kit/xlsx@0.26.0':
+    resolution: {integrity: sha512-XTqWUPfqmkHG6qhgJxeIsb48sbfHqTebQtvcZbm0iRmQxlMkhnUd0VGyR6AFzm5WD6yxo94sqkofrJMRpz/gWA==}
     engines: {node: '>=22.0.0'}
 
   '@oxc-project/types@0.149.0':
@@ -2438,7 +2438,7 @@ snapshots:
 
   '@microsoft/recognizers-text@1.3.1': {}
 
-  '@office-kit/xlsx@0.25.0':
+  '@office-kit/xlsx@0.26.0':
     dependencies:
       fflate: 0.8.3
       saxes: 6.0.0
