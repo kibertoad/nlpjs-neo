@@ -10,6 +10,7 @@ export type {
   FeatureMap,
   Intent,
   IntentMap,
+  LearningRate,
   NeuralNetworkJson,
   NeuralNetworkSettings,
   Perceptron,

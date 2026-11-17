@@ -7,6 +7,7 @@
     "bench": "vitest bench --run --reporter=verbose",
     "bench:compare": "node scripts/compare-bench.mjs",
     "bench:watch": "vitest bench --reporter=verbose",
+    "bench:massive": "vitest run --config bench/massive/vitest.config.mjs",
     "build": "tsc --build",
     "build:clean": "tsc --build --clean",
     "changeset": "changeset",

@@ -11,8 +11,9 @@
     "sourceMap": false,
     "types": ["node", "vitest/globals"],
     "paths": {
-      "@nlpjs-neo/*": ["./packages/*/src/index.ts"]
+      "@nlpjs-neo/*": ["./packages/*/src/index.ts"],
+      "#test/*": ["./test-support/*"]
     }
   },
-  "include": ["packages/*/test/**/*.ts"]
+  "include": ["packages/*/test/**/*.ts", "test-support/**/*.ts"]
 }
